@@ -1,0 +1,58 @@
+.custom-input {
+    outline: none;              
+    width: 100%;               
+    padding: 0.5rem 1rem;       
+    border: 1px solid black;   
+    border-radius: 0.25rem;    
+    padding-left: 41px;
+  }
+
+  .custom-ckeditor-wrapper {
+    /* Add your styles here */
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.custom-ckeditor-wrapper .ck-editor__editable {
+    /* Targeting the editable area */
+    min-height: 200px;
+    font-size: 16px;
+    padding: 15px;
+}
+
+
+/* / Apply styles to the scrollbar / */
+.rasi-box {
+    overflow: hidden;
+    overflow-y: auto;
+    /* / scrollbar-width: none; For Firefox / */
+    scrollbar-color: #b0b0b0 #f0f0f0; 
+    /* / height: 100%; / */
+    padding: 5px 0 !important;
+  }
+  
+
+
+/* / Custom scrollbar styles / */
+.rasi-box::-webkit-scrollbar
+ {
+  width: 4px;
+}
+
+.rasi-box::-webkit-scrollbar-thumb
+ {
+  background-color: #888; 
+  border-radius: 4px;
+}
+
+
+.rasi-box::-webkit-scrollbar-thumb:hover
+ {
+  background-color: #555; 
+}
+
+
+.rasi-box::-webkit-scrollbar-track
+ {
+  background: #f1f1f1;}

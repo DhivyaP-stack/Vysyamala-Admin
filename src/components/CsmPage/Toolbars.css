@@ -1,0 +1,33 @@
+.ck-content .custom-heading {
+    font-size: 24px;
+    color: #4CAF50;
+    font-weight: bold;
+  }
+  .sticky-panel {
+    position: sticky;
+    top: 0;
+    z-index: 1000; /* Adjust z-index as needed */
+    background-color: #fff; /* Example background color */
+    padding: 10px;
+    /* Add other styling properties as needed */
+  }
+  /* Custom styles for CKEditor toolbar */
+  /* Custom styles for CKEditor toolbar */
+  .ck.ck-toolbar .ck-button.ck-underline {
+    background-color: #000000;
+    border: 1px solid #000000;
+    border-radius: 4px;
+    color: #333;
+    padding: 8px;
+    margin-left: 4px; /* Adjust spacing as needed */
+  }
+  .underline-button {
+    font-weight: bold; /* Example styling */
+    text-decoration: underline; /* Example styling */
+  }
+  
+  
+  .custom-editor-container .ck-editor__editable {
+    height: 400px; /* Set the desired height */
+  }
+  

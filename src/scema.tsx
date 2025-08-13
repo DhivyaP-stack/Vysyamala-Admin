@@ -1,0 +1,319 @@
+import { z } from 'zod';
+export const bloodGroups = [
+  { type: 'A+', abbreviation: 'A positive' },
+  { type: 'A-', abbreviation: 'A negative' },
+  { type: 'B+', abbreviation: 'B positive' },
+  { type: 'B-', abbreviation: 'B negative' },
+  { type: 'AB+', abbreviation: 'AB positive' },
+  { type: 'AB-', abbreviation: 'AB negative' },
+  { type: 'O+', abbreviation: 'O positive' },
+  { type: 'O-', abbreviation: 'O negative' },
+];
+
+const getMinDOB = () => {
+  const today = new Date();
+  today.setFullYear(today.getFullYear() - 18);
+  return today.toISOString().split('T')[0];
+};
+
+export const parentSchema = z.object({
+  AddProfileForm : z.object({
+    // EmailId: z.string().email("Email address is required"),
+//     EmailId: z
+//   .string()
+//   .email("Invalid email address")
+//   .nullable()
+//   .optional()
+// ,
+EmailId: z
+  .string()
+  .email("Invalid email address")
+  .optional()
+  .or(z.literal("")), // allow empty string too
+
+//  EmailId: z
+//       .string()
+//       .email("Invalid email address")
+//       .regex(
+//         /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+//         "Invalid email format"
+//       ),
+    Password: z
+      .string()
+      .min(
+        8,
+        "Password must be at least 8 characters with an uppercase letter and special character"
+      )
+      .regex(
+        /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,}$/,
+        "Password must be at least 8 characters with an uppercase letter and special character"
+      ),
+
+    //Password: z.string().optional(),
+    Profile_name: z.string().min(1, "Name is required"),
+    Gender: z.enum(["male", "female"], {
+      errorMap: () => ({ message: "Please select a gender" }),
+    }),
+    Profile_marital_status: z.string().min(1, "Please select your marital status"),
+    Profile_dob: z
+      .string()
+      .min(1, "Date of Birth is required")
+      .refine((val) => new Date(val) <= new Date(getMinDOB()), {
+        message: "You must be at least 18 years old",
+      }),
+    Profile_address: z.string().optional(),
+    Profile_country: z.string().optional(),
+    Profile_state: z.string().optional(),
+    Profile_district: z.string().optional(),
+    Profile_city: z.string().optional(),
+    Profile_pincode: z.string().optional(),
+    Profile_complexion: z.string().min(1, "Complexion is required"),
+    Notifcation_enabled: z.string().optional(),
+    Profile_height:z.string().optional(),
+    Addon_package: z.string().optional(),
+   // Plan_id: z.string().optional(),
+    //Last_login_date: z.string().optional(),
+  }),  
+  // AddProfileForm: z.object({
+  //   Name: z.string().min(1, 'Name is required'),
+  //   Gender: z.enum(['male', 'female'], {
+  //     errorMap: () => ({ message: 'Please select a gender' }),
+  //   }),
+  //   Mobile_no:z.string().optional(),
+  //   // Mobile_no: z
+  //   //   .string()
+  //   //   .length(10, 'Mobile number must be exactly 10 digits long')
+  //   //   .regex(/^[0-9]+$/, 'Mobile number must contain only numbers'),
+  //   Email: z.string().email('Email address is required'),
+  //   Password: z.string().min(6, 'Password must be at least 6 characters'),
+  //   marital_status: z.string().min(1, 'Please select your marital status'),
+
+  //   dob: z
+  //     .string()
+  //     .min(1, 'Date of Birth is required')
+  //     .refine((val) => new Date(val) <= new Date(getMinDOB()), {
+  //       message: 'You must be at least 18 years old',
+  //     }),
+  //   address: z.string().min(1, 'Address is must required'),
+  //   country: z.string().min(1, 'Country is required'),
+  //   WhatsAppNumber:z.string().optional(),
+  //   state: z.string().min(1, 'State is required'),
+  //   district: z.string().min(1, 'District is required'),
+  //   City: z.string().min(1, 'city is required'),
+  //   pincode: z.string().length(6, ' Post code must be 6 digits'),
+  //   Alt_Mobile_Number: z.string().optional(),
+  //   complexion: z.string().min(1, 'Complexion is required'),
+  //   status: z.string().min(1, 'Status is required'),
+  // }),
+  // AddProfileForm :z.object({
+  //   EmailId: z.string().email('Invalid email address').optional(),
+  
+  //   Password: z.string().min(6, 'Password must be at least 6 characters').optional(),
+  
+  //   Profile_name: z.string().optional(),
+  
+  //   Profile_marital_status: z.string().optional(),
+  
+  //   Profile_dob: z
+  //     .string()
+  //     .optional()
+  //     // .refine((val) => !val || new Date(val) <= new Date(getMinDOB()), {
+  //     //   message: 'You must be at least 18 years old',
+  //     // })
+  //     ,
+  
+  //   Profile_complexion: z.string().optional(),
+  
+  //   Profile_address: z.string().optional(),
+  
+  //   Profile_country: z.string().optional(),
+  
+  //   Profile_state: z.string().optional(),
+  
+  //   Profile_city: z.string().optional(),
+  
+  //   Profile_district: z.string().optional(),
+  
+  //   Gender: z.enum(['male', 'female'], {
+  //     errorMap: () => ({ message: 'Please select a gender' }),
+  //   }),
+  
+  //   Profile_pincode: z
+  //     .string()
+  //     .optional()
+  //     // .refine((val) => !val || /^[0-9]{6}$/.test(val), {
+  //     //   message: 'Pincode must be exactly 6 digits',
+  //     // })
+  //     ,
+  
+  //   Notifcation_enabled: z.string().optional(),
+  
+  //   Addon_package: z.string().optional(),
+  
+  //   Plan_id: z.string().optional(),
+  
+  //   Last_login_date: z.string().optional(),
+  // }),
+  // FamilyDetailsForm: z.object({
+  //   fathername: z.string().min(1, 'Father Name is required'),
+  //   fatherOccupation: z.string().min(1, 'Father Occupation is required'),
+  //   motherOccupation: z.string().min(1, 'Mother Occupation is required'),
+  //   aboutMyself: z.string().min(1, 'This field is required'),
+  //   motherName: z.string().min(1, 'Mother Name is required'),
+  //   bloodGroup: z.string().min(1, 'Blood Group is required'),
+
+  //   MyHobbies: z.string().min(1, 'Required'),
+  //   EyeWear: z.enum(['Yes', 'No'], {
+  //     errorMap: () => ({ message: 'Please select either "Yes" or "No"' }),
+  //   }),
+  //   PropertyDetails: z.string().min(1, 'Property details are required'),
+  //   PropertyWorth: z.string().min(1, 'Property worth is required'),
+  //   SuyaGothram: z.string().min(1, 'Suya Gothram is required'),
+  //   UncleGothram: z.string().min(1, 'Uncle Gothram is required'),
+  //   AncestorOrigin: z.string().min(1, 'Ancestor Origin is required'),
+  //   AboutMyFamily: z.string().min(1, 'About family is required'),
+  //   FamilyValue: z.string().min(1, 'Family value is required'),
+  //   FamilyType: z.string().min(1, 'Family Type is required'),
+  //   FamilyStatus: z.string().min(1, 'Family status is required'),
+  //   selectedBrother: z.string().min(1, 'Please select no of brothers'),
+  //   marriedBrother: z
+  //     .string()
+  //     .min(1, 'Please select count of married brothers'),
+  //   selectedSister: z.string().min(1, 'Please select no of sisters'),
+  //   marriedSisters: z.string().min(1, 'Please select count of married sisters'),
+  //   physicallyChalanged: z.enum(['Yes', 'No'], {
+  //     errorMap: () => ({ message: 'Please select either "Yes" or "No"' }),
+  //   }),
+  // }),
+   FamilyDetailsForm : z.object({
+    fathername: z.string().min(1, "Father Name is required"),
+    fatherOccupation: z.string().optional(),
+    motherOccupation: z.string().optional(),
+    aboutMyself: z.string().optional(),
+    motherName: z.string().optional(),
+    bloodGroup: z.string().optional(),
+  family_name:z.string().optional(),
+    MyHobbies: z.string().optional(),
+    weight:z.string().optional(),
+    EyeWear: z.enum(['Yes', 'No']).optional(),
+    PropertyDetails: z.string().optional(),
+    PropertyWorth: z.string().optional(),
+    SuyaGothram: z.string().min(1,"Suya Gothram is required"),
+    UncleGothram: z.string().optional(),
+    AncestorOrigin: z.string().optional(),
+    AboutMyFamily: z.string().optional(),
+    FamilyValue: z.string().nullable().optional(),
+    FamilyType: z.string().nullable().optional(),
+    FamilyStatus:  z.string().nullable().optional(),
+    selectedBrother: z.string().nullable().optional(),
+    marriedBrother: z.string().optional(),
+    selectedSister:  z.string().nullable().optional(),
+    marriedSisters: z.string().optional(),
+    physicallyChalanged: z.enum(['yes', 'no']).optional(),
+    // no_of_children: z.number().optional(),
+    no_of_children: z.number().int().min(0).max(5).optional().nullable(),
+    fatherAlive: z.enum(['yes', 'no']).optional(),
+  motherAlive: z.enum(['yes', 'no']).optional(),
+    suyaGothramAdmin: z.string().optional(),
+  uncleGothramAdmin: z.string().optional(),
+  }),
+  
+  // EducationDetails: z.object({
+  //   workCountry: z.string().min(1, 'Work Country is required'),
+  //   heighestEducation: z.string().min(1, 'HeighestEducation is required'),
+  //   degree: z.string().min(1, 'degree is required'),
+  //   field_ofstudy: z.string().min(1, 'Field Of Study is required'),
+  //   AboutEducation: z.string().min(1, 'About your education is required'),
+  //   AnnualIncome: z.string().min(1, 'Annual income is required'),
+  //   ActualIncome: z.string().min(1, 'Actual income is required'),
+  //   pincode: z.string().length(6, 'Post Code must be 6 digits'),
+  //   CareerPlans: z.string().min(1, 'CareerPlans are required'),
+  //   ug_degeree: z.string().min(1, 'UG degree is required'),
+  //   profession: z.string().min(1, 'Profession is required'),
+  //   work_place: z.string().optional(),
+  // }),
+   EducationDetails : z.object({
+    workCountry: z.string().optional(),
+    work_district: z.string().optional(),
+    work_state: z.string().optional(),
+    work_city: z.string().optional(),
+    heighestEducation: z.string().min(1, "Highest Education Level is required"),
+    degree: z.string().optional(),
+   field_ofstudy: z.string().optional(),
+    AboutEducation: z.string().optional(),
+    AnnualIncome: z.string().optional(),
+    ActualIncome: z.string().optional(),
+    pincode: z.string().optional(),
+    CareerPlans: z.string().optional(),
+    ///ug_degeree: z.string().min(1, "UG Degree is required").optional(),
+    //ug_degeree: z.string().optional(),
+    profession: z.string().optional(),
+    work_place: z.string().optional(),
+  }),
+  
+  HororScopeDetails: z.object({
+    timeOfBirth: z.string().optional(),
+    PlaceofBirth: z.string().min(1, 'Place of birth is required'),
+    BirthStar: z.string().min(1, 'BirthStar is required'),
+    Rasi: z.string().min(1, 'Birth rasi is required'),
+    nalikai: z.string().optional(),
+    lagnam: z.string().optional(),
+    ChevvaiDhosam: z.string().optional(),
+    SarpaDhosham: z.string().optional(),
+     dasa_name:z.string().optional(),
+    dhasaBalanceYear: z.string().optional(),
+    dhasaBalanceMonth: z.string().optional(),
+    dhasaBalanceDay: z.string().optional(),
+  }),
+  PartnerPreference: z.object({
+    heightFrom: z.string().min(3, 'Height is required'),
+    toHeight: z.string().min(3, 'Height is required'),
+    agePreference: z.string().min(1, 'Age difference is required'),
+    ChevvaiDhosam:  z.string().optional(),
+    ragukethu: z.string().min(1, 'Please select Rahu/Ketu Dhosam'),
+
+    foreignInterest: z.string().min(1, 'Please select Foreign Interest'),
+    // pref_family_status: z.string().optional(),
+    //  pref_state: z.string().optional(),
+      pref_porutham_star_rasi:z.string().optional(),
+     pref_porutham_star:z.string().optional(),
+pref_family_status: z.string().optional().nullable(), // If you allow null
+pref_state: z.string().optional().nullable(),
+  }),
+
+  // SuggestedProfileForm:z.object({
+  
+
+  //   heightFrom: z.string().min(3,"Height is required"),
+  //   heightTo: z.string().min(3,"Height is required"),
+  //   agePreference: z.string().min(2,"Age difference is required"),
+  //  // agePreference: z.string().min(3,"Age difference is required"),
+  //   heightPreference: z.string().min(1,"Height preference is required"),
+  //   ragukethu: z.string().min(1,"Ragu Kethu is required"),
+  //   ChevvaiDhosam: z.string().min(1,"Chevvai Dhosam is required"),
+  //   foreignInterest: z.string().min(1,"Foreign interest is required"),
+  // }),
+
+   SuggestedProfileForm:z.object({
+  
+
+    heightFrom: z.string().optional(),
+    heightTo:z.string().optional(),
+    agePreference: z.string().optional(),
+   // agePreference: z.string().min(3,"Age difference is required"),
+    heightPreference:z.string().optional(),
+    ragukethu:z.string().optional(),
+    ChevvaiDhosam:  z.string().optional(),
+    foreignInterest:  z.string().optional(),
+    //  pref_family_status: z.string().optional(),
+    //  pref_state: z.string().nullable().optional(),
+    //  pref_porutham_star_rasi:z.string().min(1, 'Please select Porutham'),
+    //  pref_porutham_star:z.string().min(1, 'Please select Porutham'),
+     pref_porutham_star_rasi:z.string().optional(),
+     pref_porutham_star:z.string().optional(),
+pref_family_status: z.string().optional().nullable(), // If you allow null
+pref_state: z.string().optional().nullable(),
+  }),
+
+
+});

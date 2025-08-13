@@ -1,0 +1,666 @@
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { useFormContext } from 'react-hook-form';
+//import { EditValues, HororScopeDetails } from '../../../EditSceema';
+import {
+  fetchBirthStar,
+  fetchRasi,
+  fetchLagnam,
+  getDasaName,
+} from '../../../action';
+import { useQuery } from '@tanstack/react-query';
+import RasiGridnew from './RasiGridnew';
+import AmsamGridnew from './AmsamGridNew';
+import { HoroScopeDetails } from '../../../types/EditSchemaHoro';
+interface formProps {
+  setAmsaKattam:(rasiKattam:string) => void;
+  setRasiKattam:(rasiKattam:string) => void;
+  EditData: any;
+  setBirthStarId: (gender: string) => void;
+  isHoroscopeDetailsOpen:boolean,
+  setIsHoroscopeDetailsOpen:Dispatch<SetStateAction<boolean>>
+}
+const EditHororScopeDetails: React.FC<formProps> = ({isHoroscopeDetailsOpen, setIsHoroscopeDetailsOpen, EditData ,setBirthStarId,setRasiKattam,setAmsaKattam}) => {
+  const {
+    register,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useFormContext<HoroScopeDetails>();
+
+  // const [editRasiGridData, setEditRasiGridData] = useState('');
+  // const [editAmsamGridData, setEditAmsamRasiGridData] = useState('');
+  // In EditHororScopeDetails component
+const [editRasiGridData, setEditRasiGridData] = useState(EditData?.[3]?.rasi_kattam || '');
+const [editAmsamGridData, setEditAmsamRasiGridData] = useState(EditData?.[3]?.amsa_kattam || '');
+  const [showRasiError, setShowRasiError] = useState(false);
+  const [showAmsamError, setShowAmsamError] = useState(false);
+  const toggleSection5 = () => {
+    setIsHoroscopeDetailsOpen(!isHoroscopeDetailsOpen);
+  };
+  const selectedBirthStarId = watch('HororScopeDetails.BirthStar');
+  const chevaiDosam = watch('HororScopeDetails.ChevvaiDhosam');
+  const birthTime = watch('HororScopeDetails.timeOfBirth');
+  const { data: BirthStar } = useQuery({
+    queryKey: ['BirthStar'],
+    queryFn: fetchBirthStar,
+  });
+  const { data: Rasi } = useQuery({
+    queryKey: [selectedBirthStarId, 'Rasi'],
+    queryFn: () => fetchRasi(selectedBirthStarId),
+    enabled: !!selectedBirthStarId,
+  });
+  const { data: lagnam } = useQuery({
+    queryKey: ['lagnam'],
+    queryFn: fetchLagnam,
+  });
+  const { data: Dasa } = useQuery({
+    queryKey: ['Dasa'],
+    queryFn: getDasaName,
+  });
+ 
+  const [timeOfBirth, setTimeOfBirth] = useState('');
+  const [horoscopeDetails, setHoroscopeDetails] = useState();
+  const [amsaKatamDetals, setAmsaKattamDetails] = useState();
+
+  const birtTime = watch('HororScopeDetails.timeOfBirth');
+  const dasaName = watch('HororScopeDetails.dasaName');
+  const birthStare=watch("HororScopeDetails.BirthStar")
+  useEffect(()=>{
+if(birthStare){
+  setBirthStarId(birthStare)
+}
+  },[birthStare])
+  console.log(birtTime, 'birtTime');
+  const handleRasiGridChange = (newData: string) => {
+    setEditRasiGridData(newData);
+  };
+  const handleAmsamGridChange = (newData: string) => {
+    setEditAmsamRasiGridData(newData);
+  };
+
+
+  console.log(editRasiGridData, 'editRasiGridData');
+  console.log(editAmsamGridData, 'editAmsamGridData');
+  const [hours, sethour] = useState('');
+  const [minutes, setminute] = useState('');
+  const [periods, setperiod] = useState("AM");
+
+  const handleTimeChange = () => {
+    const hour = hours;
+    const minute = minutes;
+    const period = periods;
+    // const combinedTime = `${hour}:${minute} ${period}`;
+    // setTime(combinedTime);
+    let formattedHour = parseInt(hour, 10);
+    if (period === "PM" && formattedHour < 12) {
+      formattedHour += 12;
+    } else if (period === "AM" && formattedHour === 12) {
+      formattedHour = 0;
+    }
+
+    const formattedTime = `${formattedHour
+      .toString()
+      .padStart(2, "0")}:${minute}`;
+    setValue("HororScopeDetails.timeOfBirth", formattedTime);
+  };
+  useEffect(() => {
+    if (hours && minutes && periods) {
+      handleTimeChange();
+    }
+  }, [hours, minutes, periods]);
+  useEffect(() => {
+    if (EditData) {
+  
+
+     
+    const  dasaBalance=EditData[3].dasa_balance;
+      setValue('HororScopeDetails.timeOfBirth', EditData[3].time_of_birth);
+      setValue('HororScopeDetails.PlaceofBirth', EditData[3].place_of_birth);
+      setValue('HororScopeDetails.BirthStar', EditData[3].birthstar_name);
+      setValue('HororScopeDetails.Rasi', EditData[3].birth_rasi_name);
+      setValue('HororScopeDetails.lagnam', EditData[3].lagnam_didi);
+      setValue('HororScopeDetails.ChevvaiDhosam', EditData[3].chevvai_dosaham);
+      setValue('HororScopeDetails.SarpaDhosham', EditData[3].ragu_dosham);
+      setValue('HororScopeDetails.nalikai', EditData[3].nalikai);
+      setValue('HororScopeDetails.dasaName', EditData[3].dasa_name);
+      setValue('HororScopeDetails.horoscopeHints', EditData[3].horoscope_hints);
+      setValue('HororScopeDetails.DasaBalanceDay', EditData[3].one);
+      setValue('HororScopeDetails.DasaBalanceMonth', EditData[3].two);
+      setValue('HororScopeDetails.DasaBalanceYear', EditData[3].three);
+      setHoroscopeDetails(EditData[3].rasi_kattam);
+      setAmsaKattamDetails(EditData[3].amsa_kattam);
+      setRasiKattam(EditData[3].rasi_kattam)
+      setAmsaKattam(EditData[3].amsa_kattam)
+      setValue('HororScopeDetails.rasiKattam', EditData[3].rasi_kattam || '');
+      setValue('HororScopeDetails.amsaKattam', EditData[3].amsa_kattam || '');
+//       const splitValue = dasaBalance
+//       const [ year,month,day] = splitValue.split(",")
+//       .map((item: string) => item.split(":")[1]);
+// console.log(day, month, year)
+
+//       setValue("HororScopeDetails.DasaBalanceDay",day)
+//       setValue("HororScopeDetails.DasaBalanceMonth",month)
+//       setValue("HororScopeDetails.DasaBalanceYear",year)
+
+if (dasaBalance && dasaBalance.includes(":")) {
+  const [year, month, day] = dasaBalance
+    .split(",")
+    .map((item: string) => item.split(":")[1]);
+
+  setValue("HororScopeDetails.DasaBalanceDay", day || "");
+  setValue("HororScopeDetails.DasaBalanceMonth", month || "");
+  setValue("HororScopeDetails.DasaBalanceYear", year || "");
+
+  console.log(day, month, year);
+} else {
+  console.warn("Invalid or missing dasa_balance:", dasaBalance);
+  setValue("HororScopeDetails.DasaBalanceDay", "");
+  setValue("HororScopeDetails.DasaBalanceMonth", "");
+  setValue("HororScopeDetails.DasaBalanceYear", "");
+}
+
+      const timeOfBirth =  EditData[3].time_of_birth;
+      //const [time, period] = timeOfBirth.split(" ");
+       const [time, period] = (timeOfBirth || "").split(" ");
+      const [hours, minutes] = time.split(":");
+      sethour(hours);
+      setminute(minutes);
+      setperiod(period);
+      
+    }
+  }, [EditData]);
+  useEffect(() => {
+    if(editRasiGridData) {
+      setRasiKattam(editRasiGridData);
+      setValue('HororScopeDetails.rasiKattam', editRasiGridData);
+      setShowRasiError(false);
+    }
+    if(editAmsamGridData) {
+      setAmsaKattam(editAmsamGridData);
+      setValue('HororScopeDetails.amsaKattam', editAmsamGridData);
+      setShowAmsamError(false);
+    }
+  }, [editRasiGridData, editAmsamGridData]);
+
+  // Add validation check before form submission
+const rasiValue = watch('HororScopeDetails.rasiKattam');
+    const amsamValue = watch('HororScopeDetails.amsaKattam');
+    
+  const validateGrids = () => {
+    
+    if (!rasiValue) {
+      setShowRasiError(true);
+    }
+    if (!amsamValue) {
+      setShowAmsamError(true);
+    }
+    
+    return rasiValue && amsamValue;
+  };
+  useEffect(()=>{
+validateGrids()
+  },[rasiValue,amsamValue])
+
+  // In the useEffect that handles EditData
+useEffect(() => {
+  if (EditData) {
+    // ... other initialization code ...
+    setEditRasiGridData(EditData[3].rasi_kattam || '');
+    setEditAmsamRasiGridData(EditData[3].amsa_kattam || '');
+  }
+}, [EditData]);
+
+
+
+  return (
+    <div>
+      <div className="bg-white p-5 mb-10 rounded shadow-md">
+        <h4
+          className="text-red-600 flex row items-center justify-between text-xl font-semibold  dark:text-white cursor-pointer  after-red-line::after"
+          onClick={toggleSection5}
+        >
+          Horoscope Details
+          <svg
+            className={`fill-current transform ${
+              isHoroscopeDetailsOpen ? 'rotate-180' : ''
+            }`}
+            width={'20'}
+            viewBox="0 0 20 20"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fillRule="evenodd"
+              clipRule="evenodd"
+              d="M4.41107 6.9107C4.73651 6.58527 5.26414 6.58527 5.58958 6.9107L10.0003 11.3214L14.4111 6.91071C14.7365 6.58527 15.2641 6.58527 15.5896 6.91071C15.915 7.23614 15.915 7.76378 15.5896 8.08922L10.5896 13.0892C10.2641 13.4147 9.73651 13.4147 9.41107 13.0892L4.41107 8.08922C4.08563 7.76378 4.08563 7.23614 4.41107 6.9107Z"
+              fill=""
+            ></path>
+          </svg>
+        </h4>
+        {isHoroscopeDetailsOpen && (
+          <div className="flex flex-col gap-5 pt-2">
+            <div className="flex w-full flex-row gap-4">
+             <div className="w-full">
+  <label className="block text-black font-semibold mb-1">
+    Time of Birth
+  </label>
+  <div className="flex items-center space-x-2">
+    <select
+      value={hours}
+      onChange={(e) => sethour(e.target.value)}
+      className="px-3 py-2 border rounded border-gray-500"
+    >
+      {Array.from({ length: 12 }, (_, i) => (
+        <option key={i+1} value={(i+1).toString().padStart(2, '0')}>
+          {(i+1).toString().padStart(2, '0')}
+        </option>
+      ))}
+    </select>
+    <span>:</span>
+    <select
+      value={minutes}
+      onChange={(e) => setminute(e.target.value)}
+      className="px-3 py-2 border rounded border-gray-500"
+    >
+      {Array.from({ length: 60 }, (_, i) => (
+        <option key={i} value={i.toString().padStart(2, '0')}>
+          {i.toString().padStart(2, '0')}
+        </option>
+      ))}
+    </select>
+    <select
+      value={periods}
+      onChange={(e) => setperiod(e.target.value)}
+      className="px-3 py-2 border rounded border-gray-500"
+    >
+      <option value="AM">AM</option>
+      <option value="PM">PM</option>
+    </select>
+  </div>
+  <input
+    type="hidden"
+    {...register('HororScopeDetails.timeOfBirth', { required: "Time is required" })}
+  />
+  {errors?.HororScopeDetails?.timeOfBirth && (
+    <p className="text-red-600">
+      {errors.HororScopeDetails.timeOfBirth.message}
+    </p>
+  )}
+</div>
+                {/* <input
+                  id="time_of_birth"
+                  type="time"
+                  value={birthTime}
+                  {...register('HororScopeDetails.timeOfBirth')}
+                  className="outline-none w-full px-4 py-2 border border-black rounded"
+                />
+                {errors?.HororScopeDetails?.timeOfBirth && (
+                  <p className="text-red-600">
+                    {errors.HororScopeDetails.timeOfBirth.message}
+                  </p>
+                )} */}
+              
+
+              <div className="w-full">
+                <label
+                  htmlFor="place_of_birth"
+                  className="block text-black font-semibold mb-1"
+                >
+                  Place of Birth <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="place_of_birth"
+                  type="text"
+                  {...register('HororScopeDetails.PlaceofBirth')}
+                  className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                />
+                {errors?.HororScopeDetails?.PlaceofBirth && (
+                  <p className="text-red-600">
+                    {errors.HororScopeDetails.PlaceofBirth.message}
+                  </p>
+                )}
+              </div>
+
+                {/* Birth Star Selector */}
+                <div className="w-full">
+                <label
+                  htmlFor="birthstar_name"
+                  className="block text-black font-semibold mb-1"
+                >
+                  Birth Star<span className="text-red-500">*</span>
+                </label>
+                <select
+                  id="birthstar_name"
+                  {...register('HororScopeDetails.BirthStar')}
+                  className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                >
+                  <option value="" disabled className='text-[#000000e6] font-semibold'>
+                    -- Select your Birth Star --
+                  </option>
+                  {BirthStar?.map((option: any) => (
+                    <option key={option.birth_id} value={option.birth_id} className='text-[#000000e6] font-medium'>
+                      {option.birth_star}
+                    </option>
+                  ))}
+                </select>
+                 {errors?.HororScopeDetails?.BirthStar && (
+                  <p className="text-red-600">
+                    {errors.HororScopeDetails.BirthStar.message}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            
+
+          
+            
+
+            <div className="flex w-full flex-row gap-4">
+
+            <div className="w-full">
+                <label
+                  htmlFor="birth_rasi_name"
+                  className="block text-black font-semibold mb-1 "
+                >
+                  Rasi <span className="text-red-500">*</span>
+                </label>
+                <select
+                  {...register('HororScopeDetails.Rasi')}
+                  id="birth_rasi_name"
+                  className="outline-none w-full px-4 py-2 text-[#000000e6] font-medium border border-black rounded"
+                >
+                  <option value="" selected disabled className='text-[#000000e6] font-medium'>
+                    -- Select your Rasi --
+                  </option>
+                  {Rasi?.map((option: any) => (
+                    <option key={option.rasi_id} value={option.rasi_id} className='text-[#000000e6] font-medium'>
+                      {option.rasi_name}
+                    </option>
+                  ))}
+                </select>
+                {errors?.HororScopeDetails?.Rasi && (
+                  <p className="text-red-600">
+                    {errors.HororScopeDetails.Rasi.message}
+                  </p>
+                )}
+              </div>
+
+              <div className="w-full">
+                <label
+                  htmlFor="lagnam"
+                  className="block text-black font-semibold mb-1"
+                >
+                  Lagnam
+                </label>
+                <select
+                  id="lagnam"
+                  {...register('HororScopeDetails.lagnam')}
+                  className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                  
+                >
+                  <option value="" disabled className='text-[#000000e6] font-medium'>
+                     Select your Lagnam
+                  </option>
+                  {lagnam?.map((option: any) => (
+                    <option key={option.didi_id} value={option.didi_id} className='text-[#000000e6] font-medium'>
+                      {option.didi_description}
+                    </option>
+                  ))}
+                </select>
+                {errors?.HororScopeDetails?.lagnam && (
+                  <p className="text-red-600">
+                    {errors.HororScopeDetails.lagnam.message}
+                  </p>
+                )}
+              </div>
+
+              <div className="w-full">
+                <label
+                  htmlFor="chevvai_dosaham"
+                  className="block text-black font-semibold mb-1"
+                >
+                  Chevvai Dhosam
+                </label>
+                <select
+                  id="chevvai_dosaham"
+                  value={chevaiDosam}
+                  {...register('HororScopeDetails.ChevvaiDhosam')}
+                  className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                  defaultValue=""
+                >
+                  <option value="" disabled className='text-[#000000e6] font-medium'>
+                    Select Chevvai Dhosam 
+                  </option>
+                  <option value="UnKnown" className='text-[#000000e6] font-medium'>UnKnown</option>
+                  <option value="Yes"className='text-[#000000e6] font-medium'>Yes</option>
+                  <option value="No" className='text-[#000000e6] font-medium'>No</option>
+                </select>
+                {errors?.HororScopeDetails?.ChevvaiDhosam && (
+                  <p className="text-red-600">
+                    {errors.HororScopeDetails.ChevvaiDhosam.message}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div className="flex w-full flex-row gap-4">
+              <div className="w-full">
+                <label
+                  htmlFor="ragu_dosham"
+                  className="block text-black font-semibold mb-1"
+                >
+                  Sarpa Dhosham 
+                </label>
+                <select
+                  id="ragu_dosham"
+                  {...register('HororScopeDetails.SarpaDhosham')}
+                  className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                  defaultValue=""
+                >
+                  <option value="" disabled className='text-[#000000e6] font-medium'>
+                   Select Sarpa Dhosham
+                  </option>
+                  <option value="Unknown" className='text-[#000000e6] font-medium'>Unknown</option>
+                  <option value="Yes" className='text-[#000000e6] font-medium'>Yes</option>
+                  <option value="No" className='text-[#000000e6] font-medium'>No</option>
+                </select>
+
+                {errors?.HororScopeDetails?.SarpaDhosham && (
+                  <p className="text-red-600">
+                    {errors.HororScopeDetails.SarpaDhosham.message}
+                  </p>
+                )}
+              </div>
+
+              <div className="w-full">
+                <label
+                  htmlFor="nalikai"
+                  className="block text-black font-semibold mb-1"
+                >
+                  Naalikai 
+                </label>
+                <input
+                  {...register('HororScopeDetails.nalikai')}
+                  id="nalikai"
+                  type="text"
+                  className="outline-none w-full px-4 py-2 text-[#000000e6] font-medium border border-black rounded"
+                />
+                {errors?.HororScopeDetails?.nalikai && (
+                  <p className="text-red-600">
+                    {errors.HororScopeDetails.nalikai.message}
+                  </p>
+                )}
+              </div>
+              <div className="w-full">
+                <label htmlFor="dasa_name" className="block mb-1 text-[#000000e6] font-semibold">
+                  Dasa Name
+                </label>
+                <select
+                  value={dasaName}
+                  {...register('HororScopeDetails.dasaName')}
+                  className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                  id="dasaDropdown"
+                  defaultValue=""
+                >
+                  <option value="" selected disabled className='text-[#000000e6] font-medium'>
+                    -- Select Dasa Name --
+                  </option>
+                  {Dasa?.map((dasa: any, index: any) => (
+                    <option key={index} value={dasa.dasa_description} className='text-[#000000e6] font-medium'>
+                      {dasa.dasa_description}
+                    </option>
+                  ))}
+                </select>
+                 {errors?.HororScopeDetails?.dasaName && (
+                  <p className="text-red-600">
+                    {errors.HororScopeDetails.dasaName.message}
+                  </p>
+                )}
+              </div>
+
+            </div>
+
+            <div className="flex w-full flex-row gap-4">
+              
+              <div className="w-2/4">
+                <label htmlFor="dasaBalance" className="block text-black font-semibold mb-1">
+                  Dasa Balance
+                </label>
+                <div className="flex space-x-2">
+               
+                   <div className="w-full">
+                    <select
+                      {...register('HororScopeDetails.DasaBalanceYear')}
+                      id="year"
+                      className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                    >
+                      <option value="" disabled className='text-[#000000e6] font-medium'>
+                        Year
+                      </option>
+                      {Array.from({ length: 30 }, (_, i) => i + 1).map(
+                        (year) => (
+                          <option key={year} value={year}>
+                            {year}
+                          </option>
+                        ),
+                      )}
+                    </select>
+                  </div>
+                  <div className="w-full">
+                    <select
+                      id="month"
+                      {...register('HororScopeDetails.DasaBalanceMonth')}
+                      className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                    >
+                      <option value="" disabled className='text-[#000000e6] font-medium'> 
+                        Month
+                      </option>
+                      {[...Array(12)].map((_, i) => (
+                        <option key={i + 1} value={i + 1}>
+                          {i + 1}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                    <div className="w-full">
+                    <select
+                      {...register('HororScopeDetails.DasaBalanceDay')}
+                      id="dasa_balance"
+                      className="outline-none w-full px-4 py-2 border border-black text-[#000000e6] font-medium rounded"
+                      defaultValue=""
+                    >
+                      <option value="" disabled className='text-[#000000e6] font-medium'>
+                        Day
+                      </option>
+                      {[...Array(31)].map((_, i) => (
+                        <option key={i + 1} value={i + 1}>
+                          {i + 1}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div className=" mb-1 w-[50%]">
+              <label htmlFor="horoscopeHints" className="block text-black font-semibold mb-1">
+                Horoscope Hints
+              </label>
+              <input
+                {...register('HororScopeDetails.horoscopeHints')}
+                id="horoscopeHints"
+                type="text"
+                className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+              />
+            </div>
+              <div className=" mb-1 w-[50%]"></div>
+            </div>
+
+           
+
+            {/* Rasi Grid and Amsam Grid components */}
+            <div>
+              <h4 className="text-xl font-semibold text-black dark:text-white mb-4">
+                Rasi Grid
+              </h4>
+              <RasiGridnew
+                onChange={handleRasiGridChange}
+                isEditing={true}
+                data={horoscopeDetails ??''}
+                centerLabel={'Rasi'}
+              />
+              {/* {showRasiError && !watch('HororScopeDetails.rasiKattam') && (
+                <p className="text-red-600 mt-2">Please fill Rasi Grid details</p>
+              )} */}
+            </div>
+
+            <br />
+
+            <div>
+              <h4 className="text-xl font-semibold text-black dark:text-white mb-4">
+                Amsam Grid
+              </h4>
+              <AmsamGridnew
+                onChange={handleAmsamGridChange}
+                isEditing={true}
+                data={amsaKatamDetals ?? '' }
+                centerLabel={'Amsam'}
+              />
+              {/* {showAmsamError && !watch('HororScopeDetails.amsaKattam') && (
+                <p className="text-red-600 mt-2">Please fill Amsa Grid details</p>
+              )} */}
+            </div>
+          </div>
+        )}
+         <div className='flex justify-end mt-10 '>
+       <button
+       // onClick={formHandleSubmit}
+        type="submit"
+        onClick={() => validateGrids()}
+        className="bg-blue-500 text-white px-15 py-2 rounded"
+      >
+    Save Horoscope Details
+      </button>
+
+    
+{/* <button
+  type="submit" // Change from "submit" to prevent default behavior
+  onClick={() => {
+    if (validateGrids()) {
+      // Trigger form submission manually
+      const form = document.querySelector('form');
+      if (form) form.requestSubmit();
+    }
+  }}
+  className="bg-blue-500 text-white px-15 py-2 rounded"
+>
+  Save Horoscope Details
+</button> */}
+       </div>
+      </div>
+    </div>
+  );
+};
+
+export default EditHororScopeDetails;
