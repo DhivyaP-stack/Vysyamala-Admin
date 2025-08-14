@@ -589,7 +589,7 @@ useEffect(() => {
                   className="outline-none text-placeHolderColor px-4 py-[6px] border border-ashBorder rounded"
                   style={{ width: '300px' }} // Adjust the width as needed
                 >
-                  <option value="" disabled>
+                  <option value="" >
                     Select Currency
                   </option>
                   {sortedCurrencyOptions.map((code) => (
@@ -915,7 +915,7 @@ useEffect(() => {
                   className="outline-none w-full px-4 py-2 border border-black rounded"
                   {...register('EducationDetails.work_state')}
                 >
-                  <option value="" disabled>
+                  <option value="" >
                     Select your state
                   </option>
                   {WorkState?.map((option: State) => (
@@ -1031,7 +1031,7 @@ useEffect(() => {
                             }
                           }}
                         >
-                          <option value="" disabled>
+                          <option value="">
                             Select your City
                           </option>
                           {City?.map((option: City) => (

@@ -526,7 +526,7 @@ const AddProfileForm: React.FC<AddProfileForm> = ({
                   className="outline-none w-full px-4 py-2 border border-black rounded"
                 //   {...register('Profile_state')}
                 >
-                  <option value="" selected disabled>
+                  <option value="" selected>
                     Select State
                   </option>
                   {State?.map((option: State) => (
@@ -619,7 +619,7 @@ const AddProfileForm: React.FC<AddProfileForm> = ({
                     {...register('AddProfileForm.Profile_district', { required: 'District is required' })}
                     defaultValue=""
                   >
-                    <option value="" disabled>
+                    <option value="" >
                       Select District
                     </option>
                     {District?.map((option: District) => (
@@ -702,7 +702,7 @@ const AddProfileForm: React.FC<AddProfileForm> = ({
 
                       }}
                     >
-                      <option value="" selected disabled>
+                      <option value="" selected>
                         Select City
                       </option>
                       {City?.map((option: any) => (
@@ -815,30 +815,6 @@ const AddProfileForm: React.FC<AddProfileForm> = ({
           </div>
 
           <div className="flex w-full flex-row gap-4 max-md:flex-col">
-            {/* <div className="w-2/4 max-md:w-full">
-              <label className="block text-black font-medium mb-1">
-                Status 
-              </label>
-              <select
-                {...register('AddProfileForm.status')}
-                className="outline-none w-full px-4 py-2 border border-black rounded"
-                defaultValue={Status?.find(option => option.status_name === "Newly Registered")?.status_code || ""}
-    disabled
-              >
-                <option value="">Select your Status</option>
-                {Status?.map((option: any) => (
-                  <option key={option.status_code} value={option.status_code}>
-                    {option.status_name}
-                  </option>
-                ))}
-              </select>
-              {errors?.AddProfileForm?.status && (
-                <p className="text-red-600">
-                  {' '}
-                  {errors.AddProfileForm.status.message?.toString()}
-                </p>
-              )}
-            </div> */}
             <div className="w-2/4 max-md:w-full">
               <label className="block text-black font-medium mb-1">Status</label>
               <select
@@ -869,7 +845,7 @@ const AddProfileForm: React.FC<AddProfileForm> = ({
                 className={`text-ash font-medium block w-full px-3 py-2 border-[1px] border-footer-text-gray rounded-[4px] focus-visible:outline-none`}
                 {...register("AddProfileForm.Profile_height")}
               >
-                <option value="" selected disabled>
+                <option value="" selected>
                   Select Height
                 </option>
                 {heightOptions.map((option) => (

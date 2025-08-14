@@ -566,7 +566,7 @@ const BasicDetails: React.FC<formProps> = ({
                   {...register('BasicDetail.state')}
                   className="outline-none w-full px-4 py-2 border border-black rounded text-[#000000e6] font-medium"
                 >
-                  <option value="" className='text-[#000000e6] font-medium' selected disabled>
+                  <option value="" className='text-[#000000e6] font-medium' selected>
                     Select State
                   </option>
                   {State?.map((option: State) => (
@@ -615,7 +615,7 @@ const BasicDetails: React.FC<formProps> = ({
                         setIsCityValid(true); // Set to true to show city select when district changes
                       }}
                     >
-                      <option value="" disabled className='text-[#000000e6] font-medium'>
+                      <option value=""  className='text-[#000000e6] font-medium'>
                         Select your District
                       </option>
                       {District?.map((option: District) => (
@@ -733,7 +733,7 @@ const BasicDetails: React.FC<formProps> = ({
                               }
                             }}
                           >
-                            <option value="" disabled className='text-[#000000e6] font-medium'>Select City</option>
+                            <option value=""  className='text-[#000000e6] font-medium'>Select City</option>
                             {City?.map((option: City) => (
                               <option key={option.city_id} value={option.city_name} className='text-[#000000e6] font-medium'>
                                 {option.city_name}
@@ -922,7 +922,7 @@ flex w-full flex-row gap-4"
                 {...register("BasicDetail.Profile_height")}
                 value={watch("BasicDetail.Profile_height") || ""}
               >
-                <option value="" disabled>
+                <option value="">
                   Select Height
                 </option>
                 {heightOptions.map((option) => (

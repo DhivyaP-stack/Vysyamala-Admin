@@ -339,7 +339,7 @@ const FamilyDetails: React.FC<formProps> = ({
                   {...register('FamilyDetails.bloodGroup')}
                   className="outline-none w-full px-4 py-2 border border-black rounded text-[#000000e6] font-medium"
                 >
-                  <option value="" disabled selected>
+                  <option value="" selected>
                     -- Select Blood Group --
                   </option>
                   {bloodGroups.map((group) => (

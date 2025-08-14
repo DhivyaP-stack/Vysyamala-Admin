@@ -18,7 +18,7 @@ interface hororScopeProp {
   setHoroHint: Dispatch<SetStateAction<string>>;
   setDasaName: Dispatch<SetStateAction<string>>;
   setIsHoroscopeDetailsOpen: Dispatch<SetStateAction<boolean>>;
-   setRasiId: React.Dispatch<React.SetStateAction<string>>;
+  setRasiId: React.Dispatch<React.SetStateAction<string>>;
   isHoroscopeDetailsOpen: boolean;
 }
 
@@ -40,7 +40,7 @@ const HororScopeDetails: React.FC<hororScopeProp> = ({
   } = useFormContext<FormValues>();
 
   const selectedBirthStarId = watch('HororScopeDetails.BirthStar');
-  const selectBirtRasiId =watch('HororScopeDetails.Rasi');
+  const selectBirtRasiId = watch('HororScopeDetails.Rasi');
   const birthTime = watch('HororScopeDetails.timeOfBirth');
   console.log(birthTime, 'birthTime');
   const toggleSection4 = () => {
@@ -91,40 +91,40 @@ const HororScopeDetails: React.FC<hororScopeProp> = ({
 
 
   // In HororScopeDetails component
-const handleTimeChange = () => {
-  if (!hours || !minutes || !periods) return;
+  const handleTimeChange = () => {
+    if (!hours || !minutes || !periods) return;
 
-  let formattedHour = parseInt(hours, 10);
-  if (periods === 'PM' && formattedHour < 12) {
-    formattedHour += 12;
-  } else if (periods === 'AM' && formattedHour === 12) {
-    formattedHour = 0;
-  }
-
-  const formattedTime = `${formattedHour.toString().padStart(2, '0')}:${minutes.padStart(2, '0')}`;
-  setValue('HororScopeDetails.timeOfBirth', formattedTime);
-};
-
-// Add this useEffect to initialize time if needed
-useEffect(() => {
-  const time = watch('HororScopeDetails.timeOfBirth');
-  if (time) {
-    const [hourStr, minuteStr] = time.split(':');
-    let hour = parseInt(hourStr, 10);
-    let period = 'AM';
-    
-    if (hour >= 12) {
-      period = 'PM';
-      if (hour > 12) hour -= 12;
-    } else if (hour === 0) {
-      hour = 12;
+    let formattedHour = parseInt(hours, 10);
+    if (periods === 'PM' && formattedHour < 12) {
+      formattedHour += 12;
+    } else if (periods === 'AM' && formattedHour === 12) {
+      formattedHour = 0;
     }
-    
-    sethour(hour.toString().padStart(2, '0'));
-    setminute(minuteStr);
-    setperiod(period);
-  }
-}, []);
+
+    const formattedTime = `${formattedHour.toString().padStart(2, '0')}:${minutes.padStart(2, '0')}`;
+    setValue('HororScopeDetails.timeOfBirth', formattedTime);
+  };
+
+  // Add this useEffect to initialize time if needed
+  useEffect(() => {
+    const time = watch('HororScopeDetails.timeOfBirth');
+    if (time) {
+      const [hourStr, minuteStr] = time.split(':');
+      let hour = parseInt(hourStr, 10);
+      let period = 'AM';
+
+      if (hour >= 12) {
+        period = 'PM';
+        if (hour > 12) hour -= 12;
+      } else if (hour === 0) {
+        hour = 12;
+      }
+
+      sethour(hour.toString().padStart(2, '0'));
+      setminute(minuteStr);
+      setperiod(period);
+    }
+  }, []);
 
   useEffect(() => {
     if (hours && minutes && periods) {
@@ -156,9 +156,8 @@ useEffect(() => {
         >
           Horoscope Details
           <svg
-            className={`fill-current transform ${
-              isHoroscopeDetailsOpen ? 'rotate-180' : ''
-            }`}
+            className={`fill-current transform ${isHoroscopeDetailsOpen ? 'rotate-180' : ''
+              }`}
             width={'20'}
             viewBox="0 0 20 20"
             fill="none"
@@ -182,51 +181,11 @@ useEffect(() => {
                 >
                   Time of Birth
                 </label>
-                {/* <div className="flex items-center space-x-2 max-md:w-full">
-                  <select
-                    value={hours}
-                    onChange={(e) => sethour(e.target.value)}
-                    className="px-3 py-2 border rounded border-gray-300 focus:outline-none focus:border-blue-500"
-                  >
-                    {Array.from({ length: 12 }, (_, i) => i + 1).map((hour) => (
-                      <option
-                        key={hour}
-                        value={hour.toString().padStart(2, '0')}
-                      >
-                        {hour}
-                      </option>
-                    ))}
-                  </select>
-                  <span>:</span>
-                  <select
-                    value={minutes}
-                    // {...register("minute")}
-                    onChange={(e) => setminute(e.target.value)}
-                    className="px-3 py-2 border rounded border-gray-300 focus:outline-none focus:border-blue-500"
-                  >
-                    {Array.from({ length: 60 }, (_, i) => i).map((minute) => (
-                      <option
-                        key={minute}
-                        value={minute.toString().padStart(2, '0')}
-                      >
-                        {minute.toString().padStart(2, '0')}
-                      </option>
-                    ))}
-                  </select>
-                  <select
-                    value={periods}
-                    // {...register("period")}
-                    onChange={(e) => setperiod(e.target.value)}
-                    className="px-3 py-2 border rounded border-gray-300 focus:outline-none focus:border-blue-500"
-                  >
-                    <option value="AM">AM</option>
-                    <option value="PM">PM</option>
-                  </select>
-                </div> */}
-                 <input
+               
+                <input
                   id="time_of_birth"
                   type="time"
-                 
+
                   {...register('HororScopeDetails.timeOfBirth')}
                   className="outline-none w-full px-4 py-2 border border-black rounded"
                 />
@@ -234,7 +193,7 @@ useEffect(() => {
                   <p className="text-red-600">
                     {errors.HororScopeDetails.timeOfBirth.message}
                   </p>
-                )} 
+                )}
               </div>
 
               <div className="w-full">
@@ -274,8 +233,8 @@ useEffect(() => {
                   // onChange={handleBirthStarChange}
                   className="outline-none w-full px-4 py-2 border border-black rounded"
                 >
-                  <option value="" disabled>
-                    Select your Birth Star 
+                  <option value="" >
+                    Select your Birth Star
                   </option>
 
                   {BirthStar?.map((option: any) => (
@@ -303,8 +262,8 @@ useEffect(() => {
                   className="outline-none w-full px-4 py-2 border border-black rounded"
                   {...register('HororScopeDetails.Rasi')}
                 >
-                  <option value="" selected disabled>
-                     Select your Rasi 
+                  <option value="" selected >
+                    Select your Rasi
                   </option>
                   {Rasi?.map((option: any) => (
                     <option key={option.rasi_id} value={option.rasi_id}>
@@ -333,7 +292,7 @@ useEffect(() => {
                   {...register('HororScopeDetails.lagnam')}
                   className="outline-none w-full px-4 py-2 border border-black rounded"
                 >
-                  <option value="" disabled>
+                  <option value="" >
                     -- Select your Lagnam
                   </option>
                   {lagnam?.map((option: any) => (
@@ -354,7 +313,7 @@ useEffect(() => {
                   htmlFor="chevvai_dosaham"
                   className="block text-black font-medium mb-1"
                 >
-                  Chevvai Dhosam 
+                  Chevvai Dhosam
                 </label>
                 <select
                   id="chevvai_dosaham"
@@ -362,8 +321,8 @@ useEffect(() => {
                   {...register('HororScopeDetails.ChevvaiDhosam')}
                   defaultValue=""
                 >
-                  <option value="" disabled>
-                     Select Chevvai Dhosam 
+                  <option value="" >
+                    Select Chevvai Dhosam
                   </option>
                   <option value="UnKnown">UnKnown</option>
                   <option value="Yes">Yes</option>
@@ -391,8 +350,8 @@ useEffect(() => {
                   className="outline-none w-full px-4 py-2 border border-black rounded"
                   defaultValue="" // Ensure that this sets the initial value to the placeholder
                 >
-                  <option value="" disabled>
-                    Select Sarpa Dhosham 
+                  <option value="" >
+                    Select Sarpa Dhosham
                   </option>
                   <option value="Unknown">Unknown</option> {/* Correct typo */}
                   <option value="Yes">Yes</option>
@@ -436,11 +395,11 @@ useEffect(() => {
                   className="outline-none w-full px-4 py-2 border border-black rounded"
                   id="dasaDropdown"
                   defaultValue=""
-                 // onChange={(e) => setDasaName(e.target.value)}
+                  // onChange={(e) => setDasaName(e.target.value)}
                   {...register('HororScopeDetails.dasa_name')}
                 >
-                  <option value="" selected disabled>
-                     Select Dasa Name 
+                  <option value="" selected >
+                    Select Dasa Name
                   </option>
 
                   {Dasa?.map((dasa: any, index: any) => (
@@ -450,76 +409,76 @@ useEffect(() => {
                   ))}
                 </select>
 
-              {errors?.HororScopeDetails?.dasa_name && (
+                {errors?.HororScopeDetails?.dasa_name && (
                   <p className="text-red-600">
                     {errors.HororScopeDetails.dasa_name.message}
                   </p>
                 )}
               </div>
 
-             <div className="w-2/4 max-md:w-full">
-  <label htmlFor="dasaBalance" className="block mb-1">
-    Dasa Balance
-  </label>
-  <div className="flex space-x-2">
-    {/* Year */}
-    <div className="w-full">
-      <select
-        id="year"
-        {...register('HororScopeDetails.dhasaBalanceYear')}
-        className="outline-none w-full px-4 py-2 border border-black rounded"
-        defaultValue=""
-      >
-        <option value="" disabled>
-          Year
-        </option>
-        {Array.from({ length: 30 }, (_, i) => i + 1).map((year) => (
-          <option key={year} value={year}>
-            {year}
-          </option>
-        ))}
-      </select>
-    </div>
+              <div className="w-2/4 max-md:w-full">
+                <label htmlFor="dasaBalance" className="block mb-1">
+                  Dasa Balance
+                </label>
+                <div className="flex space-x-2">
+                  {/* Year */}
+                  <div className="w-full">
+                    <select
+                      id="year"
+                      {...register('HororScopeDetails.dhasaBalanceYear')}
+                      className="outline-none w-full px-4 py-2 border border-black rounded"
+                      defaultValue=""
+                    >
+                      <option value="" >
+                        Year
+                      </option>
+                      {Array.from({ length: 30 }, (_, i) => i + 1).map((year) => (
+                        <option key={year} value={year}>
+                          {year}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
-    {/* Month */}
-    <div className="w-full">
-      <select
-        id="month"
-        {...register('HororScopeDetails.dhasaBalanceMonth')}
-        className="outline-none w-full px-4 py-2 border border-black rounded"
-        defaultValue=""
-      >
-        <option value="" disabled>
-          Month
-        </option>
-        {[...Array(12)].map((_, i) => (
-          <option key={i + 1} value={i + 1}>
-            {i + 1}
-          </option>
-        ))}
-      </select>
-    </div>
+                  {/* Month */}
+                  <div className="w-full">
+                    <select
+                      id="month"
+                      {...register('HororScopeDetails.dhasaBalanceMonth')}
+                      className="outline-none w-full px-4 py-2 border border-black rounded"
+                      defaultValue=""
+                    >
+                      <option value="" >
+                        Month
+                      </option>
+                      {[...Array(12)].map((_, i) => (
+                        <option key={i + 1} value={i + 1}>
+                          {i + 1}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
-    {/* Day */}
-    <div className="w-full">
-      <select
-        id="dasa_balance"
-        {...register('HororScopeDetails.dhasaBalanceDay')}
-        className="outline-none w-full px-4 py-2 border border-black rounded"
-        defaultValue=""
-      >
-        <option value="" disabled>
-          Day
-        </option>
-        {[...Array(31)].map((_, i) => (
-          <option key={i + 1} value={i + 1}>
-            {i + 1}
-          </option>
-        ))}
-      </select>
-    </div>
-  </div>
-</div>
+                  {/* Day */}
+                  <div className="w-full">
+                    <select
+                      id="dasa_balance"
+                      {...register('HororScopeDetails.dhasaBalanceDay')}
+                      className="outline-none w-full px-4 py-2 border border-black rounded"
+                      defaultValue=""
+                    >
+                      <option value="" >
+                        Day
+                      </option>
+                      {[...Array(31)].map((_, i) => (
+                        <option key={i + 1} value={i + 1}>
+                          {i + 1}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
 
             </div>
 

@@ -286,7 +286,7 @@ const FamilyDetailsForm: React.FC<pageProp> = ({
                   className="outline-none w-full px-4 py-2 border border-black rounded"
                   {...register('FamilyDetailsForm.bloodGroup')}
                 >
-                  <option value="" disabled selected>
+                  <option value="" selected>
                     Select Blood Group
                   </option>
                   {bloodGroups.map((group) => (

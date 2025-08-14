@@ -92,13 +92,13 @@ const EducationalDetails: React.FC<formProps> = ({
 
   const selectedWorkCountry = watch('EducationDetails.work_country') || '';
   const selectedState = watch('EducationDetails.work_state') || '';
-  
+
   const selecteddistrict = watch('EducationDetails.work_district') || '';
 
   const selectedCity = watch('EducationDetails.work_city') || '';
-  
+
   const selectFieldOfStudy = watch('EducationDetails.field_ofstudy') || '';
-  console.log("selectFieldOfStudy",selectFieldOfStudy);
+  console.log("selectFieldOfStudy", selectFieldOfStudy);
   const selectedUgDegree = watch('EducationDetails.degree') || '';
 
   const [showCityTextInput, setShowCityTextInput] = useState(false);
@@ -107,13 +107,13 @@ const EducationalDetails: React.FC<formProps> = ({
   const [selectedCurrency, setSelectedCurrency] = useState('');
   const [profession, setProfession] = useState<number>();
   const [degrees, setDegrees] = useState<GetDegree[]>([]);
-  
+
   // console.log(degrees)
   // const [selectedDegrees, setSelectedDegrees] = useState<string[]>([]);
   const [selectedDegrees, setSelectedDegrees] = useState<string[]>([]);
- 
+
   const [otherDegree, setOtherDegree] = useState(''); // To store the value of "Other"
- 
+
   const [showOtherInput, setShowOtherInput] = useState(false); // To conditionally show input box
 
   const currencyOptions = CurrencyCodes.codes(); // Correct way to get currency codes
@@ -123,7 +123,7 @@ const EducationalDetails: React.FC<formProps> = ({
   console.log(selectFieldOfStudy);
 
   const [noDegreeOptions, setNoDegreeOptions] = useState<boolean>(true);
-  console.log("noDegreeOptions",noDegreeOptions)
+  console.log("noDegreeOptions", noDegreeOptions)
   // const [selectedId, setSelectedId] = useState<string[]>([]);
   // console.log("selectedId",selectedId);
   const preferredCurrencies = [
@@ -143,7 +143,7 @@ const EducationalDetails: React.FC<formProps> = ({
   // const [showCityTextField, setShowCityTextField] = useState(false); // State for "Others" option
 
 
- 
+
   const toggleSection4 = () => {
     setIsEducationDetailsOpen(!isEducationDetailsOpen);
   };
@@ -174,8 +174,8 @@ const EducationalDetails: React.FC<formProps> = ({
   //   queryKey: ['degrees'],
   //   queryFn: fetchDegree,
   // });
-   // Fetch degrees based on selected education and field of study
-   const { data: degreesData } = useQuery({
+  // Fetch degrees based on selected education and field of study
+  const { data: degreesData } = useQuery({
     queryKey: ['degrees', selectedEducation, selectedFieldOfStudy],
     queryFn: () => fetchDegree(selectedEducation, selectedFieldOfStudy),
     enabled: !!selectedEducation && !!selectedFieldOfStudy,
@@ -203,49 +203,49 @@ const EducationalDetails: React.FC<formProps> = ({
     enabled: !!selecteddistrict,
   });
 
- // Load selected values from sessionStorage on component mount
- useEffect(() => {
-  const savedEducation = sessionStorage.getItem('selectedEducation');
-  const savedFieldOfStudy = sessionStorage.getItem('selectedFieldOfStudy');
-  const savedDegrees = sessionStorage.getItem('selectedDegrees');
-  const savedOtherDegree = sessionStorage.getItem('otherDegree');
+  // Load selected values from sessionStorage on component mount
+  useEffect(() => {
+    const savedEducation = sessionStorage.getItem('selectedEducation');
+    const savedFieldOfStudy = sessionStorage.getItem('selectedFieldOfStudy');
+    const savedDegrees = sessionStorage.getItem('selectedDegrees');
+    const savedOtherDegree = sessionStorage.getItem('otherDegree');
 
-  if (savedEducation) {
-    setSelectedEducation(savedEducation);
-    setValue('EducationDetails.heighestEducation', savedEducation);
-  }
-  if (savedFieldOfStudy) {
-    setSelectedFieldOfStudy(savedFieldOfStudy);
-    setValue('EducationDetails.field_ofstudy', savedFieldOfStudy);
-  }
-  if (savedDegrees) {
-    const parsedDegrees = JSON.parse(savedDegrees);
-    setSelectedDegrees(parsedDegrees);
-    setValue('EducationDetails.degree', parsedDegrees.join(','));
-  }
-  if (savedOtherDegree) {
-    setOtherDegree(savedOtherDegree);
-  }
-}, [setValue]);
+    if (savedEducation) {
+      setSelectedEducation(savedEducation);
+      setValue('EducationDetails.heighestEducation', savedEducation);
+    }
+    if (savedFieldOfStudy) {
+      setSelectedFieldOfStudy(savedFieldOfStudy);
+      setValue('EducationDetails.field_ofstudy', savedFieldOfStudy);
+    }
+    if (savedDegrees) {
+      const parsedDegrees = JSON.parse(savedDegrees);
+      setSelectedDegrees(parsedDegrees);
+      setValue('EducationDetails.degree', parsedDegrees.join(','));
+    }
+    if (savedOtherDegree) {
+      setOtherDegree(savedOtherDegree);
+    }
+  }, [setValue]);
 
 
 
-// Save selected values to sessionStorage whenever they change
-useEffect(() => {
-  sessionStorage.setItem('selectedEducation', selectedEducation);
-}, [selectedEducation]);
+  // Save selected values to sessionStorage whenever they change
+  useEffect(() => {
+    sessionStorage.setItem('selectedEducation', selectedEducation);
+  }, [selectedEducation]);
 
-useEffect(() => {
-  sessionStorage.setItem('selectedFieldOfStudy', selectedFieldOfStudy);
-}, [selectedFieldOfStudy]);
+  useEffect(() => {
+    sessionStorage.setItem('selectedFieldOfStudy', selectedFieldOfStudy);
+  }, [selectedFieldOfStudy]);
 
-useEffect(() => {
-  sessionStorage.setItem('selectedDegrees', JSON.stringify(selectedDegrees));
-}, [selectedDegrees]);
+  useEffect(() => {
+    sessionStorage.setItem('selectedDegrees', JSON.stringify(selectedDegrees));
+  }, [selectedDegrees]);
 
-useEffect(() => {
-  sessionStorage.setItem('otherDegree', otherDegree);
-}, [otherDegree]);
+  useEffect(() => {
+    sessionStorage.setItem('otherDegree', otherDegree);
+  }, [otherDegree]);
 
 
   // Add useEffect for initial data population
@@ -272,7 +272,7 @@ useEffect(() => {
         const existingDegrees = EditData[2].degree.split(',');
         setSelectedDegrees(existingDegrees);
         setValue('EducationDetails.degree', EditData[2].degree);
-        
+
         // Check if "86" (Other) is in the degrees
         if (existingDegrees.includes('86')) {
           setShowOtherInput(true);
@@ -294,7 +294,7 @@ useEffect(() => {
       setValue('EducationDetails.profession', EditData[2].profession || '');
       setValue('EducationDetails.work_country', EditData[2].work_country || '');
       setValue('EducationDetails.workplace', EditData[2].work_place || '');
-      
+
       // Handle work state - check if it's a name or ID
       const workState = EditData[2].work_state;
       if (workState) {
@@ -302,7 +302,7 @@ useEffect(() => {
         // that runs after WorkState data is loaded
         setValue('EducationDetails.work_state', workState);
       }
-      
+
       setValue('EducationDetails.work_city', EditData[2].work_city || '');
       setValue('EducationDetails.profession', EditData[2].profession || '');
       setProfession(EditData[2].profession);
@@ -317,14 +317,14 @@ useEffect(() => {
   useEffect(() => {
     if (EditData && EditData[2] && WorkState && EditData[2].work_state) {
       const workState = EditData[2].work_state;
-      
+
       // Check if workState is a name (not a numeric ID)
       if (isNaN(Number(workState))) {
         // Find the state by name
-        const stateByName = WorkState.find(state => 
+        const stateByName = WorkState.find(state =>
           state.state_name.toLowerCase() === workState.toLowerCase()
         );
-        
+
         if (stateByName) {
           // Set the state ID instead of the name
           setValue('EducationDetails.work_state', stateByName.state_id);
@@ -337,14 +337,14 @@ useEffect(() => {
   useEffect(() => {
     if (EditData && EditData[2] && WorkDistrict && EditData[2].work_district) {
       const workDistrict = EditData[2].work_district;
-      
+
       // Check if workDistrict is a name (not a numeric ID)
       if (isNaN(Number(workDistrict))) {
         // Find the district by name
-        const districtByName = WorkDistrict.find(district => 
+        const districtByName = WorkDistrict.find(district =>
           district.disctict_name.toLowerCase() === workDistrict.toLowerCase()
         );
-        
+
         if (districtByName) {
           // Set the district ID instead of the name
           setValue('EducationDetails.work_district', districtByName.disctict_id);
@@ -357,14 +357,14 @@ useEffect(() => {
   useEffect(() => {
     if (EditData && EditData[2] && City && EditData[2].work_city) {
       const workCity = EditData[2].work_city;
-      
+
       // Check if workCity is a name (not a numeric ID)
       if (isNaN(Number(workCity))) {
         // Find the city by name
-        const cityByName = City.find(city => 
+        const cityByName = City.find(city =>
           city.city_name.toLowerCase() === workCity.toLowerCase()
         );
-        
+
         if (cityByName) {
           // Set the city ID instead of the name
           setValue('EducationDetails.work_city', cityByName.city_name);
@@ -376,8 +376,8 @@ useEffect(() => {
   // Add useEffect to handle degree data fetching when education and field of study change
   useEffect(() => {
     const fetchDegreeData = async () => {
-      if (selectedEducation && selectedFieldOfStudy && 
-          ['1', '2', '3', '4'].includes(selectedEducation)) {
+      if (selectedEducation && selectedFieldOfStudy &&
+        ['1', '2', '3', '4'].includes(selectedEducation)) {
         try {
           const degreeData = await fetchDegree(selectedEducation, selectedFieldOfStudy);
           setDegrees(degreeData);
@@ -408,7 +408,7 @@ useEffect(() => {
     }
   }, [selectedEducation, setValue]);
 
- 
+
 
   const handleOtherDegreeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newOtherDegree = event.target.value;
@@ -417,7 +417,7 @@ useEffect(() => {
   };
 
   const handleDegreeChange = (newValue: any) => {
-    if (selectedEducation === '5' || selectedEducation === '6') { 
+    if (selectedEducation === '5' || selectedEducation === '6') {
       setValue('EducationDetails.field_ofstudy', '');
       setValue('EducationDetails.degree', '');
       setValue('EducationDetails.other_degree', '');
@@ -425,35 +425,35 @@ useEffect(() => {
       setShowOtherInput(false);
       return;
     }
-  
+
     // Check if "Others" (degree_id: 86) is selected
     const hasOthers = newValue.some((option: any) => option.value === '86');
     setShowOtherInput(hasOthers);
-  
+
     // Extract all selected degree IDs including "Others" if selected
     const selectedDegreeIds = newValue.map((option: any) => option.value);
     setSelectedDegrees(selectedDegreeIds);
-  
+
     // Update form value
     setValue('EducationDetails.degree', selectedDegreeIds.join(','));
-    
+
     // If "Others" is not selected anymore, clear the other_degree field
     if (!hasOthers) {
       setValue('EducationDetails.other_degree', '');
       setOtherDegree('');
     }
   };
-  
+
   // Get the selected options for the Select component
   const getSelectedOptions = () => {
     if (!degreesData) return [];
-    
+
     return selectedDegrees.map(id => {
-      const degree = Array.isArray(degreesData) 
+      const degree = Array.isArray(degreesData)
         ? degreesData.find(d => d.degeree_id.toString() === id)
         : null; // Handle non-array case safely
-      
-      return degree ? { 
+
+      return degree ? {
         value: degree.degeree_id.toString(),
         label: degree.degeree_description
       } : null;
@@ -468,7 +468,7 @@ useEffect(() => {
     }
   }, [City, selectedCity]);
 
-  
+
   return (
     <div className="bg-white p-5 mb-10 rounded shadow-md">
       <h4
@@ -477,9 +477,8 @@ useEffect(() => {
       >
         Education Details
         <svg
-          className={`fill-current transform ${
-            isEducationDetailsOpen ? 'rotate-180' : ''
-          }`}
+          className={`fill-current transform ${isEducationDetailsOpen ? 'rotate-180' : ''
+            }`}
           width={'20'}
           viewBox="0 0 20 20"
           fill="none"
@@ -521,7 +520,7 @@ useEffect(() => {
                   <option
                     key={education.education_id}
                     value={education.education_id}
-                   
+
                   >
                     {education.education_description}
                   </option>
@@ -537,105 +536,105 @@ useEffect(() => {
               selectedEducation === '2' ||
               selectedEducation === '3' ||
               selectedEducation === '4') && (
-              <>
-                <div className="w-full">
-                  <label className="block text-black font-semibold mb-1">
-                    Field Of Study
-                    {/* <span className="text-red-500">*</span> */}
-                  </label>
-                  <select
-                    {...register('EducationDetails.field_ofstudy',{required:false})}
-                    className="outline-none w-full px-4 py-2 border border-black rounded text-[#000000e6] font-medium"
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      setSelectedFieldOfStudy(value);
-                      setValue('EducationDetails.field_ofstudy', value);
-                      // Reset degree selection
-                      setSelectedDegrees([]);
-                      setValue('EducationDetails.degree', '');
-                    }}
-                    value={selectedFieldOfStudy || ''}
-                  >
-                    <option value="" className='text-[#000000e6] font-medium'>Select Field of Study</option>
-                    {getFieldOfStudy?.map((education) => (
-                      <option
-                        key={education.study_id}
-                        value={education.study_id}
-                       
-                      >
-                        {education.study_description}
-                      </option>
-                    ))}
-                  </select>
-                  {errors?.EducationDetails?.field_ofstudy && (
-                    <p className="text-red-600">
-                      {errors.EducationDetails.field_ofstudy.message}
-                    </p>
-                  )}
-                </div>
-              </>
-            )}
+                <>
+                  <div className="w-full">
+                    <label className="block text-black font-semibold mb-1">
+                      Field Of Study
+                      {/* <span className="text-red-500">*</span> */}
+                    </label>
+                    <select
+                      {...register('EducationDetails.field_ofstudy', { required: false })}
+                      className="outline-none w-full px-4 py-2 border border-black rounded text-[#000000e6] font-medium"
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setSelectedFieldOfStudy(value);
+                        setValue('EducationDetails.field_ofstudy', value);
+                        // Reset degree selection
+                        setSelectedDegrees([]);
+                        setValue('EducationDetails.degree', '');
+                      }}
+                      value={selectedFieldOfStudy || ''}
+                    >
+                      <option value="" className='text-[#000000e6] font-medium'>Select Field of Study</option>
+                      {getFieldOfStudy?.map((education) => (
+                        <option
+                          key={education.study_id}
+                          value={education.study_id}
+
+                        >
+                          {education.study_description}
+                        </option>
+                      ))}
+                    </select>
+                    {errors?.EducationDetails?.field_ofstudy && (
+                      <p className="text-red-600">
+                        {errors.EducationDetails.field_ofstudy.message}
+                      </p>
+                    )}
+                  </div>
+                </>
+              )}
           </div>
           <div className="flex w-full flex-row gap-4">
             {(selectedEducation === '1' ||
               selectedEducation === '2' ||
               selectedEducation === '3' ||
               selectedEducation === '4') && (
-              <div className="w-full">
-                <label className="block text-black font-semibold mb-1">
-                  Degree
-                </label>
+                <div className="w-full">
+                  <label className="block text-black font-semibold mb-1">
+                    Degree
+                  </label>
 
-                {noDegreeOptions ? (
-                  <input
-                    type="text"
-                    className="outline-none w-full px-4 py-2 border text-black font-semibold border-black rounded"
-                    {...register('EducationDetails.degree', {
-                      required: 'Degree is required',
-                    })}
-                    placeholder="Enter your degreee"
-                  />
-                ) : (
-                  <div className="flex flex-col text-[#000000e6] font-medium gap-2">
-                    <Select
-                      {...register('EducationDetails.degree')}
-                      isMulti
-                      options={[
-                        ...degrees?.map((degree) => ({
-                          value: degree.degeree_id.toString(),
-                          label: degree.degeree_description,
-                        })),
-                      ]}
-                      value={getSelectedOptions()}
-                      onChange={handleDegreeChange}
-                    />
-                    {showOtherInput && (
-                      <input
-                        type="text"
-                        value={otherDegree}
-                        {...register('EducationDetails.other_degree')}
-                        onChange={handleOtherDegreeChange}
-                        placeholder="Enter Specific field"
-                        className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded mt-2"
-                      />
-                    )}
-
+                  {noDegreeOptions ? (
                     <input
-                      type="hidden"
-                      {...register("EducationDetails.degree")}
-                      value={selectedDegrees.length > 0 ? selectedDegrees.join(",") : ""}
-                      className='text-[#000000e6] font-medium'
+                      type="text"
+                      className="outline-none w-full px-4 py-2 border text-black font-semibold border-black rounded"
+                      {...register('EducationDetails.degree', {
+                        required: 'Degree is required',
+                      })}
+                      placeholder="Enter your degreee"
                     />
-                  </div>
-                )}
+                  ) : (
+                    <div className="flex flex-col text-[#000000e6] font-medium gap-2">
+                      <Select
+                        {...register('EducationDetails.degree')}
+                        isMulti
+                        options={[
+                          ...degrees?.map((degree) => ({
+                            value: degree.degeree_id.toString(),
+                            label: degree.degeree_description,
+                          })),
+                        ]}
+                        value={getSelectedOptions()}
+                        onChange={handleDegreeChange}
+                      />
+                      {showOtherInput && (
+                        <input
+                          type="text"
+                          value={otherDegree}
+                          {...register('EducationDetails.other_degree')}
+                          onChange={handleOtherDegreeChange}
+                          placeholder="Enter Specific field"
+                          className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded mt-2"
+                        />
+                      )}
 
-                {!selectedUgDegree && errors?.EducationDetails?.degree && (
-                  <p className="text-red-600">
-                    {errors.EducationDetails?.degree.message}
-                  </p>
-                )}
-              </div>
-            )}
+                      <input
+                        type="hidden"
+                        {...register("EducationDetails.degree")}
+                        value={selectedDegrees.length > 0 ? selectedDegrees.join(",") : ""}
+                        className='text-[#000000e6] font-medium'
+                      />
+                    </div>
+                  )}
+
+                  {!selectedUgDegree && errors?.EducationDetails?.degree && (
+                    <p className="text-red-600">
+                      {errors.EducationDetails?.degree.message}
+                    </p>
+                  )}
+                </div>
+              )}
 
             <div className="w-full">
               <Input
@@ -671,13 +670,13 @@ useEffect(() => {
                     </option>
                   ))}
                 </select>
-               
+
               </div>
-               {errors?.EducationDetails?.AnnualIncome && (
-                  <p className="text-red-600">
-                    {errors.EducationDetails.AnnualIncome.message}
-                  </p>
-                )}
+              {errors?.EducationDetails?.AnnualIncome && (
+                <p className="text-red-600">
+                  {errors.EducationDetails.AnnualIncome.message}
+                </p>
+              )}
             </div>
             <div className="w-full ">
               <label
@@ -695,7 +694,7 @@ useEffect(() => {
                   className="outline-none text-placeHolderColor px-4 py-[6px] text-[#000000e6] font-medium border border-ashBorder rounded"
                   style={{ width: '300px' }} // Adjust the width as needed
                 >
-                  <option value="" disabled className='text-[#000000e6] font-medium'>
+                  <option value="" className='text-[#000000e6] font-medium'>
                     Select Currency
                   </option>
                   {sortedCurrencyOptions.map((code) => (
@@ -709,13 +708,13 @@ useEffect(() => {
                   required
                   {...register('EducationDetails.ActualIncome')}
                 />
-              
+
               </div>
-                {errors?.EducationDetails?.ActualIncome && (
-                  <p className="text-red-600">
-                    {errors.EducationDetails.ActualIncome.message}
-                  </p>
-                )}
+              {errors?.EducationDetails?.ActualIncome && (
+                <p className="text-red-600">
+                  {errors.EducationDetails.ActualIncome.message}
+                </p>
+              )}
             </div>
           </div>
 
@@ -731,11 +730,10 @@ useEffect(() => {
                 {ProfessionalPreference?.map((Profession: ProfessionPref) => (
                   <label
                     key={Profession.Profes_Pref_id}
-                    className={`w-full px-5 py-3 text-sm font-semibold border border-b text-black   text-center cursor-pointer flex flex-wrap ${
-                      String(profession) === String(Profession.Profes_Pref_id)
+                    className={`w-full px-5 py-3 text-sm font-semibold border border-b text-black   text-center cursor-pointer flex flex-wrap ${String(profession) === String(Profession.Profes_Pref_id)
                         ? 'bg-blue-500 text-white'
                         : 'bg-white'
-                    } `}
+                      } `}
                     onClick={() => setProfession(Profession.Profes_Pref_id)}
                   >
                     <input
@@ -975,7 +973,7 @@ useEffect(() => {
                   <label
                     htmlFor="professionDetail"
                     className="block text-sm text-[#000000e6] font-semibold"
-                    //style={{ color: "#1A73E8" }} // Replace with the exact color if different
+                  //style={{ color: "#1A73E8" }} // Replace with the exact color if different
                   >
                     Profession Detail
                   </label>
@@ -996,7 +994,7 @@ useEffect(() => {
           <div className="flex flex-row gap-4">
             <div className="w-2/4">
               <label className="block text-black font-semibold mb-1">
-                Country 
+                Country
                 {/* <span className="text-red-500">*</span> */}
               </label>
               <select
@@ -1023,7 +1021,7 @@ useEffect(() => {
                   <div>
                     <label className="block text-black font-semibold mb-1">
                       City
-                       {/* <span className="text-red-500">*</span> */}
+                      {/* <span className="text-red-500">*</span> */}
                     </label>
                     <input
                       type="text"
@@ -1057,7 +1055,7 @@ useEffect(() => {
                       {...register('EducationDetails.work_state')}
                       className="outline-none w-full px-4 text-[#000000e6] font-semibold py-2 border border-black rounded"
                     >
-                      <option value="" selected disabled>
+                      <option value="" selected>
                         Select State
                       </option>
                       {WorkState?.map((option: State) => (
@@ -1070,7 +1068,7 @@ useEffect(() => {
                       <p className="text-red-600">
                         {errors.EducationDetails.work_state.message?.toString()}
                       </p>
-                    )} 
+                    )}
                   </div>
                 )}
               </div>
@@ -1114,7 +1112,7 @@ useEffect(() => {
                         setIsCityValid(true); // Set to true to show city select when district changes
                       }}
                     >
-                      <option value="" className='text-[#000000e6] font-medium' selected disabled>
+                      <option value="" className='text-[#000000e6] font-medium' selected >
                         Select your District
                       </option>
                       {WorkDistrict?.map((option: District) => (
@@ -1128,11 +1126,11 @@ useEffect(() => {
                       ))}
                     </select>
                   )}
-              {!selecteddistrict && errors?.EducationDetails?.work_district && (
-  <p className="text-red-600">
-    {errors.EducationDetails.work_district.message?.toString()}
-  </p>
-)}
+                  {!selecteddistrict && errors?.EducationDetails?.work_district && (
+                    <p className="text-red-600">
+                      {errors.EducationDetails.work_district.message?.toString()}
+                    </p>
+                  )}
 
                 </div>
 
@@ -1157,15 +1155,15 @@ useEffect(() => {
                   </div>
                 ) : (
                   selectedWorkCountry === '1' &&
-                   (
+                  (
                     <div className="w-full">
                       <div className="flex items-center gap-0">
                         <label
                           htmlFor="city"
                           className="block mb-1 text-black font-semibold"
                         >
-                      City
-                      {/* <span className="text-red-500">*</span> */}
+                          City
+                          {/* <span className="text-red-500">*</span> */}
                         </label>
                         <div className="relative inline-block ml-2 group">
                           <AiOutlineInfoCircle className="text-gray-500 cursor-pointer ml-2" />
@@ -1178,60 +1176,60 @@ useEffect(() => {
                         </div>
                       </div>
 
-                  
-{isCityValid ? (
-  <div>
-    <select
-      value={selectedCity}
-      className="outline-none w-full px-4 py-2 border border-black rounded text-[#000000e6] font-medium"
-      {...register('EducationDetails.work_city', {
-        required: 'City is required',
-      })}
-      onChange={(e) => {
-        const value = e.target.value;
-        setValue('EducationDetails.work_city', value);
 
-        if (value === 'Others') {
-          setShowCityTextInput(true);
-          setValue('EducationDetails.work_city', ''); // Reset for text input
-        } else {
-          setShowCityTextInput(false);
-        }
-      }}
-    >
-      <option value="" className='text-[#000000e6] font-medium' disabled>Select City</option>
-      {City?.map((option: City) => (
-        <option key={option.city_id} value={option.city_name} className='text-[#000000e6] font-medium'>
-          {option.city_name}
-        </option>
-      ))}
-      <option value="Others">Others</option>
-    </select>
+                      {isCityValid ? (
+                        <div>
+                          <select
+                            value={selectedCity}
+                            className="outline-none w-full px-4 py-2 border border-black rounded text-[#000000e6] font-medium"
+                            {...register('EducationDetails.work_city', {
+                              required: 'City is required',
+                            })}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              setValue('EducationDetails.work_city', value);
 
-    {showCityTextInput && (
-      <input
-        type="text"
-        className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded mt-2"
-        {...register('EducationDetails.work_city', {
-          required: 'City is required',
-        })}
-        placeholder="Enter your city"
-        onChange={(e) => setValue('EducationDetails.work_city', e.target.value)}
-      />
-    )}
-  </div>
-) : (
-  <input
-    type="text"
-    className="outline-none w-full px-4 py-2 border border-black text-[#000000e6] font-medium rounded"
-    {...register('EducationDetails.work_city', {
-      required: 'City is required',
-    })}
-    placeholder="Enter your city"
-    onChange={(e) => setValue('EducationDetails.work_city', e.target.value)}
-  />
-)}
-                      {!selectedCity &&errors?.EducationDetails?.work_city && (
+                              if (value === 'Others') {
+                                setShowCityTextInput(true);
+                                setValue('EducationDetails.work_city', ''); // Reset for text input
+                              } else {
+                                setShowCityTextInput(false);
+                              }
+                            }}
+                          >
+                            <option value="" className='text-[#000000e6] font-medium'>Select City</option>
+                            {City?.map((option: City) => (
+                              <option key={option.city_id} value={option.city_name} className='text-[#000000e6] font-medium'>
+                                {option.city_name}
+                              </option>
+                            ))}
+                            <option value="Others">Others</option>
+                          </select>
+
+                          {showCityTextInput && (
+                            <input
+                              type="text"
+                              className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded mt-2"
+                              {...register('EducationDetails.work_city', {
+                                required: 'City is required',
+                              })}
+                              placeholder="Enter your city"
+                              onChange={(e) => setValue('EducationDetails.work_city', e.target.value)}
+                            />
+                          )}
+                        </div>
+                      ) : (
+                        <input
+                          type="text"
+                          className="outline-none w-full px-4 py-2 border border-black text-[#000000e6] font-medium rounded"
+                          {...register('EducationDetails.work_city', {
+                            required: 'City is required',
+                          })}
+                          placeholder="Enter your city"
+                          onChange={(e) => setValue('EducationDetails.work_city', e.target.value)}
+                        />
+                      )}
+                      {!selectedCity && errors?.EducationDetails?.work_city && (
                         <p className="text-red-600">
                           {errors.EducationDetails.work_city.message?.toString()}
                         </p>

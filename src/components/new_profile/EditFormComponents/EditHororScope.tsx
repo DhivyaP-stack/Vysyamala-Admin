@@ -271,12 +271,12 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
                 </label>
                 <div className="flex items-center space-x-2">
                   <select value={hours} onChange={(e) => sethour(e.target.value)} className="px-3 py-2 border rounded border-gray-500 w-full">
-                    <option value="" disabled>Hour</option>
+                    <option value="" >Hour</option>
                     {Array.from({ length: 12 }, (_, i) => (<option key={i + 1} value={(i + 1).toString().padStart(2, '0')}>{(i + 1).toString().padStart(2, '0')}</option>))}
                   </select>
                   <span>:</span>
                   <select value={minutes} onChange={(e) => setminute(e.target.value)} className="px-3 py-2 border rounded border-gray-500 w-full">
-                     <option value="" disabled>Min</option>
+                     <option value="" >Min</option>
                     {Array.from({ length: 60 }, (_, i) => (<option key={i} value={i.toString().padStart(2, '0')}>{i.toString().padStart(2, '0')}</option>))}
                   </select>
                   <select value={periods} onChange={(e) => setperiod(e.target.value)} className="px-3 py-2 border rounded border-gray-500">
@@ -327,7 +327,7 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
                   {...register('HororScopeDetails.BirthStar')}
                   className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
                 >
-                  <option value="" disabled className='text-[#000000e6] font-semibold'>
+                  <option value="" className='text-[#000000e6] font-semibold'>
                     -- Select your Birth Star --
                   </option>
                   {BirthStar?.map((option: any) => (
@@ -357,7 +357,7 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
                   id="birth_rasi_name"
                   className="outline-none w-full px-4 py-2 text-[#000000e6] font-medium border border-black rounded"
                 >
-                  <option value="" selected disabled className='text-[#000000e6] font-medium'>
+                  <option value="" selected  className='text-[#000000e6] font-medium'>
                     -- Select your Rasi --
                   </option>
                   {Rasi?.map((option: any) => (
@@ -386,7 +386,7 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
                   className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
 
                 >
-                  <option value="" disabled className='text-[#000000e6] font-medium'>
+                  <option value=""  className='text-[#000000e6] font-medium'>
                     Select your Lagnam
                   </option>
                   {lagnam?.map((option: any) => (
@@ -416,7 +416,7 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
                   className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
                   defaultValue=""
                 >
-                  <option value="" disabled className='text-[#000000e6] font-medium'>
+                  <option value=""  className='text-[#000000e6] font-medium'>
                     Select Chevvai Dhosam
                   </option>
                   <option value="UnKnown" className='text-[#000000e6] font-medium'>UnKnown</option>
@@ -445,7 +445,7 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
                   className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
                   defaultValue=""
                 >
-                  <option value="" disabled className='text-[#000000e6] font-medium'>
+                  <option value=""  className='text-[#000000e6] font-medium'>
                     Select Sarpa Dhosham
                   </option>
                   <option value="Unknown" className='text-[#000000e6] font-medium'>Unknown</option>
@@ -490,7 +490,7 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
                   id="dasaDropdown"
                   defaultValue=""
                 >
-                  <option value="" selected disabled className='text-[#000000e6] font-medium'>
+                  <option value="" selected  className='text-[#000000e6] font-medium'>
                     -- Select Dasa Name --
                   </option>
                   {Dasa?.map((dasa: any, index: any) => (
@@ -520,7 +520,7 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
                       id="year"
                       className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
                     >
-                      <option value="" disabled className='text-[#000000e6] font-medium'>
+                      <option value=""  className='text-[#000000e6] font-medium'>
                         Year
                       </option>
                       {Array.from({ length: 30 }, (_, i) => i + 1).map(
@@ -538,7 +538,7 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
                       {...register('HororScopeDetails.DasaBalanceMonth')}
                       className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
                     >
-                      <option value="" disabled className='text-[#000000e6] font-medium'>
+                      <option value=""  className='text-[#000000e6] font-medium'>
                         Month
                       </option>
                       {[...Array(12)].map((_, i) => (
@@ -555,7 +555,7 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
                       className="outline-none w-full px-4 py-2 border border-black text-[#000000e6] font-medium rounded"
                       defaultValue=""
                     >
-                      <option value="" disabled className='text-[#000000e6] font-medium'>
+                      <option value=""  className='text-[#000000e6] font-medium'>
                         Day
                       </option>
                       {[...Array(31)].map((_, i) => (
