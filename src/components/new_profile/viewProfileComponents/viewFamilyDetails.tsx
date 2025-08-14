@@ -39,9 +39,9 @@ const ViewFamilyDetailsForm: React.FC<pageProp> = ({ profile }) => {
     queryKey: ['FamilyValues'],
     queryFn: fetchFamilyValues,
   });
-  const {data:SuyaGothram}=useQuery({
-    queryKey:['SuyaGothram'],
-    queryFn:fetchSuyaGothram
+  const { data: SuyaGothram } = useQuery({
+    queryKey: ['SuyaGothram'],
+    queryFn: fetchSuyaGothram
   })
   useEffect(() => {
     if (profile && profile.length > 0) {
@@ -60,17 +60,17 @@ const ViewFamilyDetailsForm: React.FC<pageProp> = ({ profile }) => {
 
 
   const options = SuyaGothram?.map((gothram) => ({
-  value: gothram.id,
-  label: gothram.sanketha_namam
-}));
-const [childrenView,setChildrenView]=useState()
-useEffect(()=>{
-if(profile){
-    const getMaritalStatus=profile[0].Profile_marital_status;
- const setChildren = getMaritalStatus && ['2', '3', '5'].includes(getMaritalStatus);
- setChildrenView(setChildren)
-}
-},[profile])
+    value: gothram.id,
+    label: gothram.sanketha_namam
+  }));
+  const [childrenView, setChildrenView] = useState()
+  useEffect(() => {
+    if (profile) {
+      const getMaritalStatus = profile[0].Profile_marital_status;
+      const setChildren = getMaritalStatus && ['2', '3', '5'].includes(getMaritalStatus);
+      setChildrenView(setChildren)
+    }
+  }, [profile])
   return (
     <div>
       <div className="bg-white p-5 mb-10 rounded shadow-md ">
@@ -78,11 +78,10 @@ if(profile){
           className="text-red-600 flex row items-center justify-between text-xl font-semibold  dark:text-white cursor-pointer  after-red-line::after"
           onClick={toggleSection2}
         >
-          Family Details<span className="text-red-500">*</span>
+          Family Details
           <svg
-            className={`fill-current transform ${
-              isFamilyDetailsOpen ? 'rotate-180' : ''
-            }`}
+            className={`fill-current transform ${isFamilyDetailsOpen ? 'rotate-180' : ''
+              }`}
             width={'20'}
             viewBox="0 0 20 20"
             fill="none"
@@ -100,19 +99,25 @@ if(profile){
           <div className="flex flex-col gap-5">
             <div className="flex w-full flex-row gap-4">
               <div className="w-full">
+                <label className="block mb-1 font-bold text-black">
+                  Father name <span className="text-red-500">*</span>
+                </label>
                 <Input
                   readOnly
                   value={familyDetails.father_name}
                   required
-                  label={'Father name'}
+                  label={''}
                 />
               </div>
               <div className="w-full">
+                <label className="block mb-1 font-bold text-black">
+                  Father Occupation <span className="text-red-500">*</span>
+                </label>
                 <Input
                   readOnly
                   value={familyDetails.father_occupation}
                   required
-                  label={'Father Occupation'}
+                  label={''}
                 />
               </div>
               <div className="w-full">
@@ -172,9 +177,9 @@ if(profile){
                   type={'text'}
                 />
               </div>
-             <div className="w-full">
+              <div className="w-full">
                 <label className="block text-black font-medium mb-1">
-                  Eye wear 
+                  Eye wear
                 </label>
                 <select
                   value={familyDetails.eye_wear}
@@ -187,76 +192,75 @@ if(profile){
               </div>
             </div>
             <div className="flex w-full flex-row gap-4">
-  {/* Father Alive */}
-  <div className="w-full py-1">
-    <label className="block text-black font-medium mb-1">
-      Father Alive 
-    </label>
-    <div className="flex items-center">
-      <label className="flex items-center mr-4">
-        <input
-          type="radio"
-          checked={familyDetails.father_alive === "yes"}
-          readOnly
-          className="mr-2"
-        />
-        Yes
-      </label>
-      <label className="flex items-center">
-        <input
-          type="radio"
-          checked={familyDetails.father_alive === "no"}
-          readOnly
-          className="mr-2"
-        />
-        No
-      </label>
-    </div>
-  </div>
+              {/* Father Alive */}
+              <div className="w-full py-1">
+                <label className="block text-black font-medium mb-1">
+                  Father Alive
+                </label>
+                <div className="flex items-center">
+                  <label className="flex items-center mr-4">
+                    <input
+                      type="radio"
+                      checked={familyDetails.father_alive === "yes"}
+                      readOnly
+                      className="mr-2"
+                    />
+                    Yes
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      checked={familyDetails.father_alive === "no"}
+                      readOnly
+                      className="mr-2"
+                    />
+                    No
+                  </label>
+                </div>
+              </div>
 
-  {/* Mother Alive */}
-  <div className="w-full py-1">
-    <label className="block text-black font-medium mb-1">
-      Mother Alive 
-    </label>
-    <div className="flex items-center">
-      <label className="flex items-center mr-4">
-        <input
-          type="radio"
-          checked={familyDetails.mother_alive === "yes"}
-          readOnly
-          className="mr-2"
-        />
-        Yes
-      </label>
-      <label className="flex items-center">
-        <input
-          type="radio"
-          checked={familyDetails.mother_alive === "no"}
-          readOnly
-          className="mr-2"
-        />
-        No
-      </label>
-    </div>
-  </div>
-</div>
+              {/* Mother Alive */}
+              <div className="w-full py-1">
+                <label className="block text-black font-medium mb-1">
+                  Mother Alive
+                </label>
+                <div className="flex items-center">
+                  <label className="flex items-center mr-4">
+                    <input
+                      type="radio"
+                      checked={familyDetails.mother_alive === "yes"}
+                      readOnly
+                      className="mr-2"
+                    />
+                    Yes
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      checked={familyDetails.mother_alive === "no"}
+                      readOnly
+                      className="mr-2"
+                    />
+                    No
+                  </label>
+                </div>
+              </div>
+            </div>
             <div>
               <div className="flex w-full flex-row gap-4">
                 <div className="w-full py-1">
                   <label className="block text-black font-medium mb-1">
-                    Family Type 
+                    Family Type
                   </label>
                   <div className="w-full inline-flex rounded">
                     {FamilyTypes?.map((type) => (
                       <label
                         key={type.family_id}
-                        className={`w-full px-5 py-3 text-sm text-black font-medium border text-center cursor-pointer  ${
-                          String(familyDetails.family_type) ===
+                        className={`w-full px-5 py-3 text-sm text-black font-medium border text-center cursor-pointer  ${String(familyDetails.family_type) ===
                           String(type.family_id)
-                            ? 'bg-blue-500 text-white'
-                            : ''
-                        }`}
+                          ? 'bg-blue-500 text-white'
+                          : ''
+                          }`}
                       >
                         <input
                           disabled
@@ -272,18 +276,17 @@ if(profile){
 
                 <div className="w-full py-1">
                   <label className="block text-black font-medium mb-1">
-                    Family Value 
+                    Family Value
                   </label>
                   <div className="w-full inline-flex rounded">
                     {FamilyValues?.map((value) => (
                       <label
                         key={familyDetails.family_value}
-                        className={`w-full px-5 py-3 text-sm text-black font-medium border cursor-pointer  ${
-                          String(familyDetails.family_value) ===
+                        className={`w-full px-5 py-3 text-sm text-black font-medium border cursor-pointer  ${String(familyDetails.family_value) ===
                           String(value.family_value_id)
-                            ? 'bg-blue-500 text-white'
-                            : ''
-                        }`}
+                          ? 'bg-blue-500 text-white'
+                          : ''
+                          }`}
                       >
                         <input
                           value={value.family_value_id}
@@ -307,12 +310,11 @@ if(profile){
                   {FamilyStatus?.map((status) => (
                     <label
                       key={status.family_status_id}
-                      className={`w-full px-5 py-3 text-sm font-medium text-black border cursor-pointer ${
-                        String(familyDetails.family_status) ===
+                      className={`w-full px-5 py-3 text-sm font-medium text-black border cursor-pointer ${String(familyDetails.family_status) ===
                         String(status.family_status_id)
-                          ? 'bg-blue-500 text-white'
-                          : ''
-                      }`}
+                        ? 'bg-blue-500 text-white'
+                        : ''
+                        }`}
                     >
                       <input
                         value={familyDetails.family_status}
@@ -328,7 +330,7 @@ if(profile){
               <div className="mt-3 flex items-center space-x-48">
                 <div>
                   <h1 className="block text-black font-medium mb-1">
-                    Brother <span className="text-red-500">*</span>
+                    Brother
                   </h1>
                   <div className="flex flex-col">
                     <div className="inline-flex rounded">
@@ -338,7 +340,7 @@ if(profile){
                           className={`px-5 py-3 text-sm text-black font-medium border text-center 
 cursor-pointer  ${buttonClass(
                             familyDetails.no_of_brother !== null &&
-                              Number(familyDetails.no_of_brother) === num,
+                            Number(familyDetails.no_of_brother) === num,
                           )}`}
                         >
                           <input
@@ -356,7 +358,7 @@ cursor-pointer  ${buttonClass(
                 {familyDetails.no_of_brother > 0 && (
                   <div>
                     <h1 className="mb-1 text-black font-semibold">
-                      Married<span className="text-red-500">*</span>
+                      Married
                     </h1>
                     <div className="flex flex-col">
                       <div className="inline-flex text-black font-medium rounded">
@@ -373,7 +375,7 @@ cursor-pointer  ${buttonClass(
                             className={`px-10 py-3 text-sm font-medium border 
 cursor-pointer  ${buttonClass(
                               familyDetails.no_of_bro_married !== null &&
-                                Number(familyDetails.no_of_bro_married) === num,
+                              Number(familyDetails.no_of_bro_married) === num,
                             )}`}
                           >
                             <input value={num} type="radio" className="w-0" />
@@ -389,7 +391,7 @@ cursor-pointer  ${buttonClass(
                 <div className="mt-3 flex items-center space-x-48">
                   <div>
                     <h1 className="block text-black font-semibold mb-1">
-                      Sister <span className="text-red-500">*</span>
+                      Sister 
                     </h1>
                     <div className="flex flex-col">
                       <div className="inline-flex rounded">
@@ -399,7 +401,7 @@ cursor-pointer  ${buttonClass(
                             className={`px-5 py-3 text-sm text-black font-medium border 
 cursor-pointer  ${buttonClass(
                               familyDetails.no_of_sister !== null &&
-                                Number(familyDetails.no_of_sister) === num,
+                              Number(familyDetails.no_of_sister) === num,
                             )}`}
                           >
                             {num === 5 ? '5+' : num}
@@ -413,7 +415,7 @@ cursor-pointer  ${buttonClass(
                   {familyDetails.no_of_sister > 0 && (
                     <div>
                       <h1 className="mb-3 text-black font-medium">
-                        Married <span className="text-red-500">*</span>
+                        Married 
                       </h1>
                       <div className="flex flex-col">
                         <div className="inline-flex rounded">
@@ -430,8 +432,8 @@ cursor-pointer  ${buttonClass(
                               className={`px-10 py-3 text-sm font-medium border 
 cursor-pointer  ${buttonClass(
                                 familyDetails.no_of_sis_married !== null &&
-                                  Number(familyDetails.no_of_sis_married) ===
-                                    num,
+                                Number(familyDetails.no_of_sis_married) ===
+                                num,
                               )}`}
                             >
                               <input value={num} type="radio" className="w-0" />
@@ -467,7 +469,7 @@ cursor-pointer  ${buttonClass(
                     value={familyDetails.property_details}
                     label={'Property Details'}
                     type={'text'}
-                    
+
                   />
                 </div>
                 <div className="w-full">
@@ -495,19 +497,19 @@ cursor-pointer  ${buttonClass(
               </div>
             </div>
 
-             <div className="flex w-full flex-row gap-4">
-            <div className="w-full">
+            <div className="flex w-full flex-row gap-4">
+              <div className="w-full">
                 <Input
                   placeholder="Kg"
                   readOnly
                   value={familyDetails.weight}
-                  
+
                   label={'weight'}
                   type={'text'}
                   name="weight"
                 />
               </div>
-            <div className="w-full">
+              <div className="w-full">
                 <label className="block text-black font-semibold mb-1">
                   About my Family
                 </label>
@@ -525,41 +527,41 @@ cursor-pointer  ${buttonClass(
                   type={'text'}
                 />
               </div>
-               {childrenView && (
-              <div className='w-full'>
-                <label className="block mb-1 text-base text-black font-medium ">
-                  Number of Children
-                </label>
-                <div className="relative">
-                  <select
-                    id="no_of_children"
-                    className="outline-none w-full text-placeHolderColor px-3 py-2.5 text-sm border border-ashBorder rounded appearance-none"
-                   // {...register("FamilyDetails.no_of_children")}
-value={profile[1].no_of_children}
-        //                 {...register("FamilyDetails.no_of_children", {
-        //   valueAsNumber: true, // Convert to number automatically
-        //   setValueAs: (value) => value === "" ? undefined : Number(value),
-        // })}
-        disabled
-                   >
-                    <option value="" disabled selected>Select Number of Children</option>
-                    {[0, 1, 2, 3, 4, 5].map((num) => (
-                      <option key={num} value={num}>
-                        {num}
-                      </option>
-                    ))}
-                  </select>
-                  <IoMdArrowDropdown
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none"
-                    size={20}
-                  />
+              {childrenView && (
+                <div className='w-full'>
+                  <label className="block mb-1 text-base text-black font-medium ">
+                    Number of Children
+                  </label>
+                  <div className="relative">
+                    <select
+                      id="no_of_children"
+                      className="outline-none w-full text-placeHolderColor px-3 py-2.5 text-sm border border-ashBorder rounded appearance-none"
+                      // {...register("FamilyDetails.no_of_children")}
+                      value={profile[1].no_of_children}
+                      //                 {...register("FamilyDetails.no_of_children", {
+                      //   valueAsNumber: true, // Convert to number automatically
+                      //   setValueAs: (value) => value === "" ? undefined : Number(value),
+                      // })}
+                      disabled
+                    >
+                      <option value="" disabled selected>Select Number of Children</option>
+                      {[0, 1, 2, 3, 4, 5].map((num) => (
+                        <option key={num} value={num}>
+                          {num}
+                        </option>
+                      ))}
+                    </select>
+                    <IoMdArrowDropdown
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none"
+                      size={20}
+                    />
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
             </div>
             <div className="flex w-full flex-row gap-4">
-              
-               <div className="w-full">
+
+              <div className="w-full">
                 <Input
                   readOnly
                   value={familyDetails.uncle_gothram}
@@ -580,11 +582,11 @@ value={profile[1].no_of_children}
               </div> */}
 
               <div className="w-full ">
-  {/* <label className="block text-black font-medium mb-1">
+                {/* <label className="block text-black font-medium mb-1">
     Uncle Gothram (Admin)
   </label> */}
-  <div className="relative">
-    {/* <select
+                <div className="relative">
+                  {/* <select
       className="block w-full max-w-full border border-black text-black font-medium rounded px-3 py-2 text-sm md:text-base truncate"
       size={1}
     >
@@ -598,38 +600,38 @@ value={profile[1].no_of_children}
         </option>
       ))}
     </select> */}
-    {/* <Select
+                  {/* <Select
   options={options}
   className="w-full text-sm border border-black text-black font-medium rounded "
   placeholder="Select Uncle Gothram"
 /> */}
 
-  </div>
-  <div className="w-full mt-1">
-  <label className="block text-black font-medium mb-1">
-    Uncle Gothram (Admin)
-  </label>
-  <div className="relative">
-    <select
-      value={familyDetails.uncle_gothram_admin || "0"}
-      disabled
-      className="outline-none w-full text-black font-medium border border-black rounded px-4 py-2"
-    >
-      <option value="0">Not Selected</option>
-      {SuyaGothram?.map((option) => (
-        <option 
-          key={option.id} 
-          value={option.id}
-          className="text-black font-semibold"
-        >
-          {option.gothram_name}
-        </option>
-      ))}
-    </select>
-  </div>
-</div>
+                </div>
+                <div className="w-full mt-1">
+                  <label className="block text-black font-medium mb-1">
+                    Uncle Gothram (Admin)
+                  </label>
+                  <div className="relative">
+                    <select
+                      value={familyDetails.uncle_gothram_admin || "0"}
+                      disabled
+                      className="outline-none w-full text-black font-medium border border-black rounded px-4 py-2"
+                    >
+                      <option value="0">Not Selected</option>
+                      {SuyaGothram?.map((option) => (
+                        <option
+                          key={option.id}
+                          value={option.id}
+                          className="text-black font-semibold"
+                        >
+                          {option.gothram_name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
 
-</div>
+              </div>
 
               <div className="w-full text-black font-medium">
                 <Input
@@ -649,41 +651,41 @@ value={profile[1].no_of_children}
                   ))}
 
                 </select> */}
-                 {/* <Select
+                {/* <Select
   options={options}
 className="w-full text-sm border border-black text-black font-medium rounded "
   placeholder="Select Suya  Gothram"
 /> */}
 
-<div className="w-full ">
-  <label className="block text-black font-medium mb-1">
-    Suya Gothram (Admin)
-  </label>
-  <div className="relative">
-    <select
-      value={familyDetails.suya_gothram_admin || "0"}
-      disabled
-      className="outline-none w-full text-black font-medium border border-black rounded px-4 py-2"
-    >
-      <option value="0">Not Selected</option>
-      {SuyaGothram?.map((option) => (
-        <option 
-          key={option.id} 
-          value={option.id}
-          className="text-black font-semibold"
-        >
-          {option.gothram_name}
-        </option>
-      ))}
-    </select>
-  </div>
-</div>
+                <div className="w-full ">
+                  <label className="block text-black font-medium mb-1">
+                    Suya Gothram (Admin)
+                  </label>
+                  <div className="relative">
+                    <select
+                      value={familyDetails.suya_gothram_admin || "0"}
+                      disabled
+                      className="outline-none w-full text-black font-medium border border-black rounded px-4 py-2"
+                    >
+                      <option value="0">Not Selected</option>
+                      {SuyaGothram?.map((option) => (
+                        <option
+                          key={option.id}
+                          value={option.id}
+                          className="text-black font-semibold"
+                        >
+                          {option.gothram_name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
 
               </div>
-           
+
             </div>
-           
-          
+
+
           </div>
         )}
       </div>

@@ -13,9 +13,9 @@ import AmsamGridview from './AmsamGridView';
 
 interface pageProps {
   profile: any;
-  setBirthStar:Dispatch<SetStateAction<string>>
+  setBirthStar: Dispatch<SetStateAction<string>>
 }
-const ViewHoroDetails: React.FC<pageProps> = ({ profile ,setBirthStar}) => {
+const ViewHoroDetails: React.FC<pageProps> = ({ profile, setBirthStar }) => {
   const [horoDetails, setHoroDetails] = useState<any>({});
   const [day, setDay] = useState<any>(0);
   const [month, setMonth] = useState<any>(0);
@@ -23,10 +23,10 @@ const ViewHoroDetails: React.FC<pageProps> = ({ profile ,setBirthStar}) => {
   const [hour, setHour] = useState('');
   const [minute, setMinute] = useState('');
   const [period, setPeriod] = useState('');
-useEffect(()=>{
-  setBirthStar(horoDetails.birthstar_name)
-},[horoDetails])
-console.log(horoDetails.birthstar_name);
+  useEffect(() => {
+    setBirthStar(horoDetails.birthstar_name)
+  }, [horoDetails])
+  console.log(horoDetails.birthstar_name);
 
   useEffect(() => {
     if (profile && profile.length > 0) {
@@ -93,25 +93,25 @@ console.log(horoDetails.birthstar_name);
 
 
   useEffect(() => {
-  if (horoDetails.time_of_birth) {
-    const [hours24, minutes] = horoDetails.time_of_birth.split(":");
-    let period = 'AM';
-    let hours12 = parseInt(hours24, 10);
-    
-    if (hours12 >= 12) {
-      period = 'PM';
-      if (hours12 > 12) {
-        hours12 -= 12;
+    if (horoDetails.time_of_birth) {
+      const [hours24, minutes] = horoDetails.time_of_birth.split(":");
+      let period = 'AM';
+      let hours12 = parseInt(hours24, 10);
+
+      if (hours12 >= 12) {
+        period = 'PM';
+        if (hours12 > 12) {
+          hours12 -= 12;
+        }
+      } else if (hours12 === 0) {
+        hours12 = 12;
       }
-    } else if (hours12 === 0) {
-      hours12 = 12;
+
+      setHour(hours12.toString().padStart(2, '0'));
+      setMinute(minutes.padStart(2, '0'));
+      setPeriod(period);
     }
-    
-    setHour(hours12.toString().padStart(2, '0'));
-    setMinute(minutes.padStart(2, '0'));
-    setPeriod(period);
-  }
-}, [horoDetails.time_of_birth]);
+  }, [horoDetails.time_of_birth]);
   return (
     <div>
       <div className="bg-white p-5 mb-10 rounded shadow-md">
@@ -121,9 +121,8 @@ console.log(horoDetails.birthstar_name);
         >
           Horoscope Details
           <svg
-            className={`fill-current transform ${
-              isHoroscopeDetailsOpen ? 'rotate-180' : ''
-            }`}
+            className={`fill-current transform ${isHoroscopeDetailsOpen ? 'rotate-180' : ''
+              }`}
             width={'20'}
             viewBox="0 0 20 20"
             fill="none"
@@ -140,15 +139,17 @@ console.log(horoDetails.birthstar_name);
         {isHoroscopeDetailsOpen && (
           <div className="flex flex-col gap-5 pt-2">
             <div className="flex w-full flex-row gap-4">
-              {/* <div className="w-full">
-                <label
-                  htmlFor="timeOfBirth"
-                  className="block text-black font-semibold mb-1"
-                >
+
+              <div className="w-full">
+                <label htmlFor="timeOfBirth" className="block text-black font-semibold mb-1">
                   Time of Birth
                 </label>
                 <div className="flex items-center space-x-2">
-                  <select disabled className="px-3 py-2 border rounded border-gray-300 text-black font-medium focus:outline-none focus:border-blue-500">
+                  <select
+                    value={hour}
+                    disabled
+                    className="px-3 py-2 border rounded border-gray-300 text-black font-medium focus:outline-none focus:border-blue-500"
+                  >
                     {Array.from({ length: 12 }, (_, i) => i + 1).map((hour) => (
                       <option
                         key={hour}
@@ -159,7 +160,11 @@ console.log(horoDetails.birthstar_name);
                     ))}
                   </select>
                   <span>:</span>
-                  <select disabled className="px-3 py-2 border rounded border-gray-300 text-black font-medium focus:outline-none focus:border-blue-500">
+                  <select
+                    value={minute}
+                    disabled
+                    className="px-3 py-2 border rounded border-gray-300 text-black font-medium focus:outline-none focus:border-blue-500"
+                  >
                     {Array.from({ length: 60 }, (_, i) => i).map((minute) => (
                       <option
                         key={minute}
@@ -169,58 +174,16 @@ console.log(horoDetails.birthstar_name);
                       </option>
                     ))}
                   </select>
-                  <select disabled className="px-3 py-2 border rounded border-gray-300 text-black font-medium focus:outline-none focus:border-blue-500">
+                  <select
+                    value={period}
+                    disabled
+                    className="px-3 py-2 border rounded border-gray-300 text-black font-medium focus:outline-none focus:border-blue-500"
+                  >
                     <option value="AM">AM</option>
                     <option value="PM">PM</option>
                   </select>
                 </div>
-              </div> */}
-
-
-              <div className="w-full">
-  <label htmlFor="timeOfBirth" className="block text-black font-semibold mb-1">
-    Time of Birth
-  </label>
-  <div className="flex items-center space-x-2">
-    <select 
-      value={hour}
-      disabled 
-      className="px-3 py-2 border rounded border-gray-300 text-black font-medium focus:outline-none focus:border-blue-500"
-    >
-      {Array.from({ length: 12 }, (_, i) => i + 1).map((hour) => (
-        <option
-          key={hour}
-          value={hour.toString().padStart(2, '0')}
-        >
-          {hour}
-        </option>
-      ))}
-    </select>
-    <span>:</span>
-    <select 
-      value={minute}
-      disabled 
-      className="px-3 py-2 border rounded border-gray-300 text-black font-medium focus:outline-none focus:border-blue-500"
-    >
-      {Array.from({ length: 60 }, (_, i) => i).map((minute) => (
-        <option
-          key={minute}
-          value={minute.toString().padStart(2, '0')}
-        >
-          {minute.toString().padStart(2, '0')}
-        </option>
-      ))}
-    </select>
-    <select 
-      value={period}
-      disabled 
-      className="px-3 py-2 border rounded border-gray-300 text-black font-medium focus:outline-none focus:border-blue-500"
-    >
-      <option value="AM">AM</option>
-      <option value="PM">PM</option>
-    </select>
-  </div>
-</div>
+              </div>
 
               <div className="w-full">
                 <label
@@ -231,19 +194,19 @@ console.log(horoDetails.birthstar_name);
                 </label>
                 <input
                   value={horoDetails.place_of_birth}
-readOnly
+                  readOnly
                   id="place_of_birth"
                   type="text"
                   className="outline-none w-full px-4 text-black font-medium py-2 border border-black rounded"
                 />
               </div>
-               {/* Birth Star Selector */}
-               <div className="w-full">
+              {/* Birth Star Selector */}
+              <div className="w-full">
                 <label
                   htmlFor="birthstar_name"
                   className="block text-black font-semibold mb-1"
                 >
-                  Birth Star 
+                  Birth Star<span className="text-red-500">*</span>
                 </label>
                 <select
                   value={horoDetails.birthstar_name}
@@ -265,11 +228,11 @@ readOnly
             </div>
 
 
-         
+
 
             <div className="flex w-full flex-row gap-4">
-    
-            <div className="w-full">
+
+              <div className="w-full">
                 <label
                   htmlFor="birth_rasi_name"
                   className="block text-black font-semibold mb-1"
@@ -292,7 +255,7 @@ readOnly
                   ))}
                 </select>
               </div>
-            
+
 
 
 
@@ -301,7 +264,7 @@ readOnly
                   htmlFor="lagnam"
                   className="block text-black font-semibold mb-1"
                 >
-                  Lagnam  <span className="text-red-500">*</span>
+                  Lagnam  
                 </label>
                 <select
                   value={horoDetails.lagnam_didi}
@@ -325,7 +288,7 @@ readOnly
                   htmlFor="chevvai_dosaham"
                   className="block text-black font-semibold  mb-1"
                 >
-                  Chevvai Dhosam <span className="text-red-500">*</span>
+                  Chevvai Dhosam
                 </label>
                 <select
                   value={horoDetails.chevvai_dosaham}
@@ -350,7 +313,7 @@ readOnly
                   htmlFor="ragu_dosham"
                   className="block text-black font-semibold mb-1"
                 >
-                  Sarpa Dhosham <span className="text-red-500">*</span>
+                  Sarpa Dhosham 
                 </label>
                 <select
                   value={horoDetails.ragu_dosham}
@@ -373,7 +336,7 @@ readOnly
                   htmlFor="nalikai"
                   className="block text-black font-semibold mb-1"
                 >
-                  Naalikai <span className="text-red-500">*</span>
+                  Naalikai
                 </label>
                 <input
                   value={horoDetails.nalikai}
@@ -407,14 +370,14 @@ readOnly
             </div>
 
             <div className="flex w-full flex-row gap-4">
-             
+
 
               <div className="w-2/4 text-[#000000e6] font-medium">
                 <label htmlFor="dasaBalance" className="block mb-1">
                   Dasa Balance
                 </label>
                 <div className="flex space-x-2">
-                   <div className="w-full">
+                  <div className="w-full">
                     <select
                       value={day}
                       disabled
@@ -432,9 +395,9 @@ readOnly
                       ))}
                     </select>
                   </div>
-                 
-                
-                   <div className="w-full">
+
+
+                  <div className="w-full">
                     <select
                       value={month}
                       disabled
@@ -451,8 +414,8 @@ readOnly
                       ))}
                     </select>
                   </div>
-                 
-                    <div className="w-full">
+
+                  <div className="w-full">
                     <select
                       disabled
                       value={year}
@@ -472,24 +435,24 @@ readOnly
                     </select>
                   </div>
                 </div>
-                
+
               </div>
 
               <div className=" mb-1 w-full">
-              <label htmlFor="horoscopeHints" className="block text-black font-semibold">
-                Horoscope Hints
-              </label>
-              <input
-                disabled
-                value={horoDetails.horoscope_hints}
-                id="horoscopeHints"
-                type="text"
-                className="outline-none w-1/2 px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
-              />
-            </div>
+                <label htmlFor="horoscopeHints" className="block text-black font-semibold">
+                  Horoscope Hints
+                </label>
+                <input
+                  disabled
+                  value={horoDetails.horoscope_hints}
+                  id="horoscopeHints"
+                  type="text"
+                  className="outline-none w-1/2 px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                />
+              </div>
             </div>
 
-           
+
 
             {/* Rasi Grid and Amsam Grid components */}
             <div>

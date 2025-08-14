@@ -17,11 +17,11 @@ interface pageProps {
   gender: any;
 }
 
-interface HoroscopeDetails{
-  birth_rasi_name:string;
-  birthstar_name:string
+interface HoroscopeDetails {
+  birth_rasi_name: string;
+  birthstar_name: string
 }
-interface Gender{
+interface Gender {
   "Gender": string,
 }
 
@@ -33,21 +33,21 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
   profile,
   birthStarId,
 }) => {
-  const{register,setValue,watch}=useForm()
+  const { register, setValue, watch } = useForm()
   const [isSuggestedProfileOpen, setIsSugggestedProfileOpen] = useState(true);
   const [SuggestedProfileDetails, setSuggestedProfileDetails] = useState<any>({});
   console.log(SuggestedProfileDetails.pref_foreign_intrest)
   // const [suggestedProfiles,setSuggestedProfiles] = useState<any>({})
   const [annualIncome, setAnnualIncome] = useState<any>([]);
   const [eduPref, setEduPref] = useState<any>([]);
-   const [selectedFamilyStatus, setSelectedFamilyStatus] = useState('');
-   const [selectedPrefState, setSelectedPrefState] = useState('');
+  const [selectedFamilyStatus, setSelectedFamilyStatus] = useState('');
+  const [selectedPrefState, setSelectedPrefState] = useState('');
   const toggleSection5 = () => {
     setIsSugggestedProfileOpen(!isSuggestedProfileOpen);
   };
 
-  const [edit3,setEdit3]=useState<HoroscopeDetails>()
-  const [edit0,setEdit0]=useState<Gender>()
+  const [edit3, setEdit3] = useState<HoroscopeDetails>()
+  const [edit0, setEdit0] = useState<Gender>()
   const { data: profession } = useQuery({
     queryKey: ['profession'],
     queryFn: getProfession,
@@ -69,14 +69,14 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
       setEdit0(profile[0]);
       const prefFamilyStatus = profile[8].pref_family_status;
       const prefState = profile[8].pref_state;
-      
+
       setSelectedFamilyStatus(prefFamilyStatus);
       setSelectedPrefState(prefState);
       setValue("profileView.pref_family_status", prefFamilyStatus);
       setValue("profileView.pref_state", prefState);
     }
   }, [profile, setValue]);
-  
+
 
   useEffect(() => {
     if (profile && profile.length > 0) {
@@ -86,16 +86,16 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
   }, [profile]);
 
 
-const rasiId:string = edit3?.birth_rasi_name as string;
-const starId :string= edit3?.birthstar_name as string;
-const gender:string = edit0?.Gender as string;
+  const rasiId: string = edit3?.birth_rasi_name as string;
+  const starId: string = edit3?.birthstar_name as string;
+  const gender: string = edit0?.Gender as string;
 
 
-const { data: matchStars } = useQuery({
-  queryKey: ['matchStars'],
-  queryFn: () => fetchMatchPreferences(rasiId,starId,gender),
-  enabled: !!rasiId&& !!gender,
-});
+  const { data: matchStars } = useQuery({
+    queryKey: ['matchStars'],
+    queryFn: () => fetchMatchPreferences(rasiId, starId, gender),
+    enabled: !!rasiId && !!gender,
+  });
 
   const [selectedStarIds, setSelectedStarIds] = useState([]);
 
@@ -133,9 +133,9 @@ const { data: matchStars } = useQuery({
   const educationArray = SuggestedProfileDetails.pref_profession?.split(',');
   const professionArray = SuggestedProfileDetails.pref_education?.split(',');
   const martalStatusArray =
-  SuggestedProfileDetails.pref_marital_status?.split(',');
+    SuggestedProfileDetails.pref_marital_status?.split(',');
   const annualIncomeArray =
-  SuggestedProfileDetails.pref_anual_income?.split(',');
+    SuggestedProfileDetails.pref_anual_income?.split(',');
 
   useEffect(() => {
     if (SuggestedProfileDetails?.pref_porutham_star) {
@@ -156,34 +156,34 @@ const { data: matchStars } = useQuery({
 
 
   const { data: FamilyStatus } = useQuery({
-        queryKey: ['FamilyStatus'],
-        queryFn: fetchFamilyStatus,
-      });
+    queryKey: ['FamilyStatus'],
+    queryFn: fetchFamilyStatus,
+  });
 
-       const [stateOptions, setStateOptions] = useState<StatePref[]>([]); // ✅ Typed useState
-      console.log("bqw",stateOptions)
-       
-      
-        useEffect(() => {
-        const fetchStatePreferences = async () => {
-          try {
-            const response = await axios.post(
-              `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_State_Pref/`
-            );
-      
-            console.log("fffffffffffffffffffffff",response);
-            
-            const data: StatePref[] = Object.values(response.data);
-            setStateOptions(data);
-            console.log("Fetched state options:", data); // ✅ this is the right place
-          } catch (error) {
-            console.error("Failed to fetch state preferences:", error);
-          }
-        };
-      
-        fetchStatePreferences();
-      }, []);
-  
+  const [stateOptions, setStateOptions] = useState<StatePref[]>([]); // ✅ Typed useState
+  console.log("bqw", stateOptions)
+
+
+  useEffect(() => {
+    const fetchStatePreferences = async () => {
+      try {
+        const response = await axios.post(
+          `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_State_Pref/`
+        );
+
+        console.log("fffffffffffffffffffffff", response);
+
+        const data: StatePref[] = Object.values(response.data);
+        setStateOptions(data);
+        console.log("Fetched state options:", data); // ✅ this is the right place
+      } catch (error) {
+        console.error("Failed to fetch state preferences:", error);
+      }
+    };
+
+    fetchStatePreferences();
+  }, []);
+
 
   return (
     <div>
@@ -192,11 +192,10 @@ const { data: matchStars } = useQuery({
           className="text-red-600 flex row items-center justify-between text-xl font-semibold dark:text-white "
           onClick={toggleSection5}
         >
-         Suggested Profile
+          Suggested Profile
           <svg
-            className={`fill-current transform ${
-              isSuggestedProfileOpen ? 'rotate-180' : ''
-            }`}
+            className={`fill-current transform ${isSuggestedProfileOpen ? 'rotate-180' : ''
+              }`}
             width={'20'}
             viewBox="0 0 20 20"
             fill="none"
@@ -248,7 +247,7 @@ const { data: matchStars } = useQuery({
             <div className="flex w-full flex-row gap-4">
               <div className="w-full text-black font-semibold">
                 <label>
-                  Chevvai <span className="text-red-500">*</span>
+                  Chevvai
                 </label>
                 <select
                   disabled
@@ -262,7 +261,7 @@ const { data: matchStars } = useQuery({
               </div>
               <div className="w-full text-black font-semibold">
                 <label>
-                  Rahu / Ketu <span className="text-red-500">*</span>
+                  Rahu / Ketu
                 </label>
                 <select
                   disabled
@@ -276,11 +275,11 @@ const { data: matchStars } = useQuery({
               </div>
               <div className="w-full text-black font-semibold">
                 <label>
-                  Foreign Interest <span className="text-red-500">*</span>
+                  Foreign Interest
                 </label>
                 <select
                   disabled
-                   value={SuggestedProfileDetails.pref_foreign_intrest}
+                  value={SuggestedProfileDetails.pref_foreign_intrest}
                   // value={SuggestedProfileDetails.pref_foreign_intrest.charAt(0).toUpperCase() + SuggestedProfileDetails.pref_foreign_intrest.slice(1).toLowerCase()}
                   className="w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
                 >
@@ -293,66 +292,64 @@ const { data: matchStars } = useQuery({
             </div>
 
 
-            
-<div className="w-full py-1">
-  <label className="block text-black font-medium mb-1">
-    Family Status 
-  </label>
-  <div className="w-full inline-flex rounded max-md:flex-col">
-    {FamilyStatus?.map((status) => ( 
-      <label
-        key={status.family_status_id}
-        className={`w-full px-5 py-3 text-sm font-bold border border-black cursor-pointer ${
-          selectedFamilyStatus === status.family_status_id.toString()
-            ? 'bg-blue-500 text-white'
-            : ''
-        }`}
-        onClick={(e)=>e.preventDefault()}
-      >
-        <input
-          type="radio"
-          name="familyStatus"
-          value={status.family_status_id}
-          checked={selectedFamilyStatus === status.family_status_id.toString()}
-          onChange={() => setSelectedFamilyStatus(status.family_status_id.toString())}
-          className="hidden"
-          onClick={(e) => e.preventDefault()}
-        />
-        {status.family_status_name}
-      </label>
-    ))}
-  </div>
-</div>
 
-<div className="w-full py-1">
-  <label className="block text-black font-medium mb-1">
-    Preferred State 
-  </label>
-  <div className="w-full inline-flex rounded max-md:flex-col">
-    {stateOptions?.map((status) => ( 
-      <label
-        key={status.State_Pref_id}
-        className={`w-full px-5 py-3 text-sm font-bold border border-black cursor-pointer ${
-          selectedPrefState === status.State_Pref_id.toString()
-            ? 'bg-blue-500 text-white'
-            : ''
-        }`}
-        onClick={(e)=>e.preventDefault()}
-      >
-        <input
-          type="radio"
-          name="preferredState"
-          value={status.State_Pref_id}
-          checked={selectedPrefState === status.State_Pref_id.toString()}
-          onChange={() => setSelectedPrefState(status.State_Pref_id.toString())}
-          className="hidden"
-          onClick={(e) => e.preventDefault()}
-        />
-        {status.State_name}
-      </label>
-    ))}
-  </div>
-</div>
+            <div className="w-full py-1">
+              <label className="block text-black font-medium mb-1">
+                Family Status
+              </label>
+              <div className="w-full inline-flex rounded max-md:flex-col">
+                {FamilyStatus?.map((status) => (
+                  <label
+                    key={status.family_status_id}
+                    className={`w-full px-5 py-3 text-sm font-bold border border-black cursor-pointer ${selectedFamilyStatus === status.family_status_id.toString()
+                        ? 'bg-blue-500 text-white'
+                        : ''
+                      }`}
+                    onClick={(e) => e.preventDefault()}
+                  >
+                    <input
+                      type="radio"
+                      name="familyStatus"
+                      value={status.family_status_id}
+                      checked={selectedFamilyStatus === status.family_status_id.toString()}
+                      onChange={() => setSelectedFamilyStatus(status.family_status_id.toString())}
+                      className="hidden"
+                      onClick={(e) => e.preventDefault()}
+                    />
+                    {status.family_status_name}
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className="w-full py-1">
+              <label className="block text-black font-medium mb-1">
+                Preferred State
+              </label>
+              <div className="w-full inline-flex rounded max-md:flex-col">
+                {stateOptions?.map((status) => (
+                  <label
+                    key={status.State_Pref_id}
+                    className={`w-full px-5 py-3 text-sm font-bold border border-black cursor-pointer ${selectedPrefState === status.State_Pref_id.toString()
+                        ? 'bg-blue-500 text-white'
+                        : ''
+                      }`}
+                    onClick={(e) => e.preventDefault()}
+                  >
+                    <input
+                      type="radio"
+                      name="preferredState"
+                      value={status.State_Pref_id}
+                      checked={selectedPrefState === status.State_Pref_id.toString()}
+                      onChange={() => setSelectedPrefState(status.State_Pref_id.toString())}
+                      className="hidden"
+                      onClick={(e) => e.preventDefault()}
+                    />
+                    {status.State_name}
+                  </label>
+                ))}
+              </div>
+            </div>
 
             <div className="w-full">
               <h5 className="text-[18px] text-black font-semibold mb-2">
@@ -445,7 +442,7 @@ const { data: matchStars } = useQuery({
                     <input
                       type="checkbox"
                       id={`annualIncome-${option.income_id}`}
-                     value={option.income_id.toString()}
+                      value={option.income_id.toString()}
                       checked={annualIncomeArray?.includes(
                         option.income_id.toString(),
                       )}

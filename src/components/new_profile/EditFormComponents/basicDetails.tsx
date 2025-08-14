@@ -74,9 +74,9 @@ const BasicDetails: React.FC<formProps> = ({
   const selectedState = watch('BasicDetail.state') ?? '';
   const selectedDistrict = watch('BasicDetail.district') ?? '';
   const selectedCity = watch('BasicDetail.City');
-  const selectAlternateNumber =watch('BasicDetail.Alt_Mobile_Number')
-  const selectNumber =watch('BasicDetail.Mobile_no')
-  const selectWhatsAppNumber =watch('BasicDetail.WhatsAppNumber')
+  const selectAlternateNumber = watch('BasicDetail.Alt_Mobile_Number')
+  const selectNumber = watch('BasicDetail.Mobile_no')
+  const selectWhatsAppNumber = watch('BasicDetail.WhatsAppNumber')
 
 
   const [showCityTextInput, setShowCityTextInput] = useState(false);
@@ -86,20 +86,20 @@ const BasicDetails: React.FC<formProps> = ({
   const [isCityValid, setIsCityValid] = useState(false);
   const [maritalStatus, setMaritalStatus] = useState('');
 
-    const [heightOptions, setHeightOptions] = useState<HeightOption[]>([]);
-  
-    useEffect(() => {
-      const fetchHeight = async () => {
-        try {
-          const response = await axios.post(`${API_URL_Auth}/Get_Height/`);
-          const options = Object.values(response.data) as HeightOption[];
-          setHeightOptions(options);
-        } catch (error) {
-          console.error("Error fetching height options:", error);
-        }
-      };
-      fetchHeight();
-    }, []);
+  const [heightOptions, setHeightOptions] = useState<HeightOption[]>([]);
+
+  useEffect(() => {
+    const fetchHeight = async () => {
+      try {
+        const response = await axios.post(`${API_URL_Auth}/Get_Height/`);
+        const options = Object.values(response.data) as HeightOption[];
+        setHeightOptions(options);
+      } catch (error) {
+        console.error("Error fetching height options:", error);
+      }
+    };
+    fetchHeight();
+  }, []);
   const toggleSection2 = () => {
     setIsBasicDetailsOpen(!isBasicDetailsOpen);
   };
@@ -255,10 +255,10 @@ const BasicDetails: React.FC<formProps> = ({
       setValue('BasicDetail.country', EditData[0].Profile_country || '' || null);
       setValue('BasicDetail.state', EditData[0].Profile_state || '' || null);
       setValue('BasicDetail.district', EditData[0].Profile_district || '' || null);
-      
+
       setValue('BasicDetail.City', EditData[0].Profile_city || '' || null);
       setValue('BasicDetail.status', EditData[0].status || '' || null);
-       setValue('BasicDetail.Profile_height', EditData[0].Profile_height || '');
+      setValue('BasicDetail.Profile_height', EditData[0].Profile_height || '');
 
       const formattedWhatsupNumber = `${EditData[0].Profile_whatsapp}`
       setValue(
@@ -274,18 +274,6 @@ const BasicDetails: React.FC<formProps> = ({
       setGender(selectedGender);
     }
   }, [selectedGender]);
-  // function trigger(arg0: string) {
-  //   throw new Error('Function not implemented.');
-  // }
-
-  // function trigger(arg0: string) {
-  //   throw new Error('Function not implemented.');
-  // }
-
-  // function trigger(arg0: string) {
-  //   throw new Error('Function not implemented.');
-  // }
-
 
   useEffect(() => {
     if (City && selectedCity) {
@@ -296,16 +284,16 @@ const BasicDetails: React.FC<formProps> = ({
   }, [City, selectedCity]);
 
 
-useEffect(()=>{
-   setGetMaritalStatus(maritalStatus)
-},[maritalStatus])
+  useEffect(() => {
+    setGetMaritalStatus(maritalStatus)
+  }, [maritalStatus])
   return (
     <div className="bg-white p-5 mb-10 rounded shadow-md">
       <h4
         className="text-red-600 flex row items-center justify-between text-xl font-semibold  dark:text-white cursor-pointer  after-red-line::after"
         onClick={toggleSection2}
       >
-        Basic Details 
+        Basic Details
         <svg
           className={`fill-current transform ${isBasicDetailsOpen ? 'rotate-180' : ''
             }`}
@@ -342,8 +330,8 @@ useEffect(()=>{
 
             <div ref={MobileNoRef} className="w-full">
               <label className="block text-black font-semibold mb-1">
-                Mobile Number
-                 {/* <span className="text-red-500">*</span> */}
+                Mobile Number<span className='text-red-500'>*</span>
+                {/* <span className="text-red-500">*</span> */}
               </label>
               <Controller
                 name="BasicDetail.Mobile_no"
@@ -367,7 +355,7 @@ useEffect(()=>{
                   />
                 )}
               />
-              {!selectNumber&&errors?.BasicDetail?.Mobile_no && (
+              {!selectNumber && errors?.BasicDetail?.Mobile_no && (
                 <p className="text-red-600">
                   {errors.BasicDetail.Mobile_no.message?.toString()}
                 </p>
@@ -399,33 +387,6 @@ useEffect(()=>{
               )}
             </div>
           </div>
-
-
-
-
-          {/* <div className="w-full">
-      <label className="block text-black font-semibold mb-1">
-        Mobile Number
-      </label>
-      <Controller
-        name="BasicDetail.Mobile_no"
-        control={control}
-        render={({ field }) => (
-          <PhoneInput
-          preferredCountries={["in", "sg", "my", "ae", "us", "gb"]}
-            country={'in'}  // Set default country
-            value={field.value}  // Display value from form state
-            onChange={(value) => field.onChange(value)}  // Handle value change
-            inputProps={{
-              className: 'custom-input',
-            }}
-          />
-        )}
-      />
-    </div> */}
-
-
-
           <div className="flex w-full flex-row gap-4">
 
 
@@ -444,7 +405,7 @@ useEffect(()=>{
 
             <div ref={MobileNoRef} className="w-full">
               <label className="block text-black font-semibold mb-1">
-                Alternate Mobile Number 
+                Alternate Mobile Number
                 {/* <span className="text-red-500">*</span> */}
               </label>
               <Controller
@@ -469,89 +430,33 @@ useEffect(()=>{
                   />
                 )}
               />
-              {!selectAlternateNumber&&errors?.BasicDetail?.Alt_Mobile_Number && (
+              {!selectAlternateNumber && errors?.BasicDetail?.Alt_Mobile_Number && (
                 <p className="text-red-600">
                   {errors.BasicDetail.Alt_Mobile_Number.message?.toString()}
                 </p>
               )}
             </div>
-
-
-            {/* <label className="block text-black font-semibold mb-1">
-                Alternate Mobile Number
-              </label>
-              
-              <PhoneInput
-                 preferredCountries={["in", "sg", "my", "ae", "us", "gb"]}
-                inputProps={{
-                  autoFocus: true,
-                  autoFormat: true,
-                  className: 'custom-input',
-                }}
-                value={'BasicDetail.Alt_Mobile_Number'} 
-                country={'in'}
-                {...register('BasicDetail.Alt_Mobile_Number', {
-                  required: true,
-                })}
-                // Manually map the onChange to handle PhoneInput's custom format
-                onChange={(value, data, event, formattedValue) => {
-                  setValue('BasicDetail.Alt_Mobile_Number', value); // Use setValue from React Hook Form
-                }}
-                // Optionally, handle onBlur as needed
-                onBlur={(event) => {
-                  trigger('BasicDetail.Alt_Mobile_Number'); // Trigger validation on blur
-                }}
-              /> */}
-            {/* <Input
-                onKeyDown={(e) => {
-                  if (
-                    e.key !== 'Backspace' &&
-                    e.key !== 'ArrowLeft' &&
-                    e.key !== 'ArrowRight' &&
-                    !/[0-9]/.test(e.key)
-                  ) {
-                    e.preventDefault();
-                  }
-                }}
-                label={'Alternate Mobile Number'}
-                {...register('BasicDetail.Alt_Mobile_Number')}
-              /> */}
-{/* 
-            <div className="w-full">
-              <label className="block text-black font-semibold mb-1">
-                Status <span className="text-red-500">*</span>
-              </label>
-              <select
-                {...register('BasicDetail.status')}
-                className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
-              >
-                <option value="" className='text-[#000000e6] font-medium'>Select your Status</option>
-                {Status?.map((option: any) => (
-                  <option key={option.status_code} value={option.status_code} className='text-[#000000e6] font-medium'>
-                    {option.status_name}
-                  </option>
-                ))}
-              </select>
-              {errors?.BasicDetail?.status && (
-                <p className="text-red-600">Status is required</p>
-              )}
-            </div> */}
           </div>
 
           <div className="flex w-full flex-row gap-4">
-            <div className="w-full">
+
+            <div className="w-full relative">
+              {/* The star placed relative to the label position */}
+              <span className="absolute top-[2px] left-[95px] text-red-500">*</span>
               <Input
                 required
-                label={'Date of Birth'}
-                type={'date'}
+                label="Date of Birth"
+                type="date"
                 {...register('BasicDetail.dob')}
               />
+
               {errors?.BasicDetail?.dob && (
                 <p className="text-red-600">
                   {errors.BasicDetail.dob.message?.toString()}
                 </p>
               )}
             </div>
+
 
             <div className="w-full">
               <label className="block text-black font-semibold mb-1">
@@ -560,10 +465,10 @@ useEffect(()=>{
               </label>
               <select
                 {...register('BasicDetail.marital_status')}
-                 onChange={(e) => {
-    setMaritalStatus(e.target.value);
-    setValue('BasicDetail.marital_status', e.target.value);
-  }}
+                onChange={(e) => {
+                  setMaritalStatus(e.target.value);
+                  setValue('BasicDetail.marital_status', e.target.value);
+                }}
                 className="outline-none w-full px-4 py-2 border border-black rounded text-[#000000e6] font-medium"
               >
                 <option value="" className='text-[#000000e6] font-medium'>Select your Marital Status</option>
@@ -591,8 +496,8 @@ useEffect(()=>{
               />
               {errors?.BasicDetail?.address && (
                 <p className="text-red-600">
-                  {errors.BasicDetail.address.message?.toString()} 
-                
+                  {errors.BasicDetail.address.message?.toString()}
+
                 </p>
               )}
             </div>
@@ -605,7 +510,7 @@ useEffect(()=>{
           <div className="flex w-full flex-row gap-4">
             <div className="w-full">
               <label className="block text-black font-semibold mb-1">
-                Complexion   <span className="text-red-500">*</span>
+                Complexion
                 {/* <span className="text-red-500">*</span> */}
               </label>
               <select
@@ -632,7 +537,7 @@ useEffect(()=>{
             <div className="w-full">
               <label className="block text-black font-semibold mb-1">
                 Country
-                 {/* <span className="text-red-500">*</span> */}
+                {/* <span className="text-red-500">*</span> */}
               </label>
               <select
                 value={selectedCountry}
@@ -648,7 +553,7 @@ useEffect(()=>{
               </select>
               {errors?.BasicDetail?.country && (
                 <p className="text-red-600">
-                {errors.BasicDetail.country.message}
+                  {errors.BasicDetail.country.message}
                 </p>
               )}
             </div>
@@ -674,162 +579,14 @@ useEffect(()=>{
                 </select>
                 {errors?.BasicDetail?.state && (
                   <p className="text-red-600">
-                    {/* {errors.BasicDetail.state.message?.toString()} */}
-                    State is required
+                    {errors.BasicDetail.state.message?.toString()}
+                    {/* State is required */}
                   </p>
                 )}
               </div>
             )}
           </div>
           <div className="flex w-full flex-row gap-4">
-
-
-            {/* 
-{selectedCountry === '1' && (
-  <div className="flex w-full flex-row gap-4">
-  
-    <div className="w-full">
-      <label className="block text-black font-semibold mb-1">
-        District
-      </label>
-      {Number(selectedState) > 7 ? (
-        <>
-          <input
-            type="text"
-            {...register('BasicDetail.district')}
-            className="outline-none w-full px-4 py-2 border border-black rounded"
-            placeholder="Enter your District"
-          />
-        </>
-      ) : (
-        <select
-        value={selectedDistrict}
-          {...register('BasicDetail.district')}
-          className="outline-none w-full px-4 py-2 border border-black rounded"
-        >
-          <option value="" disabled>
-            Select your District
-          </option>
-          {District?.map((option: District) => (
-            <option key={option.disctict_id} value={option.disctict_id}>
-              {option.disctict_name}
-            </option>
-          ))}
-        </select>
-      )}
-       {errors?.BasicDetail?.district && (
-                  <p className="text-red-600">
-                    {errors.BasicDetail.district.message?.toString()}
-                  </p>
-                )}
-    </div>
-
-    
-  </div>
-)}
-         
-             {selectedCountry !== "1" ? (
-              <div className="w-full">
-                <div className="flex items-center gap-0">
-                  <label
-                    htmlFor="city"
-                    className="block mb-1 text-black font-semibold"
-                  >
-                    City<span className="text-red-500">*</span>
-                  </label>
-                  <div className="relative inline-block ml-2 group">
-                    <AiOutlineInfoCircle className="text-gray-500 cursor-pointer ml-2" />
-                  
-                     <div className="absolute hidden group-hover:flex flex-col bg-white border border-ashSecondary rounded shadow-md p-2 w-48 z-10">
-                                        <p className="text-sm text-black">
-                                          Select your city from the list. If your city is
-                                          not listed, select Others.
-                                        </p>
-                                      </div>
-                  </div>
-                </div>
-                <input
-                  type="text"
-                  value={selectedCity}
-                  className="outline-none w-full px-4 py-2 border border-black rounded"
-                  {...register('BasicDetail.City', { required: 'City is required' })}
-                  placeholder="Enter your city"
-                />
-                {errors?.BasicDetail?.City && (
-                  <p className="text-red-600">
-                    {errors.BasicDetail.City.message?.toString()}
-                  </p>
-                )}
-              </div>
-            ) : (
-              selectedCountry === '1' &&
-              selectedDistrict && (
-                <div className="w-full">
-                  <div className="flex items-center gap-0">
-                    <label
-                      htmlFor="city"
-                      className="block mb-1 text-black font-semibold"
-                    >
-                      City <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative inline-block ml-2 group">
-                      <AiOutlineInfoCircle className="text-gray-500 cursor-pointer ml-2" />
-                    
-                      <div className="absolute hidden group-hover:flex flex-col bg-white border border-ashSecondary rounded shadow-md p-2 w-48 z-10">
-                        <p className="text-sm text-black">
-                          Select your city from the list. If your city is not listed, select Others.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {!showCityTextInput ? (
-  <select
-    className="outline-none w-full px-4 py-2 border border-black rounded"
-    value={selectedCity}
-    {...register('BasicDetail.City', { required: 'City is required' })}
-    onChange={(e) => {
-      const value = e.target.value;
-      if (value === "Others") {
-        setShowCityTextInput(true);
-        setValue('BasicDetail.City', ""); // Reset the city value for text input
-      } else {
-        setShowCityTextInput(false);
-        setValue('BasicDetail.City', value); // Set the selected city value
-      }
-    }}
-  >
-    <option value="" disabled>
-      Select City
-    </option>
-    {City?.map((option: City) => (
-      <option key={option.city_id} value={option.city_name}>
-        {option.city_name}
-      </option>
-    ))}
-    <option value="Others">Others</option>
-  </select>
-) : (
-  <input
-    type="text"
-    className="outline-none w-full px-4 py-2 border border-black rounded"
-    {...register('BasicDetail.City', { required: 'City is required' })}
-    placeholder="Enter your city"
-    onBlur={(e) => setValue('BasicDetail.City', e.target.value)}
-  />
-)}
-{errors?.BasicDetail?.City && (
-  <p className="text-red-600">
-    {errors.BasicDetail.City.message?.toString()}
-  </p>
-)}
-                </div>
-              )
-            )} */}
-
-
-
-
 
             {selectedCountry === '1' && (
               <div className="flex w-full flex-row gap-4">
@@ -870,10 +627,10 @@ useEffect(()=>{
                       ))}
                     </select>
                   )}
-                  {!selectedDistrict&&errors?.BasicDetail?.district && (
+                  {!selectedDistrict && errors?.BasicDetail?.district && (
                     <p className="text-red-600">
-                      {/* {errors.BasicDetail.district.message?.toString()} */}
-                      District is required
+                      {errors.BasicDetail.district.message?.toString()}
+                      {/* District is required */}
                     </p>
                   )}
                 </div>
@@ -905,7 +662,7 @@ useEffect(()=>{
                           htmlFor="city"
                           className="block mb-1 text-black font-semibold "
                         >
-                          City 
+                          City
                           {/* <span className="text-red-500">*</span> */}
                         </label>
                         <div className="relative inline-block ml-2 group">
@@ -1012,7 +769,7 @@ useEffect(()=>{
                       )}
 
 
-                      {!selectedCity&&errors?.BasicDetail?.City && (
+                      {!selectedCity && errors?.BasicDetail?.City && (
                         <p className="text-red-600">
                           {/* {errors.BasicDetail.City.message?.toString()} */}
                           City is required
@@ -1028,7 +785,7 @@ useEffect(()=>{
             {Number(selectedCountry) > 1 ? (
               <div className="w-2/4">
                 <label className="block text-black font-semibold mb-1">
-                  City 
+                  City
                   {/* <span className="text-red-500">*</span> */}
                 </label>
                 <input
@@ -1117,8 +874,8 @@ useEffect(()=>{
               />
               {errors?.BasicDetail?.pincode && (
                 <p className="text-red-600">
-                   {errors.BasicDetail.pincode.message?.toString()} 
-                 
+                  {errors.BasicDetail.pincode.message?.toString()}
+
                 </p>
               )}
             </div>
@@ -1131,7 +888,7 @@ flex w-full flex-row gap-4"
 
             <div className="w-1/3">
               <label className="block text-black font-semibold mb-1">
-               Whatsapp Mobile Number
+                Whatsapp Mobile Number
               </label>
               <Controller
                 name="BasicDetail.WhatsAppNumber"
@@ -1148,7 +905,7 @@ flex w-full flex-row gap-4"
                   />
                 )}
               />
-               {!selectWhatsAppNumber&&errors?.BasicDetail?.WhatsAppNumber && (
+              {!selectWhatsAppNumber && errors?.BasicDetail?.WhatsAppNumber && (
                 <p className="text-red-600">
                   {errors.BasicDetail.WhatsAppNumber.message?.toString()}
                 </p>
@@ -1156,30 +913,30 @@ flex w-full flex-row gap-4"
             </div>
 
 
-               <div className="w-2/4">
-                  <label className='block text-black font-medium mb-1'>
-                  Profile Height
-                   {/* <span className="text-red-500">*</span> */}
-                </label>
-          <select
-            id="height"
-            className={`text-ash font-medium block w-full px-3 py-2 border-[1px] border-footer-text-gray rounded-[4px] focus-visible:outline-none`}
-            {...register("BasicDetail.Profile_height")}
-            value={watch("BasicDetail.Profile_height") || ""}
-          >
-            <option value=""  disabled>
-              Select Height
-            </option>
-            {heightOptions.map((option) => (
-              <option key={option.height_id} value={option.height_id}>
-                {option.height_description}
-              </option>
-            ))}
-          </select>
-            {errors?.BasicDetail?.Profile_height && (
+            <div className="w-2/4">
+              <label className='block text-black font-medium mb-1'>
+                Profile Height
+                {/* <span className="text-red-500">*</span> */}
+              </label>
+              <select
+                id="height"
+                className={`text-ash font-medium block w-full px-3 py-2 border-[1px] border-footer-text-gray rounded-[4px] focus-visible:outline-none`}
+                {...register("BasicDetail.Profile_height")}
+                value={watch("BasicDetail.Profile_height") || ""}
+              >
+                <option value="" disabled>
+                  Select Height
+                </option>
+                {heightOptions.map((option) => (
+                  <option key={option.height_id} value={option.height_id}>
+                    {option.height_description}
+                  </option>
+                ))}
+              </select>
+              {errors?.BasicDetail?.Profile_height && (
                 <p className="text-red-600">{errors.BasicDetail.Profile_height.message?.toString()}</p>
               )}
-        </div>
+            </div>
             {/* <div className=" w-2/4">
               <label className="block text-black font-semibold mb-1">
                 Whatsapp Number <span className="text-red-500">*</span>

@@ -13,7 +13,7 @@ interface formProps {
   EditData: any;
   isFamilyDetailsOpen: boolean;
   setIsFamilyDetailsOpen: Dispatch<SetStateAction<boolean>>;
-  getMaritalStatus:string;
+  getMaritalStatus: string;
   setChildrenn: Dispatch<SetStateAction<boolean>>;
 
 }
@@ -32,6 +32,15 @@ const FamilyDetails: React.FC<formProps> = ({
     setValue,
     formState: { errors },
   } = useFormContext<FamilyDetailsValues>();
+  const watchedValues = watch('FamilyDetails'); // Watch the entire FamilyDetails object
+  useEffect(() => {
+    // This will log the data to the console every time a field changes
+    console.log("Current FamilyDetails Data:", watchedValues);
+  }, [watchedValues]);
+
+  // Also, keep the error log to see what fails on submit
+  console.log("Validation Errors on Re-render:", errors.FamilyDetails);
+
   const buttonClass = (isSelected: boolean) =>
     isSelected ? 'bg-blue-500 text-white' : '';
   const physicallyChalanged = watch('FamilyDetails.physicallyChalanged');
@@ -65,35 +74,35 @@ const FamilyDetails: React.FC<formProps> = ({
   const [selectedFamilyType, setSelectedFamilyType] = useState('');
   const [selectedFamilyStatus, setSelectedFamilyStatus] = useState('');
   const [selectedFamilyValues, setSelectedFamilyValues] = useState('');
-   //const [weight,setWeight]=useState('')
+  //const [weight,setWeight]=useState('')
   const familyTypeRef = useRef<HTMLDivElement | null>(null);
-// const[childrenView,setChildrenView]=useState()
- 
-//  useEffect(()=>{
-//    if (EditData) {
-//      const maritalStatus =getMaritalStatus
-//  console.log('12mk',maritalStatus)
-//   const showChildrenField = maritalStatus && ['2', '3', '5'].includes(maritalStatus);
-// setChildrenView(showChildrenField)
-// }
-//  },[ EditData])
- //const setChildrenView = getMaritalStatus && ['2', '3', '5'].includes(getMaritalStatus);
+  // const[childrenView,setChildrenView]=useState()
+
+  //  useEffect(()=>{
+  //    if (EditData) {
+  //      const maritalStatus =getMaritalStatus
+  //  console.log('12mk',maritalStatus)
+  //   const showChildrenField = maritalStatus && ['2', '3', '5'].includes(maritalStatus);
+  // setChildrenView(showChildrenField)
+  // }
+  //  },[ EditData])
+  //const setChildrenView = getMaritalStatus && ['2', '3', '5'].includes(getMaritalStatus);
 
   const [maritalValues, setMaritalValues] = useState('');
-console.log("1lo",maritalValues);
+  console.log("1lo", maritalValues);
 
- useEffect(()=>{
-if(EditData){
-  const data = EditData[0].Profile_marital_status
-setMaritalValues(data)
-}
- },[EditData])
- const setChildrenView = maritalValues && [2, 3, 5].includes(Number(maritalValues));
- const adminSuyaGothram = watch('FamilyDetails.suya_gothram_admin');
+  useEffect(() => {
+    if (EditData) {
+      const data = EditData[0].Profile_marital_status
+      setMaritalValues(data)
+    }
+  }, [EditData])
+  const setChildrenView = maritalValues && [2, 3, 5].includes(Number(maritalValues));
+  const adminSuyaGothram = watch('FamilyDetails.suya_gothram_admin');
   const adminUncleGothram = watch('FamilyDetails.uncle_gothram_admin');
   useEffect(() => {
-  setChildrenn(Boolean(setChildrenView)); // Ensure we're passing a boolean
-}, [setChildrenView, setChildrenn]);
+    setChildrenn(Boolean(setChildrenView)); // Ensure we're passing a boolean
+  }, [setChildrenView, setChildrenn]);
   useEffect(() => {
     if (EditData) {
       setValue('FamilyDetails.fathername', EditData[1].father_name || '');
@@ -123,20 +132,41 @@ setMaritalValues(data)
       setValue('FamilyDetails.AncestorOrigin', EditData[1].ancestor_origin || '');
       setValue('FamilyDetails.AboutMyFamily', EditData[1].about_family || '');
       setValue('FamilyDetails.weight', EditData[1].weight?.toString() || '');
-            setValue('FamilyDetails.mother_alive', EditData[1].mother_alive || '');
+      setValue('FamilyDetails.mother_alive', EditData[1].mother_alive || '');
       setValue('FamilyDetails.father_alive', EditData[1].father_alive || '');
-   //   setValue('FamilyDetails.no_of_children',EditData[1].no_of_children || '')
-     if (setChildrenView) {
-      setValue('FamilyDetails.no_of_children', EditData[1].no_of_children || '');
-    } else {
-      // Clear the value when field shouldn't be shown
-      setValue('FamilyDetails.no_of_children', undefined, { shouldValidate: false });
-    }
-        setValue('FamilyDetails.suya_gothram_admin', EditData[1].suya_gothram_admin || '');
+      //   setValue('FamilyDetails.no_of_children',EditData[1].no_of_children || '')
+      // if (setChildrenView) {
+      //   setValue('FamilyDetails.no_of_children', EditData[1].no_of_children || 0) ;
+      // } else {
+      //   // Clear the value when field shouldn't be shown
+      //   setValue('FamilyDetails.no_of_children', undefined, { shouldValidate: false });
+      // }
+      setValue('FamilyDetails.suya_gothram_admin', EditData[1].suya_gothram_admin || '');
       setValue('FamilyDetails.uncle_gothram_admin', EditData[1].uncle_gothram_admin || '');
       setValue('FamilyDetails.no_of_children', EditData[1].no_of_children || '');
     }
   }, [EditData, setValue]);
+
+
+  useEffect(() => {
+    if (EditData) {
+      // ... other setValue calls
+
+      // CORRECTED LOGIC FOR no_of_children
+      if (setChildrenView) {
+        const initialValue = EditData[1].no_of_children;
+        // Use `??` to correctly handle `0` as a valid number.
+        // Set to `undefined` if the API provides null/undefined.
+        setValue('FamilyDetails.no_of_children', initialValue ?? undefined);
+      } else {
+        // This correctly clears the value when the field is hidden
+        setValue('FamilyDetails.no_of_children', undefined, { shouldValidate: false });
+      }
+
+      // REMOVE THE DUPLICATE/UNCONDITIONAL LINE THAT WAS HERE:
+      // setValue('FamilyDetails.no_of_children', EditData[1].no_of_children || '');
+    }
+  }, [EditData, setValue, setChildrenView]);
   // const onSubmit=(data:FamilyDetailsValues)=>{
   //   console.log("form submitting Data",data)
   // }
@@ -147,33 +177,33 @@ setMaritalValues(data)
 
 
   const options = SuyaGothram?.map((gothram) => ({
-  value: gothram.id,
-  label: gothram.sanketha_namam
-}));
-// const gothramOptions = SuyaGothram?.map((gothram) => ({
-//     value: gothram.id,
-//     label: gothram.sanketha_namam
-//   }));
-const gothramOptions = SuyaGothram?.map((gothram) => ({
-  value: String(gothram.id),  // Convert to string to match backend
-  label: gothram.sanketha_namam
-}));
+    value: gothram.id,
+    label: gothram.sanketha_namam
+  }));
+  // const gothramOptions = SuyaGothram?.map((gothram) => ({
+  //     value: gothram.id,
+  //     label: gothram.sanketha_namam
+  //   }));
+  const gothramOptions = SuyaGothram?.map((gothram) => ({
+    value: String(gothram.id),  // Convert to string to match backend
+    label: gothram.sanketha_namam
+  }));
 
-const handleAdminSuyaGothramChange = (selectedOption: any) => {
-  setValue('FamilyDetails.suya_gothram_admin', selectedOption?.value || '');
-};
+  const handleAdminSuyaGothramChange = (selectedOption: any) => {
+    setValue('FamilyDetails.suya_gothram_admin', selectedOption?.value || '');
+  };
 
-const handleAdminUncleGothramChange = (selectedOption: any) => {
-  setValue('FamilyDetails.uncle_gothram_admin', selectedOption?.value || '');
-};
+  const handleAdminUncleGothramChange = (selectedOption: any) => {
+    setValue('FamilyDetails.uncle_gothram_admin', selectedOption?.value || '');
+  };
 
-const selectedAdminSuyaGothram = gothramOptions?.find(
-  option => option.value === adminSuyaGothram
-);
+  const selectedAdminSuyaGothram = gothramOptions?.find(
+    option => option.value === adminSuyaGothram
+  );
 
-const selectedAdminUncleGothram = gothramOptions?.find(
-  option => option.value === adminUncleGothram
-);
+  const selectedAdminUncleGothram = gothramOptions?.find(
+    option => option.value === adminUncleGothram
+  );
   return (
     <div>
       <div className="bg-white p-5 mb-10 rounded shadow-md ">
@@ -208,17 +238,20 @@ const selectedAdminUncleGothram = gothramOptions?.find(
                   label={'Father name'}
                   showAsterisk={true}
                 />
-                 {errors?.FamilyDetails?.fathername && (
+                {errors?.FamilyDetails?.fathername && (
                   <p className="text-red-600">
                     {errors.FamilyDetails.fathername.message}
                   </p>
-                )} 
+                )}
               </div>
               <div className="w-full">
+                <label className="block mb-1 font-bold text-black">
+                  Father Occupation <span className="text-red-500">*</span>
+                </label>
                 <Input
                   required
                   {...register('FamilyDetails.fatherOccupation')}
-                  label={'Father Occupation'}
+                  label={''}
                 />
                 {errors?.FamilyDetails?.fatherOccupation && (
                   <p className="text-red-600">
@@ -262,11 +295,11 @@ const selectedAdminUncleGothram = gothramOptions?.find(
                 {/* {errors?.FamilyDetails?.FamilyType && (
                     <p className="text-red-600">Family Name is required</p>
                   )} */}
-                  {errors?.FamilyDetails?.FamilyName && (
-                    <p className="text-red-600">
-                      {errors.FamilyDetails.FamilyName.message}
-                    </p>
-                  )}
+                {errors?.FamilyDetails?.FamilyName && (
+                  <p className="text-red-600">
+                    {errors.FamilyDetails.FamilyName.message}
+                  </p>
+                )}
               </div>
               <div className="w-full">
                 <Input
@@ -306,11 +339,11 @@ const selectedAdminUncleGothram = gothramOptions?.find(
                   {...register('FamilyDetails.bloodGroup')}
                   className="outline-none w-full px-4 py-2 border border-black rounded text-[#000000e6] font-medium"
                 >
-                  <option value="" disabled selected> 
+                  <option value="" disabled selected>
                     -- Select Blood Group --
                   </option>
                   {bloodGroups.map((group) => (
-                    <option key={group.type} value={group.abbreviation}  className='text-[#000000e6] font-medium'>
+                    <option key={group.type} value={group.abbreviation} className='text-[#000000e6] font-medium'>
                       {group.abbreviation}
                     </option>
                   ))}
@@ -321,116 +354,126 @@ const selectedAdminUncleGothram = gothramOptions?.find(
                   </p>
                 )}
               </div>
-              {/* <div className="w-full">
-                <Input
-                  required
-                  {...register('FamilyDetails.UncleGothram')}
-                  label={'Uncle Gothram'}
-                  type={'text'}
-                />
-              </div> */}
 
 
-                {setChildrenView && (
-              <div className='w-full'>
-                <label className="block mb-1 text-base text-black font-medium ">
-                  Number of Children
-                </label>
-                <div className="relative">
-                  <select
-                    id="no_of_children"
-                    className="outline-none w-full text-placeHolderColor px-3 py-2.5 text-sm border border-ashBorder rounded appearance-none"
-                   // {...register("FamilyDetails.no_of_children")}
-value={NoOfChildren ?? undefined}
-                        {...register("FamilyDetails.no_of_children", {
-          valueAsNumber: true, // Convert to number automatically
-          setValueAs: (value) => value === "" ? undefined : Number(value),
-        })}
-          //defaultValue={EditData?.[1]?.no_of_children || ""}
-                  >
-                    <option value="" disabled selected>Select Number of Children</option>
-                    {[0, 1, 2, 3, 4, 5].map((num) => (
-                      <option key={num} value={num}>
-                        {num}
-                      </option>
-                    ))}
-                  </select>
-                  <IoMdArrowDropdown
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none"
-                    size={20}
-                  />
+              {setChildrenView && (
+                <div className='w-full'>
+                  <label className="block mb-1 text-base text-black font-medium ">
+                    Number of Children
+                  </label>
+                  <div className="relative">
+                    {/* <select
+                      id="no_of_children"
+                      className="outline-none w-full text-placeHolderColor px-3 py-2.5 text-sm border border-ashBorder rounded appearance-none"
+                      // {...register("FamilyDetails.no_of_children")}
+                      value={NoOfChildren ?? undefined}
+                      {...register("FamilyDetails.no_of_children", {
+                        valueAsNumber: true, // Convert to number automatically
+                        setValueAs: (value) => value === "" ? undefined : Number(value),
+                      })}
+                    //defaultValue={EditData?.[1]?.no_of_children || ""}
+                    >
+                      <option value="" disabled selected>Select Number of Children</option>
+                      {[0, 1, 2, 3, 4, 5].map((num) => (
+                        <option key={num} value={num}>
+                          {num}
+                        </option>
+                      ))}
+                    </select> */}
+
+
+
+                    <select
+                      id="no_of_children"
+                      className="outline-none w-full text-placeHolderColor px-3 py-2.5 text-sm border border-ashBorder rounded appearance-none"
+                      // Just use valueAsNumber to handle the type conversion automatically
+                      {...register("FamilyDetails.no_of_children", {
+                        valueAsNumber: true,
+                      })}
+                    >
+                      <option value="">Select Number of Children</option> {/* Use empty string value for the placeholder */}
+                      {[0, 1, 2, 3, 4, 5].map((num) => (
+                        <option key={num} value={num}>
+                          {num}
+                        </option>
+                      ))}
+                    </select>
+                    <IoMdArrowDropdown
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none"
+                      size={20}
+                    />
+                  </div>
                 </div>
-              </div>
-            )} 
-              
+              )}
+
 
 
 
             </div>
 
-           
-<div className="flex w-full flex-row gap-4">
+
+            <div className="flex w-full flex-row gap-4">
 
 
-    <div className="w-full py-1">
-                  <label className="block text-black font-semibold mb-1">
-                    Father Alive{' '}
+              <div className="w-full py-1">
+                <label className="block text-black font-semibold mb-1">
+                  Father Alive{' '}
 
-                  </label>
+                </label>
 
-                  <input
-                    {...register('FamilyDetails.father_alive')}
-                    type="radio"
-                    value="yes"
-                    id='aliveYes'
-                  />
+                <input
+                  {...register('FamilyDetails.father_alive')}
+                  type="radio"
+                  value="yes"
+                  id='aliveYes'
+                />
 
-                  <label className="text-black px-4 font-medium" htmlFor='aliveYes'>Yes</label>
+                <label className="text-black px-4 font-medium" htmlFor='aliveYes'>Yes</label>
 
-                  <input
-                    {...register('FamilyDetails.father_alive')}
-                    type="radio"
-                    value="no"
-                    id='aliveNo'
-                  />
-                  <label className="text-black px-4 font-medium" htmlFor='aliveNo'>No</label>
-                  {errors?.FamilyDetails?.father_alive && (
-                    <p className="text-red-600">
-                      {errors.FamilyDetails.father_alive.message}
-                    </p>
-                  )}
-                </div>
+                <input
+                  {...register('FamilyDetails.father_alive')}
+                  type="radio"
+                  value="no"
+                  id='aliveNo'
+                />
+                <label className="text-black px-4 font-medium" htmlFor='aliveNo'>No</label>
+                {errors?.FamilyDetails?.father_alive && (
+                  <p className="text-red-600">
+                    {errors.FamilyDetails.father_alive.message}
+                  </p>
+                )}
+              </div>
 
-                  <div className="w-full py-1">
-                  <label className="block text-black font-semibold mb-1">
-                    Mother Alive{' '}
+              <div className="w-full py-1">
+                <label className="block text-black font-semibold mb-1">
+                  Mother Alive{' '}
 
-                  </label>
+                </label>
 
-                  <input
-                    {...register('FamilyDetails.mother_alive')}
-                    type="radio"
-                    value="yes"
-                    id='mother_aliveYes'
-                  />
+                <input
+                  {...register('FamilyDetails.mother_alive')}
+                  type="radio"
+                  value="yes"
+                  id='mother_aliveYes'
+                />
 
-                  <label className="text-black px-4 font-medium" htmlFor='mother_aliveYes'>Yes</label>
+                <label className="text-black px-4 font-medium" htmlFor='mother_aliveYes'>Yes</label>
 
-                  <input
-                    {...register('FamilyDetails.mother_alive')}
-                    type="radio"
-                    value="no"
-                     id='mother_aliveNo'
-                  />
-                  <label className="text-black px-4 font-medium" htmlFor='mother_aliveNo'>No</label>
-                  {errors?.FamilyDetails?.mother_alive && (
-                    <p className="text-red-600">
-                      {errors.FamilyDetails.mother_alive.message}
-                    </p>
-                  )}
-                </div>
-</div>
-           
+                <input
+                  {...register('FamilyDetails.mother_alive')}
+                  type="radio"
+                  value="no"
+                  id='mother_aliveNo'
+                />
+                <label className="text-black px-4 font-medium" htmlFor='mother_aliveNo'>No</label>
+                {errors?.FamilyDetails?.mother_alive && (
+                  <p className="text-red-600">
+                    {errors.FamilyDetails.mother_alive.message}
+                  </p>
+                )}
+              </div>
+            </div>
+
 
 
             <div>
@@ -537,16 +580,15 @@ value={NoOfChildren ?? undefined}
               <div className="mt-3 flex items-center space-x-48">
                 <div>
                   <h1 className="block text-black font-semibold mb-1">
-                    Brother <span className="text-red-500">*</span>
+                    Brother
                   </h1>
                   <div className="flex flex-col">
                     <div className="inline-flex rounded">
                       {[0, 1, 2, 3, 4, 5].map((num) => (
                         <label
                           key={num}
-                          className={`px-5 py-3 text-sm font-bold text-black border border-black text-center cursor-pointer ${
-                            selectedBrother === num.toString() ? 'bg-blue-500 text-white' : ''
-                          }`}
+                          className={`px-5 py-3 text-sm font-bold text-black border border-black text-center cursor-pointer ${selectedBrother === num.toString() ? 'bg-blue-500 text-white' : ''
+                            }`}
                         >
                           <input
                             value={num}
@@ -575,16 +617,15 @@ value={NoOfChildren ?? undefined}
                 {selectedBrother !== '0' && Number(selectedBrother) > 0 && (
                   <div>
                     <h1 className="mb-3 text-black font-bold">
-                      Married <span className="text-red-500">*</span>
+                      Married
                     </h1>
                     <div className="flex flex-col">
                       <div className="inline-flex rounded">
                         {[...Array(Math.min(Number(selectedBrother) + 1, 6)).keys()].map((num) => (
                           <label
                             key={num}
-                            className={`px-10 py-3 text-sm font-bold text-black border border-black cursor-pointer ${
-                              marriedBrother === num.toString() ? 'bg-blue-500 text-white' : ''
-                            }`}
+                            className={`px-10 py-3 text-sm font-bold text-black border border-black cursor-pointer ${marriedBrother === num.toString() ? 'bg-blue-500 text-white' : ''
+                              }`}
                           >
                             <input
                               value={num}
@@ -597,18 +638,18 @@ value={NoOfChildren ?? undefined}
                         ))}
                       </div>
                     </div>
-                    {errors?.FamilyDetails?.marriedBrother && (
+                    {/* {errors?.FamilyDetails?.marriedBrother && (
                       <p className="text-red-600">
                         Please select count of married brothers
                       </p>
-                    )}
+                    )} */}
                   </div>
                 )}
               </div>
               <div className="mt-3 flex items-center space-x-48">
                 <div>
                   <h1 className="block text-black font-semibold mb-1">
-                    Sister <span className="text-red-500">*</span>
+                    Sister
                   </h1>
                   <div className="flex flex-col">
                     <div className="inline-flex rounded">
@@ -645,16 +686,15 @@ cursor-pointer  ${selectedSister === num.toString() ? 'bg-blue-500 text-white' :
                 {selectedSister !== '0' && Number(selectedSister) > 0 && (
                   <div>
                     <h1 className="mb-3 text-black font-semibold">
-                      Married <span className="text-red-500">*</span>
+                      Married
                     </h1>
                     <div className="flex flex-col">
                       <div className="inline-flex rounded">
                         {[...Array(Math.min(Number(selectedSister) + 1, 6)).keys()].map((num) => (
                           <label
                             key={num}
-                            className={`px-10 py-3 text-sm text-black font-bold border border-black cursor-pointer ${
-                              marriedSisters === num.toString() ? 'bg-blue-500 text-white' : ''
-                            }`}
+                            className={`px-10 py-3 text-sm text-black font-bold border border-black cursor-pointer ${marriedSisters === num.toString() ? 'bg-blue-500 text-white' : ''
+                              }`}
                           >
                             <input
                               value={num}
@@ -781,56 +821,24 @@ cursor-pointer  ${selectedSister === num.toString() ? 'bg-blue-500 text-white' :
             </div>
             <div className="flex w-full flex-row gap-4">
 
-  <div className="w-full">
+              <div className="w-full">
                 <Input
                   {...register('FamilyDetails.UncleGothram')}
                   label={'Uncle Gothram'}
                   type={'text'}
                 />
                 {errors?.FamilyDetails?.UncleGothram && (
-                    <p className="text-red-600">
-                      {errors.FamilyDetails.UncleGothram.message}
-                    </p>
-                  )}
+                  <p className="text-red-600">
+                    {errors.FamilyDetails.UncleGothram.message}
+                  </p>
+                )}
               </div>
 
-
-              {/* <div className="w-full">
-                <label className="block text-black font-medium mb-1">
-                  Property Worth
-                </label>
-                <select
-                  {...register('FamilyDetails.PropertyWorth')}
-                  className="outline-none w-full px-4 py-2 border border-black rounded"
-                >
-                  <option value="">Select property worth</option>
-                  {propertyworth?.map((property: any) => (
-                    <option
-                      key={property.property_id}
-                      value={property.property_id}
-                    >
-                      {property.property_description}
-                    </option>
-                  ))}
-                </select>
-              </div> */}
-
-               <div className='w-full mt-1'>
+              <div className='w-full mt-1'>
                 <label className='block text-black font-semibold '>
                   Uncle Gothram (Admin)
                 </label>
-                {/* <select className='outline-none w-full border text-[#000000e6] font-medium border-black rounded px-4 py-2'>
-                  {SuyaGothram?.map((option) => (
-                    <option key={option.id} value={option.id} className='text-[#000000e6] font-medium'>{option.sanketha_namam}</option>
-                  ))}
-
-                </select> */}
-                 {/* <Select
-  options={options}
-  className="w-full text-sm border border-black text-black font-medium rounded "
-  placeholder="Select Uncle Gothram"
-/> */}
- <Select
+                <Select
                   options={gothramOptions}
                   value={selectedAdminUncleGothram}
                   onChange={handleAdminUncleGothramChange}
@@ -839,37 +847,25 @@ cursor-pointer  ${selectedSister === num.toString() ? 'bg-blue-500 text-white' :
                   isClearable
                 />
               </div>
-             
+
               <div className="w-full">
                 <Input
                   {...register('FamilyDetails.SuyaGothram')}
                   label={'Suya Gothram'}
                   showAsterisk={true}
                 />
-                 {errors?.FamilyDetails?.SuyaGothram && (
-                    <p className="text-red-600">
-                      {errors.FamilyDetails.SuyaGothram.message}
-                    </p>
-                  )}
+                {errors?.FamilyDetails?.SuyaGothram && (
+                  <p className="text-red-600">
+                    {errors.FamilyDetails.SuyaGothram.message}
+                  </p>
+                )}
               </div>
               <div className='w-full mt-1'>
                 <label className='block text-black font-semibold '>
                   Suya Gothram (Admin)
                 </label>
-                {/* <select className='outline-none w-full border text-[#000000e6] font-medium border-black rounded px-4 py-2'>
-                  {SuyaGothram?.map((option) => (
-                    <option key={option.id} value={option.id} className='text-[#000000e6] font-medium'>{option.sanketha_namam}</option>
-                  ))}
 
-                </select> */}
-
-                 {/* <Select
-  options={options}
-  className="w-full text-sm border border-black text-black font-medium rounded "
-  placeholder="Select Suya Gothram"
-/> */}
-
- <Select
+                <Select
                   options={gothramOptions}
                   value={selectedAdminSuyaGothram}
                   onChange={handleAdminSuyaGothramChange}
@@ -878,12 +874,12 @@ cursor-pointer  ${selectedSister === num.toString() ? 'bg-blue-500 text-white' :
                   isClearable
                 />
               </div>
-            
+
             </div>
             <div className="flex w-full flex-row gap-4">
 
-                <div className="w-full">
-                 <Input
+              <div className="w-full">
+                <Input
                   onKeyDown={(e) => {
                     if (
                       e.key !== 'Backspace' &&
@@ -897,35 +893,35 @@ cursor-pointer  ${selectedSister === num.toString() ? 'bg-blue-500 text-white' :
                   }}
 
 
-    {...register('FamilyDetails.weight', {
-      setValueAs: (value) => (value === '' ? undefined : value) ,
-      
-    })}
-                  
+                  {...register('FamilyDetails.weight', {
+                    setValueAs: (value) => (value === '' ? undefined : value),
+
+                  })}
+
                   placeholder="Kg"
                   label={'weight'}
                   type={'text'}
-                 // name="weight"
-                /> 
+                // name="weight"
+                />
 
 
               </div>
-              
-             <div className="w-full">
+
+              <div className="w-full">
                 <label className="block text-black font-semibold mb-1">
                   Eye wear
                 </label>
                 <select
-  {...register('FamilyDetails.EyeWear')}
-  // defaultValue="Select Eye Wear" // very important to show placeholder
-  className="outline-none w-full px-4 py-2 border border-black text-[#000000e6] font-medium rounded"
->
-  <option value="">
-    -- Select Eye Wear --
-  </option>
-  <option value="Yes">Yes</option>
-  <option value="No">No</option>
-</select>
+                  {...register('FamilyDetails.EyeWear')}
+                  // defaultValue="Select Eye Wear" // very important to show placeholder
+                  className="outline-none w-full px-4 py-2 border border-black text-[#000000e6] font-medium rounded"
+                >
+                  <option value="">
+                    -- Select Eye Wear --
+                  </option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
 
                 {errors?.FamilyDetails?.EyeWear && (
                   <p className="text-red-600">
@@ -939,7 +935,7 @@ cursor-pointer  ${selectedSister === num.toString() ? 'bg-blue-500 text-white' :
                   label={'Ancestor Origin'}
                   type={'text'}
                 />
-                
+
               </div>
 
               <div className="w-full ">
@@ -951,10 +947,10 @@ cursor-pointer  ${selectedSister === num.toString() ? 'bg-blue-500 text-white' :
                   {...register('FamilyDetails.AboutMyFamily')}
                 ></textarea>
                 {errors?.FamilyDetails?.AboutMyFamily && (
-                    <p className="text-red-600">
-                      {errors.FamilyDetails.AboutMyFamily.message}
-                    </p>
-                  )}
+                  <p className="text-red-600">
+                    {errors.FamilyDetails.AboutMyFamily.message}
+                  </p>
+                )}
               </div>
 
             </div>

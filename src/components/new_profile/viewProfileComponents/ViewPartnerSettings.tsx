@@ -17,11 +17,11 @@ interface pageProps {
   gender: any;
 }
 
-interface HoroscopeDetails{
-  birth_rasi_name:string;
-  birthstar_name:string
+interface HoroscopeDetails {
+  birth_rasi_name: string;
+  birthstar_name: string
 }
-interface Gender{
+interface Gender {
   "Gender": string,
 }
 
@@ -32,17 +32,17 @@ import { useForm } from 'react-hook-form';
 const ViewPartnerSettings: React.FC<pageProps> = ({
   profile,
   birthStarId,
-  
+
 }) => {
-   const{register,setValue,watch}=useForm()
+  const { register, setValue, watch } = useForm()
   const [isPartnerPreferenceOpen, setIsPartnerPreferenceOpen] = useState(true);
   const [partnerSettingsDetails, setPartnerSettingDetails] = useState<any>({});
-   const [selectedPrefState, setSelectedPrefState] = useState('');
-   const [selectedFamilyStatus, setSelectedFamilyStatus] = useState('');
+  const [selectedPrefState, setSelectedPrefState] = useState('');
+  const [selectedFamilyStatus, setSelectedFamilyStatus] = useState('');
   const [annualIncome, setAnnualIncome] = useState<any>([]);
   const [eduPref, setEduPref] = useState<any>([]);
-  const [edit3,setEdit3]=useState<HoroscopeDetails>()
-  const [edit0,setEdit0]=useState<Gender>()
+  const [edit3, setEdit3] = useState<HoroscopeDetails>()
+  const [edit0, setEdit0] = useState<Gender>()
   const toggleSection5 = () => {
     setIsPartnerPreferenceOpen(!isPartnerPreferenceOpen);
   };
@@ -67,18 +67,18 @@ const ViewPartnerSettings: React.FC<pageProps> = ({
   // });
 
 
-  
-const rasiId:string = edit3?.birth_rasi_name as string;
-const starId :string= edit3?.birthstar_name as string;
-const gender:string = edit0?.Gender as string;
+
+  const rasiId: string = edit3?.birth_rasi_name as string;
+  const starId: string = edit3?.birthstar_name as string;
+  const gender: string = edit0?.Gender as string;
 
   const { data: matchStars } = useQuery({
     queryKey: ['matchStars'],
-    queryFn: () => fetchMatchPreferences(rasiId,starId,gender),
-    enabled: !!rasiId&& !!gender,
+    queryFn: () => fetchMatchPreferences(rasiId, starId, gender),
+    enabled: !!rasiId && !!gender,
   });
 
-  
+
   // useEffect(() => {
   //   if (profile && profile.length > 0) {
   //     setEdit3(profile[3]);
@@ -92,21 +92,21 @@ const gender:string = edit0?.Gender as string;
   // }, [profile]);
 
 
- 
-// Modify your useEffect to set the initial values
-useEffect(() => {
-  if (profile && profile.length > 0) {
-    setEdit3(profile[3]);
-    setEdit0(profile[0]);
-    const prefFamilyStatus = profile[4].pref_family_status;
-    const prefState = profile[4].pref_state;
-    
-    setSelectedFamilyStatus(prefFamilyStatus);
-    setSelectedPrefState(prefState);
-    setValue("profileView.pref_family_status", prefFamilyStatus);
-    setValue("profileView.pref_state", prefState);
-  }
-}, [profile, setValue]);
+
+  // Modify your useEffect to set the initial values
+  useEffect(() => {
+    if (profile && profile.length > 0) {
+      setEdit3(profile[3]);
+      setEdit0(profile[0]);
+      const prefFamilyStatus = profile[4].pref_family_status;
+      const prefState = profile[4].pref_state;
+
+      setSelectedFamilyStatus(prefFamilyStatus);
+      setSelectedPrefState(prefState);
+      setValue("profileView.pref_family_status", prefFamilyStatus);
+      setValue("profileView.pref_state", prefState);
+    }
+  }, [profile, setValue]);
 
 
   const [selectedStarIds, setSelectedStarIds] = useState([]);
@@ -160,35 +160,35 @@ useEffect(() => {
   }, [partnerSettingsDetails]);
 
 
-     const { data: FamilyStatus } = useQuery({
-        queryKey: ['FamilyStatus'],
-        queryFn: fetchFamilyStatus,
-      });
-     
+  const { data: FamilyStatus } = useQuery({
+    queryKey: ['FamilyStatus'],
+    queryFn: fetchFamilyStatus,
+  });
 
-        const [stateOptions, setStateOptions] = useState<StatePref[]>([]); // ✅ Typed useState
-    console.log("bqw",stateOptions)
-     
-    
-      useEffect(() => {
-      const fetchStatePreferences = async () => {
-        try {
-          const response = await axios.post(
-            `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_State_Pref/`
-          );
-    
-          console.log("fffffffffffffffffffffff",response);
-          
-          const data: StatePref[] = Object.values(response.data);
-          setStateOptions(data);
-          console.log("Fetched state options:", data); // ✅ this is the right place
-        } catch (error) {
-          console.error("Failed to fetch state preferences:", error);
-        }
-      };
-    
-      fetchStatePreferences();
-    }, []);
+
+  const [stateOptions, setStateOptions] = useState<StatePref[]>([]); // ✅ Typed useState
+  console.log("bqw", stateOptions)
+
+
+  useEffect(() => {
+    const fetchStatePreferences = async () => {
+      try {
+        const response = await axios.post(
+          `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_State_Pref/`
+        );
+
+        console.log("fffffffffffffffffffffff", response);
+
+        const data: StatePref[] = Object.values(response.data);
+        setStateOptions(data);
+        console.log("Fetched state options:", data); // ✅ this is the right place
+      } catch (error) {
+        console.error("Failed to fetch state preferences:", error);
+      }
+    };
+
+    fetchStatePreferences();
+  }, []);
 
   return (
     <div>
@@ -199,9 +199,8 @@ useEffect(() => {
         >
           Partner Preference
           <svg
-            className={`fill-current transform ${
-              isPartnerPreferenceOpen ? 'rotate-180' : ''
-            }`}
+            className={`fill-current transform ${isPartnerPreferenceOpen ? 'rotate-180' : ''
+              }`}
             width={'20'}
             viewBox="0 0 20 20"
             fill="none"
@@ -253,7 +252,7 @@ useEffect(() => {
             <div className="flex w-full text-black font-semibold flex-row gap-4">
               <div className="w-full text-black font-semibold">
                 <label>
-                  Chevvai <span className="text-red-500">*</span>
+                  Chevvai
                 </label>
                 <select
                   disabled
@@ -267,7 +266,7 @@ useEffect(() => {
               </div>
               <div className="w-full text-black font-semibold">
                 <label>
-                  Rahu / Ketu <span className="text-red-500">*</span>
+                  Rahu / Ketu
                 </label>
                 <select
                   disabled
@@ -281,7 +280,7 @@ useEffect(() => {
               </div>
               <div className="w-full text-black font-semibold">
                 <label>
-                  Foreign Interest <span className="text-red-500">*</span>
+                  Foreign Interest
                 </label>
                 <select
                   disabled
@@ -296,68 +295,66 @@ useEffect(() => {
               </div>
             </div>
 
-<div className="w-full py-1">
-  <label className="block text-black font-medium mb-1">
-    Family Status 
-  </label>
-  <div className="w-full inline-flex rounded max-md:flex-col">
-    {FamilyStatus?.map((status) => ( 
-      <label
-        key={status.family_status_id}
-        className={`w-full px-5 py-3 text-sm font-bold border border-black cursor-pointer ${
-          selectedFamilyStatus === status.family_status_id.toString()
-            ? 'bg-blue-500 text-white'
-            : ''
-        }`}
-        onClick={(e)=>e.preventDefault()}
-      >
-        <input
-          type="radio"
-          name="familyStatus"
-          value={status.family_status_id}
-          checked={selectedFamilyStatus === status.family_status_id.toString()}
-          onChange={() => setSelectedFamilyStatus(status.family_status_id.toString())}
-          className="hidden"
-          onClick={(e) => e.preventDefault()}
-        />
-        {status.family_status_name}
-      </label>
-    ))}
-  </div>
-</div>
+            <div className="w-full py-1">
+              <label className="block text-black font-medium mb-1">
+                Family Status
+              </label>
+              <div className="w-full inline-flex rounded max-md:flex-col">
+                {FamilyStatus?.map((status) => (
+                  <label
+                    key={status.family_status_id}
+                    className={`w-full px-5 py-3 text-sm font-bold border border-black cursor-pointer ${selectedFamilyStatus === status.family_status_id.toString()
+                        ? 'bg-blue-500 text-white'
+                        : ''
+                      }`}
+                    onClick={(e) => e.preventDefault()}
+                  >
+                    <input
+                      type="radio"
+                      name="familyStatus"
+                      value={status.family_status_id}
+                      checked={selectedFamilyStatus === status.family_status_id.toString()}
+                      onChange={() => setSelectedFamilyStatus(status.family_status_id.toString())}
+                      className="hidden"
+                      onClick={(e) => e.preventDefault()}
+                    />
+                    {status.family_status_name}
+                  </label>
+                ))}
+              </div>
+            </div>
 
-<div className="w-full py-1">
-  <label className="block text-black font-medium mb-1">
-    Preferred State 
-  </label>
-  <div className="w-full inline-flex rounded max-md:flex-col">
-    {stateOptions?.map((status) => ( 
-      <label
-        key={status.State_Pref_id}
-        className={`w-full px-5 py-3 text-sm font-bold border border-black cursor-pointer ${
-          selectedPrefState === status.State_Pref_id.toString()
-            ? 'bg-blue-500 text-white'
-            : ''
-        }`}
-         onClick={(e) => e.preventDefault()}
-      >
-        <input
-          type="radio"
-          name="preferredState"
-          value={status.State_Pref_id}
-          checked={selectedPrefState === status.State_Pref_id.toString()}
-          onChange={() => setSelectedPrefState(status.State_Pref_id.toString())}
-          className="hidden"
-          onClick={(e) => e.preventDefault()}
-        />
-        {status.State_name}
-      </label>
-    ))}
-  </div>
-</div>
+            <div className="w-full py-1">
+              <label className="block text-black font-medium mb-1">
+                Preferred State
+              </label>
+              <div className="w-full inline-flex rounded max-md:flex-col">
+                {stateOptions?.map((status) => (
+                  <label
+                    key={status.State_Pref_id}
+                    className={`w-full px-5 py-3 text-sm font-bold border border-black cursor-pointer ${selectedPrefState === status.State_Pref_id.toString()
+                        ? 'bg-blue-500 text-white'
+                        : ''
+                      }`}
+                    onClick={(e) => e.preventDefault()}
+                  >
+                    <input
+                      type="radio"
+                      name="preferredState"
+                      value={status.State_Pref_id}
+                      checked={selectedPrefState === status.State_Pref_id.toString()}
+                      onChange={() => setSelectedPrefState(status.State_Pref_id.toString())}
+                      className="hidden"
+                      onClick={(e) => e.preventDefault()}
+                    />
+                    {status.State_name}
+                  </label>
+                ))}
+              </div>
+            </div>
 
-               
- <div className="w-full text-black font-semibold">
+
+            <div className="w-full text-black font-semibold">
               <h5 className="text-[18px] text-black font-semibold mb-2">
                 Profession
               </h5>

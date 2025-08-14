@@ -43,9 +43,9 @@ const EditProfile = () => {
         AncestorOrigin: '',
         AboutMyFamily: '',
         PropertyDetails: '',
-        no_of_children:0,
-          father_alive: 'yes', 
-    mother_alive: 'yes',
+        no_of_children: 0,
+        father_alive: 'yes',
+        mother_alive: 'yes',
         // Removed duplicate UncleGothram since it was already defined above
       },
     }
@@ -69,9 +69,9 @@ const EditProfile = () => {
     defaultValues: {
       PartnerPreference: {
         annualIncome: '',
-         pref_family_status: "" ,
- pref_state: '',
- 
+        pref_family_status: "",
+        pref_state: '',
+
       },
     }
   });
@@ -80,32 +80,32 @@ const EditProfile = () => {
     defaultValues: {
       suggested_pref_details: {
         pref_anual_income: '',
- pref_family_status: '', // or your backend value
-      pref_state: '' // or your backend value
+        pref_family_status: '', // or your backend value
+        pref_state: '' // or your backend value
       },
     }
   });
 
   const ProfileVisibilityMethods = useForm<ProfileVisibilityResponse>({
-  resolver: zodResolver(profileVisibilitySchema),
-  defaultValues: {
-    profile_visibility: {
-    
-      visibility_age_from: "",
-      visibility_age_to: "",
-      visibility_height_from: "",
-      visibility_height_to: "",
-      visibility_profession: "",
-      visibility_education: "",
-      visibility_anual_income: "",
-      visibility_family_status: null,
-      visibility_chevvai: "No",
-      visibility_ragukethu: "No",
-      visibility_foreign_interest: "No",
-      status: "1",
+    resolver: zodResolver(profileVisibilitySchema),
+    defaultValues: {
+      profile_visibility: {
+
+        visibility_age_from: "",
+        visibility_age_to: "",
+        visibility_height_from: "",
+        visibility_height_to: "",
+        visibility_profession: "",
+        visibility_education: "",
+        visibility_anual_income: "",
+        visibility_family_status: null,
+        visibility_chevvai: "No",
+        visibility_ragukethu: "No",
+        visibility_foreign_interest: "No",
+        status: "1",
+      }
     }
-  }
-});
+  });
 
 
   const BasicDetailsMethods = useForm<BasicDetailss>({
@@ -120,13 +120,13 @@ const EditProfile = () => {
     resolver: zodResolver(EditSchemaProfileView),
     defaultValues: {
       profileView: {
-        status: undefined ,
+        status: undefined,
         primary_status: undefined,
         secondary_status: undefined,
-        mobile_otp_verify: null ,
-        membership_fromdate:null,
-        membership_todate:null,
-        visit_count:null
+        mobile_otp_verify: null,
+        membership_fromdate: null,
+        membership_todate: null,
+        visit_count: null
       }
     }
   })
@@ -171,12 +171,12 @@ const EditProfile = () => {
   const [isPartnerPreferenceOpen, setIsPartnerPreferenceOpen] = useState(true);
   const [AnnualIncomesValmax, setAnnualIncomesValMax] = useState<string[]>([]);
   const [AnnualIncomesVal, setAnnualIncomesVal] = useState('');
-  const [familyStatus,setFamilyStatus]=useState<string>('')
-  const [familyStatusSuggested,setFamilyStatusSuggested]=useState<string>('')
-  const [familyStatusVisibility,setFamilyStatusVisibility]=useState<string>('')
+  const [familyStatus, setFamilyStatus] = useState<string>('')
+  const [familyStatusSuggested, setFamilyStatusSuggested] = useState<string>('')
+  const [familyStatusVisibility, setFamilyStatusVisibility] = useState<string>('')
 
-  const [prefferedStateSuggested,setPrefferedStateSuggested]=useState<string>('')
-  const [prefferedStatePartner,setPrefferedStatePartner]=useState<string>('')
+  const [prefferedStateSuggested, setPrefferedStateSuggested] = useState<string>('')
+  const [prefferedStatePartner, setPrefferedStatePartner] = useState<string>('')
   const [prefEducation, setprefEducation] = useState('');
   const [setMariedStatus, selectSetMaridStatus] = useState('');
   const [gender, setGender] = useState<string>('');
@@ -186,12 +186,13 @@ const EditProfile = () => {
   const [addOnPackageDetails, setAddonPackageDetails] = useState<number[]>([]);
   const [isSuggestedProfileOpen, setIsSuggestedProfileOpen] = useState(true);
   const [isViewDetais, setViewDetail] = useState(true);
-  const [isProfileVisibility,setIsProfileVisibility]=useState(true)
-  const [professionVisibility,setProfessionVisibility]=useState<ProfessionPref[]>([]);
-  const [educationVisibility,setEducationVisibility]=useState<EduPref[]>([])
-  const [annualIncomeVisibility,setAnnualIncomeVisibility]=useState<AnnualIncome[]>([])
-  const [getMaritalStatus,setGetMaritalStatus]=useState<string>('')
-  const [childrenn,setChildrenn]=useState< boolean>(false)
+  const [isProfileVisibility, setIsProfileVisibility] = useState(true)
+  const [professionVisibility, setProfessionVisibility] = useState<ProfessionPref[]>([]);
+  const [educationVisibility, setEducationVisibility] = useState<EduPref[]>([])
+  const [annualIncomeVisibility, setAnnualIncomeVisibility] = useState<AnnualIncome[]>([])
+  const [getMaritalStatus, setGetMaritalStatus] = useState<string>('')
+  const [childrenn, setChildrenn] = useState<boolean>(false)
+
   const handleProfileUpdate = async (editData: any, Name: string) => {
     try {
       setIsSubmitting(true);
@@ -214,103 +215,47 @@ const EditProfile = () => {
     }
   };
 
-  // const handleFamilyDetailsSubmit = async (data: FamilyDetailsValues) => {
-  //   if (isSubmitting) return;
-  //   console.log("data family details ==>", data);
-
-  //   // Helper function to handle empty strings and convert to null
-  //   const toNullIfEmpty = (value: string | null | undefined) => {
-  //     if (value === undefined || value === null || value.trim() === '') {
-  //       return null;
-  //     }
-  //     return value;
-  //   };
-
-  //   // Transform eye_wear from "Yes"/"No" to "1"/"0" for API
-  //   const eyeWearValue = data.FamilyDetails.EyeWear === "Yes" ? "1" : 
-  //                       data.FamilyDetails.EyeWear === "No" ? "0" : null;
-
-  //   const editDataFamilyDetails = {
-  //     family_details: {
-  //       father_name: toNullIfEmpty(data.FamilyDetails.fathername),
-  //       father_occupation: toNullIfEmpty(data.FamilyDetails.fatherOccupation),
-  //       mother_name: toNullIfEmpty(data.FamilyDetails.motherName),
-  //       mother_occupation: toNullIfEmpty(data.FamilyDetails.motherOccupation),
-  //       about_self: toNullIfEmpty(data.FamilyDetails.AboutMyself),
-  //       weight: toNullIfEmpty(data.FamilyDetails.weight),
-  //       eye_wear: eyeWearValue,
-  //       family_name: toNullIfEmpty(data.FamilyDetails.FamilyName),
-  //       hobbies: toNullIfEmpty(data.FamilyDetails.MyHobbies),
-  //       blood_group: toNullIfEmpty(data.FamilyDetails.bloodGroup),
-  //       Pysically_changed: toNullIfEmpty(data.FamilyDetails.physicallyChalanged),
-  //       no_of_brother: toNullIfEmpty(data.FamilyDetails.selectedBrother),
-  //       no_of_sister: toNullIfEmpty(data.FamilyDetails.selectedSister),
-  //       no_of_bro_married: toNullIfEmpty(data.FamilyDetails.marriedBrother),
-  //       no_of_sis_married: toNullIfEmpty(data.FamilyDetails.marriedSisters),
-  //       family_type: toNullIfEmpty(data.FamilyDetails.FamilyType),
-  //       family_value: toNullIfEmpty(data.FamilyDetails.FamilyValue),
-  //       family_status: toNullIfEmpty(data.FamilyDetails.FamilyStatus),
-  //       property_details: toNullIfEmpty(data.FamilyDetails.PropertyDetails),
-  //       property_worth: toNullIfEmpty(data.FamilyDetails.PropertyWorth),
-  //       suya_gothram: toNullIfEmpty(data.FamilyDetails.SuyaGothram),
-  //       uncle_gothram: toNullIfEmpty(data.FamilyDetails.UncleGothram),
-  //       ancestor_origin: toNullIfEmpty(data.FamilyDetails.AncestorOrigin),
-  //       about_family: toNullIfEmpty(data.FamilyDetails.AboutMyFamily),
-  //     }
-  //   };
-
-  //   const Name = "FamilyDetails";
-  //   try {
-  //     await addProfile(editDataFamilyDetails, Name);
-  //   } catch (error) {
-  //     console.error("Failed to update family details:", error);
-  //     notifyDelete("Failed to update family details. Please try again.");
-  //   }
-  // };
-
-
-
   const handleFamilyDetailsSubmit = async (data: FamilyDetailsValues) => {
-  if (isSubmitting) return;
+    if (isSubmitting) return;
 
-  const editDataFamilyDetails = {
-    family_details: {
-      father_name: data.FamilyDetails.fathername,
-      father_occupation: data.FamilyDetails.fatherOccupation,
-      mother_name: data.FamilyDetails.motherName,
-      mother_occupation: data.FamilyDetails.motherOccupation,
-      about_self: data.FamilyDetails.AboutMyself,
-      weight: data.FamilyDetails.weight, // Map directly from form data
-      eye_wear: data.FamilyDetails.EyeWear === "Yes" ? "1" : "0",
-      family_name: data.FamilyDetails.FamilyName,
-      hobbies: data.FamilyDetails.MyHobbies,
-      blood_group: data.FamilyDetails.bloodGroup,
-      Pysically_changed: data.FamilyDetails.physicallyChalanged,
-      no_of_brother: data.FamilyDetails.selectedBrother,
-      no_of_sister: data.FamilyDetails.selectedSister,
-      no_of_bro_married: data.FamilyDetails.marriedBrother,
-      no_of_sis_married: data.FamilyDetails.marriedSisters,
-      family_type: data.FamilyDetails.FamilyType,
-      family_value: data.FamilyDetails.FamilyValue,
-      family_status: data.FamilyDetails.FamilyStatus,
-      property_details: data.FamilyDetails.PropertyDetails,
-      property_worth: data.FamilyDetails.PropertyWorth,
-      suya_gothram: data.FamilyDetails.SuyaGothram,
-      uncle_gothram: data.FamilyDetails.UncleGothram,
-      ancestor_origin: data.FamilyDetails.AncestorOrigin,
-      about_family: data.FamilyDetails.AboutMyFamily,
-     // no_of_children:data.FamilyDetails.no_of_children ?? '',
-      no_of_children: childrenn ? data.FamilyDetails.no_of_children : null,
-      suya_gothram_admin:data.FamilyDetails.suya_gothram_admin ?? '',
-      uncle_gothram_admin:data.FamilyDetails.uncle_gothram_admin ?? '',
-        mother_alive:data.FamilyDetails.mother_alive ?? '',
-      father_alive:data.FamilyDetails.father_alive ?? ''
-    }
+    const editDataFamilyDetails = {
+      family_details: {
+        father_name: data.FamilyDetails.fathername,
+        father_occupation: data.FamilyDetails.fatherOccupation,
+        mother_name: data.FamilyDetails.motherName,
+        mother_occupation: data.FamilyDetails.motherOccupation,
+        about_self: data.FamilyDetails.AboutMyself,
+        weight: data.FamilyDetails.weight, // Map directly from form data
+        eye_wear: data.FamilyDetails.EyeWear === "Yes" ? "1" : "0",
+        family_name: data.FamilyDetails.FamilyName,
+        hobbies: data.FamilyDetails.MyHobbies,
+        blood_group: data.FamilyDetails.bloodGroup,
+        Pysically_changed: data.FamilyDetails.physicallyChalanged,
+        no_of_brother: data.FamilyDetails.selectedBrother,
+        no_of_sister: data.FamilyDetails.selectedSister,
+        no_of_bro_married: data.FamilyDetails.marriedBrother,
+        no_of_sis_married: data.FamilyDetails.marriedSisters,
+        family_type: data.FamilyDetails.FamilyType,
+        family_value: data.FamilyDetails.FamilyValue,
+        family_status: data.FamilyDetails.FamilyStatus,
+        property_details: data.FamilyDetails.PropertyDetails,
+        property_worth: data.FamilyDetails.PropertyWorth,
+        suya_gothram: data.FamilyDetails.SuyaGothram,
+        uncle_gothram: data.FamilyDetails.UncleGothram,
+        ancestor_origin: data.FamilyDetails.AncestorOrigin,
+        about_family: data.FamilyDetails.AboutMyFamily,
+        // no_of_children:data.FamilyDetails.no_of_children ?? '',
+        no_of_children: childrenn ? data.FamilyDetails.no_of_children : null,
+        suya_gothram_admin: data.FamilyDetails.suya_gothram_admin ?? '',
+        uncle_gothram_admin: data.FamilyDetails.uncle_gothram_admin ?? '',
+        mother_alive: data.FamilyDetails.mother_alive ?? '',
+        father_alive: data.FamilyDetails.father_alive ?? ''
+      }
+    };
+
+    const Name = "FamilyDetails";
+    await handleProfileUpdate(editDataFamilyDetails, Name);
   };
-
-  const Name = "FamilyDetails";
-  await handleProfileUpdate(editDataFamilyDetails, Name);
-};
 
   const handleBasicDetailsSubmit = async (data: BasicDetailss) => {
     if (isSubmitting) return;
@@ -337,7 +282,7 @@ const EditProfile = () => {
         Profile_pincode: data.BasicDetail.pincode,
         status: data.BasicDetail.status,
         Notifcation_enabled: alretSettings,
-        Profile_height:data.BasicDetail.Profile_height
+        Profile_height: data.BasicDetail.Profile_height
         // Addon_package: addOnPackageDetails.join(','),
       },
     };
@@ -346,215 +291,95 @@ const EditProfile = () => {
     await addProfile(editDataBasicDetails, Name);
   };
 
+  const handleVisibilitySubmit = async (data: ProfileVisibilityResponse) => {
+    if (isSubmitting) return;
 
-//   const handleVisibilitySubmit = async (data:  ProfileVisibilityResponse ) => {
-//   if (isSubmitting) return;
-
-//   console.log("Submitted visibility data:", data);
-
-//   const payload = {
-//     profile_visibility: {
-//       profile_id: data.profile_visibility.profile_id,
-//       visibility_age_from: data.profile_visibility.visibility_age_from,
-//       visibility_age_to: data.profile_visibility.visibility_age_to,
-//       visibility_height_from: data.profile_visibility.visibility_height_from,
-//       visibility_height_to: data.profile_visibility.visibility_height_to,
-//       visibility_profession: data.profile_visibility.visibility_profession,
-//       visibility_education: data.profile_visibility.visibility_education,
-//       visibility_anual_income: data.profile_visibility.visibility_anual_income,
-//       visibility_family_status: data.profile_visibility.visibility_family_status,
-//       visibility_chevvai: data.profile_visibility.visibility_chevvai,
-//       visibility_ragukethu: data.profile_visibility.visibility_ragukethu,
-//       visibility_foreign_interest: data.profile_visibility.visibility_foreign_interest,
-//       status: data.profile_visibility.status,
-//     }
-//   };
-
-//   const sectionName = "ProfileVisibility";
-//   await addProfile(payload, sectionName);
-// };
-
-// const handleVisibilitySubmit = async (data: ProfileVisibilityResponse) => {
-//   if (isSubmitting) return;
-
-//    const visibility = data.profile_visibility; // safely get the first item
-
-//   // if (!visibility) {
-//   //   console.error("No profile_visibility data to submit.");
-//   //   return;
-//   // }
-
-//   const payload = {
-//     profile_visibility: {
-    
-//       visibility_age_from: data.profile_visibility?.visibility_age_from,
-//       visibility_age_to: data.profile_visibility?.visibility_age_to,
-//       visibility_height_from: data.profile_visibility?.visibility_height_from,
-//       visibility_height_to: data.profile_visibility?.visibility_height_to,
-//       visibility_profession: data.profile_visibility?.visibility_profession,
-//       visibility_education: data.profile_visibility?.visibility_education,
-//       visibility_anual_income: data.profile_visibility?.visibility_anual_income,
-//       visibility_family_status:familyStatusVisibility,
-//       visibility_chevvai: data.profile_visibility?.visibility_chevvai,
-//       visibility_ragukethu: data.profile_visibility?.visibility_ragukethu,
-//       visibility_foreign_interest: data.profile_visibility?.visibility_foreign_interest,
-//       status: data.profile_visibility?.status,
-//     }
-//   };
-
-//   const sectionName = "ProfileVisibility";
-//   await handleProfileUpdatee (payload, sectionName);
-// };
-
-
-// const handleVisibilitySubmit = async (data: ProfileVisibilityResponse) => {
-//    console.log("Form data before submission:", data);
-//   console.log("Current familyStatusVisibility:", familyStatusVisibility);
-//   if (isSubmitting) return;
-
-//   const payload = {
-//     profile_visibility: {
-//       visibility_age_from: data.profile_visibility.visibility_age_from || "",
-//       visibility_age_to: data.profile_visibility.visibility_age_to || "",
-//       visibility_height_from: data.profile_visibility.visibility_height_from || "",
-//       visibility_height_to: data.profile_visibility.visibility_height_to || "",
-//       visibility_profession: data.profile_visibility.visibility_profession || "",
-//       visibility_education: data.profile_visibility.visibility_education || "",
-//       visibility_anual_income: data.profile_visibility.visibility_anual_income || "",
-//       visibility_family_status: familyStatusVisibility || null,
-//       visibility_chevvai: data.profile_visibility.visibility_chevvai || "No",
-//       visibility_ragukethu: data.profile_visibility.visibility_ragukethu || "No",
-//       visibility_foreign_interest: data.profile_visibility.visibility_foreign_interest || "No",
-//       status: "1" // Assuming you want to keep status as active
-//     }
-//   };
-
-//   const sectionName = "ProfileVisibility";
-//   await handleProfileUpdate(payload, sectionName);
-// };
-
-
-const handleVisibilitySubmit = async (data: ProfileVisibilityResponse) => {
-  if (isSubmitting) return;
-
-  const payload = {
-    profile_visibility_details: {
-      profile_id: profileId, // Make sure profileId is available in your component
-      visibility_age_from: data.profile_visibility.visibility_age_from,
-      visibility_age_to: data.profile_visibility.visibility_age_to,
-      visibility_height_from: data.profile_visibility.visibility_height_from,
-      visibility_height_to: data.profile_visibility.visibility_height_to,
-      visibility_profession: data.profile_visibility.visibility_profession,
-      visibility_education: data.profile_visibility.visibility_education,
-      visibility_anual_income: data.profile_visibility.visibility_anual_income,
-      visibility_family_status: familyStatusVisibility || null,
-      visibility_chevvai: data.profile_visibility.visibility_chevvai || "No",
-      visibility_ragukethu: data.profile_visibility.visibility_ragukethu || "No",
-      visibility_foreign_interest: data.profile_visibility.visibility_foreign_interest || "No",
-      status: "1"
-    }
-  };
-
-  try {
-    setIsSubmitting(true);
-    const response = await axios.put(
-      `${editProfileApi}/${profileId}/`,
-      payload
-    );
-
-    if (response.status === 200 || response.status === 201) {
-      notify("Profile visibility updated successfully");
-    }
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      notifyDelete(`Error: ${JSON.stringify(error.response?.data)}`);
-    } else {
-      console.error('Unknown error:', error);
-    }
-  } finally {
-    setIsSubmitting(false);
-  }
-};
-
-  // const handlePartnerPreferenceSubmit = async (data: PartnerPreference) => {
-  //   if (isSubmitting) return;
-  //    const toNullIfEmpty = (value: string | null | undefined) => {
-  //     if (value === undefined || value === null || value.trim() === '') {
-  //       return null;
-  //     }
-  //     return value;
-  //   };
-  //   console.log("data partnerPreference ==>", data);
-  //   const editDataPartnerPreference = {
-  //     partner_pref_details: {
-  //       pref_height_from: data.PartnerPreference.heightFrom,
-  //       pref_height_to: data.PartnerPreference.toHeight,
-  //       pref_marital_status: setMariedStatus,
-  //       pref_education: prefEducation,
-  //       pref_anual_income: data.PartnerPreference.annualIncome,
-  //       pref_profession: prefProf,
-  //       pref_age_differences: data.PartnerPreference.agePreference,
-  //       pref_chevvai: data.PartnerPreference.ChevvaiDhosam,
-  //       pref_ragukethu: data.PartnerPreference.ragukethu,
-  //       pref_foreign_intrest: data.PartnerPreference.foreignInterest,
-  //        pref_family_status: toNullIfEmpty(data.PartnerPreference.FamilyStatus),
-  //       pref_anual_income_max: data.PartnerPreference.pref_anual_income_max,
-  //       pref_porutham_star: prefporuthamstar,
-  //       pref_porutham_star_rasi: preforuthamStarRasi,
-  //        //pref_family_status: data.PartnerPreference.FamilyStatus || null,
-  //     },
-  //   };
-  //   const Name = "PartnerPreference"
-  //   await addProfile(editDataPartnerPreference, Name);
-  // };
-
-const handlePartnerPreferenceSubmit = async (data: PartnerPreference) => {
-  if (isSubmitting) return;
-  
-  const toNullIfEmpty = (value: string | null | undefined): string | null => {
-    return (value === undefined || value === null || value.trim() === '') ? null : value;
-  };
-
-  try {
-    console.log("data partnerPreference ==>", data);
-    
-    const editDataPartnerPreference = {
-      partner_pref_details: {
-        pref_height_from: data.PartnerPreference.heightFrom,
-        pref_height_to: data.PartnerPreference.toHeight,
-        pref_marital_status: setMariedStatus,
-        pref_education: prefEducation,
-        pref_anual_income: data.PartnerPreference.annualIncome,
-        pref_profession: prefProf,
-        pref_age_differences: data.PartnerPreference.agePreference,
-        pref_chevvai: data.PartnerPreference.ChevvaiDhosam,
-        pref_ragukethu: data.PartnerPreference.ragukethu,
-        pref_foreign_intrest: data.PartnerPreference.foreignInterest,
-         pref_family_status: familyStatus,
-//         pref_family_status:
-//   data.PartnerPreference.pref_family_status &&
-//   data.PartnerPreference.pref_family_status !== "null" &&
-//   data.PartnerPreference.pref_family_status !== "0"
-//     ? data.PartnerPreference.pref_family_status
-//     :  data.PartnerPreference.pref_family_status
-// ,
-        pref_anual_income_max: data.PartnerPreference.pref_anual_income_max,
-        pref_porutham_star: prefporuthamstar,
-        pref_porutham_star_rasi: preforuthamStarRasi,
-        // pref_state:prefferedStatePartner
-         pref_state:prefferedStatePartner,
-//         pref_family_status:
-      },
+    const payload = {
+      profile_visibility_details: {
+        profile_id: profileId, // Make sure profileId is available in your component
+        visibility_age_from: data.profile_visibility.visibility_age_from,
+        visibility_age_to: data.profile_visibility.visibility_age_to,
+        visibility_height_from: data.profile_visibility.visibility_height_from,
+        visibility_height_to: data.profile_visibility.visibility_height_to,
+        visibility_profession: data.profile_visibility.visibility_profession,
+        visibility_education: data.profile_visibility.visibility_education,
+        visibility_anual_income: data.profile_visibility.visibility_anual_income,
+        visibility_family_status: familyStatusVisibility || null,
+        visibility_chevvai: data.profile_visibility.visibility_chevvai || "No",
+        visibility_ragukethu: data.profile_visibility.visibility_ragukethu || "No",
+        visibility_foreign_interest: data.profile_visibility.visibility_foreign_interest || "No",
+        status: "1"
+      }
     };
 
-    const Name = "PartnerPreference";
-    await addProfile(editDataPartnerPreference, Name);
-    
-  } catch (error) {
-    console.error("Error submitting partner preference:", error);
-    // Handle error (e.g., show error message to user)
-  }
-};
+    try {
+      setIsSubmitting(true);
+      const response = await axios.put(
+        `${editProfileApi}/${profileId}/`,
+        payload
+      );
+
+      if (response.status === 200 || response.status === 201) {
+        notify("Profile visibility updated successfully");
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        notifyDelete(`Error: ${JSON.stringify(error.response?.data)}`);
+      } else {
+        console.error('Unknown error:', error);
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handlePartnerPreferenceSubmit = async (data: PartnerPreference) => {
+    if (isSubmitting) return;
+
+    const toNullIfEmpty = (value: string | null | undefined): string | null => {
+      return (value === undefined || value === null || value.trim() === '') ? null : value;
+    };
+
+    try {
+      console.log("data partnerPreference ==>", data);
+
+      const editDataPartnerPreference = {
+        partner_pref_details: {
+          pref_height_from: data.PartnerPreference.heightFrom,
+          pref_height_to: data.PartnerPreference.toHeight,
+          pref_marital_status: setMariedStatus,
+          pref_education: prefEducation,
+          pref_anual_income: data.PartnerPreference.annualIncome,
+          pref_profession: prefProf,
+          pref_age_differences: data.PartnerPreference.agePreference,
+          pref_chevvai: data.PartnerPreference.ChevvaiDhosam || null,
+          pref_ragukethu: data.PartnerPreference.ragukethu || null,
+          pref_foreign_intrest: data.PartnerPreference.foreignInterest,
+          pref_family_status: familyStatus,
+          //         pref_family_status:
+          //   data.PartnerPreference.pref_family_status &&
+          //   data.PartnerPreference.pref_family_status !== "null" &&
+          //   data.PartnerPreference.pref_family_status !== "0"
+          //     ? data.PartnerPreference.pref_family_status
+          //     :  data.PartnerPreference.pref_family_status
+          // ,
+          pref_anual_income_max: data.PartnerPreference.pref_anual_income_max,
+          pref_porutham_star: prefporuthamstar,
+          pref_porutham_star_rasi: preforuthamStarRasi,
+          // pref_state:prefferedStatePartner
+          pref_state: prefferedStatePartner,
+          //         pref_family_status:
+        },
+      };
+
+      const Name = "PartnerPreference";
+      await addProfile(editDataPartnerPreference, Name);
+
+    } catch (error) {
+      console.error("Error submitting partner preference:", error);
+      // Handle error (e.g., show error message to user)
+    }
+  };
 
 
   const handleSuggestedProfileSubmit = async (data: suggestedProfile) => {
@@ -575,9 +400,9 @@ const handlePartnerPreferenceSubmit = async (data: PartnerPreference) => {
         pref_foreign_intrest: data.suggested_pref_details.pref_foreign_intrest,
         pref_porutham_star: prefporuthamstar,
         pref_porutham_star_rasi: preforuthamStarRasi,
-        pref_family_status:familyStatusSuggested,
+        pref_family_status: familyStatusSuggested,
         // pref_state:prefferedStateSuggested,
-         pref_state:data.suggested_pref_details.pref_state,
+        pref_state: data.suggested_pref_details.pref_state,
       },
     };
     const Name = "suggestedProfile"
@@ -662,7 +487,7 @@ const handlePartnerPreferenceSubmit = async (data: PartnerPreference) => {
         dasa_name: data.HororScopeDetails.dasaName,
         dasa_balance: dasaBalance,
         horoscope_hints: data.HororScopeDetails.horoscopeHints,
-        rasi_kattam: rasiKattam ||data.HororScopeDetails.rasiKattam,
+        rasi_kattam: rasiKattam || data.HororScopeDetails.rasiKattam,
         amsa_kattam: amsaKattam || data.HororScopeDetails.amsaKattam,
       },
     }
@@ -703,52 +528,52 @@ const handlePartnerPreferenceSubmit = async (data: PartnerPreference) => {
     console.log("Submitting form with data:", data);
     try {
       console.log("Form Data:", data);
-      if(data.profileView.mobile_otp_verify === null || ""){
-notify("error");
-      }else{
- 
-   
-      const editDataProfileView = {
-        profile_common_details: {
-          Addon_package: data.profileView.Addon_package,
-          Notifcation_enabled: data.profileView.Notifcation_enabled,
-          status: data.profileView.status,
-          DateOfJoin: data.profileView.DateOfJoin,
-          ProfileId: data.profileView.ProfileId,
-          Gender: data.profileView.Gender,
-          Profile_name: data.profileView.Profile_name,
-          Mobile_no: data.profileView.Mobile_no,
-          calc_chevvai_dhosham: data.profileView.calc_chevvai_dhosham,
-          calc_raguketu_dhosham: data.profileView.calc_raguketu_dhosham,
-          horoscope_hints: data.profileView.horoscope_hints,
-          family_status: data.profileView.family_status,
-          Admin_comments: data.profileView.Admin_comments,
-          suya_gothram: data.profileView.suya_gothram,
-          profile_completion: data.profileView.profile_completion,
-          primary_status: data.profileView.primary_status,
-          secondary_status: data.profileView.secondary_status,
-          plan_status: data.profileView.plan_status,
-          profile_image: data.profileView.profile_image,
-          mobile_otp_verify: data.profileView.mobile_otp_verify,
-          membership_fromdate: data.profileView.membership_fromdate,
-          membership_todate: data.profileView.membership_todate,
-          visit_count: data.profileView.visit_count === null ||""|| 0 ? 0: data.profileView.visit_count,
-          exp_int_count: data.profileView.exp_int_count === null ||""|| 0 ? 0: data.profileView.exp_int_count,
-          exp_int_lock:data.profileView.exp_int_lock === null ||data.profileView.exp_int_lock === 0? 0: data.profileView.exp_int_lock
-},
-      };
-      console.log("API Payload:", editDataProfileView);
-      const Name = "profileView"
-      await handleProfileUpdatee(editDataProfileView, Name);
- 
-      // notify("Profile updated successfully");
-     }
-   }catch (error) {
+      if (data.profileView.mobile_otp_verify === null || "") {
+        notify("error");
+      } else {
+
+
+        const editDataProfileView = {
+          profile_common_details: {
+            Addon_package: data.profileView.Addon_package,
+            Notifcation_enabled: data.profileView.Notifcation_enabled,
+            status: data.profileView.status,
+            DateOfJoin: data.profileView.DateOfJoin,
+            ProfileId: data.profileView.ProfileId,
+            Gender: data.profileView.Gender,
+            Profile_name: data.profileView.Profile_name,
+            Mobile_no: data.profileView.Mobile_no,
+            calc_chevvai_dhosham: data.profileView.calc_chevvai_dhosham,
+            calc_raguketu_dhosham: data.profileView.calc_raguketu_dhosham,
+            horoscope_hints: data.profileView.horoscope_hints,
+            family_status: data.profileView.family_status,
+            Admin_comments: data.profileView.Admin_comments,
+            suya_gothram: data.profileView.suya_gothram,
+            profile_completion: data.profileView.profile_completion,
+            primary_status: data.profileView.primary_status,
+            secondary_status: data.profileView.secondary_status,
+            plan_status: data.profileView.plan_status,
+            profile_image: data.profileView.profile_image,
+            mobile_otp_verify: data.profileView.mobile_otp_verify,
+            membership_fromdate: data.profileView.membership_fromdate,
+            membership_todate: data.profileView.membership_todate,
+            visit_count: data.profileView.visit_count === null || "" || 0 ? 0 : data.profileView.visit_count,
+            exp_int_count: data.profileView.exp_int_count === null || "" || 0 ? 0 : data.profileView.exp_int_count,
+            exp_int_lock: data.profileView.exp_int_lock === null || data.profileView.exp_int_lock === 0 ? 0 : data.profileView.exp_int_lock
+          },
+        };
+        console.log("API Payload:", editDataProfileView);
+        const Name = "profileView"
+        await handleProfileUpdatee(editDataProfileView, Name);
+
+        // notify("Profile updated successfully");
+      }
+    } catch (error) {
       console.error("Update failed:", error);
       notifyDelete("Failed to update profile");
     }
   };
- 
+
 
   const handleProfileUpdatee = async (editData: any, Name: string) => {
     try {
@@ -969,67 +794,25 @@ notify("error");
                 setPrefferedStateSuggested={setPrefferedStateSuggested}
               // setSuggestedProfiles={setSuggestedProfiles}
               />
-
-            
-              {/* <div className='flex justify-end mt-10'>
-                <button 
-                  type="submit" 
-                  disabled={isSubmitting}
-                  className={`btn btn-primary ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
-                >
-                  {isSubmitting ? (
-                    <span className="flex items-center">
-                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Saving...
-                    </span>
-                  ) : (
-                    'Save Suggested Profile'
-                  )}
-                </button>
-              </div> */}
             </div>
           </div>
         </form>
       </FormProvider>
-  {/* <FormProvider {...ProfileVisibilityMethods}>
-        <form onSubmit={ProfileVisibilityMethods.handleSubmit(handleVisibilitySubmit)}>
-  <EditProfileVisibility
-              isProfileVisibility={isProfileVisibility}
-              setIsProfileVisibility={setIsProfileVisibility}
-              professionVisibility={professionVisibility}
-              educationVisibility={educationVisibility}
-              annualIncomeVisibility={annualIncomeVisibility}
-              EditData={EditData}
-              setFamilyStatusVisibility={setFamilyStatusVisibility}
-              />
-  </form>
-      </FormProvider> */}
 
       <FormProvider {...ProfileVisibilityMethods}>
-  <form onSubmit={ProfileVisibilityMethods.handleSubmit(handleVisibilitySubmit)}>
-    <EditProfileVisibility
-      isProfileVisibility={isProfileVisibility}
-      setIsProfileVisibility={setIsProfileVisibility}
-      professionVisibility={professionVisibility}
-      educationVisibility={educationVisibility}
-      annualIncomeVisibility={annualIncomeVisibility}
-      EditData={EditData}
-      setFamilyStatusVisibility={setFamilyStatusVisibility}
-    />
-    {/* <div className='flex justify-end mt-6'>
-      <button 
-        type="submit" 
-        className='bg-blue-500 text-white px-15 py-2 rounded'
-        disabled={isSubmitting}
-      >
-        {isSubmitting ? 'Saving...' : 'Save Profile Visibility'}
-      </button>
-    </div> */}
-  </form>
-</FormProvider>
+        <form onSubmit={ProfileVisibilityMethods.handleSubmit(handleVisibilitySubmit)}>
+          <EditProfileVisibility
+            isProfileVisibility={isProfileVisibility}
+            setIsProfileVisibility={setIsProfileVisibility}
+            professionVisibility={professionVisibility}
+            educationVisibility={educationVisibility}
+            annualIncomeVisibility={annualIncomeVisibility}
+            EditData={EditData}
+            setFamilyStatusVisibility={setFamilyStatusVisibility}
+          />
+        
+        </form>
+      </FormProvider>
     </div>
   );
 };

@@ -28,6 +28,9 @@ const MatchingStars: React.FC<MatchingStarsProps> = ({
   selectedStarIds,
   onCheckboxChange,
 }) => {
+  if (initialPoruthas === 'No of porutham 15') {
+    return null;
+  }
   const handleCheckboxChange = (
     id: string,
     rasi: string,
@@ -44,14 +47,14 @@ const MatchingStars: React.FC<MatchingStarsProps> = ({
   const handleSelectAll = () => {
     // Get IDs of stars in this specific group
     const currentGroupIds = starAndRasi.map(item => item.id);
-    
+
     // Check if all items in this group are already selected
-    const allSelectedInGroup = currentGroupIds.every(id => 
+    const allSelectedInGroup = currentGroupIds.every(id =>
       selectedStarIds.some(selected => selected.id === id)
     );
 
     let updatedIds: SelectedStarIdItem[];
-    
+
     if (allSelectedInGroup) {
       // Deselect only items in this group
       updatedIds = selectedStarIds.filter(
@@ -67,7 +70,7 @@ const MatchingStars: React.FC<MatchingStarsProps> = ({
           star: item.matching_starId,
           label: `${item.matching_starId} - ${item.matching_rasiId}`
         }));
-      
+
       updatedIds = [...selectedStarIds, ...newSelections];
     }
 
@@ -75,15 +78,15 @@ const MatchingStars: React.FC<MatchingStarsProps> = ({
   };
 
   // Check if all items in this group are selected
-  const allSelectedInGroup = starAndRasi.every(item => 
+  const allSelectedInGroup = starAndRasi.every(item =>
     selectedStarIds.some(selected => selected.id === item.id)
   );
 
   return (
     <div>
       <div className="mb-5">
-        <h5 
-          className="text-[18px] text-black font-semibold mb-2 cursor-pointer"  
+        <h5
+          className="text-[18px] text-black font-semibold mb-2 cursor-pointer"
           onClick={handleSelectAll}
         >
           {initialPoruthas}

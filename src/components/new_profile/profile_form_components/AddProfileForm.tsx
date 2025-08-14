@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import Input from '../../Fromfield/Inputfield';
-import { useFormContext } from 'react-hook-form';
+import { Controller, useFormContext } from 'react-hook-form';
 import { useQuery } from '@tanstack/react-query';
 import {
   fetchComplexionStatus,
@@ -15,7 +15,7 @@ import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import axios from 'axios';
 // import { AlertSettings } from './AlretSettings';
-import { AiOutlineInfoCircle } from 'react-icons/ai';Notification
+import { AiOutlineInfoCircle } from 'react-icons/ai'; Notification
 import { Typography } from '@mui/material';
 export interface Complexion {
   complexion_id: string;
@@ -46,7 +46,7 @@ interface AddProfileForm {
 
   setIsBasicDetailsOpen: Dispatch<SetStateAction<boolean>>;
   setAlretSetting: Dispatch<SetStateAction<string>>;
-  setMariedStatusProbs:Dispatch<SetStateAction<boolean>>;
+  setMariedStatusProbs: Dispatch<SetStateAction<boolean>>;
 }
 interface MaritalStatusOption {
   marital_sts_id: string;
@@ -72,17 +72,18 @@ const AddProfileForm: React.FC<AddProfileForm> = ({
     setError,
     clearErrors,
     setValue,
+    control,
     formState: { errors },
   } = useFormContext<FormValues>();
   const status = watch('AddProfileForm.status');
- 
+
 
   const selectedCountryId = watch('AddProfileForm.Profile_country');
   const selectedStateId = watch('AddProfileForm.Profile_state');
   const selectedDistrictId = watch('AddProfileForm.Profile_district');
   const [showCityTextInput, setShowCityTextInput] = useState(false);
-  const  maritalStatusClick =watch('AddProfileForm.Profile_marital_status')
-const cityDropdown =watch('AddProfileForm.Profile_city')
+  const maritalStatusClick = watch('AddProfileForm.Profile_marital_status')
+  const cityDropdown = watch('AddProfileForm.Profile_city')
   const [maritalStatus, setMaritalStatus] = useState<boolean>(false);
   const [heightOptions, setHeightOptions] = useState<HeightOption[]>([]);
 
@@ -99,20 +100,20 @@ const cityDropdown =watch('AddProfileForm.Profile_city')
     fetchHeight();
   }, []);
 
-  console.log('maritalStatus',maritalStatus);
-// useEffect(() => {
-//   const setChildrenView = maritalStatusClick && [2, 3, 5].includes(Number(maritalStatusClick));
-//   setMaritalStatus(setChildrenView);
-// }, [maritalStatusClick]);
+  console.log('maritalStatus', maritalStatus);
+  // useEffect(() => {
+  //   const setChildrenView = maritalStatusClick && [2, 3, 5].includes(Number(maritalStatusClick));
+  //   setMaritalStatus(setChildrenView);
+  // }, [maritalStatusClick]);
 
-useEffect(() => {
-  if (maritalStatusClick === undefined || maritalStatusClick === "") {
-    setMaritalStatus(false);
-  } else {
-    const setChildrenView = [2, 3, 5].includes(Number(maritalStatusClick));
-    setMaritalStatus(setChildrenView);
-  }
-}, [maritalStatusClick]);
+  useEffect(() => {
+    if (maritalStatusClick === undefined || maritalStatusClick === "") {
+      setMaritalStatus(false);
+    } else {
+      const setChildrenView = [2, 3, 5].includes(Number(maritalStatusClick));
+      setMaritalStatus(setChildrenView);
+    }
+  }, [maritalStatusClick]);
   const [maritialStatus, setMaritialStatus] = useState<MaritalStatusOption[]>(
     [],
   );
@@ -120,9 +121,9 @@ useEffect(() => {
     setIsBasicDetailsOpen(!isBasicDetailsOpen);
   };
 
-  useEffect(()=>{
-setMariedStatusProbs(maritalStatus)
-  },[maritalStatus])
+  useEffect(() => {
+    setMariedStatusProbs(maritalStatus)
+  }, [maritalStatus])
 
   const { data: Status } = useQuery({
     queryKey: ['Status'],
@@ -162,10 +163,10 @@ setMariedStatusProbs(maritalStatus)
   // }, [SelectedGender]);
 
   useEffect(() => {
-  if (SelectedGender !== undefined) {
-    setGender(SelectedGender);
-  }
-}, [SelectedGender]);
+    if (SelectedGender !== undefined) {
+      setGender(SelectedGender);
+    }
+  }, [SelectedGender]);
 
   const getMaritalStatus = async () => {
     try {
@@ -315,10 +316,10 @@ setMariedStatusProbs(maritalStatus)
           <div className="flex w-full flex-row gap-4 max-md:flex-col">
             <div ref={MobileNoRef} className="w-2/4 max-md:w-full">
               <label className="block text-black font-medium mb-1">
-                Mobile Number
-               
+                Mobile Number<span className="text-red-500">*</span>
+
               </label>
-              <PhoneInput
+              {/* <PhoneInput
                 preferredCountries={["in", "sg", "my", "ae", "us", "gb"]} // Ensure "in" is first
 
                 inputProps={{
@@ -336,6 +337,24 @@ setMariedStatusProbs(maritalStatus)
               // onBlur={(event) => {
               //   trigger('AddProfileForm.Mobile_no'); // Trigger validation on blur
               // }}
+              /> */}
+              <Controller
+                name="AddProfileForm.Mobile_no"
+                control={control}
+                // REMOVE THIS LINE
+                // rules={{ required: true }} 
+                render={({ field }) => (
+                  <PhoneInput
+                    preferredCountries={["in", "sg", "my", "ae", "us", "gb"]}
+                    country={'in'}
+                    inputProps={{
+                      autoFocus: true,
+                      className: 'custom-input',
+                    }}
+                    value={field.value}
+                    onChange={(value) => field.onChange(value)}
+                  />
+                )}
               />
               {errors?.AddProfileForm?.Mobile_no && (
                 <p className="text-red-600">
@@ -384,7 +403,7 @@ setMariedStatusProbs(maritalStatus)
                 // name="Profile_marital_status"
                 className="outline-none w-full px-4 py-2 border border-black rounded"
                 {...register('AddProfileForm.Profile_marital_status')}
-             
+
               >
                 <option value="">Select your Marital Status</option>
                 {maritialStatus?.map((option: any) => (
@@ -441,7 +460,7 @@ setMariedStatusProbs(maritalStatus)
             <div className="w-full">
               <label className="block text-black font-medium mb-1">
                 Complexion
-                 <span className="text-red-500">*</span>
+
               </label>
               <select
                 // name="Profile_complexion"
@@ -470,7 +489,7 @@ setMariedStatusProbs(maritalStatus)
             </div>
             <div className="w-full">
               <label className="block text-black font-medium mb-1">
-                Country 
+                Country
                 {/* <span className="text-red-500">*</span> */}
               </label>
               <select
@@ -620,7 +639,7 @@ setMariedStatusProbs(maritalStatus)
           </div>
           <div className="flex w-full flex-row gap-4 max-md:flex-col">
 
-            {Number(selectedCountryId) > 1  && Number(selectedStateId) <= 7 ? (
+            {Number(selectedCountryId) > 1 && Number(selectedStateId) <= 7 ? (
               <div className="w-2/4 max-md:w-full">
                 <div className="flex items-center gap-0">
                   <label
@@ -654,7 +673,7 @@ setMariedStatusProbs(maritalStatus)
               </div>
             ) : (
               selectedCountryId === '1' &&
-              Number(selectedDistrictId) > 0 && Number(selectedStateId) < 7 &&(
+              Number(selectedDistrictId) > 0 && Number(selectedStateId) < 7 && (
                 <div className="w-2/4 max-md:w-full">
                   <div className="flex items-center gap-0">
                     <label
@@ -680,7 +699,7 @@ setMariedStatusProbs(maritalStatus)
                       onChange={(e) => {
                         const value = e.target.value;
                         setShowCityTextInput(value === "Others");
-                       
+
                       }}
                     >
                       <option value="" selected disabled>
@@ -839,43 +858,30 @@ setMariedStatusProbs(maritalStatus)
                 <p className="text-red-600">{errors.AddProfileForm.status.message?.toString()}</p>
               )}
             </div>
-{/* 
-             <div className="w-2/4">
-                <label>
-                  Profile Height <span className="text-red-500">*</span>
-                </label>
-                <input
-                  {...register('AddProfileForm.Profile_height')}
-                  className="w-full px-4 py-2 border border-black rounded"
-                />
-                 {errors?.AddProfileForm?.Profile_height && (
-                <p className="text-red-600">{errors.AddProfileForm.Profile_height.message?.toString()}</p>
-              )}
-              </div> */}
 
-                <div className="w-2/4">
-                  <label className='block text-black font-medium mb-1'>
-                  Profile Height
-                   {/* <span className="text-red-500">*</span> */}
-                </label>
-          <select
-            id="height"
-            className={`text-ash font-medium block w-full px-3 py-2 border-[1px] border-footer-text-gray rounded-[4px] focus-visible:outline-none`}
-            {...register("AddProfileForm.Profile_height")}
-          >
-            <option value="" selected disabled>
-              Select Height
-            </option>
-            {heightOptions.map((option) => (
-              <option key={option.height_id} value={option.height_id}>
-                {option.height_description}
-              </option>
-            ))}
-          </select>
-            {errors?.AddProfileForm?.Profile_height && (
+            <div className="w-2/4">
+              <label className='block text-black font-medium mb-1'>
+                Profile Height
+                {/* <span className="text-red-500">*</span> */}
+              </label>
+              <select
+                id="height"
+                className={`text-ash font-medium block w-full px-3 py-2 border-[1px] border-footer-text-gray rounded-[4px] focus-visible:outline-none`}
+                {...register("AddProfileForm.Profile_height")}
+              >
+                <option value="" selected disabled>
+                  Select Height
+                </option>
+                {heightOptions.map((option) => (
+                  <option key={option.height_id} value={option.height_id}>
+                    {option.height_description}
+                  </option>
+                ))}
+              </select>
+              {errors?.AddProfileForm?.Profile_height && (
                 <p className="text-red-600">{errors.AddProfileForm.Profile_height.message?.toString()}</p>
               )}
-        </div>
+            </div>
 
             <div className="w-2/4 max-md:w-full">
 
@@ -908,7 +914,7 @@ setMariedStatusProbs(maritalStatus)
               )}
             </div>
           </div>
-          
+
           {/* <AlertSettings setAlretSetting={setAlretSetting} /> */}
         </div>
 

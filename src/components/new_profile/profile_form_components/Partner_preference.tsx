@@ -489,7 +489,7 @@ console.log("bqw",stateOptions)
               </div>
               <div className="w-full">
                 <label>
-                  Rahu / Ketu <span className="text-red-500">*</span>
+                  Rahu / Ketu
                 </label>
                 <select
                   {...register('PartnerPreference.ragukethu')}
@@ -507,7 +507,7 @@ console.log("bqw",stateOptions)
               </div>
               <div className="w-full">
                 <label>
-                  Foreign Interest <span className="text-red-500">*</span>
+                  Foreign Interest
                 </label>
                 <select
                   {...register('PartnerPreference.foreignInterest')}

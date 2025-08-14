@@ -36,26 +36,26 @@ const ViewBasicDetails: React.FC<pageProps> = ({ profile, setGennder }) => {
   const [finalAddon, setFinalAddOn] = useState<any[]>([]);
   const [data, setPlane] = useState<any[]>([]);
   const [planeDetail, setPlaneDetails] = useState('');
-const [heightOptions, setHeightOptions] = useState<HeightOption[]>([]);
-  
+  const [heightOptions, setHeightOptions] = useState<HeightOption[]>([]);
+
   const toggleSection1 = () => {
     setIsBasicDetailsOpen(!isBasicDetailsOpen);
   };
 
 
-  
-    useEffect(() => {
-      const fetchHeight = async () => {
-        try {
-          const response = await axios.post(`${API_URL_Auth}/Get_Height/`);
-          const options = Object.values(response.data) as HeightOption[];
-          setHeightOptions(options);
-        } catch (error) {
-          console.error("Error fetching height options:", error);
-        }
-      };
-      fetchHeight();
-    }, []);
+
+  useEffect(() => {
+    const fetchHeight = async () => {
+      try {
+        const response = await axios.post(`${API_URL_Auth}/Get_Height/`);
+        const options = Object.values(response.data) as HeightOption[];
+        setHeightOptions(options);
+      } catch (error) {
+        console.error("Error fetching height options:", error);
+      }
+    };
+    fetchHeight();
+  }, []);
   const toggleSection2 = () => {
     setIsBasicDetailsOpen(!isBasicDetailsOpen);
   };
@@ -195,9 +195,8 @@ const [heightOptions, setHeightOptions] = useState<HeightOption[]>([]);
       >
         Basic Details
         <svg
-          className={`fill-current transform ${
-            isBasicDetailsOpen ? 'rotate-180' : ''
-          }`}
+          className={`fill-current transform ${isBasicDetailsOpen ? 'rotate-180' : ''
+            }`}
           width={'20'}
           viewBox="0 0 20 20"
           fill="none"
@@ -215,7 +214,8 @@ const [heightOptions, setHeightOptions] = useState<HeightOption[]>([]);
         <div className="flex flex-col gap-5">
           {/* Basic Details Form Fields */}
           <div className="flex w-full flex-row gap-4">
-            <div className="w-2/4">
+            <div className="w-2/4 relative">
+              <span className="absolute top-[2px] left-[48px] text-red-500">*</span>
               <Input
                 value={basicDetails.Profile_name}
                 required
@@ -237,13 +237,17 @@ const [heightOptions, setHeightOptions] = useState<HeightOption[]>([]);
               />
             </div>
             <div className="w-2/4">
+              <label className="block mb-1 font-bold text-black">
+                Mobile Number <span className="text-red-500">*</span>
+              </label>
               <Input
                 value={basicDetails.Mobile_no}
                 required
-                label={'Mobile Number'}
                 readOnly
+                label={''}
               />
             </div>
+
           </div>
 
           <div className="flex w-full flex-row gap-4">
@@ -277,11 +281,14 @@ const [heightOptions, setHeightOptions] = useState<HeightOption[]>([]);
               </select>
             </div>
             <div className="w-2/4">
+              <label className="block mb-1 font-bold text-black">
+                Date of Birth <span className="text-red-500">*</span>
+              </label>
               <Input
                 value={basicDetails.Profile_dob}
                 readOnly
                 required
-                label={'Date of Birth'}
+                label={''}
                 type={'date'}
               />
             </div>
@@ -290,7 +297,7 @@ const [heightOptions, setHeightOptions] = useState<HeightOption[]>([]);
           <div className="flex w-full flex-row gap-4">
             <div className="w-full">
               <label className="block text-black font-semibold mb-1">
-                Complexion <span className="text-red-500">*</span>
+                Complexion
               </label>
               <select
                 value={basicDetails.Profile_complexion}
@@ -318,7 +325,7 @@ const [heightOptions, setHeightOptions] = useState<HeightOption[]>([]);
             </div>
             <div className="w-full">
               <label className="block text-black font-semibold mb-1">
-                Country <span className="text-red-500">*</span>
+                Country 
               </label>
               <select
                 disabled
@@ -342,7 +349,7 @@ const [heightOptions, setHeightOptions] = useState<HeightOption[]>([]);
               <div className="w-2/4">
                 <label className="block text-black font-semibold mb-1">
                   State (Based on country selection){' '}
-                  <span className="text-red-500">*</span>
+                 
                 </label>
                 <select
                   disabled
@@ -362,7 +369,7 @@ const [heightOptions, setHeightOptions] = useState<HeightOption[]>([]);
 
               <div className="w-2/4">
                 <label className="block text-black font-semibold mb-1">
-                  District <span className="text-red-500">*</span>
+                  District 
                 </label>
                 <select
                   disabled
@@ -379,10 +386,10 @@ const [heightOptions, setHeightOptions] = useState<HeightOption[]>([]);
                   ))}
                 </select>
               </div>
-              
+
               <div className="w-2/4">
                 <label className="block text-black font-semibold mb-1">
-                  City <span className="text-red-500">*</span>
+                  City
                 </label>
                 <select
                   disabled
@@ -412,7 +419,7 @@ const [heightOptions, setHeightOptions] = useState<HeightOption[]>([]);
                   readOnly
                 />
               </div> */}
-              
+
               <div className="w-2/4">
                 <Input
                   required
@@ -443,7 +450,7 @@ const [heightOptions, setHeightOptions] = useState<HeightOption[]>([]);
                 label={'Alternate Mobile Number'}
               />
             </div>
-              <div className="w-2/4">
+            <div className="w-2/4">
               <Input
                 required
                 readOnly
@@ -452,31 +459,31 @@ const [heightOptions, setHeightOptions] = useState<HeightOption[]>([]);
               />
             </div>
           </div>
-             <div className="w-2/4">
-                  <label className='block text-black font-medium mb-1'>
-                  Profile Height
-                   {/* <span className="text-red-500">*</span> */}
-                </label>
-          <select
-            id="height"
-            className={`text-ash font-medium block w-full px-3 py-2 border-[1px] border-footer-text-gray rounded-[4px] focus-visible:outline-none`}
-           // {...register("BasicDetail.Profile_height")}
-           value={basicDetails.Profile_height}
-           disabled
-          >
-            <option value="" selected disabled>
-              Select Height
-            </option>
-            {heightOptions.map((option) => (
-              <option key={option.height_id} value={option.height_id}>
-                {option.height_description}
+          <div className="w-2/4">
+            <label className='block text-black font-medium mb-1'>
+              Profile Height
+              {/* <span className="text-red-500">*</span> */}
+            </label>
+            <select
+              id="height"
+              className={`text-ash font-medium block w-full px-3 py-2 border-[1px] border-footer-text-gray rounded-[4px] focus-visible:outline-none`}
+              // {...register("BasicDetail.Profile_height")}
+              value={basicDetails.Profile_height}
+              disabled
+            >
+              <option value="" selected disabled>
+                Select Height
               </option>
-            ))}
-          </select>
+              {heightOptions.map((option) => (
+                <option key={option.height_id} value={option.height_id}>
+                  {option.height_description}
+                </option>
+              ))}
+            </select>
             {/* {errors?.BasicDetail?.Profile_height && (
                 <p className="text-red-600">{errors.BasicDetail.Profile_height.message?.toString()}</p>
               )} */}
-        </div>
+          </div>
         </div>
       )}
     </div>

@@ -47,10 +47,10 @@ interface pageProp {
   setUncleGothram: Dispatch<SetStateAction<string>>;
   setAnchesterOrgin: Dispatch<SetStateAction<string>>;
   setWeight: Dispatch<SetStateAction<string>>;
-weight: string;
-isFamilyDetailsOpen:boolean,
-setIsFamilyDetailsOpen:Dispatch<SetStateAction<boolean>>
-maritalStatusProbs:string
+  weight: string;
+  isFamilyDetailsOpen: boolean,
+  setIsFamilyDetailsOpen: Dispatch<SetStateAction<boolean>>
+  maritalStatusProbs: string
 
 }
 const FamilyDetailsForm: React.FC<pageProp> = ({
@@ -85,8 +85,8 @@ const FamilyDetailsForm: React.FC<pageProp> = ({
 
 
   // Add these near the other state declarations at the top of the component
-const [fatherAlive, setFatherAlive] = useState<string>('');
-const [motherAlive, setMotherAlive] = useState<string>('');
+  const [fatherAlive, setFatherAlive] = useState<string>('');
+  const [motherAlive, setMotherAlive] = useState<string>('');
 
   // const [isFamilyDetailsOpen, setIsFamilyDetailsOpen] = useState(true);
   const toggleSection2 = () => {
@@ -152,9 +152,9 @@ const [motherAlive, setMotherAlive] = useState<string>('');
   const physicallyChalanged = watch('FamilyDetailsForm.physicallyChalanged');
 
 
-  const {data:SuyaGothram}=useQuery({
-    queryKey:['SuyaGothram'],
-    queryFn:fetchSuyaGothram
+  const { data: SuyaGothram } = useQuery({
+    queryKey: ['SuyaGothram'],
+    queryFn: fetchSuyaGothram
   })
   return (
     <div>
@@ -165,9 +165,8 @@ const [motherAlive, setMotherAlive] = useState<string>('');
         >
           Family Details
           <svg
-            className={`fill-current transform ${
-              isFamilyDetailsOpen ? 'rotate-180' : ''
-            }`}
+            className={`fill-current transform ${isFamilyDetailsOpen ? 'rotate-180' : ''
+              }`}
             width={'20'}
             viewBox="0 0 20 20"
             fill="none"
@@ -201,9 +200,12 @@ const [motherAlive, setMotherAlive] = useState<string>('');
                 )}
               </div>
               <div className="w-full">
+                <label className="block mb-1 font-bold text-black">
+                  Father Occupation <span className="text-red-500">*</span>
+                </label>
                 <Input
                   required
-                  label={'Father Occupation'}
+                  label={''}
                   {...register('FamilyDetailsForm.fatherOccupation')}
                 />
 
@@ -246,11 +248,11 @@ const [motherAlive, setMotherAlive] = useState<string>('');
                 <Input
                   label={'Family name'}
                   type={'text'}
-                 // name="family_name"
-                   {...register('FamilyDetailsForm.family_name')}
-                  // onChange={(e) => setFamilyName(e.target.value)}
+                  // name="family_name"
+                  {...register('FamilyDetailsForm.family_name')}
+                // onChange={(e) => setFamilyName(e.target.value)}
                 />
-                 {errors?.FamilyDetailsForm?.family_name && (
+                {errors?.FamilyDetailsForm?.family_name && (
                   <p className="text-red-600">
                     {errors.FamilyDetailsForm.family_name.message}
                   </p>
@@ -277,7 +279,7 @@ const [motherAlive, setMotherAlive] = useState<string>('');
                   required
                   label={'My Hobbies'}
                   {...register('FamilyDetailsForm.MyHobbies')}
-                  // {...register('hobbies')}
+                // {...register('hobbies')}
                 />
                 {errors?.FamilyDetailsForm?.MyHobbies && (
                   <p className="text-red-600">
@@ -287,14 +289,14 @@ const [motherAlive, setMotherAlive] = useState<string>('');
               </div>
               <div className="w-full">
                 <label className="block text-black font-medium mb-1">
-                  Blood Group 
+                  Blood Group
                 </label>
                 <select
                   className="outline-none w-full px-4 py-2 border border-black rounded"
                   {...register('FamilyDetailsForm.bloodGroup')}
                 >
                   <option value="" disabled selected>
-                     Select Blood Group 
+                    Select Blood Group
                   </option>
                   {bloodGroups.map((group) => (
                     <option key={group.type} value={group.abbreviation}>
@@ -308,117 +310,117 @@ const [motherAlive, setMotherAlive] = useState<string>('');
                   </p>
                 )}
               </div>
-                 {maritalStatusProbs && ( 
-              <div className='w-full'>
-                <label className="block mb-1 text-base text-black font-medium ">
-                  Number of Children
-                </label>
-                <div className="relative">
-                  <select
-                    id="no_of_children"
-                    className="outline-none w-full text-placeHolderColor px-3 py-2.5 text-sm border border-ashBorder rounded appearance-none"
-                   // {...register("FamilyDetails.no_of_children")}
+              {maritalStatusProbs && (
+                <div className='w-full'>
+                  <label className="block mb-1 text-base text-black font-medium ">
+                    Number of Children
+                  </label>
+                  <div className="relative">
+                    <select
+                      id="no_of_children"
+                      className="outline-none w-full text-placeHolderColor px-3 py-2.5 text-sm border border-ashBorder rounded appearance-none"
+                      // {...register("FamilyDetails.no_of_children")}
 
-                        {...register("FamilyDetailsForm.no_of_children", 
-                          {
-          valueAsNumber: true, // Convert to number automatically
-          setValueAs: (value) => value === "" ? undefined : Number(value),
-        })}
-         defaultValue={0} 
-                  >
-                    <option value="" disabled selected>Select Number of Children</option>
-                    {[0, 1, 2, 3, 4, 5].map((num) => (
-                      <option key={num} value={num}>
-                        {num}
-                      </option>
-                    ))}
-                  </select>
-                  <IoMdArrowDropdown
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none"
-                    size={20}
-                  />
-                </div>
+                      {...register("FamilyDetailsForm.no_of_children",
+                        {
+                          valueAsNumber: true, // Convert to number automatically
+                          setValueAs: (value) => value === "" ? undefined : Number(value),
+                        })}
+                      defaultValue={0}
+                    >
+                      <option value="" disabled selected>Select Number of Children</option>
+                      {[0, 1, 2, 3, 4, 5].map((num) => (
+                        <option key={num} value={num}>
+                          {num}
+                        </option>
+                      ))}
+                    </select>
+                    <IoMdArrowDropdown
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none"
+                      size={20}
+                    />
+                  </div>
                   {errors?.FamilyDetailsForm?.no_of_children && (
+                    <p className="text-red-600">
+                      {errors.FamilyDetailsForm.no_of_children.message}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+
+
+            <div className="flex w-full flex-row gap-4 max-md:flex-col">
+              <div className="w-full py-1">
+                <label className="block text-black font-medium mb-1">
+                  Father Alive
+                </label>
+                <div className="flex items-center">
+                  <label className="flex items-center mr-4">
+                    <input
+                      type="radio"
+                      value="yes"
+                      //  checked={fatherAlive === 'yes'}
+                      // onChange={() => setFatherAlive('yes')}
+                      className="mr-2"
+                      {...register('FamilyDetailsForm.fatherAlive')}
+                    />
+                    Yes
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      value="no"
+                      // checked={fatherAlive === 'no'}
+                      //  onChange={() => setFatherAlive('no')}
+                      className="mr-2"
+                      {...register('FamilyDetailsForm.fatherAlive')}
+                    />
+                    No
+                  </label>
+                </div>
+                {errors?.FamilyDetailsForm?.fatherAlive && (
                   <p className="text-red-600">
-                    {errors.FamilyDetailsForm.no_of_children.message}
+                    {errors.FamilyDetailsForm.fatherAlive.message}
                   </p>
                 )}
               </div>
-             )} 
+
+              <div className="w-full py-1">
+                <label className="block text-black font-medium mb-1">
+                  Mother Alive
+                </label>
+                <div className="flex items-center">
+                  <label className="flex items-center mr-4">
+                    <input
+                      type="radio"
+                      value="yes"
+                      //  checked={motherAlive === 'yes'}
+                      // onChange={() => setMotherAlive('yes')}
+                      className="mr-2"
+                      {...register('FamilyDetailsForm.motherAlive')}
+                    />
+                    Yes
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      value="no"
+                      // checked={motherAlive === 'no'}
+                      //   onChange={() => setMotherAlive('no')}
+                      className="mr-2"
+                      {...register('FamilyDetailsForm.motherAlive')}
+                    />
+                    No
+                  </label>
+                </div>
+                {errors?.FamilyDetailsForm?.motherAlive && (
+                  <p className="text-red-600">
+                    {errors.FamilyDetailsForm.motherAlive.message}
+                  </p>
+                )}
+              </div>
             </div>
-
-            
-<div className="flex w-full flex-row gap-4 max-md:flex-col">
-  <div className="w-full py-1">
-    <label className="block text-black font-medium mb-1">
-      Father Alive 
-    </label>
-    <div className="flex items-center">
-      <label className="flex items-center mr-4">
-        <input
-          type="radio"
-          value="yes"
-        //  checked={fatherAlive === 'yes'}
-         // onChange={() => setFatherAlive('yes')}
-          className="mr-2"
-          {...register('FamilyDetailsForm.fatherAlive')}
-        />
-        Yes
-      </label>
-      <label className="flex items-center">
-        <input
-          type="radio"
-          value="no"
-         // checked={fatherAlive === 'no'}
-        //  onChange={() => setFatherAlive('no')}
-          className="mr-2"
-          {...register('FamilyDetailsForm.fatherAlive')}
-        />
-        No
-      </label>
-    </div>
-    {errors?.FamilyDetailsForm?.fatherAlive && (
-      <p className="text-red-600">
-        {errors.FamilyDetailsForm.fatherAlive.message}
-      </p>
-    )}
-  </div>
-
-  <div className="w-full py-1">
-    <label className="block text-black font-medium mb-1">
-      Mother Alive 
-    </label>
-    <div className="flex items-center">
-      <label className="flex items-center mr-4">
-        <input
-          type="radio"
-          value="yes"
-        //  checked={motherAlive === 'yes'}
-         // onChange={() => setMotherAlive('yes')}
-          className="mr-2"
-          {...register('FamilyDetailsForm.motherAlive')}
-        />
-        Yes
-      </label>
-      <label className="flex items-center">
-        <input
-          type="radio"
-          value="no"
-         // checked={motherAlive === 'no'}
-       //   onChange={() => setMotherAlive('no')}
-          className="mr-2"
-          {...register('FamilyDetailsForm.motherAlive')}
-        />
-        No
-      </label>
-    </div>
-    {errors?.FamilyDetailsForm?.motherAlive && (
-      <p className="text-red-600">
-        {errors.FamilyDetailsForm.motherAlive.message}
-      </p>
-    )}
-  </div>
-</div>
             <div>
               <div className="flex w-full flex-row gap-4 max-md:flex-col">
                 <div className="w-full py-1">
@@ -429,11 +431,10 @@ const [motherAlive, setMotherAlive] = useState<string>('');
                     {familyTypes.map((type) => (
                       <label
                         key={type.family_id}
-                        className={`w-full px-5 py-3 text-sm font-medium border text-center cursor-pointer  ${
-                          selectedFamilyType === type.family_id
+                        className={`w-full px-5 py-3 text-sm font-medium border text-center cursor-pointer  ${selectedFamilyType === type.family_id
                             ? 'bg-blue-500 text-white'
                             : ''
-                        }`}
+                          }`}
                         onClick={() => handleTypeSelection(type.family_id)}
                       >
                         <input
@@ -453,17 +454,16 @@ const [motherAlive, setMotherAlive] = useState<string>('');
 
                 <div className="w-full py-1">
                   <label className="block text-black font-medium mb-1">
-                    Family Value 
+                    Family Value
                   </label>
                   <div className="w-full inline-flex rounded max-md:flex-col">
                     {familyValues.map((value) => (
                       <label
                         key={value.family_value_id}
-                        className={`w-full px-5 py-3 text-sm font-medium border cursor-pointer ${
-                          selectedFamilyValues === value.family_value_id
+                        className={`w-full px-5 py-3 text-sm font-medium border cursor-pointer ${selectedFamilyValues === value.family_value_id
                             ? 'bg-blue-500 text-white'
                             : ''
-                        }`}
+                          }`}
                         onClick={() =>
                           handleValueSelection(value.family_value_id)
                         }
@@ -487,17 +487,16 @@ const [motherAlive, setMotherAlive] = useState<string>('');
 
               <div className="w-full py-1">
                 <label className="block text-black font-medium mb-1">
-                  Family Status 
+                  Family Status
                 </label>
                 <div className="w-full inline-flex rounded max-md:flex-col">
                   {familyStatus.map((status) => (
                     <label
                       key={status.family_status_id}
-                      className={`w-full px-5 py-3 text-sm font-medium border cursor-pointer ${
-                        selectedFamilyStatus === status.family_status_id
+                      className={`w-full px-5 py-3 text-sm font-medium border cursor-pointer ${selectedFamilyStatus === status.family_status_id
                           ? 'bg-blue-500 text-white'
                           : ''
-                      }`}
+                        }`}
                       onClick={() =>
                         handleStatusSelection(status.family_status_id)
                       }
@@ -521,7 +520,7 @@ const [motherAlive, setMotherAlive] = useState<string>('');
               <div className="mt-3 grid grid-cols-2 max-md:grid-cols-1">
                 <div>
                   <h1 className="block text-black font-medium mb-1">
-                    Brother 
+                    Brother
                   </h1>
                   <div className="flex flex-col ">
                     <div className="inline-flex rounded max-md:flex-wrap">
@@ -530,7 +529,7 @@ const [motherAlive, setMotherAlive] = useState<string>('');
                           key={num}
                           className={`px-8 py-3 text-sm font-medium border text-center cursor-pointer max-md:px-3 ${buttonClass(
                             selectedBrother !== null &&
-                              Number(selectedBrother) === num,
+                            Number(selectedBrother) === num,
                           )}`}
                         >
                           <input
@@ -545,7 +544,7 @@ const [motherAlive, setMotherAlive] = useState<string>('');
                     </div>
                     {errors?.FamilyDetailsForm?.selectedBrother && (
                       <p className="text-red-600">
-                      {errors.FamilyDetailsForm.selectedBrother.message}
+                        {errors.FamilyDetailsForm.selectedBrother.message}
                       </p>
                     )}
                   </div>
@@ -567,7 +566,7 @@ const [motherAlive, setMotherAlive] = useState<string>('');
                             key={num}
                             className={`px-10 py-3 text-sm font-medium border cursor-pointer max-md:px-3 ${buttonClass(
                               marriedBrother !== null &&
-                                Number(marriedBrother) === num,
+                              Number(marriedBrother) === num,
                             )}`}
                           >
                             <input
@@ -593,7 +592,7 @@ const [motherAlive, setMotherAlive] = useState<string>('');
               <div className="mt-3 grid grid-cols-2 max-md:grid-cols-1">
                 <div>
                   <h1 className="block text-black font-medium mb-1">
-                    Sister 
+                    Sister
                   </h1>
                   <div className="flex flex-col">
                     <div className="inline-flex rounded">
@@ -602,7 +601,7 @@ const [motherAlive, setMotherAlive] = useState<string>('');
                           key={num}
                           className={`px-8 py-3 text-sm font-medium border cursor-pointer max-md:px-3 ${buttonClass(
                             selectedSister !== null &&
-                              Number(selectedSister) === num,
+                            Number(selectedSister) === num,
                           )}`}
                         >
                           {num === 5 ? '5+' : num}
@@ -617,7 +616,7 @@ const [motherAlive, setMotherAlive] = useState<string>('');
                     </div>
                     {errors?.FamilyDetailsForm?.selectedSister && (
                       <p className="text-red-600">
-                      {errors.FamilyDetailsForm.selectedSister.message}
+                        {errors.FamilyDetailsForm.selectedSister.message}
                       </p>
                     )}
                   </div>
@@ -639,7 +638,7 @@ const [motherAlive, setMotherAlive] = useState<string>('');
                             key={num}
                             className={`px-10 py-3 text-sm font-medium border cursor-pointer max-md:px-3 ${buttonClass(
                               marriedSisters !== null &&
-                                Number(marriedSisters) === num,
+                              Number(marriedSisters) === num,
                             )}`}
                           >
                             <input
@@ -654,7 +653,7 @@ const [motherAlive, setMotherAlive] = useState<string>('');
                       </div>
                       {errors?.FamilyDetailsForm?.marriedSisters && (
                         <p className="text-red-600">
-                      {errors.FamilyDetailsForm.marriedSisters.message}
+                          {errors.FamilyDetailsForm.marriedSisters.message}
                         </p>
                       )}
                     </div>
@@ -665,7 +664,7 @@ const [motherAlive, setMotherAlive] = useState<string>('');
                 <div className="w-full py-1">
                   <label className="block text-black font-medium mb-1">
                     Physically Challenged{' '}
-                    
+
                   </label>
 
                   <input
@@ -697,64 +696,64 @@ const [motherAlive, setMotherAlive] = useState<string>('');
                   ''
                 )}
                 <div className="w-full">
-                <div className='flex items-center'>
-                <label className="block text-black font-medium mb-1">
-               Property Details
-                </label>
-                <div className="relative inline-block ml-2 group">
-                <AiOutlineInfoCircle className="text-primary align-middle" />
-                  {/* Tooltip */}
-                  <div className="absolute hidden group-hover:flex flex-col bg-white border border-ashSecondary rounded shadow-md p-2 w-48 z-10">
-                    <p className="text-sm text-black">Residential,</p>
-                    <p className="text-sm text-black">Commercial,</p>
-                    <p className="text-sm text-black">Shopping Complex,</p>
-                    <p className="text-sm text-black">Farm house,,</p>
-                    <p className="text-sm text-black">Shop,</p>
-                    <p className="text-sm text-black">Agriculture land,</p>
-                    <p className="text-sm text-black">
-                      Multistorage building etc.,
-                    </p>
+                  <div className='flex items-center'>
+                    <label className="block text-black font-medium mb-1">
+                      Property Details
+                    </label>
+                    <div className="relative inline-block ml-2 group">
+                      <AiOutlineInfoCircle className="text-primary align-middle" />
+                      {/* Tooltip */}
+                      <div className="absolute hidden group-hover:flex flex-col bg-white border border-ashSecondary rounded shadow-md p-2 w-48 z-10">
+                        <p className="text-sm text-black">Residential,</p>
+                        <p className="text-sm text-black">Commercial,</p>
+                        <p className="text-sm text-black">Shopping Complex,</p>
+                        <p className="text-sm text-black">Farm house,,</p>
+                        <p className="text-sm text-black">Shop,</p>
+                        <p className="text-sm text-black">Agriculture land,</p>
+                        <p className="text-sm text-black">
+                          Multistorage building etc.,
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                </div>
-                </div>
                   <Input
-                  //  onChange={(e) => setPropertyDetail(e.target.value)}
+                    //  onChange={(e) => setPropertyDetail(e.target.value)}
                     label={''}
                     type={'text'}
-                     {...register('FamilyDetailsForm.PropertyDetails')}
+                    {...register('FamilyDetailsForm.PropertyDetails')}
                   />
-                   {errors?.FamilyDetailsForm?.PropertyDetails && (
-                  <p className="text-red-600">
-                    {errors.FamilyDetailsForm.PropertyDetails.message}
-                  </p>
-                )}
+                  {errors?.FamilyDetailsForm?.PropertyDetails && (
+                    <p className="text-red-600">
+                      {errors.FamilyDetailsForm.PropertyDetails.message}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
             <div className="flex w-full flex-row gap-4 max-md:flex-col">
-              
+
               <div className="w-full">
 
-                   <div className='flex items-center'>
-                <label className="block text-black font-medium mb-1">
-                  Property Worth
-                </label>
-                <div className="relative inline-block ml-2 group">
-                <AiOutlineInfoCircle className="text-primary align-middle" />
-                  {/* Tooltip */}
-                  <div className="absolute hidden group-hover:flex flex-col bg-white border border-ashSecondary rounded shadow-md p-2 w-48 z-10">
-                  <p className="text-sm text-black">
-                      Approx 1c, 5c, 50c, 30L, 80L, etc.,
-                    </p>
+                <div className='flex items-center'>
+                  <label className="block text-black font-medium mb-1">
+                    Property Worth
+                  </label>
+                  <div className="relative inline-block ml-2 group">
+                    <AiOutlineInfoCircle className="text-primary align-middle" />
+                    {/* Tooltip */}
+                    <div className="absolute hidden group-hover:flex flex-col bg-white border border-ashSecondary rounded shadow-md p-2 w-48 z-10">
+                      <p className="text-sm text-black">
+                        Approx 1c, 5c, 50c, 30L, 80L, etc.,
+                      </p>
+                    </div>
                   </div>
-                </div>
                 </div>
                 <Input
                   //onChange={(e) => setPropertyWorth(e.target.value)}
                   type={'text'} label={''}
-                   {...register('FamilyDetailsForm.PropertyWorth')}
-                  />
-               {errors?.FamilyDetailsForm?.PropertyWorth && (
+                  {...register('FamilyDetailsForm.PropertyWorth')}
+                />
+                {errors?.FamilyDetailsForm?.PropertyWorth && (
                   <p className="text-red-600">
                     {errors.FamilyDetailsForm.PropertyWorth.message}
                   </p>
@@ -762,7 +761,7 @@ const [motherAlive, setMotherAlive] = useState<string>('');
               </div>
               <div className="w-full">
                 <label className="block text-black font-medium mb-1">
-                  Eye wear 
+                  Eye wear
                 </label>
                 <select
                   className="outline-none w-full px-4 py-2 border border-black rounded"
@@ -777,53 +776,53 @@ const [motherAlive, setMotherAlive] = useState<string>('');
                   </p>
                 )}
               </div>
-            
-             
-             
+
+
+
             </div>
-         <div className="flex w-full flex-row gap-4 max-md:flex-col">   
-            <div className="w-full">
+            <div className="flex w-full flex-row gap-4 max-md:flex-col">
+              <div className="w-full">
                 <Input
                   label={'Uncle Gothram'}
                   type={'text'}
-                 // onChange={(e) => setUncleGothram(e.target.value)}
-                   {...register('FamilyDetailsForm.UncleGothram')}
+                  // onChange={(e) => setUncleGothram(e.target.value)}
+                  {...register('FamilyDetailsForm.UncleGothram')}
                 />
                 {errors?.FamilyDetailsForm?.UncleGothram && (
                   <p className="text-red-600">
                     {errors.FamilyDetailsForm.UncleGothram.message}
                   </p>
                 )}
-              </div> 
-           
+              </div>
+
 
               <div className='w-full  mt-1'>
-  <label className='block text-black font-medium'>
-    Uncle Gothram (Admin)
-  </label>
-  <select 
-    className='outline-none w-full border border-black rounded px-4 py-2'
-    // value={uncleGothramAdmin}
-    // onChange={(e) => setUncleGothramAdmin(e.target.value)}
-    {...register('FamilyDetailsForm.uncleGothramAdmin')}
-  >
-    <option value="0">Select Uncle Gothram</option>
-    {SuyaGothram?.map((option) => (
-      <option key={option.id} value={option.id}>{option.gothram_name}</option>
-    ))}
-  </select>
-  {errors?.FamilyDetailsForm?.uncleGothramAdmin && (
-    <p className="text-red-600">
-      {errors.FamilyDetailsForm.uncleGothramAdmin.message}
-    </p>
-  )}
-</div>
-  <div className="w-full">
+                <label className='block text-black font-medium'>
+                  Uncle Gothram (Admin)
+                </label>
+                <select
+                  className='outline-none w-full border border-black rounded px-4 py-2'
+                  // value={uncleGothramAdmin}
+                  // onChange={(e) => setUncleGothramAdmin(e.target.value)}
+                  {...register('FamilyDetailsForm.uncleGothramAdmin')}
+                >
+                  <option value="0">Select Uncle Gothram</option>
+                  {SuyaGothram?.map((option) => (
+                    <option key={option.id} value={option.id}>{option.gothram_name}</option>
+                  ))}
+                </select>
+                {errors?.FamilyDetailsForm?.uncleGothramAdmin && (
+                  <p className="text-red-600">
+                    {errors.FamilyDetailsForm.uncleGothramAdmin.message}
+                  </p>
+                )}
+              </div>
+              <div className="w-full">
                 <Input
                   label={'Suya Gothram'}
                   showAsterisk={true}
                   //onChange={(e) => setSuyaGothram(e.target.value)}
-                   {...register('FamilyDetailsForm.SuyaGothram')}
+                  {...register('FamilyDetailsForm.SuyaGothram')}
                 />
                 {errors?.FamilyDetailsForm?.SuyaGothram && (
                   <p className="text-red-600">
@@ -832,31 +831,31 @@ const [motherAlive, setMotherAlive] = useState<string>('');
                 )}
               </div>
 
-<div className='w-full mt-1'>
-  <label className='block text-black font-medium'>
-    Suya Gothram (Admin)
-  </label>
-  <select 
-    className='outline-none w-full border border-black rounded px-4 py-2'
-    // value={suyaGothramAdmin}
-    // onChange={(e) => setSuyaGothramAdmin(e.target.value)}
-    {...register('FamilyDetailsForm.suyaGothramAdmin')}
-  >
-    <option value="0">Select Suya Gothram</option>
-    {SuyaGothram?.map((option) => (
-      <option key={option.id} value={option.id}>{option.gothram_name}</option>
-    ))}
-  </select>
-  {errors?.FamilyDetailsForm?.suyaGothramAdmin && (
-    <p className="text-red-600">
-      {errors.FamilyDetailsForm.suyaGothramAdmin.message}
-    </p>
-  )}
-</div>
-</div>
+              <div className='w-full mt-1'>
+                <label className='block text-black font-medium'>
+                  Suya Gothram (Admin)
+                </label>
+                <select
+                  className='outline-none w-full border border-black rounded px-4 py-2'
+                  // value={suyaGothramAdmin}
+                  // onChange={(e) => setSuyaGothramAdmin(e.target.value)}
+                  {...register('FamilyDetailsForm.suyaGothramAdmin')}
+                >
+                  <option value="0">Select Suya Gothram</option>
+                  {SuyaGothram?.map((option) => (
+                    <option key={option.id} value={option.id}>{option.gothram_name}</option>
+                  ))}
+                </select>
+                {errors?.FamilyDetailsForm?.suyaGothramAdmin && (
+                  <p className="text-red-600">
+                    {errors.FamilyDetailsForm.suyaGothramAdmin.message}
+                  </p>
+                )}
+              </div>
+            </div>
 
             <div className="flex w-full flex-row gap-4 max-md:flex-col">
-             <div className="w-full">
+              <div className="w-full">
                 <Input
                   placeholder="Kg"
                   onKeyDown={(e) => {
@@ -872,11 +871,11 @@ const [motherAlive, setMotherAlive] = useState<string>('');
                   }}
                   label={'weight'}
                   type={'text'}
-                   {...register('FamilyDetailsForm.weight')}
-                  // name="weight"
-                  // onChange={(e) => setWeight(e.target.value)}
+                  {...register('FamilyDetailsForm.weight')}
+                // name="weight"
+                // onChange={(e) => setWeight(e.target.value)}
                 />
-                 {errors?.FamilyDetailsForm?.weight && (
+                {errors?.FamilyDetailsForm?.weight && (
                   <p className="text-red-600">
                     {errors.FamilyDetailsForm.weight.message}
                   </p>
@@ -888,7 +887,7 @@ const [motherAlive, setMotherAlive] = useState<string>('');
                   type={'text'}
                   onChange={(e) => setAnchesterOrgin(e.target.value)}
 
-                  // {...register('FamilyDetailsForm.AncestorOrigin')}
+                // {...register('FamilyDetailsForm.AncestorOrigin')}
                 />
                 {/* {errors?.FamilyDetailsForm?.AncestorOrigin && (
                   <p className="text-red-600">
@@ -904,8 +903,8 @@ const [motherAlive, setMotherAlive] = useState<string>('');
                 </label>
                 <textarea
                   className="outline-none w-full px-4 py-2 border border-black rounded"
-                 // onChange={(e) => setAboutMyFamily(e.target.value)}
-                   {...register('FamilyDetailsForm.AboutMyFamily')}
+                  // onChange={(e) => setAboutMyFamily(e.target.value)}
+                  {...register('FamilyDetailsForm.AboutMyFamily')}
                 ></textarea>
                 {errors?.FamilyDetailsForm?.AboutMyFamily && (
                   <p className="text-red-600">
