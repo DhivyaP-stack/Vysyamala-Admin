@@ -71,7 +71,7 @@ export const parentSchema = z.object({
         message: "You must be at least 18 years old",
       }),
     Profile_address: z.string().optional(),
-    Profile_country: z.string().optional(),
+    Profile_country: z.string().min(1, "Country is required"),
     Profile_state: z.string().optional(),
     Profile_district: z.string().optional(),
     Profile_city: z.string().optional(),

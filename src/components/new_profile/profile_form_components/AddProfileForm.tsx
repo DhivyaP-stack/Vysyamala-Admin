@@ -490,7 +490,7 @@ const AddProfileForm: React.FC<AddProfileForm> = ({
             <div className="w-full">
               <label className="block text-black font-medium mb-1">
                 Country
-                {/* <span className="text-red-500">*</span> */}
+                <span className="text-red-500">*</span>
               </label>
               <select
                 // name="Profile_country"

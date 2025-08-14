@@ -260,7 +260,7 @@ const DateOfJoinToday = today.toISOString().split('T')[0];
         Profile_name: data.AddProfileForm.Profile_name,
         Profile_marital_status: data.AddProfileForm.Profile_marital_status,
         Profile_dob: data.AddProfileForm.Profile_dob,
-        Profile_complexion: data.AddProfileForm.Profile_complexion,
+        Profile_complexion: data.AddProfileForm.Profile_complexion || "",
         Profile_address: data.AddProfileForm.Profile_address,
         Profile_country: data.AddProfileForm.Profile_country,
         Profile_district: data.AddProfileForm.Profile_district,

@@ -17,7 +17,7 @@
 // //         citytemp: z.string().optional(),
 // //         disttemp: z.string().optional(),
 // //       }),
-    
+
 // //   });
 
 
@@ -41,7 +41,7 @@
 // //       field_ofstudy:string;
 // //     };
 // //   }
-  
+
 
 
 // import { z } from 'zod';
@@ -66,16 +66,16 @@
 //         work_city: z.string().min(1, 'City is required'),
 //         work_district: z.string().min(1, 'District is required'),
 //       }),
-    
+
 //     }).refine(
 //       (data) => {
 //         const { heighestEducation, field_ofstudy } = data.EducationDetails;
-    
+
 //         // If highest education is 1, 2, 3, or 4, field_ofstudy is required
 //         if (['1', '2', '3', '4'].includes(heighestEducation)) {
 //           return !!field_ofstudy && field_ofstudy.trim() !== '';
 //         }
-    
+
 //         // Otherwise, no additional validation is needed
 //         return true;
 //       },
@@ -86,12 +86,12 @@
 //     ).refine(
 //       (data) => {
 //         const { heighestEducation, degree } = data.EducationDetails;
-    
+
 //         // If highest education is 1, 2, 3, or 4, degree is required
 //         if (['1', '2', '3', '4'].includes(heighestEducation)) {
 //           return !!degree && degree.trim() !== '';
 //         }
-    
+
 //         // Otherwise, no additional validation is needed
 //         return true;
 //       },
@@ -102,12 +102,12 @@
 //     ).refine(
 //       (data) => {
 //         const { work_country, work_state, work_district } = data.EducationDetails;
-        
+
 //         // If work_country is '1' (India) and work_state is selected, work_district is required
 //         if (work_country === '1' && work_state && work_state.trim() !== '') {
 //           return work_district && work_district.trim() !== '';
 //         }
-        
+
 //         // Otherwise, work_district is optional
 //         return true;
 //       },
@@ -138,7 +138,7 @@
 //       field_ofstudy?: string | null;
 //     };
 //   }
-  
+
 
 
 import { z } from 'zod';
@@ -161,7 +161,33 @@ export const EditScheemaEducationDetails = z.object({
     work_state: z.string().optional(),
     work_city: z.string().optional(),
     work_district: z.string().optional(),
-  }),
+  })
+    .refine(
+      (data) => {
+        // If country = 1 → work_state must not be empty
+        if (data.work_country === '1') {
+          return !!data.work_state && data.work_state.trim().length > 0;
+        }
+        return true;
+      },
+      {
+        message: 'Work State is required for the selected country.',
+        path: ['work_state'],
+      }
+    )
+    .refine(
+      (data) => {
+        // If country = 1 and state selected → work_district must not be empty
+        if (data.work_country === '1') {
+          return !!data.work_district && data.work_district.trim().length > 0;
+        }
+        return true;
+      },
+      {
+        message: 'Work District is required for the selected country..',
+        path: ['work_district'],
+      }
+    ),
 })
 // .refine(
 //   (data) => {

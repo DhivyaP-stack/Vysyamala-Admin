@@ -31,10 +31,8 @@ interface FamilyDetailsDetails {
 interface pageProp {
   setFamilyName: Dispatch<SetStateAction<string>>;
   setAboutMyFamily: Dispatch<SetStateAction<string>>;
-
   // setSelectedBrother: Dispatch<SetStateAction<number>>;
   // selectedBrother: number;
-
   setSelectedFamilyValues: Dispatch<SetStateAction<string>>;
   selectedFamilyValues: string;
   setSelectedFamilyType: Dispatch<SetStateAction<string>>;
@@ -60,7 +58,6 @@ const FamilyDetailsForm: React.FC<pageProp> = ({
   isFamilyDetailsOpen,
   // setSelectedBrother,
   // selectedBrother,
-
   setSelectedFamilyValues,
   setSelectedFamilyType,
   selectedFamilyValues,
@@ -76,14 +73,9 @@ const FamilyDetailsForm: React.FC<pageProp> = ({
   maritalStatusProbs
 }) => {
   const { setValue } = useForm<FamilyDetailsDetails>();
-
   const [familyTypes, setFamilyTypes] = useState<FamilyType[]>([]);
-
   const [familyValues, setFamilyValues] = useState<FamilyValue[]>([]);
-
   const [familyStatus, setFamilyStatus] = useState<FamilyStatus[]>([]);
-
-
   // Add these near the other state declarations at the top of the component
   const [fatherAlive, setFatherAlive] = useState<string>('');
   const [motherAlive, setMotherAlive] = useState<string>('');
@@ -150,7 +142,6 @@ const FamilyDetailsForm: React.FC<pageProp> = ({
   const selectedSister = watch('FamilyDetailsForm.selectedSister');
   const marriedSisters = watch('FamilyDetailsForm.marriedSisters');
   const physicallyChalanged = watch('FamilyDetailsForm.physicallyChalanged');
-
 
   const { data: SuyaGothram } = useQuery({
     queryKey: ['SuyaGothram'],
@@ -432,8 +423,8 @@ const FamilyDetailsForm: React.FC<pageProp> = ({
                       <label
                         key={type.family_id}
                         className={`w-full px-5 py-3 text-sm font-medium border text-center cursor-pointer  ${selectedFamilyType === type.family_id
-                            ? 'bg-blue-500 text-white'
-                            : ''
+                          ? 'bg-blue-500 text-white'
+                          : ''
                           }`}
                         onClick={() => handleTypeSelection(type.family_id)}
                       >
@@ -461,8 +452,8 @@ const FamilyDetailsForm: React.FC<pageProp> = ({
                       <label
                         key={value.family_value_id}
                         className={`w-full px-5 py-3 text-sm font-medium border cursor-pointer ${selectedFamilyValues === value.family_value_id
-                            ? 'bg-blue-500 text-white'
-                            : ''
+                          ? 'bg-blue-500 text-white'
+                          : ''
                           }`}
                         onClick={() =>
                           handleValueSelection(value.family_value_id)
@@ -494,8 +485,8 @@ const FamilyDetailsForm: React.FC<pageProp> = ({
                     <label
                       key={status.family_status_id}
                       className={`w-full px-5 py-3 text-sm font-medium border cursor-pointer ${selectedFamilyStatus === status.family_status_id
-                          ? 'bg-blue-500 text-white'
-                          : ''
+                        ? 'bg-blue-500 text-white'
+                        : ''
                         }`}
                       onClick={() =>
                         handleStatusSelection(status.family_status_id)
@@ -661,7 +652,7 @@ const FamilyDetailsForm: React.FC<pageProp> = ({
                 )}
               </div>
               <div className="flex w-full flex-row gap-4 max-md:flex-col">
-                <div className="w-full py-1">
+                {/* <div className="w-full py-1">
                   <label className="block text-black font-medium mb-1">
                     Physically Challenged{' '}
 
@@ -686,7 +677,53 @@ const FamilyDetailsForm: React.FC<pageProp> = ({
                       {errors.FamilyDetailsForm.physicallyChalanged.message}
                     </p>
                   )}
+                </div> */}
+
+
+                <div className="w-full py-1">
+                  <label className="block text-black font-medium mb-1">
+                    Physically Challenged{' '}
+                  </label>
+                  <div className='flex items-center'>
+                    {/* Wrap input and text in a label for clickability */}
+                    <label className="text-black px-4 cursor-pointer">
+                      <input
+                        type="radio"
+                        value="yes"
+                        className='mr-2'
+                        {...register('FamilyDetailsForm.physicallyChalanged')}
+                      />
+                      Yes
+                    </label>
+
+                    <label className="text-black px-4 cursor-pointer">
+                      <input
+                        type="radio"
+                        value="no"
+                        className='mr-2'
+                        {...register('FamilyDetailsForm.physicallyChalanged')}
+                      />
+                      No
+                    </label>
+                  </div>
+                  {errors?.FamilyDetailsForm?.physicallyChalanged && (
+                    <p className="text-red-600">
+                      {errors.FamilyDetailsForm.physicallyChalanged.message}
+                    </p>
+                  )}
                 </div>
+
+                {/* Make the check lowercase to match the radio button value */}
+                {/* {physicallyChalanged === 'yes' && (
+    <div className="w-full">
+        <Input 
+            label={'Challenged Details'} 
+            type={'text'} 
+            // Also register this field so its value can be saved if needed
+            {...register('FamilyDetailsForm.Pysically_changed')}
+        />
+    </div>
+)} */}
 
                 {physicallyChalanged === 'Yes' ? (
                   <div className="w-full">

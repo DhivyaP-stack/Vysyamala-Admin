@@ -404,60 +404,12 @@ const EditPartnerPreference: React.FC<pageProps> = ({
       );
       setValue('PartnerPreference.pref_family_status', EditData[4].pref_family_status || '' || null);
       setValue('PartnerPreference.pref_state', EditData[4].pref_state || '' || null);
-
       setSelectedFamilyStatus(EditData[4].pref_family_status || '');
-
-
+      setFamilyStatus(EditData[4].pref_family_status || '');
       setValue('PartnerPreference.annualIncome', String(EditData[4].pref_anual_income));
       setEditProfession(EditData[4].pref_profession ?? '');
       setEditMartualStatus(EditData[4].pref_marital_status);
       setEditEducation(EditData[4].pref_education);
-      //setEditAnnualIncome(EditData[4].pref_family_status );
-      // setSelectedProfessions(EditData[4].pref_foreign_intrest)
-      // setSelectedEducations(EditData[4].pref_foreign_intrest)
-      // setSelectedMaritalStatuses()
-      // setSelectedAnnualIncomes()
-
-      // const selectedStarIdsFromApi = EditData[4].pref_porutham_star
-      //   .split(',')
-      //   .map((id: string) => ({
-      //     id: id.trim(),
-      //     rasi: '',
-      //     star: '',
-      //     label: '',
-      //   }));
-
-      // setSelectedStarIds(selectedStarIdsFromApi);
-
-
-
-
-
-      //       const selectedStarIdsFromAp = EditData[4].pref_porutham_star
-      //       ? EditData[4].pref_porutham_star.split(',')
-      //       : [];
-
-      //       const selectedStarIdsFromApii = EditData[4].pref_porutham_star_rasi
-      //       ? EditData[4].pref_porutham_star_rasi.split(','):[];
-      // const [rasih,starh]=selectedStarIdsFromApii.split('-');
-      //     const selectedStarIdsFromApi = EditData[4].pref_porutham_star_rasi
-      //       ? EditData[4].pref_porutham_star_rasi.split(',').map((rasiStar: string, index: number) => {
-      //           const [rasi, star] = rasiStar.split('-'); // Split "21-10" into "21" (rasi) and "10" (star)
-      //     console.log(rasi,"rasiiiiiiiiiiiiiiiiiiiiiii")
-      //     console.log(star,"starrrrrrrrrrrrrrrrrrr")
-      //           return {
-      //             id: selectedStarIdsFromAp[index]?.trim() ?? "", // Ensure ID is always a string
-      //             rasi: rasih.trim()??"", // Get rasi value
-      //             star: starh.trim()??"",// Get star value
-      //             label: "", // Add actual label value if needed
-      //           };
-      //         })
-      //       : [];
-
-      //     console.log(selectedStarIdsFromApi, "Updated selectedStarIds from API");
-
-      //     setSelectedStarIds(selectedStarIdsFromApi);
-
       const selectedStarIdsFromAp = EditData[4].pref_porutham_star
         ? EditData[4].pref_porutham_star.split(',')
         : [];
@@ -477,14 +429,8 @@ const EditPartnerPreference: React.FC<pageProps> = ({
           };
         })
         : [];
-
       console.log(selectedStarIdsFromApi, "Updated selectedStarIds from API");
-
       setSelectedStarIds(selectedStarIdsFromApi);
-
-
-
-
     }
   }, [EditData]);
 
@@ -726,6 +672,7 @@ const EditPartnerPreference: React.FC<pageProps> = ({
                     onClick={() => {
                       setValue('PartnerPreference.pref_family_status', status.family_status_id);
                       clearErrors('PartnerPreference.pref_family_status');
+                      setFamilyStatus(status.family_status_id.toString());
                     }}
                   >
                     <input

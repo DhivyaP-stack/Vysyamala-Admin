@@ -12,14 +12,14 @@ import RasiGridnew from './RasiGridnew';
 import AmsamGridnew from './AmsamGridNew';
 import { HoroScopeDetails } from '../../../types/EditSchemaHoro';
 interface formProps {
-  setAmsaKattam:(rasiKattam:string) => void;
-  setRasiKattam:(rasiKattam:string) => void;
+  setAmsaKattam: (rasiKattam: string) => void;
+  setRasiKattam: (rasiKattam: string) => void;
   EditData: any;
   setBirthStarId: (gender: string) => void;
-  isHoroscopeDetailsOpen:boolean,
-  setIsHoroscopeDetailsOpen:Dispatch<SetStateAction<boolean>>
+  isHoroscopeDetailsOpen: boolean,
+  setIsHoroscopeDetailsOpen: Dispatch<SetStateAction<boolean>>
 }
-const EditHororScopeDetails: React.FC<formProps> = ({isHoroscopeDetailsOpen, setIsHoroscopeDetailsOpen, EditData ,setBirthStarId,setRasiKattam,setAmsaKattam}) => {
+const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, setIsHoroscopeDetailsOpen, EditData, setBirthStarId, setRasiKattam, setAmsaKattam }) => {
   const {
     register,
     watch,
@@ -30,8 +30,8 @@ const EditHororScopeDetails: React.FC<formProps> = ({isHoroscopeDetailsOpen, set
   // const [editRasiGridData, setEditRasiGridData] = useState('');
   // const [editAmsamGridData, setEditAmsamRasiGridData] = useState('');
   // In EditHororScopeDetails component
-const [editRasiGridData, setEditRasiGridData] = useState(EditData?.[3]?.rasi_kattam || '');
-const [editAmsamGridData, setEditAmsamRasiGridData] = useState(EditData?.[3]?.amsa_kattam || '');
+  const [editRasiGridData, setEditRasiGridData] = useState(EditData?.[3]?.rasi_kattam || '');
+  const [editAmsamGridData, setEditAmsamRasiGridData] = useState(EditData?.[3]?.amsa_kattam || '');
   const [showRasiError, setShowRasiError] = useState(false);
   const [showAmsamError, setShowAmsamError] = useState(false);
   const toggleSection5 = () => {
@@ -57,19 +57,19 @@ const [editAmsamGridData, setEditAmsamRasiGridData] = useState(EditData?.[3]?.am
     queryKey: ['Dasa'],
     queryFn: getDasaName,
   });
- 
+
   const [timeOfBirth, setTimeOfBirth] = useState('');
   const [horoscopeDetails, setHoroscopeDetails] = useState();
   const [amsaKatamDetals, setAmsaKattamDetails] = useState();
 
   const birtTime = watch('HororScopeDetails.timeOfBirth');
   const dasaName = watch('HororScopeDetails.dasaName');
-  const birthStare=watch("HororScopeDetails.BirthStar")
-  useEffect(()=>{
-if(birthStare){
-  setBirthStarId(birthStare)
-}
-  },[birthStare])
+  const birthStare = watch("HororScopeDetails.BirthStar")
+  useEffect(() => {
+    if (birthStare) {
+      setBirthStarId(birthStare)
+    }
+  }, [birthStare])
   console.log(birtTime, 'birtTime');
   const handleRasiGridChange = (newData: string) => {
     setEditRasiGridData(newData);
@@ -85,35 +85,47 @@ if(birthStare){
   const [minutes, setminute] = useState('');
   const [periods, setperiod] = useState("AM");
 
-  const handleTimeChange = () => {
-    const hour = hours;
-    const minute = minutes;
-    const period = periods;
-    // const combinedTime = `${hour}:${minute} ${period}`;
-    // setTime(combinedTime);
-    let formattedHour = parseInt(hour, 10);
-    if (period === "PM" && formattedHour < 12) {
-      formattedHour += 12;
-    } else if (period === "AM" && formattedHour === 12) {
-      formattedHour = 0;
-    }
+  // const handleTimeChange = () => {
+  //   const hour = hours;
+  //   const minute = minutes;
+  //   const period = periods;
+  //   // const combinedTime = `${hour}:${minute} ${period}`;
+  //   // setTime(combinedTime);
+  //   let formattedHour = parseInt(hour, 10);
+  //   if (period === "PM" && formattedHour < 12) {
+  //     formattedHour += 12;
+  //   } else if (period === "AM" && formattedHour === 12) {
+  //     formattedHour = 0;
+  //   }
 
-    const formattedTime = `${formattedHour
-      .toString()
-      .padStart(2, "0")}:${minute}`;
-    setValue("HororScopeDetails.timeOfBirth", formattedTime);
-  };
-  useEffect(() => {
+  //   const formattedTime = `${formattedHour
+  //     .toString()
+  //     .padStart(2, "0")}:${minute}`;
+  //   setValue("HororScopeDetails.timeOfBirth", formattedTime);
+  // };
+  // useEffect(() => {
+  //   if (hours && minutes && periods) {
+  //     handleTimeChange();
+  //   }
+  // }, [hours, minutes, periods]);
+
+  const handleTimeChange = () => {
     if (hours && minutes && periods) {
-      handleTimeChange();
+      const combinedTime = `${hours}:${minutes} ${periods}`;
+      setValue("HororScopeDetails.timeOfBirth", combinedTime, { shouldValidate: true });
     }
-  }, [hours, minutes, periods]);
+  };
+
+  useEffect(() => {
+    handleTimeChange();
+  }, [hours, minutes, periods, setValue]);
+
   useEffect(() => {
     if (EditData) {
-  
 
-     
-    const  dasaBalance=EditData[3].dasa_balance;
+
+
+      const dasaBalance = EditData[3].dasa_balance;
       setValue('HororScopeDetails.timeOfBirth', EditData[3].time_of_birth);
       setValue('HororScopeDetails.PlaceofBirth', EditData[3].place_of_birth);
       setValue('HororScopeDetails.BirthStar', EditData[3].birthstar_name);
@@ -133,49 +145,63 @@ if(birthStare){
       setAmsaKattam(EditData[3].amsa_kattam)
       setValue('HororScopeDetails.rasiKattam', EditData[3].rasi_kattam || '');
       setValue('HororScopeDetails.amsaKattam', EditData[3].amsa_kattam || '');
-//       const splitValue = dasaBalance
-//       const [ year,month,day] = splitValue.split(",")
-//       .map((item: string) => item.split(":")[1]);
-// console.log(day, month, year)
+      //       const splitValue = dasaBalance
+      //       const [ year,month,day] = splitValue.split(",")
+      //       .map((item: string) => item.split(":")[1]);
+      // console.log(day, month, year)
 
-//       setValue("HororScopeDetails.DasaBalanceDay",day)
-//       setValue("HororScopeDetails.DasaBalanceMonth",month)
-//       setValue("HororScopeDetails.DasaBalanceYear",year)
+      //       setValue("HororScopeDetails.DasaBalanceDay",day)
+      //       setValue("HororScopeDetails.DasaBalanceMonth",month)
+      //       setValue("HororScopeDetails.DasaBalanceYear",year)
 
-if (dasaBalance && dasaBalance.includes(":")) {
-  const [year, month, day] = dasaBalance
-    .split(",")
-    .map((item: string) => item.split(":")[1]);
+      if (dasaBalance && dasaBalance.includes(":")) {
+        const [year, month, day] = dasaBalance
+          .split(",")
+          .map((item: string) => item.split(":")[1]);
 
-  setValue("HororScopeDetails.DasaBalanceDay", day || "");
-  setValue("HororScopeDetails.DasaBalanceMonth", month || "");
-  setValue("HororScopeDetails.DasaBalanceYear", year || "");
+        setValue("HororScopeDetails.DasaBalanceDay", day || "");
+        setValue("HororScopeDetails.DasaBalanceMonth", month || "");
+        setValue("HororScopeDetails.DasaBalanceYear", year || "");
 
-  console.log(day, month, year);
-} else {
-  console.warn("Invalid or missing dasa_balance:", dasaBalance);
-  setValue("HororScopeDetails.DasaBalanceDay", "");
-  setValue("HororScopeDetails.DasaBalanceMonth", "");
-  setValue("HororScopeDetails.DasaBalanceYear", "");
-}
+        console.log(day, month, year);
+      } else {
+        console.warn("Invalid or missing dasa_balance:", dasaBalance);
+        setValue("HororScopeDetails.DasaBalanceDay", "");
+        setValue("HororScopeDetails.DasaBalanceMonth", "");
+        setValue("HororScopeDetails.DasaBalanceYear", "");
+      }
 
-      const timeOfBirth =  EditData[3].time_of_birth;
-      //const [time, period] = timeOfBirth.split(" ");
-       const [time, period] = (timeOfBirth || "").split(" ");
-      const [hours, minutes] = time.split(":");
-      sethour(hours);
-      setminute(minutes);
-      setperiod(period);
-      
+      // const timeOfBirth = EditData[3].time_of_birth;
+      // //const [time, period] = timeOfBirth.split(" ");
+      // const [time, period] = (timeOfBirth || "").split(" ");
+      // const [hours, minutes] = time.split(":");
+      // sethour(hours);
+      // setminute(minutes);
+      // setperiod(period);
+
+      const timeOfBirth = EditData[3].time_of_birth;
+      if (timeOfBirth && timeOfBirth.includes(' ')) {
+        setValue('HororScopeDetails.timeOfBirth', timeOfBirth);
+        const [time, period] = timeOfBirth.split(" ");
+        if (time && time.includes(":")) {
+          const [h, m] = time.split(":");
+          sethour(h);
+          setminute(m);
+        }
+        if (period) {
+          setperiod(period);
+        }
+      }
+
     }
-  }, [EditData]);
+  }, [EditData, setValue, setRasiKattam, setAmsaKattam]);
   useEffect(() => {
-    if(editRasiGridData) {
+    if (editRasiGridData) {
       setRasiKattam(editRasiGridData);
       setValue('HororScopeDetails.rasiKattam', editRasiGridData);
       setShowRasiError(false);
     }
-    if(editAmsamGridData) {
+    if (editAmsamGridData) {
       setAmsaKattam(editAmsamGridData);
       setValue('HororScopeDetails.amsaKattam', editAmsamGridData);
       setShowAmsamError(false);
@@ -183,32 +209,32 @@ if (dasaBalance && dasaBalance.includes(":")) {
   }, [editRasiGridData, editAmsamGridData]);
 
   // Add validation check before form submission
-const rasiValue = watch('HororScopeDetails.rasiKattam');
-    const amsamValue = watch('HororScopeDetails.amsaKattam');
-    
+  const rasiValue = watch('HororScopeDetails.rasiKattam');
+  const amsamValue = watch('HororScopeDetails.amsaKattam');
+
   const validateGrids = () => {
-    
+
     if (!rasiValue) {
       setShowRasiError(true);
     }
     if (!amsamValue) {
       setShowAmsamError(true);
     }
-    
+
     return rasiValue && amsamValue;
   };
-  useEffect(()=>{
-validateGrids()
-  },[rasiValue,amsamValue])
+  useEffect(() => {
+    validateGrids()
+  }, [rasiValue, amsamValue])
 
   // In the useEffect that handles EditData
-useEffect(() => {
-  if (EditData) {
-    // ... other initialization code ...
-    setEditRasiGridData(EditData[3].rasi_kattam || '');
-    setEditAmsamRasiGridData(EditData[3].amsa_kattam || '');
-  }
-}, [EditData]);
+  useEffect(() => {
+    if (EditData) {
+      // ... other initialization code ...
+      setEditRasiGridData(EditData[3].rasi_kattam || '');
+      setEditAmsamRasiGridData(EditData[3].amsa_kattam || '');
+    }
+  }, [EditData]);
 
 
 
@@ -221,9 +247,8 @@ useEffect(() => {
         >
           Horoscope Details
           <svg
-            className={`fill-current transform ${
-              isHoroscopeDetailsOpen ? 'rotate-180' : ''
-            }`}
+            className={`fill-current transform ${isHoroscopeDetailsOpen ? 'rotate-180' : ''
+              }`}
             width={'20'}
             viewBox="0 0 20 20"
             fill="none"
@@ -240,66 +265,34 @@ useEffect(() => {
         {isHoroscopeDetailsOpen && (
           <div className="flex flex-col gap-5 pt-2">
             <div className="flex w-full flex-row gap-4">
-             <div className="w-full">
-  <label className="block text-black font-semibold mb-1">
-    Time of Birth
-  </label>
-  <div className="flex items-center space-x-2">
-    <select
-      value={hours}
-      onChange={(e) => sethour(e.target.value)}
-      className="px-3 py-2 border rounded border-gray-500"
-    >
-      {Array.from({ length: 12 }, (_, i) => (
-        <option key={i+1} value={(i+1).toString().padStart(2, '0')}>
-          {(i+1).toString().padStart(2, '0')}
-        </option>
-      ))}
-    </select>
-    <span>:</span>
-    <select
-      value={minutes}
-      onChange={(e) => setminute(e.target.value)}
-      className="px-3 py-2 border rounded border-gray-500"
-    >
-      {Array.from({ length: 60 }, (_, i) => (
-        <option key={i} value={i.toString().padStart(2, '0')}>
-          {i.toString().padStart(2, '0')}
-        </option>
-      ))}
-    </select>
-    <select
-      value={periods}
-      onChange={(e) => setperiod(e.target.value)}
-      className="px-3 py-2 border rounded border-gray-500"
-    >
-      <option value="AM">AM</option>
-      <option value="PM">PM</option>
-    </select>
-  </div>
-  <input
-    type="hidden"
-    {...register('HororScopeDetails.timeOfBirth', { required: "Time is required" })}
-  />
-  {errors?.HororScopeDetails?.timeOfBirth && (
-    <p className="text-red-600">
-      {errors.HororScopeDetails.timeOfBirth.message}
-    </p>
-  )}
-</div>
-                {/* <input
-                  id="time_of_birth"
-                  type="time"
-                  value={birthTime}
-                  {...register('HororScopeDetails.timeOfBirth')}
-                  className="outline-none w-full px-4 py-2 border border-black rounded"
+              <div className="w-full">
+                <label className="block text-black font-semibold mb-1">
+                  Time of Birth
+                </label>
+                <div className="flex items-center space-x-2">
+                  <select value={hours} onChange={(e) => sethour(e.target.value)} className="px-3 py-2 border rounded border-gray-500 w-full">
+                    <option value="" disabled>Hour</option>
+                    {Array.from({ length: 12 }, (_, i) => (<option key={i + 1} value={(i + 1).toString().padStart(2, '0')}>{(i + 1).toString().padStart(2, '0')}</option>))}
+                  </select>
+                  <span>:</span>
+                  <select value={minutes} onChange={(e) => setminute(e.target.value)} className="px-3 py-2 border rounded border-gray-500 w-full">
+                     <option value="" disabled>Min</option>
+                    {Array.from({ length: 60 }, (_, i) => (<option key={i} value={i.toString().padStart(2, '0')}>{i.toString().padStart(2, '0')}</option>))}
+                  </select>
+                  <select value={periods} onChange={(e) => setperiod(e.target.value)} className="px-3 py-2 border rounded border-gray-500">
+                    <option value="AM">AM</option><option value="PM">PM</option>
+                  </select>
+                </div>
+                <input
+                  type="hidden"
+                  {...register('HororScopeDetails.timeOfBirth', { required: "Time is required" })}
                 />
                 {errors?.HororScopeDetails?.timeOfBirth && (
                   <p className="text-red-600">
                     {errors.HororScopeDetails.timeOfBirth.message}
                   </p>
-                )} */}
-              
+                )}
+              </div>
 
               <div className="w-full">
                 <label
@@ -321,8 +314,8 @@ useEffect(() => {
                 )}
               </div>
 
-                {/* Birth Star Selector */}
-                <div className="w-full">
+              {/* Birth Star Selector */}
+              <div className="w-full">
                 <label
                   htmlFor="birthstar_name"
                   className="block text-black font-semibold mb-1"
@@ -343,7 +336,7 @@ useEffect(() => {
                     </option>
                   ))}
                 </select>
-                 {errors?.HororScopeDetails?.BirthStar && (
+                {errors?.HororScopeDetails?.BirthStar && (
                   <p className="text-red-600">
                     {errors.HororScopeDetails.BirthStar.message}
                   </p>
@@ -351,14 +344,8 @@ useEffect(() => {
               </div>
             </div>
 
-            
-
-          
-            
-
             <div className="flex w-full flex-row gap-4">
-
-            <div className="w-full">
+              <div className="w-full">
                 <label
                   htmlFor="birth_rasi_name"
                   className="block text-black font-semibold mb-1 "
@@ -397,10 +384,10 @@ useEffect(() => {
                   id="lagnam"
                   {...register('HororScopeDetails.lagnam')}
                   className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
-                  
+
                 >
                   <option value="" disabled className='text-[#000000e6] font-medium'>
-                     Select your Lagnam
+                    Select your Lagnam
                   </option>
                   {lagnam?.map((option: any) => (
                     <option key={option.didi_id} value={option.didi_id} className='text-[#000000e6] font-medium'>
@@ -430,10 +417,10 @@ useEffect(() => {
                   defaultValue=""
                 >
                   <option value="" disabled className='text-[#000000e6] font-medium'>
-                    Select Chevvai Dhosam 
+                    Select Chevvai Dhosam
                   </option>
                   <option value="UnKnown" className='text-[#000000e6] font-medium'>UnKnown</option>
-                  <option value="Yes"className='text-[#000000e6] font-medium'>Yes</option>
+                  <option value="Yes" className='text-[#000000e6] font-medium'>Yes</option>
                   <option value="No" className='text-[#000000e6] font-medium'>No</option>
                 </select>
                 {errors?.HororScopeDetails?.ChevvaiDhosam && (
@@ -450,7 +437,7 @@ useEffect(() => {
                   htmlFor="ragu_dosham"
                   className="block text-black font-semibold mb-1"
                 >
-                  Sarpa Dhosham 
+                  Sarpa Dhosham
                 </label>
                 <select
                   id="ragu_dosham"
@@ -459,7 +446,7 @@ useEffect(() => {
                   defaultValue=""
                 >
                   <option value="" disabled className='text-[#000000e6] font-medium'>
-                   Select Sarpa Dhosham
+                    Select Sarpa Dhosham
                   </option>
                   <option value="Unknown" className='text-[#000000e6] font-medium'>Unknown</option>
                   <option value="Yes" className='text-[#000000e6] font-medium'>Yes</option>
@@ -478,7 +465,7 @@ useEffect(() => {
                   htmlFor="nalikai"
                   className="block text-black font-semibold mb-1"
                 >
-                  Naalikai 
+                  Naalikai
                 </label>
                 <input
                   {...register('HororScopeDetails.nalikai')}
@@ -512,24 +499,22 @@ useEffect(() => {
                     </option>
                   ))}
                 </select>
-                 {errors?.HororScopeDetails?.dasaName && (
+                {errors?.HororScopeDetails?.dasaName && (
                   <p className="text-red-600">
                     {errors.HororScopeDetails.dasaName.message}
                   </p>
                 )}
               </div>
-
             </div>
 
             <div className="flex w-full flex-row gap-4">
-              
+
               <div className="w-2/4">
                 <label htmlFor="dasaBalance" className="block text-black font-semibold mb-1">
                   Dasa Balance
                 </label>
                 <div className="flex space-x-2">
-               
-                   <div className="w-full">
+                  <div className="w-full">
                     <select
                       {...register('HororScopeDetails.DasaBalanceYear')}
                       id="year"
@@ -553,7 +538,7 @@ useEffect(() => {
                       {...register('HororScopeDetails.DasaBalanceMonth')}
                       className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
                     >
-                      <option value="" disabled className='text-[#000000e6] font-medium'> 
+                      <option value="" disabled className='text-[#000000e6] font-medium'>
                         Month
                       </option>
                       {[...Array(12)].map((_, i) => (
@@ -563,7 +548,7 @@ useEffect(() => {
                       ))}
                     </select>
                   </div>
-                    <div className="w-full">
+                  <div className="w-full">
                     <select
                       {...register('HororScopeDetails.DasaBalanceDay')}
                       id="dasa_balance"
@@ -584,20 +569,18 @@ useEffect(() => {
               </div>
 
               <div className=" mb-1 w-[50%]">
-              <label htmlFor="horoscopeHints" className="block text-black font-semibold mb-1">
-                Horoscope Hints
-              </label>
-              <input
-                {...register('HororScopeDetails.horoscopeHints')}
-                id="horoscopeHints"
-                type="text"
-                className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
-              />
-            </div>
+                <label htmlFor="horoscopeHints" className="block text-black font-semibold mb-1">
+                  Horoscope Hints
+                </label>
+                <input
+                  {...register('HororScopeDetails.horoscopeHints')}
+                  id="horoscopeHints"
+                  type="text"
+                  className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                />
+              </div>
               <div className=" mb-1 w-[50%]"></div>
             </div>
-
-           
 
             {/* Rasi Grid and Amsam Grid components */}
             <div>
@@ -607,7 +590,7 @@ useEffect(() => {
               <RasiGridnew
                 onChange={handleRasiGridChange}
                 isEditing={true}
-                data={horoscopeDetails ??''}
+                data={horoscopeDetails ?? ''}
                 centerLabel={'Rasi'}
               />
               {/* {showRasiError && !watch('HororScopeDetails.rasiKattam') && (
@@ -624,7 +607,7 @@ useEffect(() => {
               <AmsamGridnew
                 onChange={handleAmsamGridChange}
                 isEditing={true}
-                data={amsaKatamDetals ?? '' }
+                data={amsaKatamDetals ?? ''}
                 centerLabel={'Amsam'}
               />
               {/* {showAmsamError && !watch('HororScopeDetails.amsaKattam') && (
@@ -633,18 +616,18 @@ useEffect(() => {
             </div>
           </div>
         )}
-         <div className='flex justify-end mt-10 '>
-       <button
-       // onClick={formHandleSubmit}
-        type="submit"
-        onClick={() => validateGrids()}
-        className="bg-blue-500 text-white px-15 py-2 rounded"
-      >
-    Save Horoscope Details
-      </button>
+        <div className='flex justify-end mt-10 '>
+          <button
+            // onClick={formHandleSubmit}
+            type="submit"
+            onClick={() => validateGrids()}
+            className="bg-blue-500 text-white px-15 py-2 rounded"
+          >
+            Save Horoscope Details
+          </button>
 
-    
-{/* <button
+
+          {/* <button
   type="submit" // Change from "submit" to prevent default behavior
   onClick={() => {
     if (validateGrids()) {
@@ -657,7 +640,7 @@ useEffect(() => {
 >
   Save Horoscope Details
 </button> */}
-       </div>
+        </div>
       </div>
     </div>
   );

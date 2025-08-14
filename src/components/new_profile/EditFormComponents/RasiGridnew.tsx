@@ -177,18 +177,18 @@ const RasiGridnew: React.FC<RasiGridProps> = ({
   };
 
   // In both RasiGridnew and AmsamGridnew components
-useEffect(() => {
-  if (data) {
-    // Parse the data only if it's not empty
-    if (typeof data === 'string' && data.trim() !== '') {
-      const formattedData = data.slice(1, -1).split(', ').map((grid) => {
-        const match = grid.match(/Grid \d+: (.+)/);
-        return match && match[1] !== 'empty' ? match[1].split(',').map(id => parseInt(id, 10)) : [];
-      });
-      // ... rest of parsing logic ...
+  useEffect(() => {
+    if (data) {
+      // Parse the data only if it's not empty
+      if (typeof data === 'string' && data.trim() !== '') {
+        const formattedData = data.slice(1, -1).split(', ').map((grid) => {
+          const match = grid.match(/Grid \d+: (.+)/);
+          return match && match[1] !== 'empty' ? match[1].split(',').map(id => parseInt(id, 10)) : [];
+        });
+        // ... rest of parsing logic ...
+      }
     }
-  }
-}, [data, initialLabels]);
+  }, [data, initialLabels]);
   return (
     <div className="flex justify-start items-start bg-gray-200 space-x-16">
       <div className="flex flex-col space-y-2">
@@ -246,7 +246,7 @@ useEffect(() => {
                   key={labelIndex}
                   className="w-24 h-auto mx-auto relative bg-white text-[9px] px-1 py-1 my-1 text-center font-semibold flex items-center justify-between max-2xl:w-[80px]"
                 >
-                  {label}
+                  <span className="flex-1 truncate text-left">{label}</span>
                   {isEditing && (
                     <AiOutlineClose
                       className="cursor-pointer ml-2"

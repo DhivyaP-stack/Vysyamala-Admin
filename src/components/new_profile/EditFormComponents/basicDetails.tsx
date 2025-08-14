@@ -22,12 +22,12 @@ import {
 } from '../profile_form_components/AddProfileForm';
 import { MaritalStatusOption } from '../../../action';
 import { Country } from '../profile_form_components/AddProfileForm';
-import { EditAlertSettings } from './EditAlertSettings';
+// import { EditAlertSettings } from './EditAlertSettings';
 import { AiOutlineInfoCircle } from 'react-icons/ai';
 import { Controller } from 'react-hook-form';
 import { BasicDetailss } from '../../../types/EditSchemaBasicDetails';
 import axios from 'axios';
-import { API_URL, API_URL_Auth } from '../../../services/api';
+import { API_URL_Auth } from '../../../services/api';
 interface formProps {
   error: any;
   EditData: any;
@@ -140,9 +140,7 @@ const BasicDetails: React.FC<formProps> = ({
     queryFn: () => GetCity(selectedDistrict),
     enabled: !!selectedDistrict,
   });
-
   const EmailRef = useRef<HTMLDivElement | null>(null);
-
   const MobileNoRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     if (errors?.BasicDetail?.Mobile_no) {
@@ -537,7 +535,7 @@ const BasicDetails: React.FC<formProps> = ({
             <div className="w-full">
               <label className="block text-black font-semibold mb-1">
                 Country
-                {/* <span className="text-red-500">*</span> */}
+                <span className="text-red-500">*</span>
               </label>
               <select
                 value={selectedCountry}

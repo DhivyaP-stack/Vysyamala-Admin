@@ -325,7 +325,7 @@ const ViewBasicDetails: React.FC<pageProps> = ({ profile, setGennder }) => {
             </div>
             <div className="w-full">
               <label className="block text-black font-semibold mb-1">
-                Country 
+                Country<span className='text-red-500'>*</span> 
               </label>
               <select
                 disabled

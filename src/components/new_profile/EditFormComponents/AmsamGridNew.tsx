@@ -107,40 +107,40 @@ const AmsamGridnew: React.FC<AmsamGridProps> = ({ centerLabel, data, onChange, i
   };
 
   // In both RasiGridnew and AmsamGridnew components
-useEffect(() => {
-  if (data) {
-    // Parse the data only if it's not empty
-    if (typeof data === 'string' && data.trim() !== '') {
-      const formattedData = data.slice(1, -1).split(', ').map((grid) => {
-        const match = grid.match(/Grid \d+: (.+)/);
-        return match && match[1] !== 'empty' ? match[1].split(',').map(id => parseInt(id, 10)) : [];
-      });
-      // ... rest of parsing logic ...
+  useEffect(() => {
+    if (data) {
+      // Parse the data only if it's not empty
+      if (typeof data === 'string' && data.trim() !== '') {
+        const formattedData = data.slice(1, -1).split(', ').map((grid) => {
+          const match = grid.match(/Grid \d+: (.+)/);
+          return match && match[1] !== 'empty' ? match[1].split(',').map(id => parseInt(id, 10)) : [];
+        });
+        // ... rest of parsing logic ...
+      }
     }
-  }
-}, [data, initialLabels]);
+  }, [data, initialLabels]);
 
   return (
     <div className="flex justify-start items-start bg-gray-200 space-x-16">
       <div className="flex flex-col space-y-2">
-      {isEditing && (
-        <div className="flex flex-col space-y-2">
-          {labels.map((label, index) => (
-            <div
-              key={index}
-              draggable
-              onDragStart={(e) => handleDragStart(e, label)}
-              className="flex items-center bg-yellow-100 text-xs font-semibold px-2 py-2 rounded text-center hover:cursor-grab 2xl:text-[12px] 2xl:px-1 max-2xl:text-[10px]"
-            >
-              <RiDraggable className="mr-2" />
-              {label.name}
-            </div>
-          ))}
-          {labels.length === 0 && hasInteracted && (
-            <div className="text-gray-500 italic">All items placed</div>
-          )}
-        </div>
-      )}
+        {isEditing && (
+          <div className="flex flex-col space-y-2">
+            {labels.map((label, index) => (
+              <div
+                key={index}
+                draggable
+                onDragStart={(e) => handleDragStart(e, label)}
+                className="flex items-center bg-yellow-100 text-xs font-semibold px-2 py-2 rounded text-center hover:cursor-grab 2xl:text-[12px] 2xl:px-1 max-2xl:text-[10px]"
+              >
+                <RiDraggable className="mr-2" />
+                {label.name}
+              </div>
+            ))}
+            {labels.length === 0 && hasInteracted && (
+              <div className="text-gray-500 italic">All items placed</div>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="">
@@ -169,7 +169,7 @@ useEffect(() => {
                   key={labelIndex}
                   className="w-24 h-auto mx-auto relative bg-white text-[9px] px-1 py-1 my-1 text-center font-semibold flex items-center justify-between max-2xl:w-[80px]"
                 >
-                  {label}
+                  <span className="flex-1 truncate text-left">{label}</span>
                   {isEditing && (
                     <AiOutlineClose
                       className="cursor-pointer ml-2"

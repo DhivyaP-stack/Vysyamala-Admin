@@ -32,8 +32,7 @@ export const EditScheemaBasicDetails = z.object({
         message: 'You must be at least 18 years old',
       }),
     address: z.string().optional().nullable(),
-    country: z.string().optional().nullable(),
-
+    country: z.string().min(1, 'Country is required'),
     // Make state and district optional by default
     state: z.string().optional().nullable(),
     district: z.string().optional().nullable(),
@@ -49,39 +48,32 @@ export const EditScheemaBasicDetails = z.object({
     WhatsAppNumber: z.string().optional(),
   })
     .refine(
-      (data) => {
-        // If the selected country has an ID of '1'...
-        if (data.country === '1') {
-          // ...then the state field must not be empty.
-          return !!data.state && data.state.length > 0;
-        }
-        // For any other country, this validation rule passes.
-        return true;
-      },
-      {
-        // This is the error message that will be shown.
-        message: 'State is required for the selected country.',
-        // This is crucial: it tells Zod to show the error on the 'state' field.
-        path: ['state'],
-      })
-      .refine(
-      (data) => {
-        // If a state has been selected (i.e., it's not null or empty)...
-        if (data.state && data.state.length > 0) {
-          // ...then the district field must also not be empty.
-          return !!data.district && data.district.length > 0;
-        }
-        // If no state is selected, this rule passes.
-        return true;
-      },
-      {
-        message: 'District is required when a state is selected.',
-        // Crucially, attach this error to the 'district' field.
-        path: ['district'],
+    (data) => {
+      // If country = 1, then state is required
+      if (data.country === '1') {
+        return !!data.state && data.state.trim().length > 0;
       }
-    ),
+      return true;
+    },
+    {
+      message: 'State is required for the selected country.',
+      path: ['state'],
+    }
+  )
+  .refine(
+    (data) => {
+      // If country = 1, then district is required
+      if (data.country === '1') {
+        return !!data.district && data.district.trim().length > 0;
+      }
+      return true;
+    },
+    {
+      message: 'District is required for the selected country.',
+      path: ['district'],
+    }
+  ),
 })
-
 
 export interface BasicDetailss {
   BasicDetail: {

@@ -5,7 +5,7 @@ import FamilyDetails from './EditFormComponents/familyDetails';
 import { EditScheema, FamilyDetailsValues, } from '../../EditSceema';
 import { fetchEditProfileDetails } from '../../action';
 import { useQuery } from '@tanstack/react-query';
-import { SetStateAction, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { notify, notifyDelete } from '../TostNotification';
 import { editProfileApi } from '../../services/api';
@@ -18,10 +18,10 @@ import { EditScheemaEducationDetails, EducationDetails } from '../../types/EditS
 import BasicDetails from './EditFormComponents/basicDetails';
 import { BasicDetailss, EditScheemaBasicDetails } from '../../types/EditSchemaBasicDetails';
 import EditSuggestedProfile from './EditFormComponents/EditSuggestedProfile';
-import ProfileView from './EditFormComponents/ProfileView';
+// import ProfileView from './EditFormComponents/ProfileView';
 import { EditSchemaProfileView, profileView } from '../../types/EditProfilrSchema';
 import EditViewProfile from './EditFormComponents/EditProfile';
-import ProfileForm from './EditFormComponents/adminForm';
+// import ProfileForm from './EditFormComponents/adminForm';
 import { EditScheemaSuggestedProfile, suggestedProfile } from '../../types/EditSchemaSuggestedProfile';
 import { EditProfileVisibility } from './EditFormComponents/EditProfileVisibility';
 import { ProfileVisibilityResponse, profileVisibilitySchema } from '../../types/EditProfileVisibiltySchema';
@@ -183,7 +183,7 @@ const EditProfile = () => {
   const [prefProf, setPrefProf] = useState('');
   const [alretSettings, setAlretSetting] = useState('');
   const [isBasicDetailsOpen, setIsBasicDetailsOpen] = useState(true);
-  const [addOnPackageDetails, setAddonPackageDetails] = useState<number[]>([]);
+  //const [addOnPackageDetails, setAddonPackageDetails] = useState<number[]>([]);
   const [isSuggestedProfileOpen, setIsSuggestedProfileOpen] = useState(true);
   const [isViewDetais, setViewDetail] = useState(true);
   const [isProfileVisibility, setIsProfileVisibility] = useState(true)
@@ -352,10 +352,10 @@ const EditProfile = () => {
           pref_anual_income: data.PartnerPreference.annualIncome,
           pref_profession: prefProf,
           pref_age_differences: data.PartnerPreference.agePreference,
-          pref_chevvai: data.PartnerPreference.ChevvaiDhosam || null,
-          pref_ragukethu: data.PartnerPreference.ragukethu || null,
+          pref_chevvai: data.PartnerPreference.ChevvaiDhosam || "",
+          pref_ragukethu: data.PartnerPreference.ragukethu || "",
           pref_foreign_intrest: data.PartnerPreference.foreignInterest,
-          pref_family_status: familyStatus,
+          pref_family_status: familyStatus || null,
           //         pref_family_status:
           //   data.PartnerPreference.pref_family_status &&
           //   data.PartnerPreference.pref_family_status !== "null" &&
