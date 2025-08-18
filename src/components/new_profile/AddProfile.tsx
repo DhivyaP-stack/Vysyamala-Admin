@@ -35,7 +35,7 @@ export interface FormValues {
     Profile_district?: string;
     Profile_pincode?: string;
     status?: string;
-    Profile_height:string;
+    Profile_height: string;
     WhatsAppNumber?: string;
     // Notifcation_enabled?: string; // Optional, as it's not in the original form
     // Addon_package?: string; // Optional field for the plan package
@@ -53,7 +53,7 @@ export interface FormValues {
     EyeWear: string;
 
     // Add the fields relevant to FamilyDetailsForm here
-    family_name:string;
+    family_name: string;
     fathername: string;
     fatherOccupation: string;
     motherName: string;
@@ -71,16 +71,16 @@ export interface FormValues {
     marriedSisters: string;
     physicallyChalanged: 'Yes' | 'No';
     Pysically_changed: string;
-    no_of_children?:number;
-     fatherAlive: string;
+    no_of_children?: number;
+    fatherAlive: string;
     motherAlive: string;
-     suyaGothramAdmin: string;
+    suyaGothramAdmin: string;
     uncleGothramAdmin: string;
   };
   EducationDetails: {
     //ug_degeree: any;
     workCountry: string;
-     work_district: string;
+    work_district: string;
     work_city: string;
     work_state: string;
     heighestEducation: string;
@@ -96,7 +96,7 @@ export interface FormValues {
     ug_degeree: string;
     CareerPlans: string;
     work_place: string;
-   
+
   };
   HororScopeDetails: {
     dasa_name: string;
@@ -150,9 +150,9 @@ const AddProfile = () => {
         physicallyChalanged: 'no',
         marriedBrother: '0',
         marriedSisters: '0',
-        motherAlive:"yes",
-        fatherAlive:"yes"
-        
+        motherAlive: "yes",
+        fatherAlive: "yes"
+
       },
       EducationDetails: {
         work_place: '',
@@ -164,8 +164,8 @@ const AddProfile = () => {
   });
   const { reset } = methods;
   const [birthStarId, setBirthStarId] = useState<string>('');
-  const [gender, setGender] = useState<string >('');
-const [rasiid,setRasiId]=useState<string >('');
+  const [gender, setGender] = useState<string>('');
+  const [rasiid, setRasiId] = useState<string>('');
   //familyDetail
   const [familyName, setFamilyName] = useState<string>('');
   const [aboutMyFamily, setAboutMyFamily] = useState<string>('');
@@ -183,14 +183,13 @@ const [rasiid,setRasiId]=useState<string >('');
 
   //partnerPreference
   const [prefProf, setPrefProf] = useState<number[]>([]);
-
   const [setMariedStatus, selectSetMaridStatus] = useState<string[]>([]);
   const [AnnualIncomesVal, setAnnualIncomesVal] = useState<string[]>([]);
   const [AnnualIncomesValmax, setAnnualIncomesValMax] = useState<string[]>([]);
   const [prefEducation, setprefEducation] = useState<string[]>();
   const [prefporuthamstar, setPoruthamstar] = useState<string>('');
   const [preforuthamStarRasi, setPreforuthamStarRasi] = useState<string>('');
-    const [preforuthamStarRasiSuggested, setPreforuthamStarRasiSuggested] = useState<string>('');
+  const [preforuthamStarRasiSuggested, setPreforuthamStarRasiSuggested] = useState<string>('');
   const [prefMaritalStatus, setMaritalStaus] = useState<string>('');
   const [weight, setWeight] = useState<string>('');
 
@@ -207,7 +206,8 @@ const [rasiid,setRasiId]=useState<string >('');
   const [isEducationDetailsOpen, setIsEducationDetailsOpen] = useState(true);
   const [isPartnerPreferenceOpen, setIsPartnerPreferenceOpen] = useState(true);
   // const [isSuggestedProfileOpen, setIsSuggestedProfileOpen] = useState(true);
-
+  // const [prefFamilyStatusSuggested, setPrefFamilyStatusSuggested] = useState('');
+  // const [prefStateSuggested, setPrefStateSuggested] = useState('');
 
   const [isUploadImagesOpen, setIsUploadImagesOpen] = useState(true);
   const [addonOpen, setAddOnOpen] = useState(true);
@@ -225,8 +225,13 @@ const [rasiid,setRasiId]=useState<string >('');
   console.log(horoImage, 'horoImagehoroImagehoroImagehoroImage');
   const [isSuggestedProfileOpen, setIsSuggestedProfileOpen] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-const[profileStatus,setProfileStatus]=useState(0)
-const [maritalStatusProbs,setMariedStatusProbs]=useState<boolean|number>(false)
+  const [profileStatus, setProfileStatus] = useState(0)
+  const [maritalStatusProbs, setMariedStatusProbs] = useState<boolean | number>(false)
+  const [prefFamilyStatusSuggested, setPrefFamilyStatusSuggested] = useState('');
+  const [prefStateSuggested, setPrefStateSuggested] = useState('');
+  // ADD THESE NEW STATE VARIABLES FOR PARTNER PREFERENCE:
+  const [prefFamilyStatusPartner, setPrefFamilyStatusPartner] = useState('');
+  const [prefStatePartner, setPrefStatePartner] = useState('');
 
   useEffect(() => {
     if (topRef.current) {
@@ -247,9 +252,9 @@ const [maritalStatusProbs,setMariedStatusProbs]=useState<boolean|number>(false)
     const dasaYear = data.HororScopeDetails.dhasaBalanceYear;
 
     const dasaBalance = `year:${dasaYear},month:${dasaMonth},day:${dasaDay}`;
-const today = new Date();
-const DateOfJoinToday = today.toISOString().split('T')[0];
-//console.log("today",DateOfJoinToday)
+    const today = new Date();
+    const DateOfJoinToday = today.toISOString().split('T')[0];
+    //console.log("today",DateOfJoinToday)
     const add_profile = {
       login_details: {
         Mobile_no: data.AddProfileForm.Mobile_no,
@@ -270,10 +275,10 @@ const DateOfJoinToday = today.toISOString().split('T')[0];
         Profile_pincode: data.AddProfileForm.Profile_pincode,
         status: data.AddProfileForm.status,
         Notifcation_enabled: alretSettings,
-        Profile_height:data.AddProfileForm.Profile_height,
+        Profile_height: data.AddProfileForm.Profile_height,
 
         Addon_package: AdditionAddOn,
-         DateOfJoin: DateOfJoinToday,
+        DateOfJoin: DateOfJoinToday,
         // DateOfJoin: '2024-11-11',
         Last_login_date: null,
       },
@@ -284,7 +289,7 @@ const DateOfJoinToday = today.toISOString().split('T')[0];
         mother_name: data.FamilyDetailsForm.motherName,
         mother_occupation: data.FamilyDetailsForm.motherOccupation,
         about_self: data.FamilyDetailsForm.aboutMyself,
-        weight:data.FamilyDetailsForm.weight,
+        weight: data.FamilyDetailsForm.weight,
         eye_wear: data.FamilyDetailsForm.EyeWear === "Yes" ? "1" : data.FamilyDetailsForm.EyeWear === "No" ? "0" : data.FamilyDetailsForm.EyeWear,
         family_name: data.FamilyDetailsForm.family_name,
         hobbies: data.FamilyDetailsForm.MyHobbies,
@@ -298,16 +303,16 @@ const DateOfJoinToday = today.toISOString().split('T')[0];
         family_value: data.FamilyDetailsForm.FamilyValue,
         family_status: data.FamilyDetailsForm.FamilyStatus,
         property_details: data.FamilyDetailsForm.PropertyDetails,
-        property_worth:data.FamilyDetailsForm.PropertyWorth,
+        property_worth: data.FamilyDetailsForm.PropertyWorth,
         suya_gothram: data.FamilyDetailsForm.SuyaGothram,
         uncle_gothram: data.FamilyDetailsForm.UncleGothram,
         ancestor_origin: anchesterOrgin,
         about_family: data.FamilyDetailsForm.AboutMyFamily,
-        no_of_children:maritalStatusProbs?data.FamilyDetailsForm.no_of_children:null,
-          father_alive: data.FamilyDetailsForm.fatherAlive,
-  mother_alive: data.FamilyDetailsForm.motherAlive,
-   suya_gothram_admin: data.FamilyDetailsForm.suyaGothramAdmin || '0',
-  uncle_gothram_admin: data.FamilyDetailsForm.uncleGothramAdmin || '0',
+        no_of_children: maritalStatusProbs ? data.FamilyDetailsForm.no_of_children : null,
+        father_alive: data.FamilyDetailsForm.fatherAlive,
+        mother_alive: data.FamilyDetailsForm.motherAlive,
+        suya_gothram_admin: data.FamilyDetailsForm.suyaGothramAdmin || '0',
+        uncle_gothram_admin: data.FamilyDetailsForm.uncleGothramAdmin || '0',
       },
       education_details: {
         work_country: data.EducationDetails.workCountry,
@@ -319,7 +324,7 @@ const DateOfJoinToday = today.toISOString().split('T')[0];
         about_edu: data.EducationDetails.AboutEducation,
         field_ofstudy: data.EducationDetails.field_ofstudy,
         degree: data.EducationDetails.degree,
-        
+
         profession: data.EducationDetails.profession,
         anual_income: data.EducationDetails.AnnualIncome,
         actual_income: data.EducationDetails.ActualIncome,
@@ -333,7 +338,6 @@ const DateOfJoinToday = today.toISOString().split('T')[0];
         pref_anual_income: AnnualIncomesVal.join(','),
         pref_anual_income_max: AnnualIncomesValmax.join(','),
         pref_profession: prefProf.join(','),
-
         pref_age_differences: data.PartnerPreference.agePreference,
         pref_height_from: data.PartnerPreference.heightFrom,
         pref_height_to: data.PartnerPreference.heightFrom,
@@ -342,8 +346,10 @@ const DateOfJoinToday = today.toISOString().split('T')[0];
         pref_foreign_intrest: data.PartnerPreference.foreignInterest,
         pref_porutham_star: prefporuthamstar,
         pref_porutham_star_rasi: preforuthamStarRasi,
-        pref_family_status:data.PartnerPreference.pref_family_status,
-        pref_state:data.PartnerPreference.pref_state
+        // pref_family_status: data.PartnerPreference.pref_family_status,
+        // pref_state: data.PartnerPreference.pref_state,
+        pref_family_status: prefFamilyStatusPartner,
+        pref_state: prefStatePartner
       },
 
       horoscope_details: {
@@ -355,30 +361,29 @@ const DateOfJoinToday = today.toISOString().split('T')[0];
         chevvai_dosaham: data.HororScopeDetails.ChevvaiDhosam,
         ragu_dosham: data.HororScopeDetails.SarpaDhosham,
         nalikai: data.HororScopeDetails.nalikai,
-        dasa_name:data.HororScopeDetails.dasa_name,
+        dasa_name: data.HororScopeDetails.dasa_name,
         dasa_balance: dasaBalance,
         horoscope_hints: horoHint,
         rasi_kattam: rasiKattam,
         amsa_kattam: amsaKattam,
         // horoscope_file: horoImage[0],
       },
-      suggested_pref_details:{
+      suggested_pref_details: {
         pref_marital_status: setMariedStatus.join(','),
         pref_education: prefEducation?.join(','),
         pref_anual_income: AnnualIncomesVal.join(','),
-        pref_anual_income_max:AnnualIncomesValmax.join(','),
+        pref_anual_income_max: AnnualIncomesValmax.join(','),
         pref_profession: prefProf.join(','),
-
         pref_age_differences: data.SuggestedProfileForm.agePreference,
         pref_height_from: data.SuggestedProfileForm.heightFrom,
         pref_height_to: data.SuggestedProfileForm.heightTo,
         pref_chevvai: data.SuggestedProfileForm.ChevvaiDhosam,
         pref_ragukethu: data.SuggestedProfileForm.ragukethu,
         pref_foreign_intrest: data.SuggestedProfileForm.foreignInterest,
-       pref_porutham_star: prefporuthamstar || data.SuggestedProfileForm.pref_porutham_star,
-       pref_porutham_star_rasi: preforuthamStarRasiSuggested || data.SuggestedProfileForm.pref_porutham_star_rasi,
-       pref_family_status:data.SuggestedProfileForm.pref_family_status,
-       pref_state:data.SuggestedProfileForm.pref_state
+        pref_porutham_star: prefporuthamstar || data.SuggestedProfileForm.pref_porutham_star,
+        pref_porutham_star_rasi: preforuthamStarRasiSuggested || data.SuggestedProfileForm.pref_porutham_star_rasi,
+        pref_family_status: prefFamilyStatusSuggested,
+        pref_state: prefStateSuggested
       },
       images: multipleImage,
       Profile_idproof: idProof[0],
@@ -483,15 +488,15 @@ const DateOfJoinToday = today.toISOString().split('T')[0];
         });
         let profileStatus = response?.status
         setProfileStatus(profileStatus)
-        console.log("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk",response.status)
+        console.log("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk", response.status)
         console.log("API Response:", response.data);
 
 
-         if (response.status === 201) {
-      notify('Profile added successfully');
-      navigate('/NewlyRegistered'); // Navigate here directly
-      return true; // Return success status
-    }
+        if (response.status === 201) {
+          notify('Profile added successfully');
+          navigate('/NewlyRegistered'); // Navigate here directly
+          return true; // Return success status
+        }
         if (response.status === 201) {
           setIsProfileAdded(!isProfileAdded);
           reset();
@@ -534,141 +539,73 @@ const DateOfJoinToday = today.toISOString().split('T')[0];
   const suggestedProfileRef = useRef<HTMLDivElement | null>(null);
   const imageUploadRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
- 
- 
- const formHandleSubmit = async () => {
-  const scrollToAndFocus = (ref: React.RefObject<HTMLElement>) => {
-    ref.current?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'center',
-    });
-    ref.current?.focus();
+
+
+  const formHandleSubmit = async () => {
+    const scrollToAndFocus = (ref: React.RefObject<HTMLElement>) => {
+      ref.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+      ref.current?.focus();
+    };
+
+    // First ensure all sections are expanded
+    if (!isBasicDetailsOpen) {
+      setIsBasicDetailsOpen(true);
+      scrollToAndFocus(AddFormRef);
+      return;
+    }
+    if (!isFamilyDetailsOpen) {
+      setIsFamilyDetailsOpen(true);
+      scrollToAndFocus(FamilySetailsRef);
+      return;
+    }
+    if (!isEducationDetailsOpen) {
+      setIsEducationDetailsOpen(true);
+      scrollToAndFocus(EducationalFormRef);
+      return;
+    }
+    if (!isHoroscopeDetailsOpen) {
+      setIsHoroscopeDetailsOpen(true);
+      scrollToAndFocus(HoroscopeRef);
+      return;
+    }
+    if (!isPartnerPreferenceOpen) {
+      setIsPartnerPreferenceOpen(true);
+      scrollToAndFocus(partnerSettingspeRef);
+      return;
+    }
+    if (!isSuggestedProfileOpen) {
+      setIsSuggestedProfileOpen(true);
+      scrollToAndFocus(suggestedProfileRef);
+      return;
+    }
+    if (!isUploadImagesOpen) {
+      setIsUploadImagesOpen(true);
+      scrollToAndFocus(imageUploadRef);
+      return;
+    }
+
+    try {
+      setIsSubmitting(true); // Set submitting state to true
+      await methods.handleSubmit(onSubmit)(); // Wait for form submission to complete
+
+      // Check if the submission was successful (status 201)
+      if (profileStatus === 201) {
+        notify("Successfully registered");
+        setTimeout(() => {
+          navigate('/NewlyRegistered');
+        }, 1000);
+      }
+    } catch (error) {
+      console.error("Form submission failed:", error);
+      notify("Failed to submit form. Please check your inputs.");
+    } finally {
+      setIsSubmitting(false); // Reset submitting state
+    }
   };
 
-  // First ensure all sections are expanded
-  if (!isBasicDetailsOpen) {
-    setIsBasicDetailsOpen(true);
-    scrollToAndFocus(AddFormRef);
-    return;
-  }
-  if (!isFamilyDetailsOpen) {
-    setIsFamilyDetailsOpen(true);
-    scrollToAndFocus(FamilySetailsRef);
-    return;
-  }
-  if (!isEducationDetailsOpen) {
-    setIsEducationDetailsOpen(true);
-    scrollToAndFocus(EducationalFormRef);
-    return;
-  }
-  if (!isHoroscopeDetailsOpen) {
-    setIsHoroscopeDetailsOpen(true);
-    scrollToAndFocus(HoroscopeRef);
-    return;
-  }
-  if (!isPartnerPreferenceOpen) {
-    setIsPartnerPreferenceOpen(true);
-    scrollToAndFocus(partnerSettingspeRef);
-    return;
-  }
-  if (!isSuggestedProfileOpen) {
-    setIsSuggestedProfileOpen(true);
-    scrollToAndFocus(suggestedProfileRef);
-    return;
-  }
-  if (!isUploadImagesOpen) {
-    setIsUploadImagesOpen(true);
-    scrollToAndFocus(imageUploadRef);
-    return;
-  }
-
-  try {
-    setIsSubmitting(true); // Set submitting state to true
-    await methods.handleSubmit(onSubmit)(); // Wait for form submission to complete
-    
-    // Check if the submission was successful (status 201)
-    if (profileStatus === 201) {
-      notify("Successfully registered");
-      setTimeout(() => {
-        navigate('/NewlyRegistered');
-      }, 1000);
-    }
-  } catch (error) {
-    console.error("Form submission failed:", error);
-    notify("Failed to submit form. Please check your inputs.");
-  } finally {
-    setIsSubmitting(false); // Reset submitting state
-  }
-};
-
-  // const formHandleSubmit = () => {
-  //   const scrollToAndFocus = (ref: React.RefObject<HTMLElement>) => {
-  //     ref.current?.scrollIntoView({
-  //       behavior: 'smooth',
-  //       block: 'center',
-  //     });
-  //     ref.current?.focus();
-  //   };
-
-
-    
-  //   if (!isBasicDetailsOpen) {
-  //     setIsBasicDetailsOpen(true);
-  //     scrollToAndFocus(AddFormRef);
-  //     return;
-  //   }
-
-  //   if (!isFamilyDetailsOpen) {
-  //     setIsFamilyDetailsOpen(true);
-  //     scrollToAndFocus(FamilySetailsRef);
-  //     return;
-  //   }
-
-  //   if (!isEducationDetailsOpen) {
-  //     setIsEducationDetailsOpen(true);
-  //     scrollToAndFocus(EducationalFormRef);
-  //     return;
-  //   }
-
-  //   if (!isHoroscopeDetailsOpen) {
-  //     setIsHoroscopeDetailsOpen(true);
-  //     scrollToAndFocus(HoroscopeRef);
-  //     return;
-  //   }
-
-  //   if (!isPartnerPreferenceOpen) {
-  //     setIsPartnerPreferenceOpen(true);
-  //     scrollToAndFocus(partnerSettingspeRef);
-  //     return;
-  //   }
-
-  //   if (!isSuggestedProfileOpen) {
-  //     setIsSuggestedProfileOpen(true);
-  //     scrollToAndFocus(suggestedProfileRef);
-  //     return;
-  //   }
-
-
-
-  //   if (!isUploadImagesOpen) {
-  //     setIsUploadImagesOpen(true);
-  //     scrollToAndFocus(imageUploadRef);
-  //     return;
-  //   }
-  //   // console.log(methods.handleSubmit(onSubmit)())
-  //   // Submit the form once all sections are open
-  //   methods.handleSubmit(onSubmit)();
-  //  if( profileStatus === 201){
-  //    notify("successfully registered")
-  //   setTimeout(() => {
-  //     navigate('/NewlyRegistered'); // Navigate to the previous page
-  //   }, 1000); // Adjust delay if needed
-
-  //  }
-  // };
-
-
-  
   useEffect(() => {
     console.log("Form errors:", methods.formState.errors);
   }, [methods.formState.errors]);
@@ -677,7 +614,7 @@ const DateOfJoinToday = today.toISOString().split('T')[0];
     <div ref={topRef}>
       <FormProvider {...methods}>
         <form onSubmit={methods.handleSubmit(onSubmit)} className=" p-5 mb-10 max-md:p-0">
-          
+
           <div ref={AddFormRef}>
             <AddProfileForm
               setAlretSetting={setAlretSetting}
@@ -745,28 +682,34 @@ const DateOfJoinToday = today.toISOString().split('T')[0];
               gender={gender}
               birthStarId={birthStarId}
               rasiid={rasiid}
+              setFamilyStatus={setPrefFamilyStatusPartner}
+              setPrefState={setPrefStatePartner}
             />
           </div>
 
 
           {/* Suggested Profile Form */}
-           <div ref={suggestedProfileRef}>
-        <SuggestedProfileForm
-          setPreforuthamStarRasi={setPreforuthamStarRasiSuggested}
-          setPoruthamstar={setPoruthamstar}
-          gender={gender}
-          birthStarId={birthStarId}
-          selectSetMaridStatus={selectSetMaridStatus}
-         setPrefEducation={setprefEducation}
-         setPrefProf={setPrefProf}
-         setMaritalStaus={setMaritalStaus}
-          setIsSuggestedProfileOpen={setIsSuggestedProfileOpen}
-          isSuggestedProfileOpen={isSuggestedProfileOpen}
-          setAnnualIncomesVal={setAnnualIncomesVal}
-          setAnnualIncomesValmax={setAnnualIncomesValMax}
-          rasiid={rasiid}
-        />
-      </div>  
+          <div ref={suggestedProfileRef}>
+            <SuggestedProfileForm
+              setPreforuthamStarRasi={setPreforuthamStarRasiSuggested}
+              setPoruthamstar={setPoruthamstar}
+              gender={gender}
+              birthStarId={birthStarId}
+              selectSetMaridStatus={selectSetMaridStatus}
+              setPrefEducation={setprefEducation}
+              setPrefProf={setPrefProf}
+              setMaritalStaus={setMaritalStaus}
+              setIsSuggestedProfileOpen={setIsSuggestedProfileOpen}
+              isSuggestedProfileOpen={isSuggestedProfileOpen}
+              setAnnualIncomesVal={setAnnualIncomesVal}
+              setAnnualIncomesValmax={setAnnualIncomesValMax}
+              rasiid={rasiid}
+              setFamilyStatus={setPrefFamilyStatusSuggested}
+              setPrefState={setPrefStateSuggested}
+            // setPrefState={setPrefState}
+            // setFamilyStatus={setFamilyStatus}
+            />
+          </div>
 
 
           <div>

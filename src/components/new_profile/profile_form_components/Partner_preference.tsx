@@ -9,7 +9,6 @@ import {
   educationalPrefApi,
   fetchFamilyStatus,
   StatePref,
-
 } from '../../../action';
 import { useQuery } from '@tanstack/react-query';
 import { useFormContext } from 'react-hook-form';
@@ -23,7 +22,7 @@ interface ProfessionPref {
 interface Partnerpreference {
   birthStarId: string;
   gender: string;
-  rasiid:string;
+  rasiid: string;
   setPoruthamstar: Dispatch<SetStateAction<string>>;
   setPreforuthamStarRasi: Dispatch<SetStateAction<string>>;
   setMaritalStaus: Dispatch<SetStateAction<string>>;
@@ -34,6 +33,8 @@ interface Partnerpreference {
   selectSetMaridStatus: Dispatch<SetStateAction<string[]>>;
   setIsPartnerPreferenceOpen: Dispatch<SetStateAction<boolean>>;
   isPartnerPreferenceOpen: boolean;
+  setFamilyStatus: Dispatch<SetStateAction<string>>;
+  setPrefState: Dispatch<SetStateAction<string>>;
 }
 export interface SelectedStarIdItem {
   id: string;
@@ -89,6 +90,8 @@ const Partner_preference: React.FC<Partnerpreference> = ({
   setAnnualIncomesValmax,
   isPartnerPreferenceOpen,
   setIsPartnerPreferenceOpen,
+  setFamilyStatus,
+  setPrefState,
 }) => {
   const {
     register,
@@ -100,21 +103,6 @@ const Partner_preference: React.FC<Partnerpreference> = ({
   const [selectedStarIds, setSelectedStarIds] = useState<SelectedStarIdItem[]>(
     [],
   );
-// const [partnerSelectedStarIds, setPartnerSelectedStarIds] = useState<SelectedStarIdItem[]>([]);
-//   // Generate the strings in a useEffect or when needed
-// const partnerStarString = partnerSelectedStarIds.map(item => item.star).join(',');
-// const partnerCombinedString = partnerSelectedStarIds.map(item => `${item.star}-${item.rasi}`).join(',');
-//    useEffect(() => {
-//     const starString = partnerSelectedStarIds.map(item => item.star).join(',');
-//     const combinedString = partnerSelectedStarIds.map(item => `${item.star}-${item.rasi}`).join(',');
-    
-//     setPoruthamstar(starString);
-//     setPreforuthamStarRasi(combinedString);
-    
-//     // For debugging:
-//     console.log('Partner Preference Stars:', starString);
-//     console.log('Partner Preference Combined:', combinedString);
-//   }, [partnerSelectedStarIds]);
   const handleCheckboxChange = (updatedIds: SelectedStarIdItem[]) => {
     setSelectedStarIds(updatedIds);
   };
@@ -126,6 +114,44 @@ const Partner_preference: React.FC<Partnerpreference> = ({
       isChecked ? [...prev, id] : prev.filter((eduId) => eduId !== id),
     );
   };
+
+  // In Partner_preference.tsx, add these two useEffects
+
+//  useEffect(() => {
+//     setFamilyStatus(selectedFamilyStatus);
+//   }, [selectedFamilyStatus, setFamilyStatus]);
+
+//   useEffect(() => {
+//     setPrefState(selectedPrefState);
+//   }, [selectedPrefState, setPrefState]);
+  // In Partner_preference.tsx, add these handlers
+
+  // Handler for Family Status
+  const handleFamilyStatusChange = (id: string) => {
+    const currentIds = selectedFamilyStatus ? selectedFamilyStatus.split(',') : [];
+    const index = currentIds.indexOf(id);
+
+    if (index === -1) {
+      currentIds.push(id); // Add if not present
+    } else {
+      currentIds.splice(index, 1); // Remove if present
+    }
+    setSelectedFamilyStatus(currentIds.join(','));
+  };
+
+  // Handler for Preferred State
+  const handleStateChange = (id: string) => {
+    const currentIds = selectedPrefState ? selectedPrefState.split(',') : [];
+    const index = currentIds.indexOf(id);
+
+    if (index === -1) {
+      currentIds.push(id); // Add if not present
+    } else {
+      currentIds.splice(index, 1); // Remove if present
+    }
+    setSelectedPrefState(currentIds.join(','));
+  };
+
   useEffect(() => {
     setPrefEducation(selectedEducations);
   }, [selectedEducations]);
@@ -148,10 +174,10 @@ const Partner_preference: React.FC<Partnerpreference> = ({
   });
   const { data: matchStars } = useQuery({
     queryKey: ['matchingStars'],
-    queryFn: () => fetchMatchPreferences(rasiid,birthStarId, gender),
+    queryFn: () => fetchMatchPreferences(rasiid, birthStarId, gender),
     enabled: !!birthStarId && !!gender && !!rasiid,
   });
-  
+
   const starArray = selectedStarIds.map((item) => item.id);
   const starRasiArray = selectedStarIds.map(
     (item) => `${item.star}-${item.rasi}`,
@@ -162,16 +188,11 @@ const Partner_preference: React.FC<Partnerpreference> = ({
   const StarString = starArray.join(',');
   const combinedString = starRasiArray.join(',');
 
- 
+
   useEffect(() => {
     setPreforuthamStarRasi(combinedString);
     setPoruthamstar(StarString);
   }, [StarString, combinedString]);
-  // const handleAnnualIncomeChange = (id: string, isChecked: boolean) => {
-  //   setSelectedAnnualIncomes((prev) =>
-  //     isChecked ? [...prev, id] : prev.filter((incId) => incId !== id),
-  //   );
-  // };
 
   const handleAnnualIncomeChange = (value: string) => {
     setSelectedAnnualIncomes([value]); // Ensure it's always a single value
@@ -180,18 +201,10 @@ const Partner_preference: React.FC<Partnerpreference> = ({
   const handleAnnualIncomeChangeMax = (value: string) => {
     setSelectedAnnualIncomesMax([value]); // Ensure it's always a single value
   };
-
-
   const [annualIncome, setAnnualIncome] = useState<AnnualIncome[]>([]);
-
-  const [selectedAnnualIncomes, setSelectedAnnualIncomes] = useState<string[]>(
-    [],
-  );
-
-  const [selectedAnnualIncomesMax, setSelectedAnnualIncomesMax] = useState<string[]>(
-    [],
-  );
-// In Partner_preference component
+  const [selectedAnnualIncomes, setSelectedAnnualIncomes] = useState<string[]>([]);
+  const [selectedAnnualIncomesMax, setSelectedAnnualIncomesMax] = useState<string[]>([],);
+  // In Partner_preference component
 
 
   useEffect(() => {
@@ -236,10 +249,9 @@ const Partner_preference: React.FC<Partnerpreference> = ({
   }, []);
 
   ////mar status
-  const [selectedMaritalStatuses, setSelectedMaritalStatuses] = useState<
-    string[]
-  >([]);
-   const [selectedFamilyStatus, setSelectedFamilyStatus] = useState('');
+   const [selectedMaritalStatuses, setSelectedMaritalStatuses] = useState<string[]>([]);
+  const [selectedFamilyStatus, setSelectedFamilyStatus] = useState<string>('');
+  const [selectedPrefState, setSelectedPrefState] = useState<string>('');
   const handleMaritalStatusChange = (id: string, isChecked: boolean) => {
     setSelectedMaritalStatuses((prev) =>
       isChecked ? [...prev, id] : prev.filter((statusId) => statusId !== id),
@@ -284,76 +296,76 @@ const Partner_preference: React.FC<Partnerpreference> = ({
 
 
   const handleSelectAllProfessions = () => {
-  // Check if all are already selected
-  const allSelected = profession?.every((p:any) => 
-    selectedProfessions.includes(p.Profes_Pref_id)
-  );
-  
-  if (allSelected) {
-    // Deselect all
-    setSelectedProfessions([]);
-  } else {
-    // Select all
-    const allIds = profession?.map((p:any) => p.Profes_Pref_id) || [];
-    setSelectedProfessions(allIds);
-  }
-};
+    // Check if all are already selected
+    const allSelected = profession?.every((p: any) =>
+      selectedProfessions.includes(p.Profes_Pref_id)
+    );
 
-const handleSelectAllMaritalStatus = () => {
-  const allSelected = MaritalStatuses?.every((m:any) => 
-    selectedMaritalStatuses.includes(m.marital_sts_id.toString())
-  );
-  
-  if (allSelected) {
-    setSelectedMaritalStatuses([]);
-  } else {
-    const allIds = MaritalStatuses?.map((m:any )=> m.marital_sts_id.toString()) || [];
-    setSelectedMaritalStatuses(allIds);
-  }
-};
-const handleSelectAllEducation = () => {
-  const allSelected = eduPref.every(e => 
-    selectedEducations.includes(e.Edu_Pref_id.toString())
-  );
-  
-  if (allSelected) {
-    setSelectedEducations([]);
-  } else {
-    const allIds = eduPref.map(e => e.Edu_Pref_id.toString());
-    setSelectedEducations(allIds);
-  }
-};
+    if (allSelected) {
+      // Deselect all
+      setSelectedProfessions([]);
+    } else {
+      // Select all
+      const allIds = profession?.map((p: any) => p.Profes_Pref_id) || [];
+      setSelectedProfessions(allIds);
+    }
+  };
 
- const { data: FamilyStatus } = useQuery({
+  const handleSelectAllMaritalStatus = () => {
+    const allSelected = MaritalStatuses?.every((m: any) =>
+      selectedMaritalStatuses.includes(m.marital_sts_id.toString())
+    );
+
+    if (allSelected) {
+      setSelectedMaritalStatuses([]);
+    } else {
+      const allIds = MaritalStatuses?.map((m: any) => m.marital_sts_id.toString()) || [];
+      setSelectedMaritalStatuses(allIds);
+    }
+  };
+  const handleSelectAllEducation = () => {
+    const allSelected = eduPref.every(e =>
+      selectedEducations.includes(e.Edu_Pref_id.toString())
+    );
+
+    if (allSelected) {
+      setSelectedEducations([]);
+    } else {
+      const allIds = eduPref.map(e => e.Edu_Pref_id.toString());
+      setSelectedEducations(allIds);
+    }
+  };
+
+  const { data: FamilyStatus } = useQuery({
     queryKey: ['FamilyStatus'],
     queryFn: fetchFamilyStatus,
   });
 
 
-  const [selectedPrefState, setSelectedPrefState] = useState('');
-   const [stateOptions, setStateOptions] = useState<StatePref[]>([]); // ✅ Typed useState
-console.log("bqw",stateOptions)
- 
+  // const [selectedPrefState, setSelectedPrefState] = useState('');
+  const [stateOptions, setStateOptions] = useState<StatePref[]>([]); // ✅ Typed useState
+  console.log("bqw", stateOptions)
+
 
   useEffect(() => {
-  const fetchStatePreferences = async () => {
-    try {
-      const response = await axios.post(
-        `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_State_Pref/`
-      );
+    const fetchStatePreferences = async () => {
+      try {
+        const response = await axios.post(
+          `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_State_Pref/`
+        );
 
-      console.log("fffffffffffffffffffffff",response);
-      
-      const data: StatePref[] = Object.values(response.data);
-      setStateOptions(data);
-      console.log("Fetched state options:", data); // ✅ this is the right place
-    } catch (error) {
-      console.error("Failed to fetch state preferences:", error);
-    }
-  };
+        console.log("fffffffffffffffffffffff", response);
 
-  fetchStatePreferences();
-}, []);
+        const data: StatePref[] = Object.values(response.data);
+        setStateOptions(data);
+        console.log("Fetched state options:", data); // ✅ this is the right place
+      } catch (error) {
+        console.error("Failed to fetch state preferences:", error);
+      }
+    };
+
+    fetchStatePreferences();
+  }, []);
 
 
   return (
@@ -470,7 +482,7 @@ console.log("bqw",stateOptions)
             <div className="flex w-full flex-row gap-4 max-md:flex-col">
               <div className="w-full">
                 <label>
-                  Chevvai 
+                  Chevvai
                   {/* <span className="text-red-500">*</span> */}
                 </label>
                 <select
@@ -478,6 +490,7 @@ console.log("bqw",stateOptions)
                   className="w-full px-4 py-2 border border-black rounded"
                 >
                   <option value="">Select</option>
+                  <option value="Both">Both</option>
                   <option value="Yes">Yes</option>
                   <option value="No">No</option>
                 </select>
@@ -496,6 +509,7 @@ console.log("bqw",stateOptions)
                   className="w-full px-4 py-2 border border-black rounded"
                 >
                   <option value="">Select</option>
+                  <option value="Both">Both</option>
                   <option value="Yes">Yes</option>
                   <option value="No">No</option>
                 </select>
@@ -528,89 +542,63 @@ console.log("bqw",stateOptions)
 
 
 
-  <div className="w-full py-1">
-                <label className="block text-black font-medium mb-1">
-                  Family Status 
-                   {/* <span className="text-red-500">*</span> */}
-                </label>
-                <div className="w-full inline-flex rounded max-md:flex-col">
-                  {FamilyStatus?.map((status) => ( 
-                  
+            <div className="w-full py-1">
+              <h5 className="text-[18px] text-black font-semibold mb-2">
+                Family Status
+              </h5>
+              <div className="flex flex-wrap gap-x-6 gap-y-2">
+                {FamilyStatus?.map((status) => (
+                  <div key={status.family_status_id} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id={`partner-family-status-${status.family_status_id}`}
+                      value={status.family_status_id}
+                      checked={(selectedFamilyStatus || '').split(',').includes(status.family_status_id.toString())}
+                      onChange={() => handleFamilyStatusChange(status.family_status_id.toString())}
+                      className="mr-2"
+                    />
                     <label
-                       key={status.family_status_id}
-                     // className='w-full px-5 py-3 text-sm font-medium border cursor-pointer'
-                      className={`w-full px-5 py-3 text-sm font-bold border border-black cursor-pointer ${String(selectedFamilyStatus) ===
-                        String(status.family_status_id)
-                        ? 'bg-blue-500 text-white'
-                        : ''
-                        }`}
-                      onClick={() =>
-                        setSelectedFamilyStatus(status.family_status_id)
-                      }
+                      htmlFor={`partner-family-status-${status.family_status_id}`}
+                      className='text-[#000000e6] font-medium'
                     >
-                      <input
-                         value={status.family_status_id}
-                       {...register('PartnerPreference.pref_family_status')}
-                        type="radio"
-                        className="w-0"
-                      />
                       {status.family_status_name}
                     </label>
-                  ))}
-                </div>
-                 {/* {errors?.PartnerPreference?.pref_family_status && (
-                  <p className="text-red-600">{errors?.PartnerPreference?.pref_family_status.message}</p>
-                )}  */}
-               
+                  </div>
+                ))}
               </div>
+            </div>
 
 
 
-              
-  <div className="w-full py-1">
-                <label className="block text-black font-medium mb-1">
-                Preffered State 
-                </label>
-                <div className="w-full inline-flex rounded max-md:flex-col">
-                  {stateOptions?.map((status) => ( 
-                  
+
+            <div className="w-full py-1">
+              <h5 className="text-[18px] text-black font-semibold mb-2">
+                Preferred State
+              </h5>
+              <div className="flex flex-wrap gap-x-6 gap-y-2">
+                {stateOptions?.map((state) => (
+                  <div key={state.State_Pref_id} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id={`partner-state-${state.State_Pref_id}`}
+                      value={state.State_Pref_id}
+                      checked={(selectedPrefState || '').split(',').includes(state.State_Pref_id.toString())}
+                      onChange={() => handleStateChange(state.State_Pref_id.toString())}
+                      className="mr-2"
+                    />
                     <label
-                       key={status.State_Pref_id}
-                     // className='w-full px-5 py-3 text-sm font-medium border cursor-pointer'
-                      className={`w-full px-5 py-3 text-sm font-bold border border-black cursor-pointer ${
-                        String(selectedPrefState) ===
-                        String(status.State_Pref_id)
-                       // watch("suggested_pref_details.pref_state") === String(status.State_Pref_id)
-
-                        ? 'bg-blue-500 text-white'
-                        : ''
-                        }`}
-                      onClick={() =>
-                        setSelectedPrefState(String(status.State_Pref_id))
-                      }
+                      htmlFor={`partner-state-${state.State_Pref_id}`}
+                      className='text-[#000000e6] font-medium'
                     >
-                      <input
-                         value={status.State_Pref_id}
-                       {...register('PartnerPreference.pref_state')}
-                        type="radio"
-                        className="w-0"
-                      />
-                      {status.State_name}
+                      {state.State_name}
                     </label>
-                  ))}
-                </div>
-                 {/* {errors?.PartnerPreference?.FamilyStatus && (
-                  <p className="text-red-600">Family status is required</p>
-                )}  */}
-                 {/* {errors?.SuggestedProfileForm?.pref_state && (
-                  <p className="text-red-600">
-                    {errors.SuggestedProfileForm.pref_state.message}
-                  </p>
-                )} */}
+                  </div>
+                ))}
               </div>
+            </div>
 
             <div className="w-full">
-              <h5 className="text-[18px] text-black font-semibold mb-2 cursor-pointer"  onClick={handleSelectAllProfessions}>
+              <h5 className="text-[18px] text-black font-semibold mb-2 cursor-pointer" onClick={handleSelectAllProfessions}>
                 Profession
               </h5>
               <div className="flex justify-between items-center max-md:flex-col max-md:gap-3 max-md:items-start">
@@ -644,7 +632,7 @@ console.log("bqw",stateOptions)
                 )} */}
             </div>
             <div>
-              <label className="text-[18px] text-black font-semibold mb-2 cursor-pointer"  onClick={handleSelectAllEducation}>
+              <label className="text-[18px] text-black font-semibold mb-2 cursor-pointer" onClick={handleSelectAllEducation}>
                 Education
               </label>
               <div className="flex flex-wrap gap-4">
@@ -819,14 +807,14 @@ console.log("bqw",stateOptions)
                           unique={"partner"}
                         />
 
-//                         <MatchingStars
-//                          key={index}
-//   unique="partner"
-//   initialPoruthas={`No of porutham ${matchCountValue}`}
-//   starAndRasi={starAndRasi}
-//   selectedStarIds={partnerSelectedStarIds}
-//   onCheckboxChange={setPartnerSelectedStarIds}
-// />
+                        //                         <MatchingStars
+                        //                          key={index}
+                        //   unique="partner"
+                        //   initialPoruthas={`No of porutham ${matchCountValue}`}
+                        //   starAndRasi={starAndRasi}
+                        //   selectedStarIds={partnerSelectedStarIds}
+                        //   onCheckboxChange={setPartnerSelectedStarIds}
+                        // />
                       );
                     })
                 ) : (

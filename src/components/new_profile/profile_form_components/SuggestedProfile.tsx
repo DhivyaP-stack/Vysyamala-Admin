@@ -2,7 +2,7 @@ import { useFormContext } from 'react-hook-form';
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { FormValues } from '../AddProfile';
 import axios from 'axios';
-import { annualIncomeApi, educationalPrefApi, fetchMaritalStatuses, getProfession, fetchMatchPreferences, annualMaxIncomeApi, fetchFamilyStatus, StatePref} from '../../../action';
+import { annualIncomeApi, educationalPrefApi, fetchMaritalStatuses, getProfession, fetchMatchPreferences, annualMaxIncomeApi, fetchFamilyStatus, StatePref } from '../../../action';
 import { useQuery } from '@tanstack/react-query';
 import MatchingStars from '../../PartnerPreference/MatchingStars';
 import { IoMdArrowDropdown } from 'react-icons/io';
@@ -40,7 +40,7 @@ interface ProfessionPref {
 interface SuggestedProfileForm {
   birthStarId: string;
   gender: string;
-  rasiid:string;
+  rasiid: string;
   setPoruthamstar: Dispatch<SetStateAction<string>>;
   setPreforuthamStarRasi: Dispatch<SetStateAction<string>>;
   setMaritalStaus: Dispatch<SetStateAction<string>>;
@@ -48,9 +48,11 @@ interface SuggestedProfileForm {
   setPrefEducation: Dispatch<SetStateAction<string[] | undefined>>;
   setAnnualIncomesVal: Dispatch<SetStateAction<string[]>>;
   setAnnualIncomesValmax: Dispatch<SetStateAction<string[]>>;
- selectSetMaridStatus: Dispatch<SetStateAction<string[]>>;
+  selectSetMaridStatus: Dispatch<SetStateAction<string[]>>;
   setIsSuggestedProfileOpen: Dispatch<SetStateAction<boolean>>;
   isSuggestedProfileOpen: boolean;
+  setFamilyStatus: Dispatch<SetStateAction<string>>;
+  setPrefState: Dispatch<SetStateAction<string>>;
 }
 interface MatchingStar {
   dest_rasi_id: number;
@@ -78,7 +80,10 @@ const SuggestedProfileForm: React.FC<SuggestedProfileForm> = ({
   setAnnualIncomesVal,
   setAnnualIncomesValmax,
   isSuggestedProfileOpen,
-  setIsSuggestedProfileOpen}) => {
+  setIsSuggestedProfileOpen,
+  setFamilyStatus,
+  setPrefState,
+}) => {
   const {
     register,
 
@@ -87,33 +92,17 @@ const SuggestedProfileForm: React.FC<SuggestedProfileForm> = ({
 
   const toggleSection = () => {
     (!isSuggestedProfileOpen);
-  };setIsSuggestedProfileOpen
+  }; setIsSuggestedProfileOpen
 
 
   const [selectedStarIds, setSelectedStarIds] = useState<SelectedStarIdItem[]>(
     [],
   );
-//     // In SuggestedProfileForm component
-// const [suggestedSelectedStarIds, setSuggestedSelectedStarIds] = useState<SelectedStarIdItem[]>([]);
-//   useEffect(() => {
-//     const starString = suggestedSelectedStarIds.map(item => item.star).join(',');
-//     const combinedString = suggestedSelectedStarIds.map(item => `${item.star}-${item.rasi}`).join(',');
-    
-//     setPoruthamstar(starString);
-//     setPreforuthamStarRasi(combinedString);
-    
-//     // For debugging:
-//     console.log('Suggested Profile Stars:', starString);
-//     console.log('Suggested Profile Combined:', combinedString);
-//   }, [suggestedSelectedStarIds]);
-
 
   const [annualIncome, setAnnualIncome] = useState<AnnualIncome[]>([]);
- 
   const [selectedAnnualIncomes, setSelectedAnnualIncomes] = useState<string[]>(
     [],
   );
-  
   const [selectedAnnualIncomesmax, setSelectedAnnualIncomesMax] = useState<string[]>(
     [],
   );
@@ -128,7 +117,7 @@ const SuggestedProfileForm: React.FC<SuggestedProfileForm> = ({
     setAnnualIncomesValmax(selectedAnnualIncomesmax);
   }, [selectedAnnualIncomesmax]);
 
-  
+
   useEffect(() => {
     const fetchAnnualIncome = async () => {
       try {
@@ -172,7 +161,46 @@ const SuggestedProfileForm: React.FC<SuggestedProfileForm> = ({
   const [selectedMaritalStatuses, setSelectedMaritalStatuses] = useState<
     string[]
   >([]);
-   const [selectedFamilyStatus, setSelectedFamilyStatus] = useState('');
+  const [selectedFamilyStatus, setSelectedFamilyStatus] = useState<string>('');
+  const [selectedPrefState, setSelectedPrefState] = useState<string>('');
+
+  // In SuggestedProfileForm.tsx, add these two useEffects
+
+  useEffect(() => {
+    setFamilyStatus(selectedFamilyStatus);
+  }, [selectedFamilyStatus, setFamilyStatus]);
+
+  useEffect(() => {
+    setPrefState(selectedPrefState);
+  }, [selectedPrefState, setPrefState]);
+
+  // In SuggestedProfileForm.tsx
+
+  // Handler for Family Status
+  const handleFamilyStatusChange = (id: string) => {
+    const currentIds = selectedFamilyStatus ? selectedFamilyStatus.split(',') : [];
+    const index = currentIds.indexOf(id);
+
+    if (index === -1) {
+      currentIds.push(id); // Add if not present
+    } else {
+      currentIds.splice(index, 1); // Remove if present
+    }
+    setSelectedFamilyStatus(currentIds.join(','));
+  };
+
+  // Handler for Preferred State
+  const handleStateChange = (id: string) => {
+    const currentIds = selectedPrefState ? selectedPrefState.split(',') : [];
+    const index = currentIds.indexOf(id);
+
+    if (index === -1) {
+      currentIds.push(id); // Add if not present
+    } else {
+      currentIds.splice(index, 1); // Remove if present
+    }
+    setSelectedPrefState(currentIds.join(','));
+  };
 
   const handleEducationChange = (id: string, isChecked: boolean) => {
     setSelectedEducations((prev) =>
@@ -184,6 +212,8 @@ const SuggestedProfileForm: React.FC<SuggestedProfileForm> = ({
       isChecked ? [...prev, id] : prev.filter((statusId) => statusId !== id),
     );
   };
+
+
   const { data: profession } = useQuery({
     queryKey: ['profession'],
     queryFn: getProfession,
@@ -197,7 +227,7 @@ const SuggestedProfileForm: React.FC<SuggestedProfileForm> = ({
 
   const { data: matchStars } = useQuery({
     queryKey: ['matchingStars'],
-    queryFn: () => fetchMatchPreferences(rasiid,birthStarId, gender),
+    queryFn: () => fetchMatchPreferences(rasiid, birthStarId, gender),
     enabled: !!birthStarId && !!gender && !!rasiid,
   });
 
@@ -237,17 +267,17 @@ const SuggestedProfileForm: React.FC<SuggestedProfileForm> = ({
   useEffect(() => {
     setPrefProf(selectedProfessions);
   }, [selectedProfessions]);
- const starArray = selectedStarIds.map((item) => item.id);
+  const starArray = selectedStarIds.map((item) => item.id);
   const starRasiArray = selectedStarIds.map(
     (item) => `${item.star}-${item.rasi}`,
   );
- const StarString = starArray.join(',');
+  const StarString = starArray.join(',');
   const combinedString = starRasiArray.join(',');
 
-    useEffect(() => {
-      setPreforuthamStarRasi(combinedString);
-      setPoruthamstar(StarString);
-    }, [StarString, combinedString]);
+  useEffect(() => {
+    setPreforuthamStarRasi(combinedString);
+    setPoruthamstar(StarString);
+  }, [StarString, combinedString]);
 
   const handleCheckboxChange = (updatedIds: SelectedStarIdItem[]) => {
     setSelectedStarIds(updatedIds);
@@ -255,80 +285,80 @@ const SuggestedProfileForm: React.FC<SuggestedProfileForm> = ({
 
 
 
-   const { data: FamilyStatus } = useQuery({
+  const { data: FamilyStatus } = useQuery({
     queryKey: ['FamilyStatus'],
     queryFn: fetchFamilyStatus,
   });
 
-  const [selectedPrefState, setSelectedPrefState] = useState('');
-   const [stateOptions, setStateOptions] = useState<StatePref[]>([]); // ✅ Typed useState
-console.log("bqw",stateOptions)
- 
+  // const [selectedPrefState, setSelectedPrefState] = useState('');
+  const [stateOptions, setStateOptions] = useState<StatePref[]>([]); // ✅ Typed useState
+  console.log("bqw", stateOptions)
+
 
   useEffect(() => {
-  const fetchStatePreferences = async () => {
-    try {
-      const response = await axios.post(
-        `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_State_Pref/`
-      );
+    const fetchStatePreferences = async () => {
+      try {
+        const response = await axios.post(
+          `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_State_Pref/`
+        );
 
-      console.log("fffffffffffffffffffffff",response);
-      
-      const data: StatePref[] = Object.values(response.data);
-      setStateOptions(data);
-      console.log("Fetched state options:", data); // ✅ this is the right place
-    } catch (error) {
-      console.error("Failed to fetch state preferences:", error);
+        console.log("fffffffffffffffffffffff", response);
+
+        const data: StatePref[] = Object.values(response.data);
+        setStateOptions(data);
+        console.log("Fetched state options:", data); // ✅ this is the right place
+      } catch (error) {
+        console.error("Failed to fetch state preferences:", error);
+      }
+    };
+
+    fetchStatePreferences();
+  }, []);
+
+  const handleSelectAllMaritalStatus = () => {
+    const allSelected = MaritalStatuses?.every((m: any) =>
+      selectedMaritalStatuses.includes(m.marital_sts_id.toString())
+    );
+
+    if (allSelected) {
+      setSelectedMaritalStatuses([]);
+    } else {
+      const allIds = MaritalStatuses?.map((m: any) => m.marital_sts_id.toString()) || [];
+      setSelectedMaritalStatuses(allIds);
     }
   };
 
-  fetchStatePreferences();
-}, []);
 
-const handleSelectAllMaritalStatus = () => {
-  const allSelected = MaritalStatuses?.every((m:any) => 
-    selectedMaritalStatuses.includes(m.marital_sts_id.toString())
-  );
-  
-  if (allSelected) {
-    setSelectedMaritalStatuses([]);
-  } else {
-    const allIds = MaritalStatuses?.map((m:any )=> m.marital_sts_id.toString()) || [];
-    setSelectedMaritalStatuses(allIds);
-  }
-};
+  const handleSelectAllProfessions = () => {
+    // Check if all are already selected
+    const allSelected = profession?.every((p: any) =>
+      selectedProfessions.includes(p.Profes_Pref_id)
+    );
 
-
- const handleSelectAllProfessions = () => {
-  // Check if all are already selected
-  const allSelected = profession?.every((p:any) => 
-    selectedProfessions.includes(p.Profes_Pref_id)
-  );
-  
-  if (allSelected) {
-    // Deselect all
-    setSelectedProfessions([]);
-  } else {
-    // Select all
-    const allIds = profession?.map((p:any) => p.Profes_Pref_id) || [];
-    setSelectedProfessions(allIds);
-  }
-};
+    if (allSelected) {
+      // Deselect all
+      setSelectedProfessions([]);
+    } else {
+      // Select all
+      const allIds = profession?.map((p: any) => p.Profes_Pref_id) || [];
+      setSelectedProfessions(allIds);
+    }
+  };
 
 
 
-const handleSelectAllEducation = () => {
-  const allSelected = eduPref.every(e => 
-    selectedEducations.includes(e.Edu_Pref_id.toString())
-  );
-  
-  if (allSelected) {
-    setSelectedEducations([]);
-  } else {
-    const allIds = eduPref.map(e => e.Edu_Pref_id.toString());
-    setSelectedEducations(allIds);
-  }
-};
+  const handleSelectAllEducation = () => {
+    const allSelected = eduPref.every(e =>
+      selectedEducations.includes(e.Edu_Pref_id.toString())
+    );
+
+    if (allSelected) {
+      setSelectedEducations([]);
+    } else {
+      const allIds = eduPref.map(e => e.Edu_Pref_id.toString());
+      setSelectedEducations(allIds);
+    }
+  };
   return (
     <div>
       <div className="bg-white p-5 mb-10 rounded shadow-md">
@@ -338,9 +368,8 @@ const handleSelectAllEducation = () => {
         >
           Suggested Profile
           <svg
-            className={`fill-current transform ${
-              isSuggestedProfileOpen ? 'rotate-180' : ''
-            }`}
+            className={`fill-current transform ${isSuggestedProfileOpen ? 'rotate-180' : ''
+              }`}
             width={'20'}
             viewBox="0 0 20 20"
             xmlns="http://www.w3.org/2000/svg"
@@ -354,7 +383,7 @@ const handleSelectAllEducation = () => {
             <div className="flex w-full flex-row gap-4 max-md:flex-col">
               <div className="w-full">
                 <label>
-                  Height From 
+                  Height From
                 </label>
                 <input
                   {...register('SuggestedProfileForm.heightFrom')}
@@ -368,7 +397,7 @@ const handleSelectAllEducation = () => {
               </div>
               <div className="w-full">
                 <label>
-                  Height To 
+                  Height To
                 </label>
                 <input
                   {...register('SuggestedProfileForm.heightTo')}
@@ -382,7 +411,7 @@ const handleSelectAllEducation = () => {
               </div>
               <div className="w-full">
                 <label>
-                  Age Difference 
+                  Age Difference
                 </label>
                 <input
                   onKeyDown={(e) => {
@@ -439,13 +468,14 @@ const handleSelectAllEducation = () => {
             <div className="flex w-full flex-row gap-4 max-md:flex-col">
               <div className="w-full">
                 <label>
-                  Chevvai 
+                  Chevvai
                 </label>
                 <select
                   {...register('SuggestedProfileForm.ChevvaiDhosam')}
                   className="w-full px-4 py-2 border border-black rounded"
                 >
                   <option value="">Select</option>
+                  <option value="Both">Both</option>
                   <option value="Yes">Yes</option>
                   <option value="No">No</option>
                 </select>
@@ -457,13 +487,14 @@ const handleSelectAllEducation = () => {
               </div>
               <div className="w-full">
                 <label>
-                  Rahu / Ketu 
+                  Rahu / Ketu
                 </label>
                 <select
                   {...register('SuggestedProfileForm.ragukethu')}
                   className="w-full px-4 py-2 border border-black rounded"
                 >
                   <option value="">Select</option>
+                  <option value="Both">Both</option>
                   <option value="Yes">Yes</option>
                   <option value="No">No</option>
                 </select>
@@ -475,7 +506,7 @@ const handleSelectAllEducation = () => {
               </div>
               <div className="w-full">
                 <label>
-                  Foreign Interest 
+                  Foreign Interest
                 </label>
                 <select
                   {...register('SuggestedProfileForm.foreignInterest')}
@@ -496,99 +527,62 @@ const handleSelectAllEducation = () => {
 
 
 
-            
-  <div className="w-full py-1">
-                <label className="block text-black font-medium mb-1">
-                  Family Status 
-                </label>
-                <div className="w-full inline-flex rounded max-md:flex-col">
-                  {FamilyStatus?.map((status) => ( 
-                  
+
+            <div className="w-full ">
+              <h5 className="text-[18px] text-black font-semibold mb-2">
+                Family Status
+              </h5>
+               <div className="flex justify-between items-center max-md:flex-col max-md:gap-3 max-md:items-start">
+                {FamilyStatus?.map((status) => (
+                  <div key={status.family_status_id}>
+                    <input
+                      type="checkbox"
+                      id={`suggested-form-family-status-${status.family_status_id}`}
+                      value={status.family_status_id}
+                      checked={(selectedFamilyStatus || '').split(',').includes(status.family_status_id.toString())}
+                      onChange={() => handleFamilyStatusChange(status.family_status_id.toString())}
+                      className="mr-2"
+                    />
                     <label
-                       key={status.family_status_id}
-                     // className='w-full px-5 py-3 text-sm font-medium border cursor-pointer'
-                      className={`w-full px-5 py-3 text-sm font-bold border border-black cursor-pointer ${String(selectedFamilyStatus) ===
-                        String(status.family_status_id)
-                        ? 'bg-blue-500 text-white'
-                        : ''
-                        }`}
-                      onClick={() =>
-                        setSelectedFamilyStatus(status.family_status_id)
-                      }
+                      htmlFor={`suggested-form-family-status-${status.family_status_id}`}
+                      className='pl-1'
                     >
-                      <input
-                         value={status.family_status_id}
-                       {...register('SuggestedProfileForm.pref_family_status', { required: false })}
-                        type="radio"
-                        className="w-0"
-                      />
                       {status.family_status_name}
                     </label>
-                  ))}
-                </div>
-                 {/* {errors?.PartnerPreference?.FamilyStatus && (
-                  <p className="text-red-600">Family status is required</p>
-                )}  */}
-                 {/* {errors?.profile_visibility.visibility_family_status && (
-                  <p className="text-red-600">
-                    {errors.profile_visibility.visibility_family_status.message}
-                  </p>
-                )} */}
+                  </div>
+                ))}
               </div>
+            </div>
 
 
-              
-  <div className="w-full py-1">
-                <label className="block text-black font-medium mb-1">
-                Preffered State 
-                </label>
-                <div className="w-full inline-flex rounded max-md:flex-col">
-                  {stateOptions?.map((status) => ( 
-                  
+            <div className="w-full">
+              <h5 className="text-[18px] text-black font-semibold mb-2">
+                Preferred State
+              </h5>
+             <div className="flex justify-between items-center max-md:flex-col max-md:gap-3 max-md:items-start">
+                {stateOptions?.map((state) => (
+                  <div key={state.State_Pref_id}>
+                    <input
+                      type="checkbox"
+                      id={`suggested-form-state-${state.State_Pref_id}`}
+                      value={state.State_Pref_id}
+                      checked={(selectedPrefState || '').split(',').includes(state.State_Pref_id.toString())}
+                      onChange={() => handleStateChange(state.State_Pref_id.toString())}
+                      className="mr-2"
+                    />
                     <label
-                       key={status.State_Pref_id}
-                     // className='w-full px-5 py-3 text-sm font-medium border cursor-pointer'
-                      className={`w-full px-5 py-3 text-sm font-bold border border-black cursor-pointer ${
-                        String(selectedPrefState) ===
-                        String(status.State_Pref_id)
-                       // watch("suggested_pref_details.pref_state") === String(status.State_Pref_id)
-
-                        ? 'bg-blue-500 text-white'
-                        : ''
-                        }`}
-                      onClick={() =>
-                        setSelectedPrefState(String(status.State_Pref_id))
-                      }
+                      htmlFor={`suggested-form-state-${state.State_Pref_id}`}
+                      className='pl-1'
                     >
-                      <input
-                         value={status.State_Pref_id}
-                       {...register('SuggestedProfileForm.pref_state', { required: false })}
-                        type="radio"
-                        className="w-0"
-                      />
-                      {status.State_name}
+                      {state.State_name}
                     </label>
-                  ))}
-                </div>
-                 {/* {errors?.PartnerPreference?.FamilyStatus && (
-                  <p className="text-red-600">Family status is required</p>
-                )}  */}
-                 {/* {errors?.SuggestedProfileForm?.pref_state && (
-                  <p className="text-red-600">
-                    {errors.SuggestedProfileForm?.pref_state.message}
-                  </p>
-                )} */}
-                {errors?.SuggestedProfileForm?.pref_state && (
-  <p className="text-red-600">
-    {errors.SuggestedProfileForm?.pref_state.message}
-  </p>
-)}
+                  </div>
+                ))}
               </div>
-
+            </div>
 
 
             {/* Profession */}
-
             <div className="w-full">
               <label className='text-black font-semibold text-[18px] cursor-pointer' onClick={handleSelectAllProfessions}>Profession</label>
               <div className="flex justify-between items-center max-md:flex-col max-md:gap-3 max-md:items-start">
@@ -622,7 +616,7 @@ const handleSelectAllEducation = () => {
               <label className="text-[18px] text-black font-semibold mb-2 cursor-pointer" onClick={handleSelectAllEducation}>
                 Education
               </label>
-            
+
               <div className="flex flex-wrap gap-4">
                 {eduPref.map((option) => (
                   <div key={option.Edu_Pref_id} className="flex items-center">
@@ -656,8 +650,8 @@ const handleSelectAllEducation = () => {
               <label className="text-[18px] text-black font-semibold mb-2 cursor-pointer" onClick={handleSelectAllMaritalStatus}>
                 Marital Status
               </label>
-            
-               <div className="flex justify-between items-center max-md:flex-col max-md:gap-3 max-md:items-start " >
+
+              <div className="flex justify-between items-center max-md:flex-col max-md:gap-3 max-md:items-start " >
                 {MaritalStatuses?.map((status: any) => (
                   <div key={status.marital_sts_id}>
                     <input
@@ -688,60 +682,60 @@ const handleSelectAllEducation = () => {
               <label className="text-[18px] text-black font-semibold mb-2">
                 Annual Income
               </label>
-          
-<div className='flex w-full gap-4 flex-row max-md:flex-col'>
-<div className="w-full">
-  <h5>Minimum Annual Income</h5>
-<div className="relative">
-    <select
-      id="annualIncome_min"
-      className="block w-full px-3 py-[13px] text-sm border border-ashBorder rounded outline-none appearance-none bg-transparent"
-      value={selectedAnnualIncomes}
-      onChange={(e) => handleAnnualIncomeChange(e.target.value)}
-    >
-      <option value="" disabled>
-        Select min Annual Income
-      </option>
-      {annualIncome?.length > 0 ? (
-        annualIncome.map((option) => (
-          <option key={option.income_id} value={option.income_id}>
-            {option.income_description}
-          </option>
-        ))
-      ) : (
-        <option disabled>No income options available</option>
-      )}
-    </select>
-    <IoMdArrowDropdown className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
-  </div>
-  </div>
-  <div className="w-full">
-    <h5 >Maximum Annual Income</h5>
-  <div className="relative">
-    <select
-      id="annualIncome_min"
-      className="block w-full px-3 py-[13px] text-sm border border-ashBorder rounded outline-none appearance-none bg-transparent"
-      value={selectedAnnualIncomesmax}
-      onChange={(e) => handleAnnualIncomeChangemax(e.target.value)}
-    >
-      <option value="" disabled>
-        Select max Annual Income
-      </option>
-      {annualIncome?.length > 0 ? (
-        annualIncome.map((option) => (
-          <option key={option.income_id} value={option.income_id}>
-            {option.income_description}
-          </option>
-        ))
-      ) : (
-        <option disabled>No income options available</option>
-      )}
-    </select>
-    <IoMdArrowDropdown className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
-  </div>
-  </div>
-</div>
-              
+
+              <div className='flex w-full gap-4 flex-row max-md:flex-col'>
+                <div className="w-full">
+                  <h5>Minimum Annual Income</h5>
+                  <div className="relative">
+                    <select
+                      id="annualIncome_min"
+                      className="block w-full px-3 py-[13px] text-sm border border-ashBorder rounded outline-none appearance-none bg-transparent"
+                      value={selectedAnnualIncomes}
+                      onChange={(e) => handleAnnualIncomeChange(e.target.value)}
+                    >
+                      <option value="" disabled>
+                        Select min Annual Income
+                      </option>
+                      {annualIncome?.length > 0 ? (
+                        annualIncome.map((option) => (
+                          <option key={option.income_id} value={option.income_id}>
+                            {option.income_description}
+                          </option>
+                        ))
+                      ) : (
+                        <option disabled>No income options available</option>
+                      )}
+                    </select>
+                    <IoMdArrowDropdown className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
+                  </div>
+                </div>
+                <div className="w-full">
+                  <h5 >Maximum Annual Income</h5>
+                  <div className="relative">
+                    <select
+                      id="annualIncome_min"
+                      className="block w-full px-3 py-[13px] text-sm border border-ashBorder rounded outline-none appearance-none bg-transparent"
+                      value={selectedAnnualIncomesmax}
+                      onChange={(e) => handleAnnualIncomeChangemax(e.target.value)}
+                    >
+                      <option value="" disabled>
+                        Select max Annual Income
+                      </option>
+                      {annualIncome?.length > 0 ? (
+                        annualIncome.map((option) => (
+                          <option key={option.income_id} value={option.income_id}>
+                            {option.income_description}
+                          </option>
+                        ))
+                      ) : (
+                        <option disabled>No income options available</option>
+                      )}
+                    </select>
+                    <IoMdArrowDropdown className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
+                  </div>
+                </div>
+              </div>
+
             </div>
 
             <div>
@@ -769,36 +763,36 @@ const handleSelectAllEducation = () => {
                           onCheckboxChange={handleCheckboxChange}
                           unique={"suggested"}
                         />
-//                         <MatchingStars
-//                          key={index}
-//   unique="suggested"
-//   initialPoruthas={`No of porutham ${matchCountValue}`}
-//   starAndRasi={starAndRasi}
-//   selectedStarIds={suggestedSelectedStarIds}
-//   onCheckboxChange={setSuggestedSelectedStarIds}
-// />
-                     );
+                        //                         <MatchingStars
+                        //                          key={index}
+                        //   unique="suggested"
+                        //   initialPoruthas={`No of porutham ${matchCountValue}`}
+                        //   starAndRasi={starAndRasi}
+                        //   selectedStarIds={suggestedSelectedStarIds}
+                        //   onCheckboxChange={setSuggestedSelectedStarIds}
+                        // />
+                      );
                     })
                 ) : (
                   <p>No match stars available</p>
                 )}
               </div>
             </div>
-                    {errors.SuggestedProfileForm?.pref_porutham_star_rasi?.message && (
-  <p className="text-red-600">
-    {errors.SuggestedProfileForm.pref_porutham_star_rasi.message}
-  </p>
-)}
+            {errors.SuggestedProfileForm?.pref_porutham_star_rasi?.message && (
+              <p className="text-red-600">
+                {errors.SuggestedProfileForm.pref_porutham_star_rasi.message}
+              </p>
+            )}
           </div>
         )}
       </div>
-       {/* {errors?.SuggestedProfileForm?.pref_porutham_star_rasi && (
+      {/* {errors?.SuggestedProfileForm?.pref_porutham_star_rasi && (
                   <p className="text-red-600">
                     {errors.SuggestedProfileForm.pref_porutham_star_rasi}
                   </p>
                 )} */}
 
-        
+
     </div>
   );
 };

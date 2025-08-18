@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Box, Checkbox, CircularProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
 import { userAnnualIncome, userCity, userComplexion, userEducation, userFamilyStatus, userMaritalStatus, userMatchingProfiles, userMatchingProfilesFilter, userMatchingProfilesPrintProfile, userMatchingProfilesSendEmail, userMatchingProfilesWhatsapp, userMembership, userProfession, userState } from '../api/apiConfig';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { NotifyError, NotifySuccess } from '../common/Toast/ToastMessage';
 import { MdVerified } from 'react-icons/md';
 import { GoUnverified } from 'react-icons/go';
@@ -119,13 +119,13 @@ const SearchProfile = () => {
     // const profileID = query.get('profileId');
 
     // console.log("vv10",profileID);
-    
+
     const roleId = sessionStorage.getItem('role_id');
 
     // State declarations
 
-    const [profileID,setProfileID]=useState<string>('')
-    const [profileName,setProfileName]=useState<string>('')
+    const [profileID, setProfileID] = useState<string>('')
+    const [profileName, setProfileName] = useState<string>('')
 
     const [matchingData, setMatchingData] = useState<SearchProfileProps[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -156,8 +156,8 @@ const SearchProfile = () => {
 
     const [heightTo, setHeightTo] = useState<string>('');
     const [ageTo, setAgeTo] = useState<string>('100');
-   const [sarpaDhosam,setSarpaDhosam]=useState<string>('')
-   const [chevvaiDhosam,setChevvaiDhosam]=useState<string>('')
+    const [sarpaDhosam, setSarpaDhosam] = useState<string>('')
+    const [chevvaiDhosam, setChevvaiDhosam] = useState<string>('')
 
     const [minAnnualIncome, setMinAnnualIncome] = useState<string>('');
     const [maxAnnualIncome, setMaxAnnualIncome] = useState<string>('');
@@ -177,7 +177,8 @@ const SearchProfile = () => {
     const [isPrintProfile, setIsPrintProfile] = useState<boolean>(false);
     const [whatsappFormat, setWhatsappFormat] = useState<string>('');
     const [iswhatsappProfile, setIsWhatsappProfile] = useState<boolean>(false);
-
+    const navigate = useNavigate();
+    
     useEffect(() => {
         const fetchSearchData = async () => {
             // if (!profileID) return;
@@ -268,73 +269,73 @@ const SearchProfile = () => {
         });
     };
 
-    const ageFromRef =useRef<HTMLInputElement>(null);
-    const ageToRef =useRef<HTMLInputElement>(null)
-const heightFromRef = useRef<HTMLInputElement>(null);
-const heightToRef = useRef<HTMLInputElement>(null);
+    const ageFromRef = useRef<HTMLInputElement>(null);
+    const ageToRef = useRef<HTMLInputElement>(null)
+    const heightFromRef = useRef<HTMLInputElement>(null);
+    const heightToRef = useRef<HTMLInputElement>(null);
 
     const handleFilterSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 
         event.preventDefault();
 
         // Validate age inputs
-    if (!ageFrom || ageFrom.trim() === '') {
-        NotifyError("Age from cannot be empty");
-        ageFromRef.current?.focus();
-        return;
-    }
+        if (!ageFrom || ageFrom.trim() === '') {
+            NotifyError("Age from cannot be empty");
+            ageFromRef.current?.focus();
+            return;
+        }
 
-    if (!ageTo || ageTo.trim() === '') {
-        NotifyError("Age to cannot be empty");
-        ageToRef.current?.focus();
-        return;
-    }
+        if (!ageTo || ageTo.trim() === '') {
+            NotifyError("Age to cannot be empty");
+            ageToRef.current?.focus();
+            return;
+        }
 
-    const ageFromNum = Number(ageFrom);
-    const ageToNum = Number(ageTo);
+        const ageFromNum = Number(ageFrom);
+        const ageToNum = Number(ageTo);
 
-    if (isNaN(ageFromNum)) {
-        NotifyError("Age from must be a valid number");
-        ageFromRef.current?.focus();
-        return;
-    }
+        if (isNaN(ageFromNum)) {
+            NotifyError("Age from must be a valid number");
+            ageFromRef.current?.focus();
+            return;
+        }
 
-    if (isNaN(ageToNum)) {
-        NotifyError("Age to must be a valid number");
-        ageToRef.current?.focus();
-        return;
-    }
+        if (isNaN(ageToNum)) {
+            NotifyError("Age to must be a valid number");
+            ageToRef.current?.focus();
+            return;
+        }
 
-    if (ageFromNum > ageToNum) {
-        NotifyError("Age from cannot be greater than age to");
-        ageFromRef.current?.focus();
-        return;
-    }
+        if (ageFromNum > ageToNum) {
+            NotifyError("Age from cannot be greater than age to");
+            ageFromRef.current?.focus();
+            return;
+        }
 
-    if (ageFromNum < 18 || ageToNum > 100) {
-        NotifyError("Age must be between 18 and 100");
-        ageFromRef.current?.focus();
-        return;
-    }
+        if (ageFromNum < 18 || ageToNum > 100) {
+            NotifyError("Age must be between 18 and 100");
+            ageFromRef.current?.focus();
+            return;
+        }
 
-    // Validate height inputs
-    if (heightFrom && isNaN(Number(heightFrom))) {
-        NotifyError("Height from must be a valid number");
-        heightFromRef.current?.focus();
-        return;
-    }
+        // Validate height inputs
+        if (heightFrom && isNaN(Number(heightFrom))) {
+            NotifyError("Height from must be a valid number");
+            heightFromRef.current?.focus();
+            return;
+        }
 
-    if (heightTo && isNaN(Number(heightTo))) {
-        NotifyError("Height to must be a valid number");
-        heightToRef.current?.focus();
-        return;
-    }
+        if (heightTo && isNaN(Number(heightTo))) {
+            NotifyError("Height to must be a valid number");
+            heightToRef.current?.focus();
+            return;
+        }
 
-    if (heightFrom && heightTo && Number(heightFrom) > Number(heightTo)) {
-        NotifyError("Height from cannot be greater than height to");
-        heightFromRef.current?.focus();
-        return;
-    }
+        if (heightFrom && heightTo && Number(heightFrom) > Number(heightTo)) {
+            NotifyError("Height from cannot be greater than height to");
+            heightFromRef.current?.focus();
+            return;
+        }
 
 
         try {
@@ -360,14 +361,14 @@ const heightToRef = useRef<HTMLInputElement>(null);
                 // Number(destRasiIds.join(",")),
                 Number(ageDifference),
                 selectedProfessions.join(','),
-                 Number(ageFrom),
+                Number(ageFrom),
                 Number(ageTo),
                 String(sarpaDhosam),
                 String(chevvaiDhosam),
                 String(profileName),
-               // selectedBirthStarIds
+                // selectedBirthStarIds
             );
-            console.log('lop123',MatchingprofileFilter)
+            console.log('lop123', MatchingprofileFilter)
             setMatchingData(MatchingprofileFilter.profiles || []);
             setTotalItems(MatchingprofileFilter.total_count || 0);
         } catch (error: any) {
@@ -475,8 +476,8 @@ const heightToRef = useRef<HTMLInputElement>(null);
         }
     };
 
-     // Function to handle checkbox change
-     const handleEducationChange = (EducationID: String) => {
+    // Function to handle checkbox change
+    const handleEducationChange = (EducationID: String) => {
         setSelectedEducation(prev =>
             prev.includes(EducationID)
                 // If the education is already selected, remove it from the array
@@ -486,8 +487,8 @@ const heightToRef = useRef<HTMLInputElement>(null);
         );
     };
 
-     // Function to handle checkbox change
-     const handleComplexionChange = (complexionId: String) => {
+    // Function to handle checkbox change
+    const handleComplexionChange = (complexionId: String) => {
         setSelectedComplexions(prev =>
             prev.includes(complexionId)
                 // If the complexion is already selected, remove it from the array
@@ -518,27 +519,27 @@ const heightToRef = useRef<HTMLInputElement>(null);
     };
 
 
-//     const handleProfessionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//   const value = e.target.value;
-//   const isChecked = e.target.checked;
+    //     const handleProfessionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    //   const value = e.target.value;
+    //   const isChecked = e.target.checked;
 
-//   setSelectedProfessions((prev) =>
-//     isChecked ? [...prev, value] : prev.filter((id) => id !== value)
-//   );
-// };
+    //   setSelectedProfessions((prev) =>
+    //     isChecked ? [...prev, value] : prev.filter((id) => id !== value)
+    //   );
+    // };
 
-const handleProfessionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const value = e.target.value;
-  const isChecked = e.target.checked;
+    const handleProfessionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        const isChecked = e.target.checked;
 
-  setSelectedProfessions((prev) => {
-    if (isChecked) {
-      return prev.includes(value) ? prev : [...prev, value]; // ✅ Prevent duplicates
-    } else {
-      return prev.filter((id) => id !== value); // ✅ Remove when unchecked
-    }
-  });
-};
+        setSelectedProfessions((prev) => {
+            if (isChecked) {
+                return prev.includes(value) ? prev : [...prev, value]; // ✅ Prevent duplicates
+            } else {
+                return prev.filter((id) => id !== value); // ✅ Remove when unchecked
+            }
+        });
+    };
 
 
     return (
@@ -578,7 +579,7 @@ const handleProfessionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                                                 placeholder="Enter Profile ID"
                                                 value={profileID}
                                                 className="w-full px-4 py-2 border border-black rounded"
-                                                onChange={(e)=>setProfileID(e.target.value)}
+                                                onChange={(e) => setProfileID(e.target.value)}
                                             />
                                         </div>
 
@@ -592,26 +593,9 @@ const handleProfessionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                                                 value={profileName}
                                                 placeholder="Enter Profile Name"
                                                 className="w-full px-4 py-2 border border-black rounded"
-                                                onChange={(e)=>setProfileName(e.target.value)}
+                                                onChange={(e) => setProfileName(e.target.value)}
                                             />
                                         </div>
-
-                                        {/* Age Difference */}
-                                        {/* <div className="flex flex-col">
-                                            <label className="text-[18px] text-black font-semibold mb-2">
-                                                Age Difference
-                                            </label>
-                                            <select
-                                                className="w-full outline-none px-4 py-2.5 border border-black rounded"
-                                                defaultValue="5"
-                                            onChange={(e)=>setAgeDifference(e.target.value)}
-                                            >
-                                                <option value="" disabled>-- Select Age difference--</option>
-                                                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(age => (
-                                                    <option key={age} value={age}>{age}</option>
-                                                ))}
-                                            </select>
-                                        </div> */}
 
                                         <div className="flex items-center space-x-5">
                                             <div className="flex flex-col">
@@ -619,22 +603,21 @@ const handleProfessionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                                                     Age from
                                                 </label>
                                                 <input
-                                                ref={ageFromRef}
+                                                    ref={ageFromRef}
                                                     value={ageFrom}
-                                                   placeholder='Enter AgeFrom'
-                                                    onChange={(e) =>
-                                                    {
-                                                         const value =e.target.value;
-                                                         if(value === '' || Number(value) >=18 || Number(value)<=100){
+                                                    placeholder='Enter AgeFrom'
+                                                    onChange={(e) => {
+                                                        const value = e.target.value;
+                                                        if (value === '' || Number(value) >= 18 || Number(value) <= 100) {
                                                             setAgeFrom(value)
-                                                         }
+                                                        }
                                                     }
-                                                     }
+                                                    }
                                                     className="w-full px-4 py-2 border border-black rounded"
                                                 />
-                                                  {ageFrom && ageTo && Number(ageFrom) > Number(ageTo) && (
-      <span className="text-red-500 text-sm">Age from cannot be greater than age to</span>
-    )}
+                                                {ageFrom && ageTo && Number(ageFrom) > Number(ageTo) && (
+                                                    <span className="text-red-500 text-sm">Age from cannot be greater than age to</span>
+                                                )}
                                             </div>
                                             <div className="flex flex-col">
                                                 <label className="text-[18px] text-black font-semibold mb-2">
@@ -644,17 +627,17 @@ const handleProfessionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                                                     value={ageTo}
                                                     ref={ageToRef}
                                                     placeholder='Enter AgeTo'
-                                                    onChange={(e)=>{
-                                                        const value =e.target.value;
-                                                        if(value === '' || Number(value)>=18 || Number(value) <=100){
+                                                    onChange={(e) => {
+                                                        const value = e.target.value;
+                                                        if (value === '' || Number(value) >= 18 || Number(value) <= 100) {
                                                             setAgeTo(value)
                                                         }
                                                     }}
                                                     className="w-full px-4 py-2 border border-black rounded"
                                                 />
-                                                 {ageFrom && ageTo && Number(ageFrom) > Number(ageTo) && (
-      <span className="text-red-500 text-sm">Age to cannot be less than age from</span>
-    )}
+                                                {ageFrom && ageTo && Number(ageFrom) > Number(ageTo) && (
+                                                    <span className="text-red-500 text-sm">Age to cannot be less than age from</span>
+                                                )}
                                             </div>
                                         </div>
 
@@ -678,8 +661,8 @@ const handleProfessionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                                                     Height To
                                                 </label>
                                                 <input
-                                                ref={heightToRef}
-                                                 placeholder='Enter HeightTo'
+                                                    ref={heightToRef}
+                                                    placeholder='Enter HeightTo'
                                                     value={heightTo}
                                                     onChange={(e) => setHeightTo(e.target.value)}
                                                     className="w-full px-4 py-2 border border-black rounded"
@@ -692,9 +675,9 @@ const handleProfessionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                                             <label className="text-[18px] text-black font-semibold mb-2">
                                                 Sarpa Dhosham
                                             </label>
-                                            <select className="w-full outline-none px-4 py-2.5 border border-black rounded" 
-                                            value={sarpaDhosam}
-                                            onChange={(e)=>setSarpaDhosam(e.target.value)}
+                                            <select className="w-full outline-none px-4 py-2.5 border border-black rounded"
+                                                value={sarpaDhosam}
+                                                onChange={(e) => setSarpaDhosam(e.target.value)}
                                             >
                                                 <option value="" disabled>-- Select Sarpa Dhosham --</option>
                                                 <option value="">Unknown</option>
@@ -708,8 +691,8 @@ const handleProfessionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                                                 Chevvai Dhosam
                                             </label>
                                             <select className="w-full outline-none px-4 py-2.5 border border-black rounded"
-                                            value={chevvaiDhosam}
-                                             onChange={(e)=>setChevvaiDhosam(e.target.value)}
+                                                value={chevvaiDhosam}
+                                                onChange={(e) => setChevvaiDhosam(e.target.value)}
                                             >
                                                 <option value="" disabled>-- Select Chevvai Dhosam --</option>
                                                 <option value="">Unknown</option>
@@ -745,292 +728,292 @@ const handleProfessionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
                                     {/* Highest Education */}
                                     <div className="py-4">
-                                                <div className="w-fit text-start">
-                                                    <h2 className="text-lg text-black font-semibold mb-2">Education</h2>
+                                        <div className="w-fit text-start">
+                                            <h2 className="text-lg text-black font-semibold mb-2">Education</h2>
+                                        </div>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                                            {highestEducation.map((education) => (
+                                                <div key={education.education_id} className="flex items-center">
+                                                    <input
+                                                        type="checkbox"
+                                                        id={`highestEducation-${education.education_id}`}
+                                                        value={education.education_id.toString()}
+                                                        className="mr-2"
+                                                        checked={selectedEducation.includes(education.education_id.toString())}
+                                                        onChange={() => handleEducationChange(education.education_id.toString())}  // Call the handleComplexionChange function
+                                                    />
+                                                    <label htmlFor={`highestEducation-${education.education_id}`} className="text-sm">
+                                                        {education.education_description}
+                                                    </label>
                                                 </div>
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                                                    {highestEducation.map((education) => (
-                                                        <div key={education.education_id} className="flex items-center">
-                                                            <input
-                                                                type="checkbox"
-                                                                id={`highestEducation-${education.education_id}`}
-                                                                value={education.education_id.toString()}
-                                                                className="mr-2"
-                                                                checked={selectedEducation.includes(education.education_id.toString())}
-                                                                onChange={() => handleEducationChange(education.education_id.toString())}  // Call the handleComplexionChange function
-                                                            />
-                                                            <label htmlFor={`highestEducation-${education.education_id}`} className="text-sm">
-                                                                {education.education_description}
-                                                            </label>
-                                                        </div>
-                                                    ))}
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Profession */}
+                                    <div className="py-4">
+                                        <div className="w-fit text-start">
+                                            <h2 className="text-lg text-black font-semibold mb-2">Profession</h2>
+                                        </div>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                                            {profession.map((prof) => (
+                                                <div key={prof.Profes_Pref_id} className="flex items-center">
+                                                    <input
+                                                        type="checkbox"
+                                                        id={`profession-${prof.Profes_Pref_id}`}
+                                                        value={prof.Profes_Pref_id.toString()}
+                                                        checked={(selectedProfessions.includes(prof.Profes_Pref_id.toString()))}
+                                                        onChange={handleProfessionChange}
+                                                        className="mr-2"
+                                                    />
+                                                    <label htmlFor={`profession-${prof.Profes_Pref_id}`} className="text-sm">
+                                                        {prof.Profes_name}
+                                                    </label>
                                                 </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Father Live */}
+                                    <div className="py-4">
+                                        <div className="w-fit text-start">
+                                            <h2 className="text-lg text-black font-semibold mb-2">Father Live</h2>
+                                        </div>
+
+                                        <select name="" id="" className="w-full outline-none px-4 py-2.5 border border-black rounded">
+                                            <option value="">Select Option</option>
+                                            <option value="">Yes</option>
+                                            <option value="">No</option>
+                                        </select>
+                                    </div>
+                                    {/* Mother Live */}
+                                    <div className="py-4">
+                                        <div className="w-fit text-start">
+                                            <h2 className="text-lg text-black font-semibold mb-2">Mother Live</h2>
+                                        </div>
+
+                                        <select name="" id="" className="w-full outline-none px-4 py-2.5 border border-black rounded">
+                                            <option value="">Select Option</option>
+                                            <option value="">Yes</option>
+                                            <option value="">No</option>
+                                        </select>
+                                    </div>
+
+                                    {/* Marital Status */}
+                                    <div className="py-4">
+                                        <div className="w-fit text-start">
+                                            <h2 className="text-lg text-black font-semibold mb-2">Marital Status</h2>
+                                        </div>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                                            {maritalStatus.map((marital) => (
+                                                <div key={marital.marital_sts_id} className="flex items-center">
+                                                    <input
+                                                        type="checkbox"
+                                                        id={`maritalStatus-${marital.marital_sts_id}`}
+                                                        value={marital.marital_sts_id.toString()}
+                                                        className="mr-2"
+                                                    />
+                                                    <label htmlFor={`maritalStatus-${marital.marital_sts_id}`} className="text-sm">
+                                                        {marital.marital_sts_name}
+                                                    </label>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Complexion */}
+                                    <div className="py-4">
+                                        <div className="w-fit text-start">
+                                            <h2 className="text-lg text-black font-semibold mb-2">Complexion</h2>
+                                        </div>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                                            {complexion.map((complex) => (
+                                                <div key={complex.complexion_id} className="flex items-center">
+                                                    <input
+                                                        type="checkbox"
+                                                        id={`complexion-${complex.complexion_id}`}
+                                                        value={complex.complexion_id.toString()}
+                                                        className="mr-2"
+                                                        checked={selectedComplexions.includes(complex.complexion_id.toString())}
+                                                        onChange={() => handleComplexionChange(complex.complexion_id.toString())}  // Call the handleComplexionChange function
+
+                                                    />
+                                                    <label htmlFor={`complexion-${complex.complexion_id}`} className="text-sm">
+                                                        {complex.complexion_description}
+                                                    </label>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Family Status */}
+                                    <div className="py-4">
+                                        <div className="w-fit text-start">
+                                            <h2 className="text-lg text-black font-semibold mb-2">Family Status</h2>
+                                        </div>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                                            {familyStatus.map((fStatus) => (
+                                                <div key={fStatus.family_status_id} className="flex items-center">
+                                                    <input
+                                                        type="checkbox"
+                                                        id={`familyStatus-${fStatus.family_status_id}`}
+                                                        value={fStatus.family_status_id.toString()}
+                                                        className="mr-2"
+                                                    />
+                                                    <label htmlFor={`familyStatus-${fStatus.family_status_id}`} className="text-sm">
+                                                        {fStatus.family_status_name}
+                                                    </label>
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                    </div>
+
+                                    {/* Annual Income */}
+                                    <div>
+                                        <div className="py-4">
+                                            <div className="w-fit text-start">
+                                                <h2 className="text-lg text-black font-semibold mb-2">Annual Income</h2>
                                             </div>
 
-                                            {/* Profession */}
-                                            <div className="py-4">
-                                                <div className="w-fit text-start">
-                                                    <h2 className="text-lg text-black font-semibold mb-2">Profession</h2>
+                                            <div className="flex items-center space-x-5">
+                                                <div>
+                                                    <select name="minAnnualIncome"
+                                                        id="minAnnualIncome"
+                                                        value={minAnnualIncome}
+                                                        onChange={(e) => setMinAnnualIncome(e.target.value)}
+                                                        className="w-72 outline-none px-4 py-2.5 border border-black rounded">
+                                                        <option value="">Select Min Annual Income</option>
+                                                        {annualIncome.map((option) => (
+                                                            <option key={option.income_id} value={option.income_id}>
+                                                                {option.income_description}
+                                                            </option>
+                                                        ))}
+                                                    </select>
                                                 </div>
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                                                    {profession.map((prof) => (
-                                                        <div key={prof.Profes_Pref_id} className="flex items-center">
-                                                            <input
-                                                                type="checkbox"
-                                                                id={`profession-${prof.Profes_Pref_id}`}
-                                                                value={prof.Profes_Pref_id.toString()}
-                                                                checked={(selectedProfessions.includes(prof.Profes_Pref_id.toString()))}
-                                                                onChange={handleProfessionChange}
-                                                                className="mr-2"
-                                                            />
-                                                            <label htmlFor={`profession-${prof.Profes_Pref_id}`} className="text-sm">
-                                                                {prof.Profes_name}
-                                                            </label>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-
-                                            {/* Father Live */}
-                                            <div className="py-4">
-                                                <div className="w-fit text-start">
-                                                    <h2 className="text-lg text-black font-semibold mb-2">Father Live</h2>
-                                                </div>
-
-                                                <select name="" id="" className="w-full outline-none px-4 py-2.5 border border-black rounded">
-                                                    <option value="">Select Option</option>
-                                                    <option value="">Yes</option>
-                                                    <option value="">No</option>
-                                                </select>
-                                            </div>
-                                            {/* Mother Live */}
-                                            <div className="py-4">
-                                                <div className="w-fit text-start">
-                                                    <h2 className="text-lg text-black font-semibold mb-2">Mother Live</h2>
-                                                </div>
-
-                                                <select name="" id="" className="w-full outline-none px-4 py-2.5 border border-black rounded">
-                                                    <option value="">Select Option</option>
-                                                    <option value="">Yes</option>
-                                                    <option value="">No</option>
-                                                </select>
-                                            </div>
-
-                                            {/* Marital Status */}
-                                            <div className="py-4">
-                                                <div className="w-fit text-start">
-                                                    <h2 className="text-lg text-black font-semibold mb-2">Marital Status</h2>
-                                                </div>
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                                                    {maritalStatus.map((marital) => (
-                                                        <div key={marital.marital_sts_id} className="flex items-center">
-                                                            <input
-                                                                type="checkbox"
-                                                                id={`maritalStatus-${marital.marital_sts_id}`}
-                                                                value={marital.marital_sts_id.toString()}
-                                                                className="mr-2"
-                                                            />
-                                                            <label htmlFor={`maritalStatus-${marital.marital_sts_id}`} className="text-sm">
-                                                                {marital.marital_sts_name}
-                                                            </label>
-                                                        </div>
-                                                    ))}
+                                                <div>
+                                                    <select name="maxAnnualIncome" id="maxAnnualIncome"
+                                                        value={maxAnnualIncome}
+                                                        onChange={(e) => setMaxAnnualIncome(e.target.value)}
+                                                        className="w-72 outline-none px-4 py-2.5 border border-black rounded">
+                                                        <option value="">Select Max Annual Income</option>
+                                                        {annualIncome.map((option) => (
+                                                            <option key={option.income_id} value={option.income_id}>
+                                                                {option.income_description}
+                                                            </option>
+                                                        ))}
+                                                    </select>
                                                 </div>
                                             </div>
+                                        </div>
+                                    </div>
 
-                                            {/* Complexion */}
-                                            <div className="py-4">
-                                                <div className="w-fit text-start">
-                                                    <h2 className="text-lg text-black font-semibold mb-2">Complexion</h2>
-                                                </div>
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                                                    {complexion.map((complex) => (
-                                                        <div key={complex.complexion_id} className="flex items-center">
-                                                            <input
-                                                                type="checkbox"
-                                                                id={`complexion-${complex.complexion_id}`}
-                                                                value={complex.complexion_id.toString()}
-                                                                className="mr-2"
-                                                                checked={selectedComplexions.includes(complex.complexion_id.toString())}
-                                                                onChange={() => handleComplexionChange(complex.complexion_id.toString())}  // Call the handleComplexionChange function
-
-                                                            />
-                                                            <label htmlFor={`complexion-${complex.complexion_id}`} className="text-sm">
-                                                                {complex.complexion_description}
-                                                            </label>
-                                                        </div>
-                                                    ))}
-                                                </div>
+                                    {/* State & City */}
+                                    <div>
+                                        <div className="py-4">
+                                            <div className="w-fit text-start">
+                                                <h2 className="text-lg text-black font-semibold mb-2">State and City</h2>
                                             </div>
 
-                                            {/* Family Status */}
-                                            <div className="py-4">
-                                                <div className="w-fit text-start">
-                                                    <h2 className="text-lg text-black font-semibold mb-2">Family Status</h2>
+                                            <div className="flex items-center space-x-5">
+                                                <div>
+                                                    <select
+                                                        name="selectedState"
+                                                        id="selectedState"
+                                                        className="w-72 outline-none px-4 py-2.5 border border-black rounded"
+                                                        value={selectedState || ""}
+                                                        onChange={(e) => setSelectedState(e.target.value)}
+                                                    >
+                                                        <option value="">Select State</option>
+                                                        {state.map((option) => (
+                                                            <option key={option.State_Pref_id} value={option.State_Pref_id}>
+                                                                {option.State_name}
+                                                            </option>
+                                                        ))}
+                                                    </select>
                                                 </div>
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                                                    {familyStatus.map((fStatus) => (
-                                                        <div key={fStatus.family_status_id} className="flex items-center">
-                                                            <input
-                                                                type="checkbox"
-                                                                id={`familyStatus-${fStatus.family_status_id}`}
-                                                                value={fStatus.family_status_id.toString()}
-                                                                className="mr-2"
-                                                            />
-                                                            <label htmlFor={`familyStatus-${fStatus.family_status_id}`} className="text-sm">
-                                                                {fStatus.family_status_name}
-                                                            </label>
-                                                        </div>
-                                                    ))}
-                                                </div>
-
-                                            </div>
-
-                                            {/* Annual Income */}
-                                            <div>
-                                                <div className="py-4">
-                                                    <div className="w-fit text-start">
-                                                        <h2 className="text-lg text-black font-semibold mb-2">Annual Income</h2>
-                                                    </div>
-
-                                                    <div className="flex items-center space-x-5">
-                                                        <div>
-                                                            <select name="minAnnualIncome"
-                                                                id="minAnnualIncome"
-                                                                value={minAnnualIncome}
-                                                                onChange={(e) => setMinAnnualIncome(e.target.value)}
-                                                                className="w-72 outline-none px-4 py-2.5 border border-black rounded">
-                                                                <option value="">Select Min Annual Income</option>
-                                                                {annualIncome.map((option) => (
-                                                                    <option key={option.income_id} value={option.income_id}>
-                                                                        {option.income_description}
-                                                                    </option>
-                                                                ))}
-                                                            </select>
-                                                        </div>
-                                                        <div>
-                                                            <select name="maxAnnualIncome" id="maxAnnualIncome"
-                                                                value={maxAnnualIncome}
-                                                                onChange={(e) => setMaxAnnualIncome(e.target.value)}
-                                                                className="w-72 outline-none px-4 py-2.5 border border-black rounded">
-                                                                <option value="">Select Max Annual Income</option>
-                                                                {annualIncome.map((option) => (
-                                                                    <option key={option.income_id} value={option.income_id}>
-                                                                        {option.income_description}
-                                                                    </option>
-                                                                ))}
-                                                            </select>
-                                                        </div>
-                                                    </div>
+                                                {/* City Dropdown - Disabled until state is selected */}
+                                                <div>
+                                                    <select
+                                                        name="selectedCity"
+                                                        id="selectedCity"
+                                                        value={selectedCity || ""}
+                                                        onChange={(e) => setSelectedCity(e.target.value)}
+                                                        className="w-72 outline-none px-4 py-2.5 border border-black rounded"
+                                                    >
+                                                        <option value="">Select City
+                                                            {/* {selectedState ? "Select City" : "Please select a State first"} */}
+                                                        </option>
+                                                        {cities.map((option) => (
+                                                            <option key={option.id} value={option.id}>
+                                                                {option.district}
+                                                            </option>
+                                                        ))}
+                                                    </select>
                                                 </div>
                                             </div>
+                                        </div>
+                                    </div>
 
-                                             {/* State & City */}
-                                             <div>
-                                                <div className="py-4">
-                                                    <div className="w-fit text-start">
-                                                        <h2 className="text-lg text-black font-semibold mb-2">State and City</h2>
-                                                    </div>
-
-                                                    <div className="flex items-center space-x-5">
-                                                        <div>
-                                                            <select
-                                                                name="selectedState"
-                                                                id="selectedState"
-                                                                className="w-72 outline-none px-4 py-2.5 border border-black rounded"
-                                                                value={selectedState || ""}
-                                                                onChange={(e) => setSelectedState(e.target.value)}
-                                                            >
-                                                                <option value="">Select State</option>
-                                                                {state.map((option) => (
-                                                                    <option key={option.State_Pref_id} value={option.State_Pref_id}>
-                                                                        {option.State_name}
-                                                                    </option>
-                                                                ))}
-                                                            </select>
-                                                        </div>
-                                                        {/* City Dropdown - Disabled until state is selected */}
-                                                        <div>
-                                                            <select
-                                                                name="selectedCity"
-                                                                id="selectedCity"
-                                                                value={selectedCity || ""}
-                                                                onChange={(e) => setSelectedCity(e.target.value)}
-                                                                className="w-72 outline-none px-4 py-2.5 border border-black rounded"
-                                                            >
-                                                                <option value="">Select City
-                                                                    {/* {selectedState ? "Select City" : "Please select a State first"} */}
-                                                                </option>
-                                                                {cities.map((option) => (
-                                                                    <option key={option.id} value={option.id}>
-                                                                        {option.district}
-                                                                    </option>
-                                                                ))}
-                                                            </select>
-                                                        </div>
-                                                    </div>
+                                    {/* Membership */}
+                                    <div className="py-4">
+                                        <div className="w-fit text-start">
+                                            <h2 className="text-lg text-black font-semibold mb-2">Membership</h2>
+                                        </div>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                                            {membership.map((plan) => (
+                                                <div key={plan.id} className="flex items-center">
+                                                    <input
+                                                        type="checkbox"
+                                                        id={`plan-${plan.id}`}
+                                                        value={plan.id.toString()}
+                                                        className="mr-2"
+                                                        checked={selectedMembership.includes(plan.id.toString())}
+                                                        onChange={() => handleMembershipChange(plan.id.toString())}  // Call the handleComplexionChange function
+                                                    />
+                                                    <label htmlFor={`plan-${plan.id}`} className="text-sm">
+                                                        {plan.plan_name}
+                                                    </label>
                                                 </div>
-                                            </div>
+                                            ))}
+                                        </div>
+                                    </div>
 
-                                             {/* Membership */}
-                                             <div className="py-4">
-                                                <div className="w-fit text-start">
-                                                    <h2 className="text-lg text-black font-semibold mb-2">Membership</h2>
-                                                </div>
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                                                    {membership.map((plan) => (
-                                                        <div key={plan.id} className="flex items-center">
-                                                            <input
-                                                                type="checkbox"
-                                                                id={`plan-${plan.id}`}
-                                                                value={plan.id.toString()}
-                                                                className="mr-2"
-                                                                checked={selectedMembership.includes(plan.id.toString())}
-                                                                onChange={() => handleMembershipChange(plan.id.toString())}  // Call the handleComplexionChange function
-                                                            />
-                                                            <label htmlFor={`plan-${plan.id}`} className="text-sm">
-                                                                {plan.plan_name}
-                                                            </label>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
+                                    {/* Foreign Interest */}
+                                    <div className="py-4">
+                                        <div className="w-fit text-start">
+                                            <h2 className="text-lg text-black font-semibold mb-2">Foreign Interest</h2>
+                                        </div>
+                                        <select
+                                            name="foreignInterest"
+                                            id="foreignInterest"
+                                            className="w-full outline-none px-4 py-2.5 border border-black rounded"
+                                            value={foreignInterest}  // Bind the state to the value of the select element
+                                            onChange={(e) => setForeignInterest(e.target.value)}>
+                                            <option value="">Select Option</option>
+                                            <option value="Both">Both</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
+                                    </div>
 
-                                            {/* Foreign Interest */}
-                                            <div className="py-4">
-                                                <div className="w-fit text-start">
-                                                    <h2 className="text-lg text-black font-semibold mb-2">Foreign Interest</h2>
-                                                </div>
-                                                <select
-                                                    name="foreignInterest"
-                                                    id="foreignInterest"
-                                                    className="w-full outline-none px-4 py-2.5 border border-black rounded"
-                                                    value={foreignInterest}  // Bind the state to the value of the select element
-                                                    onChange={(e) => setForeignInterest(e.target.value)}>
-                                                    <option value="">Select Option</option>
-                                                    <option value="Both">Both</option>
-                                                    <option value="Yes">Yes</option>
-                                                    <option value="No">No</option>
-                                                </select>
-                                            </div>
+                                    {/* Has Photo */}
+                                    <div className="py-4">
+                                        <div className="w-fit text-start">
+                                            <h2 className="text-lg text-black font-semibold mb-2">Has Photo</h2>
+                                        </div>
 
-                                            {/* Has Photo */}
-                                            <div className="py-4">
-                                                <div className="w-fit text-start">
-                                                    <h2 className="text-lg text-black font-semibold mb-2">Has Photo</h2>
-                                                </div>
-
-                                                <select
-                                                    name="hasphotos"
-                                                    id="hasphotos"
-                                                    value={hasphotos}
-                                                    onChange={(e) => setHasPhotos(e.target.value)}
-                                                    className="w-full outline-none px-4 py-2.5 border border-black rounded">
-                                                    <option value="">Select Option</option>
-                                                    <option value="Yes">Yes</option>
-                                                    <option value="No">No</option>
-                                                </select>
-                                            </div>
+                                        <select
+                                            name="hasphotos"
+                                            id="hasphotos"
+                                            value={hasphotos}
+                                            onChange={(e) => setHasPhotos(e.target.value)}
+                                            className="w-full outline-none px-4 py-2.5 border border-black rounded">
+                                            <option value="">Select Option</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
+                                    </div>
 
                                     <div className="mt-4">
                                         <button type="submit" className="bg-red-500 text-white rounded-sm px-3 py-2 focus-within:outline-none">
@@ -1098,7 +1081,18 @@ const handleProfessionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                                                                 onError={(e) => (e.currentTarget.src = No_Image_Available)}
                                                             />
                                                         </TableCell>
-                                                        <TableCell>{row.profile_id}</TableCell>
+                                                        <TableCell
+                                                            onClick={() =>
+                                                                navigate(
+                                                                    `/viewProfile?profileId=${row.profile_id}`,
+                                                                )
+                                                            }
+                                                            sx={{
+                                                                color: 'blue',
+                                                                cursor: 'pointer',
+                                                                textDecoration: 'none', '&:hover': { textDecoration: 'underline' }
+                                                            }}
+                                                        >{row.profile_id}</TableCell>
                                                         <TableCell>{row.profile_name}</TableCell>
                                                         <TableCell>{row.profile_age}</TableCell>
                                                         <TableCell>{row.profile_gender}</TableCell>

@@ -2,6 +2,7 @@ import { Dispatch, SetStateAction, useEffect, useLayoutEffect, useState } from '
 import { Button } from '@mui/material';
 import {
   ArrowBack,
+  CameraAlt,
   Numbers,
   Print,
   Settings,
@@ -65,11 +66,11 @@ const EditViewProfile: React.FC<pageProps> = ({
   const [OpenAdminDetails, setOpenAdminDetails] = useState<boolean>(false);
   const [showOtpPopup, setShowOtpPopup] = useState(false);
   const status = watch('profileView.status') ?? ''; // Ensure it doesn't break
- 
+
   const primaryStatus = watch('profileView.primary_status') ?? ''; // Prevent undefined errors
-  
+
   const secondaryStatus = watch('profileView.secondary_status') ?? '';
- 
+
   const image = watch('profileView.profile_image');
 
 
@@ -119,30 +120,30 @@ const EditViewProfile: React.FC<pageProps> = ({
       setValue('profileView.Admin_comments', data.Admin_comments ?? '');
       setValue('profileView.Addon_package', data.Addon_package ?? '');
       const value =
-  data.Notifcation_enabled?.trim() === '' || data.Notifcation_enabled == null
-    ? ''
-    : data.Notifcation_enabled;
+        data.Notifcation_enabled?.trim() === '' || data.Notifcation_enabled == null
+          ? ''
+          : data.Notifcation_enabled;
       setValue(
         'profileView.Notifcation_enabled',
-        value ,
+        value,
       );
       setValue('profileView.profile_image', EditData[6].profile_image);
       setValue('profileView.Package_name', data.Package_name ?? '');
       setValue('profileView.valid_till', data.valid_till ?? '');
       setValue('profileView.age', data.age ?? '');
       setValue('profileView.created_date', data.created_date ?? '');
-      setValue('profileView.visit_count', data.visit_count === null ||""|| 0 ? 0: data.visit_count);
-      setValue('profileView.exp_int_count', data.exp_int_count === null ||""|| 0 ? 0: data.exp_int_count);
-      setValue('profileView.exp_int_lock',data.exp_int_lock === null || data.exp_int_lock === "" || data.exp_int_lock === undefined? 0: Number(data.exp_int_lock)
-);
+      setValue('profileView.visit_count', data.visit_count === null || "" || 0 ? 0 : data.visit_count);
+      setValue('profileView.exp_int_count', data.exp_int_count === null || "" || 0 ? 0 : data.exp_int_count);
+      setValue('profileView.exp_int_lock', data.exp_int_lock === null || data.exp_int_lock === "" || data.exp_int_lock === undefined ? 0 : Number(data.exp_int_lock)
+      );
 
       setValue('profileView.payment_date', data.payment_date ?? '');
       setValue('profileView.payment_mode', data.payment_mode ?? '');
       setValue('profileView.add_on_pack_name', data.add_on_pack_name ?? 0);
-      setValue('profileView.mobile_otp_verify',data.mobile_otp_verify?? '');
-      setValue('profileView.membership_fromdate',data.membership_fromdate?? '');
-      setValue('profileView.membership_todate',data.membership_todate?? '')
-      
+      setValue('profileView.mobile_otp_verify', data.mobile_otp_verify ?? '');
+      setValue('profileView.membership_fromdate', data.membership_fromdate ?? '');
+      setValue('profileView.membership_todate', data.membership_todate ?? '')
+
       if (data?.DateOfJoin) {
         const formattedDate = new Date(data.DateOfJoin)
           .toISOString()
@@ -180,23 +181,23 @@ const EditViewProfile: React.FC<pageProps> = ({
   //   enabled: Boolean(primaryStatus),
   // });
 
-//   const { data: Primary } = useQuery({
-//   queryKey: [status ?? '', 'primary'],
-//   queryFn: () => getProfilePrimaryStatus(status ?? ''),
-//   enabled: status !== null && status !== undefined,  // ✅ allow 0
-// });
+  //   const { data: Primary } = useQuery({
+  //   queryKey: [status ?? '', 'primary'],
+  //   queryFn: () => getProfilePrimaryStatus(status ?? ''),
+  //   enabled: status !== null && status !== undefined,  // ✅ allow 0
+  // });
 
-const { data: Primary } = useQuery({
-  queryKey: ['primaryStatus', status],
-  queryFn: () => getProfilePrimaryStatus(status),
-  enabled: status !== undefined && status !== null , // Allows 0
-});
+  const { data: Primary } = useQuery({
+    queryKey: ['primaryStatus', status],
+    queryFn: () => getProfilePrimaryStatus(status),
+    enabled: status !== undefined && status !== null, // Allows 0
+  });
 
-const { data: secondary } = useQuery({
-  queryKey: [primaryStatus ?? '', 'secondary'],
-  queryFn: () => getProfileSecondaryStatus(primaryStatus ?? ''),
-  enabled: primaryStatus !== null && primaryStatus !== undefined, // ✅ allow 0
-});
+  const { data: secondary } = useQuery({
+    queryKey: [primaryStatus ?? '', 'secondary'],
+    queryFn: () => getProfileSecondaryStatus(primaryStatus ?? ''),
+    enabled: primaryStatus !== null && primaryStatus !== undefined, // ✅ allow 0
+  });
 
 
   const fetchAddOnPackages = async () => {
@@ -220,120 +221,120 @@ const { data: secondary } = useQuery({
 
 
 
-const handlePrintProfile = (format: string) => {
-  if (profileId) {
-    downloadProfilePdf(profileId, format);
-  } else {
-    console.error('Profile ID is not available or invalid');
-    notify('Invalid profile ID. Please check the profile details.', { type: 'error' });
-  }
-};
+  const handlePrintProfile = (format: string) => {
+    if (profileId) {
+      downloadProfilePdf(profileId, format);
+    } else {
+      console.error('Profile ID is not available or invalid');
+      notify('Invalid profile ID. Please check the profile details.', { type: 'error' });
+    }
+  };
 
   const sendOtp = async () => {
-  try {
-    const response = await apiAxios.post(
-      '/api/send_mobile_otp/',
-      {
-        profile_id: profileId // Using the profileId from your form
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json'
+    try {
+      const response = await apiAxios.post(
+        '/api/send_mobile_otp/',
+        {
+          profile_id: profileId // Using the profileId from your form
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
         }
+      );
+      if (response.data.status === 1) {
+        // Success case
+        console.log("OTP sent successfully:", response.data.message);
+        setShowOtpPopup(true); // Show the OTP popup after successful send
+        // You might want to show a success toast/notification here
+      } else {
+        console.error("Failed to send OTP:", response.data.message);
+        // Show error message to user
       }
-    );
-    if (response.data.status === 1) {
-      // Success case
-      console.log("OTP sent successfully:", response.data.message);
-      setShowOtpPopup(true); // Show the OTP popup after successful send
-      // You might want to show a success toast/notification here
-    } else {
-      console.error("Failed to send OTP:", response.data.message);
+    } catch (error) {
+      console.error("Error sending OTP:", error);
       // Show error message to user
     }
-  } catch (error) {
-    console.error("Error sending OTP:", error);
-    // Show error message to user
-  }
-};
+  };
 
-//   const handleProfileView = async (data: profileView, event?: React.BaseSyntheticEvent) => {
-//     event?.preventDefault();
-//     try {
-//         // Check for empty membership dates
-//         if (!data.profileView.membership_fromdate || data.profileView.membership_fromdate.trim() === '') {
-//             notifyDelete("Membership from date is required");
-//             return;
-//         }
-//         if (!data.profileView.membership_todate || data.profileView.membership_todate.trim() === '') {
-//             notifyDelete("Membership to date is required");
-//             return;
-//         }
-      
-//         // Check for mobile verification
-//         if (data.profileView.mobile_otp_verify === null || 
-//             data.profileView.mobile_otp_verify === undefined || 
-//             data.profileView.mobile_otp_verify.trim() === '') {
-//             notifyDelete("Please select mobile verification status (Yes/No)");
-//             return;
-//         }
+  //   const handleProfileView = async (data: profileView, event?: React.BaseSyntheticEvent) => {
+  //     event?.preventDefault();
+  //     try {
+  //         // Check for empty membership dates
+  //         if (!data.profileView.membership_fromdate || data.profileView.membership_fromdate.trim() === '') {
+  //             notifyDelete("Membership from date is required");
+  //             return;
+  //         }
+  //         if (!data.profileView.membership_todate || data.profileView.membership_todate.trim() === '') {
+  //             notifyDelete("Membership to date is required");
+  //             return;
+  //         }
 
-//         const editDataProfileView = {
-//             profile_common_details: {
-//                 Addon_package: data.profileView.Addon_package,
-//                 Notifcation_enabled: data.profileView.Notifcation_enabled,
-//                 status: data.profileView.status,
-//                 DateOfJoin: data.profileView.DateOfJoin,
-//                 ProfileId: data.profileView.ProfileId,
-//                 Gender: data.profileView.Gender,
-//                 Profile_name: data.profileView.Profile_name,
-//                 Mobile_no: data.profileView.Mobile_no,
-//                 calc_chevvai_dhosham: data.profileView.calc_chevvai_dhosham,
-//                 calc_raguketu_dhosham: data.profileView.calc_raguketu_dhosham,
-//                 horoscope_hints: data.profileView.horoscope_hints,
-//                 family_status: data.profileView.family_status,
-//                 Admin_comments: data.profileView.Admin_comments,
-//                 suya_gothram: data.profileView.suya_gothram,
-//                 profile_completion: data.profileView.profile_completion,
-//                 primary_status: data.profileView.primary_status,
-//                 secondary_status: data.profileView.secondary_status,
-//                 plan_status: data.profileView.plan_status,
-//                 profile_image: data.profileView.profile_image,
-//                 mobile_otp_verify: data.profileView.mobile_otp_verify,
-//                 membership_fromdate: data.profileView.membership_fromdate,
-//                 membership_todate: data.profileView.membership_todate,
-//                 visit_count: data.profileView.visit_count === null || "" || 0 ? 0 : data.profileView.visit_count,
-//                 exp_int_count: data.profileView.exp_int_count === null || "" || 0 ? 0 : data.profileView.exp_int_count,
-//                 exp_int_lock: data.profileView.exp_int_lock === null || data.profileView.exp_int_lock === 0 ? 0 : data.profileView.exp_int_lock
-//             },
-//         };
+  //         // Check for mobile verification
+  //         if (data.profileView.mobile_otp_verify === null || 
+  //             data.profileView.mobile_otp_verify === undefined || 
+  //             data.profileView.mobile_otp_verify.trim() === '') {
+  //             notifyDelete("Please select mobile verification status (Yes/No)");
+  //             return;
+  //         }
 
-//         const Name = "profileView";
-//         await handleSubmit();
-//     } catch (error) {
-//         console.error("Update failed:", error);
-//         notifyDelete("Failed to update profile");
-//     }
-// };
+  //         const editDataProfileView = {
+  //             profile_common_details: {
+  //                 Addon_package: data.profileView.Addon_package,
+  //                 Notifcation_enabled: data.profileView.Notifcation_enabled,
+  //                 status: data.profileView.status,
+  //                 DateOfJoin: data.profileView.DateOfJoin,
+  //                 ProfileId: data.profileView.ProfileId,
+  //                 Gender: data.profileView.Gender,
+  //                 Profile_name: data.profileView.Profile_name,
+  //                 Mobile_no: data.profileView.Mobile_no,
+  //                 calc_chevvai_dhosham: data.profileView.calc_chevvai_dhosham,
+  //                 calc_raguketu_dhosham: data.profileView.calc_raguketu_dhosham,
+  //                 horoscope_hints: data.profileView.horoscope_hints,
+  //                 family_status: data.profileView.family_status,
+  //                 Admin_comments: data.profileView.Admin_comments,
+  //                 suya_gothram: data.profileView.suya_gothram,
+  //                 profile_completion: data.profileView.profile_completion,
+  //                 primary_status: data.profileView.primary_status,
+  //                 secondary_status: data.profileView.secondary_status,
+  //                 plan_status: data.profileView.plan_status,
+  //                 profile_image: data.profileView.profile_image,
+  //                 mobile_otp_verify: data.profileView.mobile_otp_verify,
+  //                 membership_fromdate: data.profileView.membership_fromdate,
+  //                 membership_todate: data.profileView.membership_todate,
+  //                 visit_count: data.profileView.visit_count === null || "" || 0 ? 0 : data.profileView.visit_count,
+  //                 exp_int_count: data.profileView.exp_int_count === null || "" || 0 ? 0 : data.profileView.exp_int_count,
+  //                 exp_int_lock: data.profileView.exp_int_lock === null || data.profileView.exp_int_lock === 0 ? 0 : data.profileView.exp_int_lock
+  //             },
+  //         };
 
-const [isShareVisible, setIsShareVisible] = useState(false);
-const [isPdfOptionsVisible,setIsPdfOptionsVisible]=useState(false);
+  //         const Name = "profileView";
+  //         await handleSubmit();
+  //     } catch (error) {
+  //         console.error("Update failed:", error);
+  //         notifyDelete("Failed to update profile");
+  //     }
+  // };
 
- const toggleShareVisibility = () => {
+  const [isShareVisible, setIsShareVisible] = useState(false);
+  const [isPdfOptionsVisible, setIsPdfOptionsVisible] = useState(false);
+
+  const toggleShareVisibility = () => {
     setIsShareVisible((prevState) => !prevState);
     setIsPdfOptionsVisible(false)
   };
 
 
-  const togglePdfVisibility =()=>{
-    setIsPdfOptionsVisible((prevState)=>!prevState)
+  const togglePdfVisibility = () => {
+    setIsPdfOptionsVisible((prevState) => !prevState)
     setIsShareVisible(false)
   }
 
   return (
     <div>
       <div>
-        
+
         <div className="bg-white p-2 mb-10 rounded shadow-md">
           <h4
             onClick={toggleSection1}
@@ -362,7 +363,7 @@ const [isPdfOptionsVisible,setIsPdfOptionsVisible]=useState(false);
               <div className="flex  items-center justify-between mt-3">
                 {/* Back Text with Icon on Left */}
                 <div className="flex items-center gap-2 text-blue-600 cursor-pointer hover:text-blue-800"
-                onClick={()=>navigate(-1)}
+                  onClick={() => navigate(-1)}
                 >
                   <ArrowBack fontSize="small" />
                   <span>Back</span>
@@ -370,24 +371,28 @@ const [isPdfOptionsVisible,setIsPdfOptionsVisible]=useState(false);
 
                 {/* Other Texts with Icons on Right */}
                 <div className="flex gap-6 text-gray-700">
+                   <div className="flex items-center gap-2 cursor-pointer hover:text-gray-900"   onClick={() => navigate(`/UploadApprovalProfileImg?profileId=${profileId}`)}>  
+                    <CameraAlt fontSize="small" />
+                    <span>Photo Update</span>
+                  </div>
                   <div className="flex items-center gap-2 cursor-pointer hover:text-green-600" onClick={toggleShareVisibility} >
                     <WhatsApp fontSize="small" className=" text-green-700" />
                     <span>WhatsApp</span>
 
-                     {isShareVisible && (
-                            // <Share closePopup={toggleShareVisibility} />
-                            <MyProfileShare
+                    {isShareVisible && (
+                      // <Share closePopup={toggleShareVisibility} />
+                      <MyProfileShare
 
-                              closePopup={toggleShareVisibility}
-                              // profileImagess={'https://www.kannikadhanam.com/members/parthasarathyr/'}
-                              profileImagess={EditData[6]?.profile_image || ""}
-                           //   profileImage={get_myprofile_personal?.profile_id}
-                              profileId={profileId}
-                              profileName={profileName}
-                              age={age}
-                               starName={EditData[3]?.star_name}
-                            />
-                          )}
+                        closePopup={toggleShareVisibility}
+                        // profileImagess={'https://www.kannikadhanam.com/members/parthasarathyr/'}
+                        profileImagess={EditData[6]?.profile_image || ""}
+                        //   profileImage={get_myprofile_personal?.profile_id}
+                        profileId={profileId}
+                        profileName={profileName}
+                        age={age}
+                        starName={EditData[3]?.star_name}
+                      />
+                    )}
                   </div>
                   <div className="flex items-center gap-2 cursor-pointer hover:text-gray-900"
                     // onClick={handlePrintProfile}
@@ -396,32 +401,32 @@ const [isPdfOptionsVisible,setIsPdfOptionsVisible]=useState(false);
                     <Print fontSize="small" />
                     <span>Print</span>
 
-             
+
 
                     {
-  isPdfOptionsVisible && (
-    <div className='absolute right-20 mt-60 z-10 w-[220px] rounded-md shadow-lg p-2 bg-white max-sm:left-auto max-sm:right-[-200px]'>
-      <div className='flex flex-col items-start pb-1 font-semibold'>
-        <button onClick={() => handlePrintProfile('withoutaddress')}>Format 1</button>
-      </div>
-      <div className='flex flex-col items-start pb-1 font-semibold'>
-        <button onClick={() => handlePrintProfile('withaddress')}>Format 2</button>
-      </div>
-       <div className='flex flex-col items-start pb-1 font-semibold'>
-        <button onClick={() => handlePrintProfile('withoutcontact')}>Format 3</button>
-      </div>
-       <div className='flex flex-col items-start pb-1 font-semibold'>
-        <button onClick={() => handlePrintProfile('withonlystar')}>Format 5</button>
-      </div>
-       <div className='flex flex-col items-start pb-1 font-semibold'>
-        <button onClick={() => handlePrintProfile('withcontactonly')}>Format 7</button>
-      </div>
-       <div className='flex flex-col items-start pb-1 font-semibold'>
-        <button onClick={() => handlePrintProfile('withoutcontactonly')}>Format 8</button>
-      </div>
-    </div>
-  )
-}
+                      isPdfOptionsVisible && (
+                        <div className='absolute right-20 mt-60 z-10 w-[220px] rounded-md shadow-lg p-2 bg-white max-sm:left-auto max-sm:right-[-200px]'>
+                          <div className='flex flex-col items-start pb-1 font-semibold'>
+                            <button onClick={() => handlePrintProfile('withoutaddress')}>Format 1</button>
+                          </div>
+                          <div className='flex flex-col items-start pb-1 font-semibold'>
+                            <button onClick={() => handlePrintProfile('withaddress')}>Format 2</button>
+                          </div>
+                          <div className='flex flex-col items-start pb-1 font-semibold'>
+                            <button onClick={() => handlePrintProfile('withoutcontact')}>Format 3</button>
+                          </div>
+                          <div className='flex flex-col items-start pb-1 font-semibold'>
+                            <button onClick={() => handlePrintProfile('withonlystar')}>Format 5</button>
+                          </div>
+                          <div className='flex flex-col items-start pb-1 font-semibold'>
+                            <button onClick={() => handlePrintProfile('withcontactonly')}>Format 7</button>
+                          </div>
+                          <div className='flex flex-col items-start pb-1 font-semibold'>
+                            <button onClick={() => handlePrintProfile('withoutcontactonly')}>Format 8</button>
+                          </div>
+                        </div>
+                      )
+                    }
                   </div>
                   <div className="flex items-center gap-2 cursor-pointer hover:text-gray-900">
                     <Settings fontSize="small" />
@@ -633,10 +638,10 @@ const [isPdfOptionsVisible,setIsPdfOptionsVisible]=useState(false);
                               })}
                               className="px-2 py-1 border border-black rounded  text-[#000000e6] "
                             >
-                              <option value=""  className=' text-[#000000e6] '>Select your Status</option>
+                              <option value="" className=' text-[#000000e6] '>Select your Status</option>
                               {Status?.map((option) => (
-                                <option 
-                                  key={option.status_code} 
+                                <option
+                                  key={option.status_code}
                                   value={option.status_code}
                                   className=' text-[#000000e6] '
                                 >
@@ -645,26 +650,26 @@ const [isPdfOptionsVisible,setIsPdfOptionsVisible]=useState(false);
                               ))}
                             </select>
 
-                            
-                              <select
-                                {...register('profileView.primary_status', {
-                                  setValueAs: (value) => value === "" ? undefined : Number(value)
-                                })}
-                                value={watch('profileView.primary_status') || ''}
-                                className="px-2 py-1 border border-black rounded  text-[#000000e6] "
-                              >
-                                <option value=""  className=' text-[#000000e6] '>Select Primary Status</option>
-                                {Primary?.map((option) => (
-                                  <option key={option.id} value={option.id}  className=' text-[#000000e6] '>
-                                    {option.sub_status_name}
-                                  </option>
-                                ))}
-                              </select>
-                            
+
+                            <select
+                              {...register('profileView.primary_status', {
+                                setValueAs: (value) => value === "" ? undefined : Number(value)
+                              })}
+                              value={watch('profileView.primary_status') || ''}
+                              className="px-2 py-1 border border-black rounded  text-[#000000e6] "
+                            >
+                              <option value="" className=' text-[#000000e6] '>Select Primary Status</option>
+                              {Primary?.map((option) => (
+                                <option key={option.id} value={option.id} className=' text-[#000000e6] '>
+                                  {option.sub_status_name}
+                                </option>
+                              ))}
+                            </select>
+
 
                             {Number(watch('profileView.status')) !== 0 &&
                               watch('profileView.primary_status') &&
-                              ![7,8,9,10,11,12,13,14,15,16, 17,18,19,20,21,22].includes(Number(watch('profileView.primary_status'))) && (
+                              ![7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22].includes(Number(watch('profileView.primary_status'))) && (
                                 <select
                                   {...register('profileView.secondary_status', {
                                     setValueAs: (value) => value === "" ? undefined : Number(value)
@@ -674,7 +679,7 @@ const [isPdfOptionsVisible,setIsPdfOptionsVisible]=useState(false);
                                 >
                                   <option value="">Select Secondary Status</option>
                                   {secondary?.map((option) => (
-                                    <option key={option.id} value={option.id}  className=' text-[#000000e6] '>
+                                    <option key={option.id} value={option.id} className=' text-[#000000e6] '>
                                       {option.plan_name}
                                     </option>
                                   ))}
@@ -702,7 +707,7 @@ const [isPdfOptionsVisible,setIsPdfOptionsVisible]=useState(false);
                               <label className="text-black font-medium">From:</label>
                               <input
                                 {...register('profileView.membership_fromdate')}
-                                type="date" 
+                                type="date"
                                 className='font-medium text-[#000000e6] mb-1'
                                 value={watch('profileView.membership_fromdate')?.split('T')[0] || ''}
                               />
@@ -716,9 +721,9 @@ const [isPdfOptionsVisible,setIsPdfOptionsVisible]=useState(false);
                           <div className="flex flex-col">
                             <div className="flex gap-1">
                               <label className="text-black font-medium">To:</label>
-                              <input 
+                              <input
                                 {...register('profileView.membership_todate')}
-                                type="date" 
+                                type="date"
                                 className='font-medium text-[#000000e6] mb-1'
                                 value={watch('profileView.membership_todate')?.split('T')[0] || ''}
                               />
@@ -802,16 +807,16 @@ const [isPdfOptionsVisible,setIsPdfOptionsVisible]=useState(false);
                             <span className="font-medium text-[#000000e6]">{visit_count}</span>
                           </span> */}
                           <div className="flex items-center gap-2">
-  <label className="font-semibold text-black">Visit Count No:</label>
-  <input
-    {...register('profileView.visit_count', {
-      valueAsNumber: true // Ensures the value is treated as a number
-    })}
-    type="number" 
-    min="0" // Prevent negative numbers
-    className="w-20 px-2 py-1 border border-gray-300 rounded font-medium text-[#000000e6]"
-  />
-</div>
+                            <label className="font-semibold text-black">Visit Count No:</label>
+                            <input
+                              {...register('profileView.visit_count', {
+                                valueAsNumber: true // Ensures the value is treated as a number
+                              })}
+                              type="number"
+                              min="0" // Prevent negative numbers
+                              className="w-20 px-2 py-1 border border-gray-300 rounded font-medium text-[#000000e6]"
+                            />
+                          </div>
                         </div>
                         {/* <div className="mt-2">
                           <span className="font-semibold text-black">
@@ -836,40 +841,40 @@ const [isPdfOptionsVisible,setIsPdfOptionsVisible]=useState(false);
       className="w-20 px-2 py-1 border border-gray-300 rounded font-medium text-[#000000e6]"
     />
   </div> */}
-  
 
 
-  <div className="mt-2 flex items-center gap-4">
-  <div className="flex items-center gap-2">
-    <label className="font-semibold text-black">Exp Interest:</label>
-    <select
-      {...register('profileView.exp_int_lock', 
-        {
-        valueAsNumber: true,
-      }
-    )}
-      className="w-24 px-2 py-1 border border-gray-300 rounded font-medium text-[#000000e6]"
-    >
-      <option value={1}>Yes</option>
-      <option value={0}>No</option>
-    </select>
-  </div>
+
+                        <div className="mt-2 flex items-center gap-4">
+                          <div className="flex items-center gap-2">
+                            <label className="font-semibold text-black">Exp Interest:</label>
+                            <select
+                              {...register('profileView.exp_int_lock',
+                                {
+                                  valueAsNumber: true,
+                                }
+                              )}
+                              className="w-24 px-2 py-1 border border-gray-300 rounded font-medium text-[#000000e6]"
+                            >
+                              <option value={1}>Yes</option>
+                              <option value={0}>No</option>
+                            </select>
+                          </div>
 
 
- {Number(watch('profileView.exp_int_lock')) !== 0 &&(
- <div className="flex items-center gap-2">
-    <label className="font-semibold text-black">Exp No Count:</label>
-    <input
-      {...register('profileView.exp_int_count', {
-        valueAsNumber: true
-      })}
-      type="number"
-      min="0"
-      className="w-20 px-2 py-1 border border-gray-300 rounded font-medium text-[#000000e6]"
-    />
-  </div>
- )}
-</div>
+                          {Number(watch('profileView.exp_int_lock')) !== 0 && (
+                            <div className="flex items-center gap-2">
+                              <label className="font-semibold text-black">Exp No Count:</label>
+                              <input
+                                {...register('profileView.exp_int_count', {
+                                  valueAsNumber: true
+                                })}
+                                type="number"
+                                min="0"
+                                className="w-20 px-2 py-1 border border-gray-300 rounded font-medium text-[#000000e6]"
+                              />
+                            </div>
+                          )}
+                        </div>
                         <div>
                           {/* <button className="bg-blue-700 text-white px-2 py-1 text-md mt-1 rounded">Update profile status2</button> */}
                         </div>
@@ -881,57 +886,57 @@ const [isPdfOptionsVisible,setIsPdfOptionsVisible]=useState(false);
                             <p className="text-red-500 text-[#000000e6]">{Mobile_no}</p>
                           </div>
 
-                        <div className="mt-2 flex items-center">
-                          <p className="text-black mr-2 font-semibold">Verification:</p>
+                          <div className="mt-2 flex items-center">
+                            <p className="text-black mr-2 font-semibold">Verification:</p>
 
-                          <input
-                            type="radio"
-                            id="verifyYes"
-                            {...register("profileView.mobile_otp_verify", {
+                            <input
+                              type="radio"
+                              id="verifyYes"
+                              {...register("profileView.mobile_otp_verify", {
                                 required: "Please select mobile verification status"
-                            })}
-                            value="1"
-                            checked={String(watch("profileView.mobile_otp_verify")) === "1"}
-                            className="ml-1 font-medium"
-                          />
-                          <label htmlFor="verifyYes" className="ml-1 text-[#000000e6]">Yes</label>
+                              })}
+                              value="1"
+                              checked={String(watch("profileView.mobile_otp_verify")) === "1"}
+                              className="ml-1 font-medium"
+                            />
+                            <label htmlFor="verifyYes" className="ml-1 text-[#000000e6]">Yes</label>
 
-                          <input
-                            type="radio"
-                            id="verifyNo"
-                            {...register("profileView.mobile_otp_verify", {
+                            <input
+                              type="radio"
+                              id="verifyNo"
+                              {...register("profileView.mobile_otp_verify", {
                                 required: "Please select mobile verification status"
-                            })}
-                            value="0"
-                            checked={String(watch("profileView.mobile_otp_verify")) === "0"}
-                            className="ml-2 font-medium text-[#000000e6]"
-                          />
-                          <label htmlFor="verifyNo" className="ml-1 text-[#000000e6]">No</label>
+                              })}
+                              value="0"
+                              checked={String(watch("profileView.mobile_otp_verify")) === "0"}
+                              className="ml-2 font-medium text-[#000000e6]"
+                            />
+                            <label htmlFor="verifyNo" className="ml-1 text-[#000000e6]">No</label>
 
-                          
-                        </div>
+
+                          </div>
 
                           <div>
                             <button
-                            onClick={sendOtp}
-                            type="button" 
-                            className="bg-blue-700  text-white px-3 py-1 text-md mt-1 rounded">
+                              onClick={sendOtp}
+                              type="button"
+                              className="bg-blue-700  text-white px-3 py-1 text-md mt-1 rounded">
                               Send otp
                             </button>
                           </div>
                         </div>
                         {errors?.profileView?.mobile_otp_verify && (
-                            <p className="text-red-600 ml-2">
-                                {errors.profileView.mobile_otp_verify.message || "Mobile verification is required"}
-                            </p>
-                          )}
+                          <p className="text-red-600 ml-2">
+                            {errors.profileView.mobile_otp_verify.message || "Mobile verification is required"}
+                          </p>
+                        )}
                         <button
                           type="submit"
                           name="save2"
-                            onClick={(e) => {
-                  e.preventDefault();
-                  handleSubmit();
-                }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleSubmit();
+                          }}
                           className="hidden xl:block bg-blue-700  text-white px-3 py-1 text-md mt-8 rounded"
                         >
                           Update profile
@@ -994,10 +999,10 @@ const [isPdfOptionsVisible,setIsPdfOptionsVisible]=useState(false);
                         <div className=" justify-start items-start ">
                           <button
                             type="submit"
-                          onClick={(e) => {
-                  e.preventDefault();
-                  handleSubmit();
-                }}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleSubmit();
+                            }}
                             name="save2"
                             className="hidden max-xl:block bg-blue-700  text-white justify-start items-start px-3 py-1 text-md mt-8 rounded"
                           >
@@ -1008,7 +1013,7 @@ const [isPdfOptionsVisible,setIsPdfOptionsVisible]=useState(false);
                       {showOtpPopup && (
                         <VerifyOTPPopup
                           onClose={() => setShowOtpPopup(false)}
-                          profileId ={profileId }
+                          profileId={profileId}
                         />
                       )}
                     </div>
@@ -1018,7 +1023,7 @@ const [isPdfOptionsVisible,setIsPdfOptionsVisible]=useState(false);
             </div>
           )}
         </div>
-        
+
       </div>
     </div>
   );

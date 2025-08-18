@@ -15,8 +15,7 @@ import axios from 'axios';
 import MatchingStars from './EditMatchingStar';
 import { SelectChangeEvent } from '@mui/material';
 import { PartnerPreference } from '../../../types/EditScemaPartnerPref';
-import { apiAxios } from '../../../api/apiUrl';
-
+// import { apiAxios } from '../../../api/apiUrl';
 
 interface pageProps {
   EditData: any;
@@ -88,13 +87,11 @@ const EditPartnerPreference: React.FC<pageProps> = ({
     clearErrors
   } = useFormContext<PartnerPreference>();
 
-
   // const [matchStars, setMatchStars] = useState<MatchingStar[]>([]);
-  const [selectedStarIds, setSelectedStarIds] = useState<SelectedStarIdItem[]>(
-    [],
-  );
+  const [selectedStarIds, setSelectedStarIds] = useState<SelectedStarIdItem[]>([],);
   const [edit3, setEdit3] = useState<HoroscopeDetails>()
   const [edit0, setEdit0] = useState<Gender>()
+
   const AnnualmaxIncome = watch('PartnerPreference.pref_anual_income_max')
   const AnnualminIncome = watch('PartnerPreference.annualIncome')
   const handleCheckboxChange = (updatedIds: SelectedStarIdItem[]) => {
@@ -126,20 +123,11 @@ const EditPartnerPreference: React.FC<pageProps> = ({
   const starId: string = edit3?.birthstar_name as string;
   const gender: string = edit0?.Gender as string;
 
-
-  // const { data: AnnualIncome } = useQuery<AnnualIncome[]>({
-  //   queryKey: ['AnnualIncome'],
-  //   queryFn: fetchAnnualIncome,
-  // });
   const { data: MaritalStatuses } = useQuery({
     queryKey: ['MaritalStatuses'],
     queryFn: fetchMaritalStatuses,
   });
-  // const handleAnnualIncomeChange = (id: string, isChecked: boolean) => {
-  //   setSelectedAnnualIncomes((prev) =>
-  //     isChecked ? [...prev, id] : prev.filter((incId) => incId !== id),
-  //   );
-  // };
+
 
   const { data: matchStars } = useQuery({
     queryKey: ['matchStars'],
@@ -285,57 +273,111 @@ const EditPartnerPreference: React.FC<pageProps> = ({
     // Filter out any empty values and join them into a string
     setEditEducation(currentEducation.filter(Boolean).join(','));
   };
-  // const handleAnnualIncomeChange = (id: string) => {
-  //   let currentAnnualIncome = EditAnnualIncome
-  //     ? EditAnnualIncome.split(',')
-  //     : [];
 
-  //   const index = currentAnnualIncome.indexOf(id);
-
-  //   if (index === -1) {
-  //     // Add the income ID to the list
-  //     currentAnnualIncome.push(id);
-  //   } else {
-  //     // Remove the income ID from the list
-  //     currentAnnualIncome.splice(index, 1);
-  //   }
-
-  //   // Filter out any empty values and join them into a string
-  //   setEditAnnualIncome(currentAnnualIncome.filter(Boolean).join(','));
-  // };
-  // const handleAnnualIncomeChange = (id: string) => {
-  //   let currentAnnualIncome = EditAnnualIncome
-  //     ? EditAnnualIncome.split(',')
-  //     : [];
-
-  //   const index = currentAnnualIncome.indexOf(id);
-
-  //   if (index === -1) {
-  //     // Add the income ID to the list
-  //     currentAnnualIncome.push(id);
-  //   } else {
-  //     // Remove the income ID from the list
-  //     currentAnnualIncome.splice(index, 1);
-  //   }
-
-  //   // Filter out any empty values and join them into a string
-  //   setEditAnnualIncome(currentAnnualIncome.filter(Boolean).join(','));
-  // };
   const handleAnnualIncomeChange = (event: SelectChangeEvent<typeof EditAnnualIncome>) => {
     setEditAnnualIncome(event.target.value);
   };
   const [eduPref, setEduPref] = useState<EduPref[]>([]);
   const [selectedEducations, setSelectedEducations] = useState('');
-  const [selectedFamilyStatus, setSelectedFamilyStatus] = useState('');
-  console.log("mm123", selectedFamilyStatus)
-  // const handleEducationChange = (id: string, isChecked: boolean) => {
-  //   setSelectedEducations((prev) =>
-  //     isChecked ? [...prev, id] : prev.filter((eduId) => eduId !== id),
-  //   );
-  // };
-  // useEffect(() => {
-  //   setprefEducation(selectedEducations);
-  // }, [selectedEducations]);
+  // const [selectedFamilyStatus, setSelectedFamilyStatus] = useState('');
+  // console.log("mm123", selectedFamilyStatus)
+  const [editFamilyStatus, setEditFamilyStatus] = useState('');
+  const [selectedPrefStates, setSelectedPrefStates] = useState<string[]>([]);
+
+
+  const handleFamilyStatusChange = (id: number) => {
+    // Get the current IDs as an array
+    const currentStatusIds = editFamilyStatus ? editFamilyStatus.split(',') : [];
+    const idString = id.toString();
+    const index = currentStatusIds.indexOf(idString);
+
+    if (index === -1) {
+      // If the ID is not present, add it
+      currentStatusIds.push(idString);
+    } else {
+      // If the ID is present, remove it
+      currentStatusIds.splice(index, 1);
+    }
+
+    // Join the array back into a string and update the state
+    const newStatusString = currentStatusIds.filter(Boolean).join(',');
+    setEditFamilyStatus(newStatusString);
+
+    // Also update the react-hook-form value for validation
+    setValue('PartnerPreference.pref_family_status', newStatusString, { shouldValidate: true });
+  };
+
+  const handleSelectAllFamilyStatus = () => {
+    if (!FamilyStatus || FamilyStatus.length === 0) return;
+
+    const allIds = FamilyStatus.map(f => f.family_status_id.toString());
+    const currentSelectedIds = editFamilyStatus.split(',').filter(Boolean);
+
+    const isAllSelected =
+      currentSelectedIds.length === allIds.length &&
+      allIds.every(id => currentSelectedIds.includes(id));
+
+    if (isAllSelected) {
+      // If all are selected, deselect all
+      setEditFamilyStatus('');
+      setValue('PartnerPreference.pref_family_status', '');
+
+    } else {
+      // Else, select all
+      const idsString = allIds.join(',');
+      setEditFamilyStatus(idsString);
+      setValue('PartnerPreference.pref_family_status', idsString);
+    }
+  };
+
+
+  const handleStateChange = (id: number) => {
+    const idString = id.toString();
+    setSelectedPrefStates(prev => {
+      const newSelection = prev.includes(idString)
+        ? prev.filter(stateId => stateId !== idString) // Remove if already selected
+        : [...prev, idString]; // Add if not selected
+
+      // Update form value for validation
+      setValue('PartnerPreference.pref_state', newSelection.join(','), {
+        shouldValidate: true
+      });
+
+      return newSelection;
+    });
+  };
+
+  // Select All handler
+  const handleSelectAllStates = () => {
+    if (!stateOptions || stateOptions.length === 0) return;
+
+    const allIds = stateOptions.map(state => state.State_Pref_id.toString());
+    const isAllSelected = allIds.every(id =>
+      selectedPrefStates.includes(id)
+    );
+
+    if (isAllSelected) {
+      // Deselect all
+      setSelectedPrefStates([]);
+      setValue('PartnerPreference.pref_state', '');
+    } else {
+      // Select all
+      setSelectedPrefStates(allIds);
+      setValue('PartnerPreference.pref_state', allIds.join(','));
+    }
+  };
+
+  // In the useEffect where you process EditData:
+  useEffect(() => {
+    if (EditData) {
+      // ... other setValue calls ...
+      const initialStates = EditData[4].pref_state
+        ? EditData[4].pref_state.split(',').filter(Boolean)
+        : [];
+      setSelectedPrefStates(initialStates);
+      setValue('PartnerPreference.pref_state', initialStates.join(','));
+    }
+  }, [EditData]);
 
   useEffect(() => {
     const fetchEduPref = async () => {
@@ -352,15 +394,7 @@ const EditPartnerPreference: React.FC<pageProps> = ({
   }, []);
 
   const [selectedMaritalStatuses, setSelectedMaritalStatuses] = useState('');
-  // const handleMaritalStatusChange = (id: string, isChecked: boolean) => {
-  //   setSelectedMaritalStatuses((prev) =>
-  //     isChecked ? [...prev, id] : prev.filter((statusId) => statusId !== id),
-  //   );
-  // };
 
-  // useEffect(() => {
-  //   selectSetMaridStatus(selectedMaritalStatuses);
-  // }, [selectedMaritalStatuses]);
   const starArray = selectedStarIds.map((item) => item.id);
   const starRasiArray = selectedStarIds.map(
     (item) => `${item.star}-${item.rasi}`
@@ -378,14 +412,14 @@ const EditPartnerPreference: React.FC<pageProps> = ({
     setPreforuthamStarRasi(combinedString);
     setPoruthamstar(StarString);
     setProfessionVisibility(profession);
-    setFamilyStatus(selectedFamilyStatus)
+    // setFamilyStatus(selectedFamilyStatus)
   }, [StarString, combinedString]);
 
   const [EditProfession, setEditProfession] = useState('');
   const [editMartualStatus, setEditMartualStatus] = useState('');
   const [EditEducation, setEditEducation] = useState('');
   const [EditAnnualIncome, setEditAnnualIncome] = useState('');
-  const [selectedPrefState, setSelectedPrefState] = useState('');
+  // const [selectedPrefState, setSelectedPrefState] = useState('');
 
   useEffect(() => {
     if (EditData) {
@@ -403,8 +437,9 @@ const EditPartnerPreference: React.FC<pageProps> = ({
         EditData[4].pref_foreign_intrest,
       );
       setValue('PartnerPreference.pref_family_status', EditData[4].pref_family_status || '' || null);
+      setEditFamilyStatus(EditData[4].pref_family_status || ''); // Add this line
       setValue('PartnerPreference.pref_state', EditData[4].pref_state || '' || null);
-      setSelectedFamilyStatus(EditData[4].pref_family_status || '');
+      // setSelectedFamilyStatus(EditData[4].pref_family_status || '');
       setFamilyStatus(EditData[4].pref_family_status || '');
       setValue('PartnerPreference.annualIncome', String(EditData[4].pref_anual_income));
       setEditProfession(EditData[4].pref_profession ?? '');
@@ -441,8 +476,8 @@ const EditPartnerPreference: React.FC<pageProps> = ({
     setPrefProf(EditProfession);
     setEducationVisibility(eduPref);
     setAnnualIncomeVisibility(annualIncome)
-    setPrefferedStatePartner(selectedPrefState)
-  }, [EditProfession, editMartualStatus, EditEducation, EditAnnualIncome, eduPref, annualIncome, selectedPrefState]);
+    //setPrefferedStatePartner(selectedPrefState)
+  }, [EditProfession, editMartualStatus, EditEducation, EditAnnualIncome, eduPref, annualIncome]);
 
 
 
@@ -479,13 +514,13 @@ const EditPartnerPreference: React.FC<pageProps> = ({
 
 
   // In the useEffect where you process EditData:
-  useEffect(() => {
-    if (EditData) {
-      // ... other setValue calls ...
-      setValue('PartnerPreference.pref_state', EditData[4].pref_state || '' || null);
-      setSelectedPrefState(EditData[4].pref_state?.toString() || ''); // Convert to string explicitly
-    }
-  }, [EditData]);
+  // useEffect(() => {
+  //   if (EditData) {
+  //     // ... other setValue calls ...
+  //     setValue('PartnerPreference.pref_state', EditData[4].pref_state || '' || null);
+  //     setSelectedPrefState(EditData[4].pref_state?.toString() || ''); // Convert to string explicitly
+  //   }
+  // }, [EditData]);
 
   return (
     <div>
@@ -608,6 +643,7 @@ const EditPartnerPreference: React.FC<pageProps> = ({
                   className="w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
                 >
                   <option value="" className='text-[#000000e6] font-medium'>Select</option>
+                  <option value="Both" className='text-[#000000e6] font-medium'>Both</option>
                   <option value="Yes" className='text-[#000000e6] font-medium'>Yes</option>
                   <option value="No" className='text-[#000000e6] font-medium'>No</option>
                 </select>
@@ -626,6 +662,7 @@ const EditPartnerPreference: React.FC<pageProps> = ({
                   className="w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
                 >
                   <option value="" className='text-[#000000e6] font-medium'>Select</option>
+                  <option value="Both" className='text-[#000000e6] font-medium'>Both</option>
                   <option value="Yes" className='text-[#000000e6] font-medium'>Yes</option>
                   <option value="No" className='text-[#000000e6] font-medium'>No</option>
                 </select>
@@ -656,77 +693,73 @@ const EditPartnerPreference: React.FC<pageProps> = ({
               </div>
             </div>
 
-            <div className="w-full py-1">
-              <label className="block text-black font-medium mb-1">
+            <div>
+              <h5 className="text-[18px] text-black font-semibold mb-2 cursor-pointer"
+                onClick={handleSelectAllFamilyStatus} // Optional: Add select all
+              >
                 Family Status
-                {/* <span className='text-red-500 text-xl'>*</span> */}
-              </label>
-              <div className="w-full inline-flex rounded max-md:flex-col">
+              </h5>
+
+              <div className="flex flex-wrap gap-x-6 gap-y-2">
                 {FamilyStatus?.map((status) => (
-                  <label
-                    key={status.family_status_id}
-                    className={`w-full px-5 py-3 text-sm font-bold border border-black cursor-pointer ${String(watch('PartnerPreference.pref_family_status')) === String(status.family_status_id)
-                      ? 'bg-blue-500 text-white'
-                      : ''
-                      }`}
-                    onClick={() => {
-                      setValue('PartnerPreference.pref_family_status', status.family_status_id);
-                      clearErrors('PartnerPreference.pref_family_status');
-                      setFamilyStatus(status.family_status_id.toString());
-                    }}
-                  >
+                  <div key={status.family_status_id} className="flex items-center">
                     <input
+                      type="checkbox"
+                      id={`family-status-${status.family_status_id}`}
                       value={status.family_status_id}
-                      {...register('PartnerPreference.pref_family_status')}
-                      type="radio"
-                      className="w-0"
-                      checked={String(watch('PartnerPreference.pref_family_status')) === String(status.family_status_id)}
-                      onChange={() => { }} // Empty to suppress warnings
+                      checked={(editFamilyStatus || '').split(',').includes(
+                        status.family_status_id.toString()
+                      )}
+                      onChange={() => handleFamilyStatusChange(status.family_status_id)}
+                      className="mr-2"
                     />
-                    {status.family_status_name}
-                  </label>
+                    <label
+                      htmlFor={`family-status-${status.family_status_id}`}
+                      className='text-[#000000e6] font-medium'
+                    >
+                      {status.family_status_name}
+                    </label>
+                  </div>
                 ))}
               </div>
+              {/* This error message will now work with the react-hook-form value */}
               {errors?.PartnerPreference?.pref_family_status && (
-                <p className="text-red-600">
+                <p className="text-red-600 mt-1">
                   {errors.PartnerPreference.pref_family_status.message}
                 </p>
               )}
             </div>
 
-            <div className="w-full py-1">
-              <label className="block text-black font-medium mb-1">
-                Preffered State
-                {/* <span className='text-red-500 text-xl'>*</span> */}
-              </label>
-              <div className="w-full inline-flex rounded max-md:flex-col">
-                {stateOptions?.map((status) => (
-                  <label
-                    key={status.State_Pref_id}
-                    className={`w-full px-5 py-3 text-sm font-bold border border-black cursor-pointer ${selectedPrefState === status.State_Pref_id.toString()
-                      ? 'bg-blue-500 text-white'
-                      : ''
-                      }`}
-                    onClick={() => {
-                      setSelectedPrefState(status.State_Pref_id.toString())
-                      clearErrors('PartnerPreference.pref_state')
-                    }
+            <div>
+              <h5 className="text-[18px] text-black font-semibold mb-2 cursor-pointer"
+                onClick={handleSelectAllStates}
+              >
+                Preferred State
+              </h5>
 
-                    }
-                  >
+              <div className="flex flex-wrap gap-x-6 gap-y-2">
+                {stateOptions?.map((state) => (
+                  <div key={state.State_Pref_id} className="flex items-center">
                     <input
-                      value={status.State_Pref_id}
-                      {...register('PartnerPreference.pref_state')}
-                      type="radio"
-                      className="w-0"
-                      checked={selectedPrefState === status.State_Pref_id.toString()}
+                      type="checkbox"
+                      id={`state-${state.State_Pref_id}`}
+                      value={state.State_Pref_id}
+                      checked={selectedPrefStates.includes(state.State_Pref_id.toString())}
+                      onChange={() => handleStateChange(state.State_Pref_id)}
+                      className="mr-2"
                     />
-                    {status.State_name}
-                  </label>
+                    <label
+                      htmlFor={`state-${state.State_Pref_id}`}
+                      className='text-[#000000e6] font-medium'
+                    >
+                      {state.State_name}
+                    </label>
+                  </div>
                 ))}
               </div>
+
               {errors?.PartnerPreference?.pref_state && (
-                <p className="text-red-600">
+                <p className="text-red-600 mt-1">
                   {errors.PartnerPreference.pref_state.message}
                 </p>
               )}

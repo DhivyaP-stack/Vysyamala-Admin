@@ -72,13 +72,13 @@ export const downloadExcel = async () => {
 
 //     // Get the PDF as a blob
 //     const pdfBlob = await response.blob();
-    
+
 //     // Create a URL for the blob
 //     const pdfUrl = URL.createObjectURL(pdfBlob);
-    
+
 //     // Try to open in new tab
 //     const newWindow = window.open(pdfUrl, '_blank');
-    
+
 //     if (!newWindow) {
 //       // If popup blocked, offer download
 //       const downloadLink = document.createElement('a');
@@ -89,10 +89,10 @@ export const downloadExcel = async () => {
 //       document.body.removeChild(downloadLink);
 //       notify('PDF downloaded successfully', { type: 'success' });
 //     }
-    
+
 //     // Revoke the blob URL after use
 //     setTimeout(() => URL.revokeObjectURL(pdfUrl), 1000);
-    
+
 //   } catch (error) {
 //     console.error('Error generating PDF:', error);
 //     notify('Failed to generate PDF. Please try again.', { type: 'error' });
@@ -100,9 +100,10 @@ export const downloadExcel = async () => {
 // };
 
 
+
 export const downloadProfilePdf = async (profileId: string, format: string) => {
   const apiUrl = `${API_URL}/admin-pdf-with-format/?profile_id=${encodeURIComponent(profileId)}&pdf_format=${encodeURIComponent(format)}`;
-  
+
   try {
     // Show loading indicator
     notify('Generating PDF...', { type: 'info' });
@@ -118,34 +119,28 @@ export const downloadProfilePdf = async (profileId: string, format: string) => {
       throw new Error(`Failed to generate PDF: ${response.statusText}`);
     }
 
-    // Get the PDF as a blob
-    const pdfBlob = await response.blob();
-    
-    // Create a URL for the blob
-    const pdfUrl = URL.createObjectURL(pdfBlob);
-    
-    // Try to open in new tab
-    const newWindow = window.open(pdfUrl, '_blank');
-    
+
+    const newWindow = window.open(apiUrl, "_blank");
     if (!newWindow) {
       // If popup blocked, offer download
       const downloadLink = document.createElement('a');
-      downloadLink.href = pdfUrl;
+      downloadLink.href = apiUrl;
       downloadLink.download = `profile_${profileId}_${format}.pdf`;
       document.body.appendChild(downloadLink);
       downloadLink.click();
       document.body.removeChild(downloadLink);
       notify('PDF downloaded successfully', { type: 'success' });
     }
-    
+
     // Revoke the blob URL after use
-    setTimeout(() => URL.revokeObjectURL(pdfUrl), 1000);
-    
+    setTimeout(() => URL.revokeObjectURL(apiUrl), 1000);
+
   } catch (error) {
     console.error('Error generating PDF:', error);
     notify('Failed to generate PDF. Please try again.', { type: 'error' });
   }
 };
+
 // export const getExpressIntrest = async (
 //   fromDate: string,
 //   toDate: string,
@@ -812,10 +807,10 @@ export const visitorProfileApi = `${API_URL}/Visitor_profiles/`
 export const GetPhotoRequestProfileApi = `${API_URL}/Get_photo_request/`;
 export const LoginDetailsApi = `${API_URL}/login-details/`;
 export const VysyaAssistProfileApi = `${API_URL}/vysassist/`;
-export const  PersonalNotesProfileApi = `${API_URL}/Personal_notes/`;
-export const  ExpressInterestProfileApi = `${API_URL}/Express_interest/`;
-export const  ExpressInterestMutualApi = `${API_URL}/Express_interest_mutual/`;
-export const  ExpressInterestReceivedApi = `${API_URL}/Express_interest_received/`;
+export const PersonalNotesProfileApi = `${API_URL}/Personal_notes/`;
+export const ExpressInterestProfileApi = `${API_URL}/Express_interest/`;
+export const ExpressInterestMutualApi = `${API_URL}/Express_interest_mutual/`;
+export const ExpressInterestReceivedApi = `${API_URL}/Express_interest_received/`;
 //profileImageApproval
 export const profileImgApproval = `${API_URL}/get_profile-images_approval/`;
 //photo request

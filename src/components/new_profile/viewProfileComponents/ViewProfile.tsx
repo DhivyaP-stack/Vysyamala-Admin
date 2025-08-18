@@ -747,7 +747,7 @@ import {
   useState,
 } from 'react';
 import { Button } from '@mui/material';
-import { ArrowBack, Print, Settings, WhatsApp } from '@mui/icons-material';
+import { ArrowBack, CameraAlt, Print, Settings, WhatsApp } from '@mui/icons-material';
 import ViewProfileButton from '../../../matchingProfile/ViewProfileButton';
 import axios from 'axios';
 import { useForm } from 'react-hook-form';
@@ -804,9 +804,9 @@ const ViewProfile: React.FC<pageProps> = ({
   const { register, setValue, watch } = useForm();
   const [profileView, setProfileView] = useState<any>({});
 
-  
+
   const [profileView7, setProfileView7] = useState<any>({});
- 
+
   const [emailAlerts, setEmailAlerts] = useState<Alert[]>([]);
   const [smsAlerts, setSmsAlerts] = useState<Alert[]>([]);
   const [familyStatuses, setFamilyStatuses] = useState<FamilyStatus[]>([]);
@@ -816,8 +816,8 @@ const ViewProfile: React.FC<pageProps> = ({
   const [checkAddOn, setCheckAddOn] = useState<string | undefined>();
   const [image, setImage] = useState<string | null>(null);
   const [openCallManagement, setOpenCallManagement] = useState<boolean>(false)
-   const [OpenAdminDetails,setOpenAdminDetails]=useState<boolean>(false)
-    const [openDataHistory,setOpenDataHistory]=useState<boolean>(false)
+  const [OpenAdminDetails, setOpenAdminDetails] = useState<boolean>(false)
+  const [openDataHistory, setOpenDataHistory] = useState<boolean>(false)
   // const [profileCountt,setProfileCountt]=useState()
   //   import moment from "moment";
   //   npm install moment
@@ -825,30 +825,30 @@ const ViewProfile: React.FC<pageProps> = ({
   console.log('profileView7', profileView7);
   console.log("profileView", profileView)
 
-   useEffect(() => {
-  if (profile) {
-    if (profile[6]) {
-       const membership_fromdate= new Date(profile[6].membership_fromdate);
-      const formattedDateFrom = membership_fromdate.toISOString().split('T')[0];
-     
-      const membership_todate= new Date(profile[6].membership_todate);
-      const formattedDate = membership_todate.toISOString().split('T')[0];
-     
-      
-      // Set both date fields using setValue
-      setValue('profileView.membership_fromdate', formattedDateFrom);
-      setValue('profileView.membership_todate', formattedDate); // or use the appropriate end date
+  useEffect(() => {
+    if (profile) {
+      if (profile[6]) {
+        const membership_fromdate = new Date(profile[6].membership_fromdate);
+        const formattedDateFrom = membership_fromdate.toISOString().split('T')[0];
+
+        const membership_todate = new Date(profile[6].membership_todate);
+        const formattedDate = membership_todate.toISOString().split('T')[0];
+
+
+        // Set both date fields using setValue
+        setValue('profileView.membership_fromdate', formattedDateFrom);
+        setValue('profileView.membership_todate', formattedDate); // or use the appropriate end date
+      }
+
+      // ... rest of your useEffect code
     }
-
-    // ... rest of your useEffect code
-  }
-}, [profile, setValue]);
+  }, [profile, setValue]);
 
 
-// useEffect(() => {
-//     const formattedDate = new Date(apiValue).toISOString().split("T")[0];
-//     setValue("profileView.membership_fromdate", formattedDate);
-//   }, []);
+  // useEffect(() => {
+  //     const formattedDate = new Date(apiValue).toISOString().split("T")[0];
+  //     setValue("profileView.membership_fromdate", formattedDate);
+  //   }, []);
 
   useEffect(() => {
     if (profile) {
@@ -890,7 +890,7 @@ const ViewProfile: React.FC<pageProps> = ({
   const email = profileView.Notifcation_enabled?.split(',');
   const sms = profileView.Notifcation_enabled?.split(',');
   const addOn = profileView.Addon_package?.split(',');
-  console.log("addd123addd123",addOn)
+  console.log("addd123addd123", addOn)
   console.log(addOn);
   const { data: Status } = useQuery({
     queryKey: ['Status'],
@@ -961,7 +961,7 @@ const ViewProfile: React.FC<pageProps> = ({
     }
   }, [profile]);
 
- 
+
 
   const toggleSection10 = () => {
     setViewDetails(!isViewDetai);
@@ -992,13 +992,13 @@ const ViewProfile: React.FC<pageProps> = ({
   ];
 
 
-    const [addonPackage, setAddonPackage] = useState<AddOnPackage[]>([]);
+  const [addonPackage, setAddonPackage] = useState<AddOnPackage[]>([]);
 
 
 
-    useEffect(() => {
+  useEffect(() => {
 
-      
+
     const fetchAddOnPackages = async () => {
       try {
         const response = await axios.post(
@@ -1014,30 +1014,30 @@ const ViewProfile: React.FC<pageProps> = ({
         console.error(err);
       }
     };
-      fetchAddOnPackages();
-    }, []);
- 
+    fetchAddOnPackages();
+  }, []);
 
 
-const handlePrintProfile = (format: string) => {
-  if (profileId) {
-    downloadProfilePdf(profileId, format);
-  } else {
-    console.error('Profile ID is not available or invalid');
-    notify('Invalid profile ID. Please check the profile details.', { type: 'error' });
-  }
-};
 
-const [isShareVisible, setIsShareVisible] = useState(false);
-const [isPdfOptionsVisible,setIsPdfOptionsVisible]=useState(false);
- const toggleShareVisibility = () => {
+  const handlePrintProfile = (format: string) => {
+    if (profileId) {
+      downloadProfilePdf(profileId, format);
+    } else {
+      console.error('Profile ID is not available or invalid');
+      notify('Invalid profile ID. Please check the profile details.', { type: 'error' });
+    }
+  };
+
+  const [isShareVisible, setIsShareVisible] = useState(false);
+  const [isPdfOptionsVisible, setIsPdfOptionsVisible] = useState(false);
+  const toggleShareVisibility = () => {
     setIsShareVisible((prevState) => !prevState);
     setIsPdfOptionsVisible(false)
   };
 
-  
-  const togglePdfVisibility =()=>{
-    setIsPdfOptionsVisible((prevState)=>!prevState)
+
+  const togglePdfVisibility = () => {
+    setIsPdfOptionsVisible((prevState) => !prevState)
     setIsShareVisible(false)
   }
 
@@ -1068,7 +1068,7 @@ const [isPdfOptionsVisible,setIsPdfOptionsVisible]=useState(false);
         <div className="mt-3">
           {/* Header with back and action buttons */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div 
+            <div
               className="flex items-center gap-2 text-blue-600 cursor-pointer hover:text-blue-800"
               onClick={() => navigate(-1)}
             >
@@ -1081,59 +1081,62 @@ const [isPdfOptionsVisible,setIsPdfOptionsVisible]=useState(false);
                 <WhatsApp fontSize="small" className="text-green-700" />
                 <span>WhatsApp</span>
               </div> */}
+              <div className="flex items-center gap-2 cursor-pointer hover:text-gray-900" onClick={() => navigate(`/UploadApprovalProfileImg?profileId=${profileView.ProfileId}`)}>
+                <CameraAlt fontSize="small" />
+                <span>Photo Update</span>
+              </div>
+              <div className="flex items-center gap-2 cursor-pointer hover:text-green-600" onClick={toggleShareVisibility} >
+                <WhatsApp fontSize="small" className=" text-green-700" />
+                <span>WhatsApp</span>
 
-                <div className="flex items-center gap-2 cursor-pointer hover:text-green-600" onClick={toggleShareVisibility} >
-                    <WhatsApp fontSize="small" className=" text-green-700" />
-                    <span>WhatsApp</span>
+                {isShareVisible && (
+                  // <Share closePopup={toggleShareVisibility} />
+                  <MyProfileShare
 
-                     {isShareVisible && (
-                            // <Share closePopup={toggleShareVisibility} />
-                            <MyProfileShare
-
-                              closePopup={toggleShareVisibility}
-                              // profileImagess={'https://www.kannikadhanam.com/members/parthasarathyr/'}
-                              profileImagess={profile[6]?.profile_image || ""}
-                           //   profileImage={get_myprofile_personal?.profile_id}
-                              profileId={profileId}
-                              profileName={profile[6]?.Profile_name}
-                              age={profile[6]?.age}
-                              starName={profile[3]?.star_name}
-                            />
-                          )}
-                  </div>
+                    closePopup={toggleShareVisibility}
+                    // profileImagess={'https://www.kannikadhanam.com/members/parthasarathyr/'}
+                    profileImagess={profile[6]?.profile_image || ""}
+                    //   profileImage={get_myprofile_personal?.profile_id}
+                    profileId={profileId}
+                    profileName={profile[6]?.Profile_name}
+                    age={profile[6]?.age}
+                    starName={profile[3]?.star_name}
+                  />
+                )}
+              </div>
               <div
                 className="flex items-center gap-2 cursor-pointer hover:text-gray-900"
-               // onClick={handlePrintProfile}
+                // onClick={handlePrintProfile}
                 onClick={togglePdfVisibility}
               >
                 <Print fontSize="small" />
                 <span>Print</span>
-                
-                    {
-  isPdfOptionsVisible && (
-    <div className='absolute right-20 mt-30 z-10 w-[220px] rounded-md shadow-lg p-2 bg-white max-sm:left-auto max-sm:right-[-200px]'>
-      <div className='flex flex-col items-start pb-1 font-semibold'>
-        <button onClick={() => handlePrintProfile('withoutaddress')}>Format 1</button>
-      </div>
-      <div className='flex flex-col items-start pb-1 font-semibold'>
-        <button onClick={() => handlePrintProfile('withaddress')}>Format 2</button>
-      </div>
-       <div className='flex flex-col items-start pb-1 font-semibold'>
-        <button onClick={() => handlePrintProfile('withoutcontact')}>Format 3</button>
-      </div>
-       <div className='flex flex-col items-start pb-1 font-semibold'>
-        <button onClick={() => handlePrintProfile('withonlystar')}>Format 5</button>
-      </div>
-       <div className='flex flex-col items-start pb-1 font-semibold'>
-        <button onClick={() => handlePrintProfile('withcontactonly')}>Format 7</button>
-      </div>
-       <div className='flex flex-col items-start pb-1 font-semibold'>
-        <button onClick={() => handlePrintProfile('withoutcontactonly')}>Format 8</button>
-      </div>
-    </div>
-  )
-}
-   
+
+                {
+                  isPdfOptionsVisible && (
+                    <div className='absolute right-20 mt-30 z-10 w-[220px] rounded-md shadow-lg p-2 bg-white max-sm:left-auto max-sm:right-[-200px]'>
+                      <div className='flex flex-col items-start pb-1 font-semibold'>
+                        <button onClick={() => handlePrintProfile('withoutaddress')}>Format 1</button>
+                      </div>
+                      <div className='flex flex-col items-start pb-1 font-semibold'>
+                        <button onClick={() => handlePrintProfile('withaddress')}>Format 2</button>
+                      </div>
+                      <div className='flex flex-col items-start pb-1 font-semibold'>
+                        <button onClick={() => handlePrintProfile('withoutcontact')}>Format 3</button>
+                      </div>
+                      <div className='flex flex-col items-start pb-1 font-semibold'>
+                        <button onClick={() => handlePrintProfile('withonlystar')}>Format 5</button>
+                      </div>
+                      <div className='flex flex-col items-start pb-1 font-semibold'>
+                        <button onClick={() => handlePrintProfile('withcontactonly')}>Format 7</button>
+                      </div>
+                      <div className='flex flex-col items-start pb-1 font-semibold'>
+                        <button onClick={() => handlePrintProfile('withoutcontactonly')}>Format 8</button>
+                      </div>
+                    </div>
+                  )
+                }
+
               </div>
               <div className="flex items-center gap-2 cursor-pointer hover:text-gray-900">
                 <Settings fontSize="small" />
@@ -1316,14 +1319,14 @@ const [isPdfOptionsVisible,setIsPdfOptionsVisible]=useState(false);
                   </div> */}
 
                   <div className="flex flex-wrap items-center gap-1 mb-2">
-  <span className="font-semibold text-black whitespace-nowrap">AddOn Packages:</span>
-  <span className="text-[#000000e6]">
-    {addonPackage
-      .filter(pkg => addOn?.includes(pkg.package_id.toString()))
-      .map(pkg => `${pkg.name}-${pkg.amount}`)
-      .join(', ')}
-  </span>
-</div>
+                    <span className="font-semibold text-black whitespace-nowrap">AddOn Packages:</span>
+                    <span className="text-[#000000e6]">
+                      {addonPackage
+                        .filter(pkg => addOn?.includes(pkg.package_id.toString()))
+                        .map(pkg => `${pkg.name}-${pkg.amount}`)
+                        .join(', ')}
+                    </span>
+                  </div>
 
 
                   <div className="flex flex-wrap items-center gap-4 mb-2">
@@ -1333,7 +1336,7 @@ const [isPdfOptionsVisible,setIsPdfOptionsVisible]=useState(false);
                   </div>
                   <div>
 
-                     <span className="font-semibold text-black">
+                    <span className="font-semibold text-black">
                       Exp Interest: <span className="font-normal">
                         {profileView.exp_int_lock === 1 ? "Yes" : "No"}
                         {profileView.exp_int_lock === 1 && (

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Box, Button, Checkbox, CircularProgress, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField, Typography } from '@mui/material'
 import { userAnnualIncome, userCity, userComplexion, userEducation, userFamilyStatus, userMaritalStatus, userMatchingProfiles, userMatchingProfilesFilter, userMatchingProfilesFilterListMatch, userMatchingProfilesPrintProfile, userMatchingProfilesSendEmail, userMatchingProfilesWhatsapp, userMembership, userProfession, userState } from '../api/apiConfig';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { NotifyError, NotifySuccess } from '../common/Toast/ToastMessage';
 import { MdVerified } from 'react-icons/md';
 import { GoUnverified } from 'react-icons/go';
@@ -109,7 +109,7 @@ const columns = [
     { id: 'location', label: 'Location' },
     { id: 'star', label: 'Star' },
     { id: 'matching_score', label: 'Matching Score' },
-     { id: 'action_score', label: 'Action Score' },
+    { id: 'action_score', label: 'Action Score' },
     { id: 'verified', label: 'Verified' },
 ];
 
@@ -118,9 +118,9 @@ export const UserMatchingProfiles = () => {
     const location = useLocation();
     const query = new URLSearchParams(location.search);
     const profileID = query.get('profileId');
-
+    const navigate = useNavigate();
     const [matchingData, setMatchingData] = useState<UserMatchingProfilesProps[]>([]);
-    console.log("01m",matchingData)
+    console.log("01m", matchingData)
     const [annualIncome, setAnnualIncome] = useState<AnnualIncome[]>([]);
     const [profession, setProfession] = useState<Profession[]>([]);
     const [maritalStatus, setMaritalStatus] = useState<MaritalStatus[]>([]);
@@ -462,18 +462,18 @@ export const UserMatchingProfiles = () => {
     };
 
 
-     const [goToPageInput, setGoToPageInput] = useState<string>('');
-  
+    const [goToPageInput, setGoToPageInput] = useState<string>('');
+
     const handleGoToPage = () => {
-    const pageNumber = parseInt(goToPageInput, 10);
-    if (!isNaN(pageNumber)) {
-      const lastPage = Math.ceil(totalItems / itemsPerPage) - 1;
-      const newPage = Math.max(0, Math.min(pageNumber - 1, lastPage));
-      setCurrentPage(newPage);
-      setGoToPageInput('');
-    }
-  };
-return (
+        const pageNumber = parseInt(goToPageInput, 10);
+        if (!isNaN(pageNumber)) {
+            const lastPage = Math.ceil(totalItems / itemsPerPage) - 1;
+            const newPage = Math.max(0, Math.min(pageNumber - 1, lastPage));
+            setCurrentPage(newPage);
+            setGoToPageInput('');
+        }
+    };
+    return (
         <div>
             <div>
                 {loading ? (
@@ -1165,7 +1165,18 @@ return (
                                                                         onError={(e) => (e.currentTarget.src = No_Image_Available)} // Fallback image
                                                                     />
                                                                 </TableCell>
-                                                                <TableCell>{row.profile_id}</TableCell>
+                                                                <TableCell
+                                                                    onClick={() =>
+                                                                        navigate(
+                                                                            `/viewProfile?profileId=${row.profile_id}`,
+                                                                        )
+                                                                    }
+                                                                    sx={{
+                                                                        color: 'blue',
+                                                                        cursor: 'pointer',
+                                                                        textDecoration: 'none', '&:hover': { textDecoration: 'underline' }
+                                                                    }}
+                                                                >{row.profile_id}</TableCell>
                                                                 <TableCell>{row.profile_name}</TableCell>
                                                                 <TableCell>{row.profile_age}</TableCell>
                                                                 <TableCell>{row.profile_gender}</TableCell>
@@ -1211,7 +1222,7 @@ return (
                                 /> */}
 
 
-                                     {/* {
+                                {/* {
   Math.ceil(totalItems / itemsPerPage) > 0 && (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 px-4 py-3 bg-gray-50 rounded-lg border border-gray-200">
       <div className="text-sm text-gray-600">
@@ -1340,130 +1351,130 @@ return (
   )
 } */}
 
-{
-  Math.ceil(totalItems / itemsPerPage) > 0 && (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 px-4 py-3 bg-gray-50 rounded-lg border border-gray-200">
-      <div className="text-sm text-gray-600">
-        Showing {currentPage * itemsPerPage + 1} to {Math.min((currentPage + 1) * itemsPerPage, totalItems)} of {totalItems} records
-      </div>
-      
-      <div className="flex items-center gap-2">
-        {/* Go to page input */}
-        <div className="flex items-center gap-2">
-          <Typography variant="body2">Go to page:</Typography>
-          <TextField
-            size="small"
-            type="number"
-            value={goToPageInput}
-            onChange={(e) => setGoToPageInput(e.target.value)}
-            inputProps={{
-              min: 1,
-              max: Math.ceil(totalItems / itemsPerPage),
-            }}
-            style={{ width: '80px' }}
-            onKeyPress={(e) => e.key === 'Enter' && handleGoToPage()}
-          />
-          <Button
-            variant="contained"
-            size="small"
-            onClick={handleGoToPage}
-            disabled={!goToPageInput}
-          >
-            Go
-          </Button>
-        </div>
+                                {
+                                    Math.ceil(totalItems / itemsPerPage) > 0 && (
+                                        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 px-4 py-3 bg-gray-50 rounded-lg border border-gray-200">
+                                            <div className="text-sm text-gray-600">
+                                                Showing {currentPage * itemsPerPage + 1} to {Math.min((currentPage + 1) * itemsPerPage, totalItems)} of {totalItems} records
+                                            </div>
 
-        {/* First Page */}
-        <IconButton
-          onClick={() => setCurrentPage(0)}
-          disabled={currentPage === 0}
-          aria-label="first page"
-        >
-          {/* <FirstPageIcon /> */}{"<<"}
-        </IconButton>
+                                            <div className="flex items-center gap-2">
+                                                {/* Go to page input */}
+                                                <div className="flex items-center gap-2">
+                                                    <Typography variant="body2">Go to page:</Typography>
+                                                    <TextField
+                                                        size="small"
+                                                        type="number"
+                                                        value={goToPageInput}
+                                                        onChange={(e) => setGoToPageInput(e.target.value)}
+                                                        inputProps={{
+                                                            min: 1,
+                                                            max: Math.ceil(totalItems / itemsPerPage),
+                                                        }}
+                                                        style={{ width: '80px' }}
+                                                        onKeyPress={(e) => e.key === 'Enter' && handleGoToPage()}
+                                                    />
+                                                    <Button
+                                                        variant="contained"
+                                                        size="small"
+                                                        onClick={handleGoToPage}
+                                                        disabled={!goToPageInput}
+                                                    >
+                                                        Go
+                                                    </Button>
+                                                </div>
 
-        {/* Previous Page */}
-        <IconButton
-          onClick={() => setCurrentPage(prev => Math.max(prev - 1, 0))}
-          disabled={currentPage === 0}
-          aria-label="previous page"
-        >
-          {/* <KeyboardArrowLeft /> */}{"<"}
-        </IconButton>
+                                                {/* First Page */}
+                                                <IconButton
+                                                    onClick={() => setCurrentPage(0)}
+                                                    disabled={currentPage === 0}
+                                                    aria-label="first page"
+                                                >
+                                                    {/* <FirstPageIcon /> */}{"<<"}
+                                                </IconButton>
 
-        {/* Page Numbers */}
-        {(() => {
-          const totalPages = Math.ceil(totalItems / itemsPerPage);
-          const maxVisiblePages = 5;
-          let startPage, endPage;
+                                                {/* Previous Page */}
+                                                <IconButton
+                                                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 0))}
+                                                    disabled={currentPage === 0}
+                                                    aria-label="previous page"
+                                                >
+                                                    {/* <KeyboardArrowLeft /> */}{"<"}
+                                                </IconButton>
 
-          if (totalPages <= maxVisiblePages) {
-            startPage = 0;
-            endPage = totalPages - 1;
-          } else {
-            const maxPagesBeforeCurrent = Math.floor(maxVisiblePages / 2);
-            const maxPagesAfterCurrent = Math.ceil(maxVisiblePages / 2) - 1;
-            
-            if (currentPage < maxPagesBeforeCurrent) {
-              startPage = 0;
-              endPage = maxVisiblePages - 1;
-            } else if (currentPage + maxPagesAfterCurrent >= totalPages) {
-              startPage = totalPages - maxVisiblePages;
-              endPage = totalPages - 1;
-            } else {
-              startPage = currentPage - maxPagesBeforeCurrent;
-              endPage = currentPage + maxPagesAfterCurrent;
-            }
-          }
+                                                {/* Page Numbers */}
+                                                {(() => {
+                                                    const totalPages = Math.ceil(totalItems / itemsPerPage);
+                                                    const maxVisiblePages = 5;
+                                                    let startPage, endPage;
 
-          const pages = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
+                                                    if (totalPages <= maxVisiblePages) {
+                                                        startPage = 0;
+                                                        endPage = totalPages - 1;
+                                                    } else {
+                                                        const maxPagesBeforeCurrent = Math.floor(maxVisiblePages / 2);
+                                                        const maxPagesAfterCurrent = Math.ceil(maxVisiblePages / 2) - 1;
 
-          return (
-            <div className="flex">
-              {pages.map((page) => (
-                <Button
-                  key={page}
-                  variant={currentPage === page ? "contained" : "text"}
-                  onClick={() => setCurrentPage(page)}
-                  style={{
-                    minWidth: '32px',
-                    height: '32px',
-                    margin: '0 2px',
-                    backgroundColor: currentPage === page ? '#1976d2' : 'transparent',
-                    color: currentPage === page ? '#fff' : '#000',
-                  }}
-                >
-                  {page + 1}
-                </Button>
-              ))}
-            </div>
-          );
-        })()}
+                                                        if (currentPage < maxPagesBeforeCurrent) {
+                                                            startPage = 0;
+                                                            endPage = maxVisiblePages - 1;
+                                                        } else if (currentPage + maxPagesAfterCurrent >= totalPages) {
+                                                            startPage = totalPages - maxVisiblePages;
+                                                            endPage = totalPages - 1;
+                                                        } else {
+                                                            startPage = currentPage - maxPagesBeforeCurrent;
+                                                            endPage = currentPage + maxPagesAfterCurrent;
+                                                        }
+                                                    }
 
-        {/* Next Page */}
-        <IconButton
-          onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(totalItems / itemsPerPage) - 1))}
-          disabled={currentPage >= Math.ceil(totalItems / itemsPerPage) - 1}
-          aria-label="next page"
-        >
-          {/* <KeyboardArrowRight /> */}{">"}
-        </IconButton>
+                                                    const pages = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
 
-        {/* Last Page */}
-        <IconButton
-          onClick={() => setCurrentPage(Math.ceil(totalItems / itemsPerPage) - 1)}
-          disabled={currentPage >= Math.ceil(totalItems / itemsPerPage) - 1}
-          aria-label="last page"
-        >
-          {/* <LastPageIcon /> */}{">>"}
-        </IconButton>
-      </div>
-    </div>
-  )
-}
+                                                    return (
+                                                        <div className="flex">
+                                                            {pages.map((page) => (
+                                                                <Button
+                                                                    key={page}
+                                                                    variant={currentPage === page ? "contained" : "text"}
+                                                                    onClick={() => setCurrentPage(page)}
+                                                                    style={{
+                                                                        minWidth: '32px',
+                                                                        height: '32px',
+                                                                        margin: '0 2px',
+                                                                        backgroundColor: currentPage === page ? '#1976d2' : 'transparent',
+                                                                        color: currentPage === page ? '#fff' : '#000',
+                                                                    }}
+                                                                >
+                                                                    {page + 1}
+                                                                </Button>
+                                                            ))}
+                                                        </div>
+                                                    );
+                                                })()}
+
+                                                {/* Next Page */}
+                                                <IconButton
+                                                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(totalItems / itemsPerPage) - 1))}
+                                                    disabled={currentPage >= Math.ceil(totalItems / itemsPerPage) - 1}
+                                                    aria-label="next page"
+                                                >
+                                                    {/* <KeyboardArrowRight /> */}{">"}
+                                                </IconButton>
+
+                                                {/* Last Page */}
+                                                <IconButton
+                                                    onClick={() => setCurrentPage(Math.ceil(totalItems / itemsPerPage) - 1)}
+                                                    disabled={currentPage >= Math.ceil(totalItems / itemsPerPage) - 1}
+                                                    aria-label="last page"
+                                                >
+                                                    {/* <LastPageIcon /> */}{">>"}
+                                                </IconButton>
+                                            </div>
+                                        </div>
+                                    )
+                                }
                             </div>
 
-                         
+
 
                         </div>
                     </div>

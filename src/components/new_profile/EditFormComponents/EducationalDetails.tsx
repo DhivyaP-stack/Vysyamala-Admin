@@ -3,7 +3,6 @@ import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import Input from '../../Fromfield/Inputfield';
 import { useFormContext } from 'react-hook-form';
 // import Tooltip from '@mui/material/Tooltip';
-
 import CurrencyCodes from 'currency-codes';
 import currencySymbolMap from 'currency-symbol-map';
 import {
@@ -92,40 +91,27 @@ const EducationalDetails: React.FC<formProps> = ({
 
   const selectedWorkCountry = watch('EducationDetails.work_country') || '';
   const selectedState = watch('EducationDetails.work_state') || '';
-
   const selecteddistrict = watch('EducationDetails.work_district') || '';
-
   const selectedCity = watch('EducationDetails.work_city') || '';
-
   const selectFieldOfStudy = watch('EducationDetails.field_ofstudy') || '';
   console.log("selectFieldOfStudy", selectFieldOfStudy);
   const selectedUgDegree = watch('EducationDetails.degree') || '';
-
   const [showCityTextInput, setShowCityTextInput] = useState(false);
   const [isCityValid, setIsCityValid] = useState(false);
-
   const [selectedCurrency, setSelectedCurrency] = useState('');
   const [profession, setProfession] = useState<number>();
   const [degrees, setDegrees] = useState<GetDegree[]>([]);
-
-  // console.log(degrees)
-  // const [selectedDegrees, setSelectedDegrees] = useState<string[]>([]);
   const [selectedDegrees, setSelectedDegrees] = useState<string[]>([]);
-
   const [otherDegree, setOtherDegree] = useState(''); // To store the value of "Other"
-
   const [showOtherInput, setShowOtherInput] = useState(false); // To conditionally show input box
-
   const currencyOptions = CurrencyCodes.codes(); // Correct way to get currency codes
   const [selectedEducation, setSelectedEducation] = useState<string>('');
   console.log(selectedEducation);
   const [selectedFieldOfStudy, setSelectedFieldOfStudy] = useState<string>('');
   console.log(selectFieldOfStudy);
-
   const [noDegreeOptions, setNoDegreeOptions] = useState<boolean>(true);
   console.log("noDegreeOptions", noDegreeOptions)
-  // const [selectedId, setSelectedId] = useState<string[]>([]);
-  // console.log("selectedId",selectedId);
+
   const preferredCurrencies = [
     'INR', // Indian Rupee - India
     'MYR', // Malaysian Ringgit - Malaysia
@@ -140,9 +126,6 @@ const EducationalDetails: React.FC<formProps> = ({
     (code) => !preferredCurrencies.includes(code),
   );
   const sortedCurrencyOptions = [...preferredCurrencies, ...otherCurrencies]; // Combine preferred and other currencies
-  // const [showCityTextField, setShowCityTextField] = useState(false); // State for "Others" option
-
-
 
   const toggleSection4 = () => {
     setIsEducationDetailsOpen(!isEducationDetailsOpen);
@@ -170,22 +153,11 @@ const EducationalDetails: React.FC<formProps> = ({
     queryKey: ['WorkCountry'],
     queryFn: fetchCountryStatus,
   });
-  // const { data: degreesData } = useQuery({
-  //   queryKey: ['degrees'],
-  //   queryFn: fetchDegree,
-  // });
-  // Fetch degrees based on selected education and field of study
   const { data: degreesData } = useQuery({
     queryKey: ['degrees', selectedEducation, selectedFieldOfStudy],
     queryFn: () => fetchDegree(selectedEducation, selectedFieldOfStudy),
     enabled: !!selectedEducation && !!selectedFieldOfStudy,
   });
-
-  // Map degrees to options for the multi-select component
-  // const degreeOptions = degreesData?.map((degree) => ({
-  //   value: degree.degeree_id,
-  //   label: degree.degeree_description,
-  // }));
   const { data: WorkState } = useQuery({
     queryKey: [selectedWorkCountry, 'WorkState'],
     queryFn: () => fetchStateStatus(selectedWorkCountry),
@@ -731,8 +703,8 @@ const EducationalDetails: React.FC<formProps> = ({
                   <label
                     key={Profession.Profes_Pref_id}
                     className={`w-full px-5 py-3 text-sm font-semibold border border-b text-black   text-center cursor-pointer flex flex-wrap ${String(profession) === String(Profession.Profes_Pref_id)
-                        ? 'bg-blue-500 text-white'
-                        : 'bg-white'
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-white'
                       } `}
                     onClick={() => setProfession(Profession.Profes_Pref_id)}
                   >
@@ -1001,6 +973,16 @@ const EducationalDetails: React.FC<formProps> = ({
                 value={selectedWorkCountry}
                 {...register('EducationDetails.work_country')}
                 className="outline-none w-full px-4 py-2 border border-black text-black font-semibold rounded"
+                onChange={(e) => {
+                  const value = e.target.value;
+                  // Set the value for the country field itself
+                  setValue('EducationDetails.work_country', value);
+
+                  // Reset all dependent location fields
+                  setValue('EducationDetails.work_state', '');
+                  setValue('EducationDetails.work_district', '');
+                  setValue('EducationDetails.work_city', '');
+                }}
               >
                 <option value="">Select your Country </option>
                 {WorkCountry?.map((option: Country) => (
@@ -1054,6 +1036,15 @@ const EducationalDetails: React.FC<formProps> = ({
                       value={selectedState}
                       {...register('EducationDetails.work_state')}
                       className="outline-none w-full px-4 text-[#000000e6] font-semibold py-2 border border-black rounded"
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        // Set the value for the state field
+                        setValue('EducationDetails.work_state', value);
+
+                        // Reset the district and city fields
+                        setValue('EducationDetails.work_district', '');
+                        setValue('EducationDetails.work_city', '');
+                      }}
                     >
                       <option value="" selected>
                         Select State
@@ -1102,14 +1093,17 @@ const EducationalDetails: React.FC<formProps> = ({
                     <select
                       value={selecteddistrict || ''}
                       {...register('EducationDetails.work_district')}
-                      className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                      // ... other props
+                       className="outline-none w-full px-4 text-[#000000e6] font-semibold py-2 border border-black rounded"
                       onChange={(e) => {
                         const value = e.target.value;
                         setValue('EducationDetails.work_district', value);
-                        // Reset city when district changes
+
+                        // This line correctly resets the city
                         setValue('EducationDetails.work_city', '');
+
                         setShowCityTextInput(false);
-                        setIsCityValid(true); // Set to true to show city select when district changes
+                        setIsCityValid(true);
                       }}
                     >
                       <option value="" className='text-[#000000e6] font-medium' selected >

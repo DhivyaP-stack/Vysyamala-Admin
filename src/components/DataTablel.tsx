@@ -70,7 +70,7 @@ const columns: Column[] = [
   { id: 'EmailId', label: 'Email' },
   { id: 'highest_education', label: 'Education Details' },
   { id: 'family_status', label: 'Family Status' },
-  { id: 'anual_income', label: 'Anual Income' },
+  { id: 'anual_income', label: 'Annual Income' },
   { id: 'Last_login_date', label: 'Last Act Date' },
 
   { id: 'Profile_for', label: 'Profile For' },

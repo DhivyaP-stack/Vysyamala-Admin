@@ -68,7 +68,7 @@ export interface getSecondaryStatus{
   plan_price:string
 }
 export interface FamilyStatus {
-  family_status_id: string;
+  family_status_id: number;
   family_status_name: string;
   family_status_description: string;
 }

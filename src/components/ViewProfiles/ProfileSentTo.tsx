@@ -30,7 +30,7 @@ const columns = [
   { id: 'Profile_city', label: 'City' },
   { id: 'highest_education', label: 'Highest Education' },
   { id: 'profession', label: 'Profession' },
-  { id: 'anual_income', label: 'Anual income' },
+  { id: 'anual_income', label: 'Annual income' },
   { id: 'suya_gothram', label: 'Suya Gothram' },
   { id: 'birthstar_name', label: 'Birthstar Name' },
   { id: 'status', label: 'Status' },

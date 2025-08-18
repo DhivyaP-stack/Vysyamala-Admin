@@ -129,7 +129,7 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
       setValue('HororScopeDetails.timeOfBirth', EditData[3].time_of_birth);
       setValue('HororScopeDetails.PlaceofBirth', EditData[3].place_of_birth);
       setValue('HororScopeDetails.BirthStar', EditData[3].birthstar_name);
-      setValue('HororScopeDetails.Rasi', EditData[3].birth_rasi_name);
+      //setValue('HororScopeDetails.Rasi', EditData[3].birth_rasi_name);
       setValue('HororScopeDetails.lagnam', EditData[3].lagnam_didi);
       setValue('HororScopeDetails.ChevvaiDhosam', EditData[3].chevvai_dosaham);
       setValue('HororScopeDetails.SarpaDhosham', EditData[3].ragu_dosham);
@@ -145,14 +145,6 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
       setAmsaKattam(EditData[3].amsa_kattam)
       setValue('HororScopeDetails.rasiKattam', EditData[3].rasi_kattam || '');
       setValue('HororScopeDetails.amsaKattam', EditData[3].amsa_kattam || '');
-      //       const splitValue = dasaBalance
-      //       const [ year,month,day] = splitValue.split(",")
-      //       .map((item: string) => item.split(":")[1]);
-      // console.log(day, month, year)
-
-      //       setValue("HororScopeDetails.DasaBalanceDay",day)
-      //       setValue("HororScopeDetails.DasaBalanceMonth",month)
-      //       setValue("HororScopeDetails.DasaBalanceYear",year)
 
       if (dasaBalance && dasaBalance.includes(":")) {
         const [year, month, day] = dasaBalance
@@ -170,15 +162,6 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
         setValue("HororScopeDetails.DasaBalanceMonth", "");
         setValue("HororScopeDetails.DasaBalanceYear", "");
       }
-
-      // const timeOfBirth = EditData[3].time_of_birth;
-      // //const [time, period] = timeOfBirth.split(" ");
-      // const [time, period] = (timeOfBirth || "").split(" ");
-      // const [hours, minutes] = time.split(":");
-      // sethour(hours);
-      // setminute(minutes);
-      // setperiod(period);
-
       const timeOfBirth = EditData[3].time_of_birth;
       if (timeOfBirth && timeOfBirth.includes(' ')) {
         setValue('HororScopeDetails.timeOfBirth', timeOfBirth);
@@ -195,6 +178,17 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
 
     }
   }, [EditData, setValue, setRasiKattam, setAmsaKattam]);
+
+  // In EditHororScopeDetails.tsx, add this new useEffect
+
+  // This hook waits for the Rasi options to be fetched before setting the value
+  useEffect(() => {
+    // Check if the Rasi data array exists, has items, and EditData is present
+    if (Rasi && Rasi.length > 0 && EditData) {
+      setValue('HororScopeDetails.Rasi', EditData[3].birth_rasi_name);
+    }
+  }, [Rasi, EditData, setValue]); // This effect runs when the Rasi data changes
+
   useEffect(() => {
     if (editRasiGridData) {
       setRasiKattam(editRasiGridData);
@@ -270,19 +264,19 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
                   Time of Birth
                 </label>
                 <div className="flex items-center space-x-2">
-                  <select value={hours} onChange={(e) => sethour(e.target.value)} className="px-3 py-2 border rounded border-gray-500 w-full">
-                    <option value="" >Hour</option>
-                    {Array.from({ length: 12 }, (_, i) => (<option key={i + 1} value={(i + 1).toString().padStart(2, '0')}>{(i + 1).toString().padStart(2, '0')}</option>))}
-                  </select>
-                  <span>:</span>
-                  <select value={minutes} onChange={(e) => setminute(e.target.value)} className="px-3 py-2 border rounded border-gray-500 w-full">
-                     <option value="" >Min</option>
-                    {Array.from({ length: 60 }, (_, i) => (<option key={i} value={i.toString().padStart(2, '0')}>{i.toString().padStart(2, '0')}</option>))}
-                  </select>
-                  <select value={periods} onChange={(e) => setperiod(e.target.value)} className="px-3 py-2 border rounded border-gray-500">
-                    <option value="AM">AM</option><option value="PM">PM</option>
-                  </select>
-                </div>
+                  <select value={hours} onChange={(e) => sethour(e.target.value)} className="px-3 py-2 border rounded border-gray-500 w-full">
+                    <option value="" >Hour</option>
+                    {Array.from({ length: 12 }, (_, i) => (<option key={i + 1} value={(i + 1).toString().padStart(2, '0')}>{(i + 1).toString().padStart(2, '0')}</option>))}
+                  </select>
+                  <span>:</span>
+                  <select value={minutes} onChange={(e) => setminute(e.target.value)} className="px-3 py-2 border rounded border-gray-500 w-full">
+                    <option value="" >Min</option>
+                    {Array.from({ length: 60 }, (_, i) => (<option key={i} value={i.toString().padStart(2, '0')}>{i.toString().padStart(2, '0')}</option>))}
+                  </select>
+                  <select value={periods} onChange={(e) => setperiod(e.target.value)} className="px-3 py-2 border rounded border-gray-500">
+                    <option value="AM">AM</option><option value="PM">PM</option>
+                  </select>
+                </div>
                 <input
                   type="hidden"
                   {...register('HororScopeDetails.timeOfBirth', { required: "Time is required" })}
@@ -357,7 +351,7 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
                   id="birth_rasi_name"
                   className="outline-none w-full px-4 py-2 text-[#000000e6] font-medium border border-black rounded"
                 >
-                  <option value="" selected  className='text-[#000000e6] font-medium'>
+                  <option value="" selected className='text-[#000000e6] font-medium'>
                     -- Select your Rasi --
                   </option>
                   {Rasi?.map((option: any) => (
@@ -386,7 +380,7 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
                   className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
 
                 >
-                  <option value=""  className='text-[#000000e6] font-medium'>
+                  <option value="" className='text-[#000000e6] font-medium'>
                     Select your Lagnam
                   </option>
                   {lagnam?.map((option: any) => (
@@ -416,7 +410,7 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
                   className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
                   defaultValue=""
                 >
-                  <option value=""  className='text-[#000000e6] font-medium'>
+                  <option value="" className='text-[#000000e6] font-medium'>
                     Select Chevvai Dhosam
                   </option>
                   <option value="UnKnown" className='text-[#000000e6] font-medium'>UnKnown</option>
@@ -445,7 +439,7 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
                   className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
                   defaultValue=""
                 >
-                  <option value=""  className='text-[#000000e6] font-medium'>
+                  <option value="" className='text-[#000000e6] font-medium'>
                     Select Sarpa Dhosham
                   </option>
                   <option value="Unknown" className='text-[#000000e6] font-medium'>Unknown</option>
@@ -490,7 +484,7 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
                   id="dasaDropdown"
                   defaultValue=""
                 >
-                  <option value="" selected  className='text-[#000000e6] font-medium'>
+                  <option value="" selected className='text-[#000000e6] font-medium'>
                     -- Select Dasa Name --
                   </option>
                   {Dasa?.map((dasa: any, index: any) => (
@@ -520,7 +514,7 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
                       id="year"
                       className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
                     >
-                      <option value=""  className='text-[#000000e6] font-medium'>
+                      <option value="" className='text-[#000000e6] font-medium'>
                         Year
                       </option>
                       {Array.from({ length: 30 }, (_, i) => i + 1).map(
@@ -538,7 +532,7 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
                       {...register('HororScopeDetails.DasaBalanceMonth')}
                       className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
                     >
-                      <option value=""  className='text-[#000000e6] font-medium'>
+                      <option value="" className='text-[#000000e6] font-medium'>
                         Month
                       </option>
                       {[...Array(12)].map((_, i) => (
@@ -555,7 +549,7 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
                       className="outline-none w-full px-4 py-2 border border-black text-[#000000e6] font-medium rounded"
                       defaultValue=""
                     >
-                      <option value=""  className='text-[#000000e6] font-medium'>
+                      <option value="" className='text-[#000000e6] font-medium'>
                         Day
                       </option>
                       {[...Array(31)].map((_, i) => (

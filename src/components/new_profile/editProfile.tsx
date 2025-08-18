@@ -355,7 +355,7 @@ const EditProfile = () => {
           pref_chevvai: data.PartnerPreference.ChevvaiDhosam || "",
           pref_ragukethu: data.PartnerPreference.ragukethu || "",
           pref_foreign_intrest: data.PartnerPreference.foreignInterest,
-          pref_family_status: familyStatus || null,
+          pref_family_status: data.PartnerPreference.pref_family_status || null,
           //         pref_family_status:
           //   data.PartnerPreference.pref_family_status &&
           //   data.PartnerPreference.pref_family_status !== "null" &&
@@ -367,7 +367,7 @@ const EditProfile = () => {
           pref_porutham_star: prefporuthamstar,
           pref_porutham_star_rasi: preforuthamStarRasi,
           // pref_state:prefferedStatePartner
-          pref_state: prefferedStatePartner,
+          pref_state: data.PartnerPreference.pref_state || null,
           //         pref_family_status:
         },
       };
@@ -400,7 +400,7 @@ const EditProfile = () => {
         pref_foreign_intrest: data.suggested_pref_details.pref_foreign_intrest,
         pref_porutham_star: prefporuthamstar,
         pref_porutham_star_rasi: preforuthamStarRasi,
-        pref_family_status: familyStatusSuggested,
+        pref_family_status:data.suggested_pref_details.pref_family_status,
         // pref_state:prefferedStateSuggested,
         pref_state: data.suggested_pref_details.pref_state,
       },
