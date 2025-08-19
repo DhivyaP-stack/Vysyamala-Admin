@@ -106,6 +106,7 @@ import ExpressInterestReceivedProfiles from './matchingProfile/ExpressIntrestRec
 import { UserMatchingProfiles } from './matchingProfile/UserMatchingProfiles';
 import { UploadApprovalProfileImg } from './components/ReuseProfileTable/userActions/ProfileImgApproval.tsx/UploadApprovalProfileImg';
 import SearchProfile from './pages/SearchProfile';
+import RenewalProfiles from './components/ReuseProfileTable/Profiles/RenewalProfiles';
 
 
 function App() {
@@ -215,12 +216,12 @@ function App() {
                   />
                   <Route path='/FamilyDetails' element={
                     <>
-                      <PageTitle title='FamilyDetails'/>
+                      <PageTitle title='FamilyDetails' />
                       <FamilyDetails EditData={undefined} isFamilyDetailsOpen={false} setIsFamilyDetailsOpen={function (value: SetStateAction<boolean>): void {
                         throw new Error('Function not implemented.');
-                      } }/>
+                      }} />
                     </>
-                  }/>
+                  } />
                   <Route
                     path="/mailerTool"
                     element={
@@ -253,7 +254,7 @@ function App() {
                     element={
                       <>
                         <PageTitle title="suggestedProfiles" />
-                        <SuggestedProfile/>
+                        <SuggestedProfile />
                       </>
                     }
                   />
@@ -262,30 +263,30 @@ function App() {
                     element={
                       <>
                         <PageTitle title="CToCReceivedProfiles" />
-                        <CToCReceivedProfile/>
+                        <CToCReceivedProfile />
                       </>
                     }
                   />
-                  
+
                   <Route
                     path="/CToCSentProfiles"
                     element={
                       <>
                         <PageTitle title="CToCSentProfiles" />
-                        <CToCSentProfile/>
+                        <CToCSentProfile />
                       </>
                     }
                   />
-                    <Route
+                  <Route
                     path="/ExpressInterestMutualProfiles"
                     element={
                       <>
                         <PageTitle title="ExpressInterestMutualProfiles" />
-                        <ExpressInterestMutualProfiles/>
+                        <ExpressInterestMutualProfiles />
                       </>
                     }
                   />
-                   <Route
+                  <Route
                     path="/ExpressInterestReceivedProfiles"
                     element={
                       <>
@@ -303,12 +304,12 @@ function App() {
                       </>
                     }
                   />
-                   <Route
+                  <Route
                     path="/VisitorProfilesById"
                     element={
                       <>
                         <PageTitle title="VisitorProfilesById" />
-                        <VisitorProfile/>
+                        <VisitorProfile />
                       </>
                     }
                   />
@@ -530,6 +531,15 @@ function App() {
                       </>
                     }
                   />
+                  <Route
+                    path="/RenewalProfiles"
+                    element={
+                      <>
+                        <PageTitle title="RenewalProfiles" />
+                        <RenewalProfiles />
+                      </>
+                    }
+                  />
 
                   <Route
                     path="/feature_profile"
@@ -653,8 +663,8 @@ function App() {
                     }
                   />
 
-                  <Route path="/AdminList" 
-                  element={
+                  <Route path="/AdminList"
+                    element={
                       <>
                         <PageTitle title="AdminList" />
                         <AdminTable />
@@ -1018,7 +1028,7 @@ function App() {
                   element={
                     <>
                       <PageTitle title="EditFamilyProfile" />
-                      <EditFamilyProfile/>
+                      <EditFamilyProfile />
                     </>
                   }
                 />
@@ -1032,14 +1042,14 @@ function App() {
                   }
                 />
                 <Route
-                    path="/UploadApprovalProfileImg"
-                    element={
-                      <>
-                        <PageTitle title="Upload Approval Profile Image" />
-                        <UploadApprovalProfileImg />
-                      </>
-                    }
-                  />
+                  path="/UploadApprovalProfileImg"
+                  element={
+                    <>
+                      <PageTitle title="Upload Approval Profile Image" />
+                      <UploadApprovalProfileImg />
+                    </>
+                  }
+                />
                 <Route
                   path="/SearchProfile"
                   element={

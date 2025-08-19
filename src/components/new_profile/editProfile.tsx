@@ -304,7 +304,7 @@ const EditProfile = () => {
         visibility_profession: data.profile_visibility.visibility_profession,
         visibility_education: data.profile_visibility.visibility_education,
         visibility_anual_income: data.profile_visibility.visibility_anual_income,
-        visibility_family_status: familyStatusVisibility || null,
+        visibility_family_status: familyStatusVisibility || data.profile_visibility.visibility_family_status || null,
         visibility_chevvai: data.profile_visibility.visibility_chevvai || "No",
         visibility_ragukethu: data.profile_visibility.visibility_ragukethu || "No",
         visibility_foreign_interest: data.profile_visibility.visibility_foreign_interest || "No",
@@ -400,7 +400,7 @@ const EditProfile = () => {
         pref_foreign_intrest: data.suggested_pref_details.pref_foreign_intrest,
         pref_porutham_star: prefporuthamstar,
         pref_porutham_star_rasi: preforuthamStarRasi,
-        pref_family_status:data.suggested_pref_details.pref_family_status,
+        pref_family_status: data.suggested_pref_details.pref_family_status,
         // pref_state:prefferedStateSuggested,
         pref_state: data.suggested_pref_details.pref_state,
       },
@@ -470,10 +470,29 @@ const EditProfile = () => {
     //console.log('FamilyName:', data.FamilyDetails?.FamilyName);
     // console.log('Selected Profiles:', selectedProfiles);
 
-    const dasaDay = data.HororScopeDetails.DasaBalanceDay;
-    const dasaMonth = data.HororScopeDetails.DasaBalanceMonth;
     const dasaYear = data.HororScopeDetails.DasaBalanceYear;
-    const dasaBalance = `year:${dasaYear},month:${dasaMonth},day:${dasaDay}`;
+    const dasaMonth = data.HororScopeDetails.DasaBalanceMonth;
+    const dasaDay = data.HororScopeDetails.DasaBalanceDay;
+
+    // --- START: New logic for dasa_balance ---
+    const parts = [];
+
+    if (dasaYear && dasaYear !== '0') {
+      const yearNum = parseInt(dasaYear, 10);
+      parts.push(`${yearNum} ${yearNum === 1 ? 'Year' : 'Years'}`);
+    }
+
+    if (dasaMonth && dasaMonth !== '0') {
+      const monthNum = parseInt(dasaMonth, 10);
+      parts.push(`${monthNum} ${monthNum === 1 ? 'Month' : 'Months'}`);
+    }
+
+    if (dasaDay && dasaDay !== '0') {
+      const dayNum = parseInt(dasaDay, 10);
+      parts.push(`${dayNum} ${dayNum === 1 ? 'Day' : 'Days'}`);
+    }
+
+    const dasaBalance = parts.join(', ');
     const editDataHoroscopeDetails = {
       horoscope_details: {
         time_of_birth: data.HororScopeDetails.timeOfBirth,
@@ -810,7 +829,7 @@ const EditProfile = () => {
             EditData={EditData}
             setFamilyStatusVisibility={setFamilyStatusVisibility}
           />
-        
+
         </form>
       </FormProvider>
     </div>

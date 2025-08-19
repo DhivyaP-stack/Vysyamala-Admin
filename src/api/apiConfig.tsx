@@ -252,7 +252,7 @@ export const userMatchingProfilesFilterListMatch = async (
     pageSize: number,
     Complexion: string,
     Education: string,
-    HeightFrom: number ,
+    HeightFrom: number,
     HeightTo: number,
     MinAnualIncome: number,
     MaxAnualIncome: number,
@@ -299,7 +299,7 @@ export const userMatchingProfilesFilter = async (
     ProfileID: string | null,
     pageNumber: number,
     pageSize: number,
-    Complexion: string |null,
+    Complexion: string | null,
     Education: string,
     HeightFrom: number,
     HeightTo: number,
@@ -311,14 +311,14 @@ export const userMatchingProfilesFilter = async (
     Membership: number,
     HasPhotos: string,
     // matching_stars: number,
-    selectedBirthStarIds:string,
-    ageDifference:number,
-    selectedProfessions:string,
-    ageFrom:number,
-    ageTo:number,
-    sarpaDhosam:string,
-     chevvaiDhosam:string,
-     profileName:string,
+    selectedBirthStarIds: string,
+    ageDifference: number,
+    selectedProfessions: string,
+    ageFrom: number,
+    ageTo: number,
+    sarpaDhosam: string,
+    chevvaiDhosam: string,
+    profileName: string,
     // selectedBirthStarIds
 ) => {
     try {
@@ -338,13 +338,13 @@ export const userMatchingProfilesFilter = async (
             membership: Membership,
             has_photos: HasPhotos,
             matching_stars: selectedBirthStarIds,
-            search_age:ageDifference,
-            search_profession:selectedProfessions,
-            age_from:ageFrom,
-            age_to:ageTo,
-            ragu_dosham:sarpaDhosam,
-            chevvai_dosham:chevvaiDhosam,
-            profile_name:profileName
+            search_age: ageDifference,
+            search_profession: selectedProfessions,
+            age_from: ageFrom,
+            age_to: ageTo,
+            ragu_dosham: sarpaDhosam,
+            chevvai_dosham: chevvaiDhosam,
+            profile_name: profileName
         });
         console.log("User Matching records filter fetched successfully", response);
         // Assuming the API returns an object with a `status` field and a `data` field
@@ -518,7 +518,7 @@ export const fetchProfileCallManagement = async (profileId: string) => {
 };
 
 // create CallMAnagement
-export const creatCallManagement = async (profileID: string, ProfileStatusID: string, OwnerID: string, comments: string, CallType?: string, CallStatus?: string, CallAction?: string, NextCallDate?:string, FutureAction?:string, NextDateAction?:string, WorkAssign?:string) => {
+export const creatCallManagement = async (profileID: string, ProfileStatusID: string, OwnerID: string, comments: string, CallType?: string, CallStatus?: string, CallAction?: string, NextCallDate?: string, FutureAction?: string, NextDateAction?: string, WorkAssign?: string) => {
     try {
         const formData = new FormData();
         formData.append("profile_id", profileID);
@@ -537,16 +537,16 @@ export const creatCallManagement = async (profileID: string, ProfileStatusID: st
             formData.append("callaction_today_id", CallAction);
         }
         if (NextCallDate) {
-            formData.append("next_calldate",NextCallDate);
+            formData.append("next_calldate", NextCallDate);
         }
         if (FutureAction) {
-            formData.append("future_actiontaken_id",FutureAction);
+            formData.append("future_actiontaken_id", FutureAction);
         }
         if (NextDateAction) {
-            formData.append("next_dateaction_point",NextDateAction);
+            formData.append("next_dateaction_point", NextDateAction);
         }
         if (WorkAssign) {
-            formData.append("work_asignid",WorkAssign);
+            formData.append("work_asignid", WorkAssign);
         }
         const response = await apiAxios.post('/api/profile-call-management/create/', formData,
             {
@@ -569,20 +569,20 @@ export const creatCallManagement = async (profileID: string, ProfileStatusID: st
 export const createMarriageSettleDetails = async (
     profileID: string,
     OwnerID: string,
-    MarriageDate:string, 
-    GroomBrideFatherName:string ,
-    GroomBrideVysysaID:string,
-    EngagementDate:string,
-    MarriagePhotoDetails:string,
-    EngagementPhotoDetails:string,
-    AdminMarriageComments:string,
-    GroomBrideName:string,
-    GroomBrideCity:string,
-    SettledThru:string,
-    MarriageComments:string,
-    MarriageInvitationDetails:string,
-    EngagementInvitationDetails:string,
-    AdminSettledThru:string
+    MarriageDate: string,
+    GroomBrideFatherName: string,
+    GroomBrideVysysaID: string,
+    EngagementDate: string,
+    MarriagePhotoDetails: string,
+    EngagementPhotoDetails: string,
+    AdminMarriageComments: string,
+    GroomBrideName: string,
+    GroomBrideCity: string,
+    SettledThru: string,
+    MarriageComments: string,
+    MarriageInvitationDetails: string,
+    EngagementInvitationDetails: string,
+    AdminSettledThru: string
 ) => {
     try {
         const formData = new FormData();
@@ -599,37 +599,37 @@ export const createMarriageSettleDetails = async (
             formData.append("groombridevysysaid", GroomBrideVysysaID);
         }
         if (EngagementDate) {
-            formData.append("engagementdate",EngagementDate);
+            formData.append("engagementdate", EngagementDate);
         }
         if (MarriagePhotoDetails) {
-            formData.append("marriagephotodetails",MarriagePhotoDetails);
+            formData.append("marriagephotodetails", MarriagePhotoDetails);
         }
         if (EngagementPhotoDetails) {
-            formData.append("engagementphotodetails",EngagementPhotoDetails);
+            formData.append("engagementphotodetails", EngagementPhotoDetails);
         }
         if (AdminMarriageComments) {
-            formData.append("adminmarriagecomments",AdminMarriageComments);
+            formData.append("adminmarriagecomments", AdminMarriageComments);
         }
         if (GroomBrideName) {
-            formData.append("groombridename",GroomBrideName);
+            formData.append("groombridename", GroomBrideName);
         }
         if (GroomBrideCity) {
-            formData.append("groombridecity",GroomBrideCity);
+            formData.append("groombridecity", GroomBrideCity);
         }
         if (SettledThru) {
-            formData.append("settledthru",SettledThru);
+            formData.append("settledthru", SettledThru);
         }
         if (MarriageComments) {
-            formData.append("marriagecomments",MarriageComments);
+            formData.append("marriagecomments", MarriageComments);
         }
         if (MarriageInvitationDetails) {
-            formData.append("marriageinvitationdetails",MarriageInvitationDetails);
-        } 
+            formData.append("marriageinvitationdetails", MarriageInvitationDetails);
+        }
         if (EngagementInvitationDetails) {
-            formData.append("engagementinvitationdetails",EngagementInvitationDetails);
+            formData.append("engagementinvitationdetails", EngagementInvitationDetails);
         }
         if (AdminSettledThru) {
-            formData.append("adminsettledthru",AdminSettledThru);
+            formData.append("adminsettledthru", AdminSettledThru);
         }
         const response = await apiAxios.post('/api/marriage-settle-details/create/', formData,
             {
@@ -651,12 +651,12 @@ export const createMarriageSettleDetails = async (
 
 // AdminDetails --> PaymentDetails
 export const updatePaymentDetails = async (
-    profileID: string, 
-    PaymentType: string, 
-    OwnerID: string, 
+    profileID: string,
+    PaymentType: string,
+    OwnerID: string,
     Status: string,
-    PaymentRefno:string,
-    DiscountAmount:string
+    PaymentRefno: string,
+    DiscountAmount: string
 ) => {
     try {
         const formData = new FormData();
@@ -664,9 +664,9 @@ export const updatePaymentDetails = async (
         formData.append("payment_type", PaymentType);
         formData.append("status", Status);
         formData.append("owner_id", OwnerID);
-        formData.append("payment_refno",PaymentRefno);
+        formData.append("payment_refno", PaymentRefno);
         if (DiscountAmount) {
-            formData.append("discount_amont",DiscountAmount);
+            formData.append("discount_amont", DiscountAmount);
         }
         const response = await apiAxios.post('/api/payment-transaction/create/', formData,
             {
@@ -745,7 +745,7 @@ export const getPhotoProofDetails = async (
     imageID: string,
     isDeleted: string,
     imageApproved: string,
-   photoPassword: string
+    photoPassword: string
 ) => {
     try {
         const formData = new FormData();
@@ -773,6 +773,71 @@ export const getPhotoProofDetails = async (
     }
 };
 
+export const uploadProofFiles = async (
+    profileId: string,
+    horoscopeFile: File | null,
+    idProofFile: File | null,
+    divorceFile: File | null // Assuming the API parameter is 'divorce_file'
+) => {
+    const formData = new FormData();
+    formData.append('profile_id', profileId);
+
+    // Only append files if they exist
+    if (horoscopeFile) {
+        formData.append('horoscope_file', horoscopeFile);
+    }
+    if (idProofFile) {
+        formData.append('idproof_file', idProofFile);
+    }
+    if (divorceFile) {
+        // IMPORTANT: The backend key might be different, e.g., 'divorce_certificate_file'.
+        // I'm assuming 'divorce_file' based on the pattern. Please confirm with your backend developer.
+        formData.append('divorce_file', divorceFile);
+    }
+
+
+    try {
+        const response = await apiAxios.post(`auth/Photo_Id_Settings/`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error uploading proof files:", error);
+        throw error; // Re-throw the error to be caught by the calling function
+    }
+};
+
+
+export const uploadNewProfileImages = async (profileId: string, newFiles: File[]) => {
+    // FormData is required for sending files
+    const formData = new FormData();
+
+    // 1. Append the profile_id
+    formData.append('profile_id', profileId);
+
+    // 2. Append each new image file.
+    // The key 'new_image_files' is used for every file.
+    // The backend will receive this as a list of files.
+    newFiles.forEach((file) => {
+        formData.append('new_image_files', file);
+    });
+
+    try {
+        // Make the POST request to the endpoint
+        const response = await apiAxios.post('/auth/ImageSetEdit/', formData, {
+            headers: {
+                // This header is crucial for file uploads
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error uploading new profile images:", error);
+        throw error; // Re-throw the error to be caught by the component
+    }
+};
 //get full ProfileDetails
 export const getProfileDetails = async (profileID: string) => {
     try {
@@ -792,15 +857,15 @@ export const getProfileDetails = async (profileID: string) => {
 
 //CallManagement --> Admin-list
 export const fetchAdminUsers = async () => {
-  try {
-    const response = await apiAxios.get(
-      `/api/admin-users/list/`
-    );
-    return response.data;
-  } catch (error: any) {
-    console.error("Error fetching admin users", error.message || error);
-    throw new Error("Unable to fetch admin users");
-  }
+    try {
+        const response = await apiAxios.get(
+            `/api/admin-users/list/`
+        );
+        return response.data;
+    } catch (error: any) {
+        console.error("Error fetching admin users", error.message || error);
+        throw new Error("Unable to fetch admin users");
+    }
 };
 
 
@@ -819,14 +884,14 @@ export const fetchAdminUsers = async () => {
 // };
 
 export const fetchProfilestatus = async (): Promise<SubStatus[]> => {
-  try {
-    const response = await apiAxios.post(
-      `/api/get_sub_status_master/`,
-      { primary_status: 1 }
-    );
-    return response.data.data; // assuming `data` inside response is the array
-  } catch (error: any) {
-    console.error("Error fetching profile status:", error.message || error);
-    throw new Error("Unable to fetch profile status");
-  }
+    try {
+        const response = await apiAxios.post(
+            `/api/get_sub_status_master/`,
+            { primary_status: 1 }
+        );
+        return response.data.data; // assuming `data` inside response is the array
+    } catch (error: any) {
+        console.error("Error fetching profile status:", error.message || error);
+        throw new Error("Unable to fetch profile status");
+    }
 };

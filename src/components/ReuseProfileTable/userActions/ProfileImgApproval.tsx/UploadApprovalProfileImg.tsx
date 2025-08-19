@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import profileImg from "../../../../assets/images/defaultprofileImg.jpg"
-import { fetchPhotoProofDetails, getPhotoProofDetails, getProfileDetails } from '../../../../api/apiConfig';
+import { fetchPhotoProofDetails, getPhotoProofDetails, getProfileDetails, uploadNewProfileImages, uploadProofFiles } from '../../../../api/apiConfig';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { NotifyError, NotifySuccess } from '../../../../common/Toast/ToastMessage';
 import { IoEye, IoEyeOff } from "react-icons/io5";
+import { FileInput } from '../../../ReusableFile/FileInput';
 
 interface ProfileImage {
     id: number;
@@ -23,7 +24,9 @@ interface PhotoProofDetails {
     divorce_certificate: string | null;
     horoscope_file: string;
     profile_images: ProfileImage[];
+    profile_martial_status:string;
 }
+
 
 const CombinedPhotoProofDetailsSchema = z.object({
     photo_password: z.string().optional(),
@@ -49,6 +52,11 @@ export const UploadApprovalProfileImg = () => {
     console.log("password", password)
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [profileData, setProfileData] = useState<any | null>(null);
+    const [newProfileImages, setNewProfileImages] = useState<File[]>([]);
+    const [horoscopeFiles, setHoroscopeFiles] = useState<File[]>([]);
+    const [idProofFiles, setIdProofFiles] = useState<File[]>([]);
+    const [divorceProofFiles, setDivorceProofFiles] = useState<File[]>([]);
+
     const {
         register,
         setValue,
@@ -91,46 +99,123 @@ export const UploadApprovalProfileImg = () => {
         fetchPhotoProof();
     }, [profileId, setValue]);
     // //Update Uploaded Images
+    // const ImageStatusSubmit = async () => {
+    //     try {
+    //         if (!profileId || !photoProofDetails) return;
+    //         const passwordValue = watch("photo_password"); // ✅ Get current value
+    //         console.log("passwordValue", passwordValue)
+
+    //         // Collect all image IDs and their approval status (1 = approved/checked, 0 = unapproved/unchecked)
+    //         const imageIds = photoProofDetails.profile_images
+    //             .map(image => image.id)
+    //             .join(",");
+
+    //         const imageApprovedStatuses = photoProofDetails.profile_images
+    //             .map(image => (image.image_approved ? "1" : "0"))
+    //             .join(",");
+
+    //         const isDeleted = photoProofDetails.profile_images
+    //             .map(image => (image.is_deleted ? "1" : "0"))
+    //             .join(",");
+
+    //         // Submit all images with their status in one call
+    //         const response = await getPhotoProofDetails(
+    //             profileId,
+    //             imageIds,
+    //             isDeleted, // optional: you can make this a comma-separated list too
+    //             imageApprovedStatuses,
+    //             passwordValue || ""
+    //         );
+
+    //         console.log("Approval Images updated successfully", response);
+    //         NotifySuccess("Approval Images updated successfully")
+    //         fetchPhotoProof()
+    //         // console.log("Image status updated successfully", response);
+    //         // return response;
+    //     } catch (error) {
+    //         NotifyError("Error updating image status")
+    //         console.error("Error updating image status", error);
+    //         throw error;
+    //     }
+    // };
+
     const ImageStatusSubmit = async () => {
+        if (!profileId || !photoProofDetails) {
+            NotifyError("Profile ID not found.");
+            return;
+        }
+
+        setLoading(true);
+
         try {
-            if (!profileId || !photoProofDetails) return;
-            const passwordValue = watch("photo_password"); // ✅ Get current value
-            console.log("passwordValue", passwordValue)
+            const apiTasks = [];
 
-            // Collect all image IDs and their approval status (1 = approved/checked, 0 = unapproved/unchecked)
-            const imageIds = photoProofDetails.profile_images
-                .map(image => image.id)
-                .join(",");
+            // ✅ START: New Block for Profile Image Upload
+            // Check if there are new profile images to upload
+            if (newProfileImages.length > 0) {
+                // Add the new profile image upload task to our list
+                apiTasks.push(
+                    uploadNewProfileImages(profileId, newProfileImages)
+                );
+            }
+            // ✅ END: New Block for Profile Image Upload
 
-            const imageApprovedStatuses = photoProofDetails.profile_images
-                .map(image => (image.image_approved ? "1" : "0"))
-                .join(",");
 
-            const isDeleted = photoProofDetails.profile_images
-                .map(image => (image.is_deleted ? "1" : "0"))
-                .join(",");
+            // Task for other proof file uploads (ID, Horoscope, etc.)
+            const hasProofFilesToUpload =
+                horoscopeFiles.length > 0 ||
+                idProofFiles.length > 0 ||
+                divorceProofFiles.length > 0;
 
-            // Submit all images with their status in one call
-            const response = await getPhotoProofDetails(
-                profileId,
-                imageIds,
-                isDeleted, // optional: you can make this a comma-separated list too
-                imageApprovedStatuses,
-                passwordValue || ""
+            if (hasProofFilesToUpload) {
+                apiTasks.push(
+                    uploadProofFiles(
+                        profileId,
+                        horoscopeFiles[0] || null,
+                        idProofFiles[0] || null,
+                        divorceProofFiles[0] || null
+                    )
+                );
+            }
+
+            // Task for updating image status and password
+            const passwordValue = watch("photo_password");
+            const imageIds = photoProofDetails.profile_images.map(img => img.id).join(",");
+            const imageApprovedStatuses = photoProofDetails.profile_images.map(img => (img.image_approved ? "1" : "0")).join(",");
+            const isDeleted = photoProofDetails.profile_images.map(img => (img.is_deleted ? "1" : "0")).join(",");
+
+            apiTasks.push(
+                getPhotoProofDetails(
+                    profileId,
+                    imageIds,
+                    isDeleted,
+                    imageApprovedStatuses,
+                    passwordValue || ""
+                )
             );
 
-            console.log("Approval Images updated successfully", response);
-            NotifySuccess("Approval Images updated successfully")
-            fetchPhotoProof()
-            // console.log("Image status updated successfully", response);
-            // return response;
+            // --- Run all tasks concurrently ---
+            await Promise.all(apiTasks);
+
+            NotifySuccess("Profile updated successfully!");
+
+            // ✅ Clear the file input states on success
+            setNewProfileImages([]);
+            setHoroscopeFiles([]);
+            setIdProofFiles([]);
+            setDivorceProofFiles([]);
+
+
+            // Refresh all data from the server to show new images
+            fetchPhotoProof();
+
         } catch (error) {
-            NotifyError("Error updating image status")
-            console.error("Error updating image status", error);
-            throw error;
+            NotifyError("An error occurred while updating the profile.");
+            console.error("Update Error:", error);
+        } finally {
+            setLoading(false);
         }
     };
-
     //Image Approval
     const handleImageApprovalChange = (imageId: number) => {
         if (!photoProofDetails) return; // Prevents running when null
@@ -161,33 +246,21 @@ export const UploadApprovalProfileImg = () => {
     //download horoscope file
     const handleDownloadHoroscopeFile = (fileUrl: string | null) => {
         if (!fileUrl) return;
-        const link = document.createElement('a');
-        link.href = fileUrl;
-        link.setAttribute('download', 'file'); // optional: set file name
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
+        window.open(fileUrl, '_blank');
     };
     //Download ID proof
     const handleDownloadIDProof = (fileUrl: string | null) => {
         if (!fileUrl) return;
-        const link = document.createElement('a');
-        link.href = fileUrl;
-        link.setAttribute('download', 'file'); // optional: set file name
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
+        window.open(fileUrl, '_blank');
     };
     //Download divorce proof
     const handleDownloadDivorceProof = (fileUrl: string | null) => {
         if (!fileUrl) return;
-        const link = document.createElement('a');
-        link.href = fileUrl;
-        link.setAttribute('download', 'file'); // optional: set file name
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
+        window.open(fileUrl, '_blank');
     };
+
+    // ... inside the UploadApprovalProfileImg component
+
 
     // if (loading) {
     //     return (
@@ -363,57 +436,140 @@ export const UploadApprovalProfileImg = () => {
                         <span className="w-100 font-semibold text-black">LAD</span>
                         <span>04/04/25 11:56:25 AM</span>
                     </div>
+
+
+                    <div className="flex">
+                        {/* <span className="w-100 font-semibold text-black">Upload Profile Images</span> */}
+                        <FileInput
+                            label="Upload Profile Images"
+                            files={newProfileImages}
+                            onFilesChange={setNewProfileImages}
+                            accept="image/*"
+                            multiple={true}
+                        />
+                    </div>
+
+                    {/* ✅ Step 4: Add this block to display selected file names */}
+
+                    <div className="flex">
+                        {/* <span className="w-100 font-semibold text-black">Upload Horoscope</span> */}
+                        <FileInput
+                            label="Upload Horoscope Original"
+                            files={horoscopeFiles}
+                            onFilesChange={setHoroscopeFiles}
+                            accept="image/*,.pdf,.doc,.docx"
+                            multiple={false}
+                        />
+                    </div>
                     {/* Horoscope upload */}
                     <div className="flex">
-                        <span className="w-100 font-semibold text-black">Horoscope File</span>
+                        <span className="w-100 font-semibold text-black">Original Horoscope File</span>
                         {/* <input
                             type="file"
                             accept="image/*"
                         /> */}
-                        <button
-                            onClick={() => handleDownloadHoroscopeFile(photoProofDetails.id_proof)}
-                            className={`bg-blue-500 text-white rounded-md px-3 py-0.5 `}
+                        <a
+                            href="#"
+                            // onClick={(e) => {
+                            //     e.preventDefault();
+                            //     handleDownloadHoroscopeFile(photoProofDetails.horoscope_file);
+                            // }}
+                            className="text-blue-500 underline ml-2"
                         >
                             View File
-                        </button>
+                        </a>
                     </div>
-                    {/* Horoscope (Original) with Address */}
-                    {/* <div className="flex">
-                        <span className="w-100 font-semibold text-black">Horoscope (Original) with Address</span>
-                        <input
-                            type="file"
-                            accept="image/*"
+
+                    <div className="flex">
+                        {/* <span className="w-100 font-semibold text-black">Upload Horoscope</span> */}
+                        <FileInput
+                            label="Upload Horoscope Admin"
+                            files={horoscopeFiles}
+                            onFilesChange={setHoroscopeFiles}
+                            accept="image/*,.pdf,.doc,.docx"
+                            multiple={false}
                         />
-                    </div> */}
-                    <div className="flex">
-                        <span className="w-100 font-semibold text-black">ID Proof</span>
-                        {/* <input
-                            type="file"
-                            accept="image/*"
-                        /> */}
-                        <button
-                            onClick={() => handleDownloadIDProof(photoProofDetails.id_proof)}
-                            className={`bg-blue-500 text-white rounded-md px-3 py-0.5 `}
-                        >
-                            View File
-                        </button>
                     </div>
-                    <div className="flex">
-                        <span className="w-100 font-semibold text-black">Divorce Proof</span>
-                        {/* <input
-                            type="file"
-                            accept="image/*"
-                        /> */}
-                        <button
-                            onClick={() => handleDownloadDivorceProof(photoProofDetails.divorce_certificate)}
-                            className={`bg-blue-500 text-white rounded-md px-3 py-0.5 `}
-                        >
-                            View File
-                        </button>
-                    </div>
+                    {/* Horoscope upload */}
+                    {photoProofDetails?.horoscope_file && (
+                        <div className="flex items-center">
+                            <span className="font-semibold text-black">Admin Horoscope File:</span>
+                            <a
+                                href="#"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    handleDownloadHoroscopeFile(photoProofDetails.horoscope_file);
+                                }}
+                                className="text-blue-500 underline ml-2"
+                            >
+                                View File
+                            </a>
+                        </div>
+                    )}
 
+
+                    <div className="flex">
+                        {/* <span className="w-100 font-semibold text-black">Upload ID Proof</span> */}
+                        <FileInput
+                            label="Upload ID Proof"
+                            files={idProofFiles}
+                            onFilesChange={setIdProofFiles}
+                            accept="image/*,.pdf,.doc,.docx"
+                            multiple={false}
+                        />
+                    </div>
+                    {photoProofDetails?.id_proof && (
+                        <div className="flex">
+                            <span className="w-100 font-semibold text-black">ID Proof</span>
+                            {/* <input
+                            type="file"
+                            accept="image/*"
+                        /> */}
+                            <a
+                                href="#"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    handleDownloadIDProof(photoProofDetails.id_proof);
+                                }}
+                                className="text-blue-500 underline ml-2"
+                            >
+                                View File
+                            </a>
+                        </div>
+                    )}
+                    {['2', '4', '5'].includes(photoProofDetails?.profile_martial_status) && (
+                        <>
+                            <div className="flex">
+                                <FileInput
+                                    label="Upload Divorce Proof"
+                                    files={divorceProofFiles}
+                                    onFilesChange={setDivorceProofFiles}
+                                    accept="image/*,.pdf,.doc,.docx"
+                                    multiple={false}
+                                />
+                            </div>
+                        </>
+                    )}
+                    {photoProofDetails?.divorce_certificate && (
+                        <div className="flex">
+                            <span className="w-100 font-semibold text-black">Divorce Proof</span>
+                            {/* <input
+                            type="file"
+                            accept="image/*"
+                        /> */}
+                            <a
+                                href="#"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    handleDownloadDivorceProof(photoProofDetails.divorce_certificate);
+                                }}
+                                className="text-blue-500 underline ml-2"
+                            >
+                                View File
+                            </a>
+                        </div>
+                    )}
                 </div>
-
             </div>
             {/* ✅ Submit Button */}
             <div className="w-full flex justify-center mt-6 ml-60">

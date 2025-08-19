@@ -42,6 +42,8 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
   const [eduPref, setEduPref] = useState<any>([]);
   const [selectedFamilyStatus, setSelectedFamilyStatus] = useState('');
   const [selectedPrefState, setSelectedPrefState] = useState('');
+   const [editFamilyStatus, setEditFamilyStatus] = useState('');
+     const [editPrefState, setEditPrefState] = useState('');
   const toggleSection5 = () => {
     setIsSugggestedProfileOpen(!isSuggestedProfileOpen);
   };
@@ -74,9 +76,17 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
       setSelectedPrefState(prefState);
       setValue("profileView.pref_family_status", prefFamilyStatus);
       setValue("profileView.pref_state", prefState);
+       
     }
   }, [profile, setValue]);
 
+
+  useEffect(() => {
+  if (profile && profile.length > 0) {
+    setEditFamilyStatus(profile[8].pref_family_status || '');
+      setEditPrefState(profile[8].pref_state || '');
+  }
+}, [profile]);
 
   useEffect(() => {
     if (profile && profile.length > 0) {
@@ -292,64 +302,63 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
             </div>
 
 
-
-            <div className="w-full py-1">
-              <label className="block text-black font-medium mb-1">
-                Family Status
-              </label>
-              <div className="w-full inline-flex rounded max-md:flex-col">
-                {FamilyStatus?.map((status) => (
+  <div className="w-full py-1">
+            <h5 className="text-[18px] text-black font-semibold mb-2 cursor-pointer">
+              Family Status
+            </h5>
+            <div className="flex flex-wrap gap-x-6 gap-y-2">
+              {FamilyStatus?.map((status) => (
+                <div key={status.family_status_id} className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id={`suggested-family-status-${status.family_status_id}`}
+                    value={status.family_status_id}
+                     checked={(editFamilyStatus || '').split(',').includes(status.family_status_id.toString())}
+                    // onChange={() => handleFamilyStatusChange(status.family_status_id)}
+                    className="mr-2"
+                  />
                   <label
-                    key={status.family_status_id}
-                    className={`w-full px-5 py-3 text-sm font-bold border border-black cursor-pointer ${selectedFamilyStatus === status.family_status_id.toString()
-                        ? 'bg-blue-500 text-white'
-                        : ''
-                      }`}
-                    onClick={(e) => e.preventDefault()}
+                    htmlFor={`suggested-family-status-${status.family_status_id}`}
+                    className='text-[#000000e6] font-medium'
                   >
-                    <input
-                      type="radio"
-                      name="familyStatus"
-                      value={status.family_status_id}
-                      checked={selectedFamilyStatus === status.family_status_id.toString()}
-                      onChange={() => setSelectedFamilyStatus(status.family_status_id.toString())}
-                      className="hidden"
-                      onClick={(e) => e.preventDefault()}
-                    />
                     {status.family_status_name}
                   </label>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
+           
+          </div>
 
-            <div className="w-full py-1">
-              <label className="block text-black font-medium mb-1">
-                Preferred State
-              </label>
-              <div className="w-full inline-flex rounded max-md:flex-col">
-                {stateOptions?.map((status) => (
+
+
+            
+          <div className="w-full py-1">
+            <h5 className="text-[18px] text-black font-semibold mb-2 cursor-pointer">
+              Preferred State
+            </h5>
+            <div className="flex flex-wrap gap-x-6 gap-y-2">
+              {stateOptions?.map((state) => (
+                <div key={state.State_Pref_id} className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id={`suggested-state-${state.State_Pref_id}`}
+                    value={state.State_Pref_id}
+                    checked={(editPrefState || '').split(',').includes(state.State_Pref_id.toString())}
+                   // onChange={() => handleStateChange(state.State_Pref_id)}
+                    className="mr-2"
+                  />
                   <label
-                    key={status.State_Pref_id}
-                    className={`w-full px-5 py-3 text-sm font-bold border border-black cursor-pointer ${selectedPrefState === status.State_Pref_id.toString()
-                        ? 'bg-blue-500 text-white'
-                        : ''
-                      }`}
-                    onClick={(e) => e.preventDefault()}
+                    htmlFor={`suggested-state-${state.State_Pref_id}`}
+                    className='text-[#000000e6] font-medium'
                   >
-                    <input
-                      type="radio"
-                      name="preferredState"
-                      value={status.State_Pref_id}
-                      checked={selectedPrefState === status.State_Pref_id.toString()}
-                      onChange={() => setSelectedPrefState(status.State_Pref_id.toString())}
-                      className="hidden"
-                      onClick={(e) => e.preventDefault()}
-                    />
-                    {status.State_name}
+                    {state.State_name}
                   </label>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
+           
+          </div>
+
 
             <div className="w-full">
               <h5 className="text-[18px] text-black font-semibold mb-2">

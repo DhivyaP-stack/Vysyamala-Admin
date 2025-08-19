@@ -26,7 +26,7 @@ export const EditProfileVisibility: React.FC<formProps> = ({
   setFamilyStatusVisibility
 }) => {
   const { setValue, register, watch, formState: { errors }, handleSubmit } = useFormContext<ProfileVisibilityResponse>();
-  console.log("nnnn++++", professionVisibility)
+  
   const toggleSection = () => {
     setIsProfileVisibility(!isProfileVisibility);
   };
@@ -35,11 +35,12 @@ export const EditProfileVisibility: React.FC<formProps> = ({
     queryKey: ['profession'],
     queryFn: getProfession,
   });
+
   // State for checkbox values
   const [selectedProfessions, setSelectedProfessions] = useState<number[]>([]);
   const [selectedEducations, setSelectedEducations] = useState<string[]>([]);
   const [selectedAnnualIncomes, setSelectedAnnualIncomes] = useState<string[]>([]);
-  const [selectedFamilyStatus, setSelectedFamilyStatus] = useState('');
+  const [selectedFamilyStatus, setSelectedFamilyStatus] = useState<string[]>([]);
 
   // Initialize form values from EditData
   useEffect(() => {
@@ -54,7 +55,6 @@ export const EditProfileVisibility: React.FC<formProps> = ({
       setValue('profile_visibility.visibility_ragukethu', visibility.visibility_ragukethu);
       setValue('profile_visibility.visibility_chevvai', visibility.visibility_chevvai);
       setValue('profile_visibility.visibility_foreign_interest', visibility.visibility_foreign_interest);
-      setValue('profile_visibility.visibility_family_status', visibility.visibility_family_status);
 
       // Set checkbox values
       if (visibility.visibility_profession) {
@@ -75,13 +75,18 @@ export const EditProfileVisibility: React.FC<formProps> = ({
         setValue('profile_visibility.visibility_anual_income', incomes.join(','));
       }
 
-      setSelectedFamilyStatus(visibility.visibility_family_status);
+      if (visibility.visibility_family_status) {
+        const familyStatuses = visibility.visibility_family_status.split(',');
+        setSelectedFamilyStatus(familyStatuses);
+        setValue('profile_visibility.visibility_family_status', familyStatuses.join(','));
+        setFamilyStatusVisibility(familyStatuses.join(','));
+      }
     }
-  }, [EditData, setValue]);
+  }, [EditData, setValue, setFamilyStatusVisibility]);
 
   // Update family status in parent component
   useEffect(() => {
-    setFamilyStatusVisibility(selectedFamilyStatus);
+    setFamilyStatusVisibility(selectedFamilyStatus.join(','));
   }, [selectedFamilyStatus, setFamilyStatusVisibility]);
 
   // Profession checkbox handler
@@ -123,43 +128,46 @@ export const EditProfileVisibility: React.FC<formProps> = ({
     });
   };
 
-  // Family status radio handler
+  // Family status checkbox handler
   const handleFamilyStatusChange = (id: string) => {
-    setSelectedFamilyStatus(id);
-    setValue('profile_visibility.visibility_family_status', id);
+    setSelectedFamilyStatus(prev => {
+      const newStatuses = prev.includes(id)
+        ? prev.filter(statusId => statusId !== id)
+        : [...prev, id];
+
+      // Update form value
+      setValue('profile_visibility.visibility_family_status', newStatuses.join(','));
+      return newStatuses;
+    });
   };
 
   const { data: FamilyStatus } = useQuery({
     queryKey: ['FamilyStatus'],
     queryFn: fetchFamilyStatus,
   });
-  // const [EditProfession, setEditProfession] = useState('');
-  //   const handleSelectAllProfessions = () => {
-  //   if (!professionVisibility || professionVisibility.length === 0) return;
 
-  //   const allIds = professionVisibility.map((p: any) => p.Profes_Pref_id.toString());
-  //   const currentSelectedIds = EditProfession.split(',').filter(Boolean);
+  const handleSelectAllFamilyStatus = () => {
+    if (!FamilyStatus || FamilyStatus.length === 0) return;
 
-  //   // Check if all are currently selected
-  //   const isAllSelected = 
-  //     currentSelectedIds.length === allIds.length &&
-  //     allIds.every((id:any )=> currentSelectedIds.includes(id));
+    const allIds = FamilyStatus.map(f => f.family_status_id.toString());
+    const isAllSelected = selectedFamilyStatus.length === allIds.length;
 
-  //   if (isAllSelected) {
-  //     // If all are selected, unselect all
-  //     setEditProfession('');
-  //   } else {
-  //     // Else, select all
-  //     setEditProfession(allIds.join(','));
-  //   }
-  // };
+    if (isAllSelected) {
+      // If all are selected, deselect all
+      setSelectedFamilyStatus([]);
+      setValue('profile_visibility.visibility_family_status', '');
+    } else {
+      // Else, select all
+      setSelectedFamilyStatus(allIds);
+      setValue('profile_visibility.visibility_family_status', allIds.join(','));
+    }
+  };
+
   const handleSelectAllEducations = () => {
     if (!educationVisibility || educationVisibility.length === 0) return;
 
     const allEducationIds = educationVisibility.map(e => e.Edu_Pref_id.toString());
-
-    const isAllSelected = selectedEducations.length === allEducationIds.length &&
-      allEducationIds.every(id => selectedEducations.includes(id));
+    const isAllSelected = selectedEducations.length === allEducationIds.length;
 
     if (isAllSelected) {
       setSelectedEducations([]);
@@ -170,14 +178,11 @@ export const EditProfileVisibility: React.FC<formProps> = ({
     }
   };
 
-
   const handleSelectAllAnnualIncomes = () => {
     if (!annualIncomeVisibility || annualIncomeVisibility.length === 0) return;
 
     const allIncomeIds = annualIncomeVisibility.map(i => i.income_id.toString());
-
-    const isAllSelected = selectedAnnualIncomes.length === allIncomeIds.length &&
-      allIncomeIds.every(id => selectedAnnualIncomes.includes(id));
+    const isAllSelected = selectedAnnualIncomes.length === allIncomeIds.length;
 
     if (isAllSelected) {
       setSelectedAnnualIncomes([]);
@@ -188,62 +193,21 @@ export const EditProfileVisibility: React.FC<formProps> = ({
     }
   };
 
-
-  // Update your handleSelectAllProfessions function
   const handleSelectAllProfessions = () => {
     if (!profession || profession.length === 0) return;
 
-    const allProfessionIds = profession.map((p: any) => p.Profes_Pref_id);
-
-    // Check if all are currently selected
-    const isAllSelected = selectedProfessions.length === allProfessionIds.length &&
-      allProfessionIds.every((id: number) => selectedProfessions.includes(id));
+    const allProfessionIds = profession.map((p: any) => p.Profes_Pref_id.toString());
+    const isAllSelected = selectedProfessions.length === allProfessionIds.length;
 
     if (isAllSelected) {
-      // If all are selected, unselect all
       setSelectedProfessions([]);
       setValue('profile_visibility.visibility_profession', '');
     } else {
-      // Else, select all
-      setSelectedProfessions(allProfessionIds);
+      setSelectedProfessions(allProfessionIds.map((id: string) => parseInt(id)));
       setValue('profile_visibility.visibility_profession', allProfessionIds.join(','));
     }
   };
 
-  // Update your profession checkboxes section
-  <div className="w-full mt-6">
-    <div className="flex items-center mb-2">
-      <h5 className="text-[18px] text-black font-semibold mr-3">
-        Profession
-      </h5>
-      <button
-        type="button"
-        onClick={handleSelectAllProfessions}
-        className="text-sm text-blue-500 hover:underline"
-      >
-        {selectedProfessions.length === professionVisibility?.length ?
-          'Unselect All' : 'Select All'}
-      </button>
-    </div>
-    <div className="flex flex-wrap justify-between items-center">
-      {professionVisibility?.map((profession: ProfessionPref) => (
-        <div key={profession.Profes_Pref_id}>
-          <input
-            type="checkbox"
-            id={`professionVisibility-${profession.Profes_Pref_id}`}
-            checked={selectedProfessions.includes(profession.Profes_Pref_id)}
-            onChange={() => handleProfessionChange(profession.Profes_Pref_id)}
-          />
-          <label
-            htmlFor={`professionVisibility-${profession.Profes_Pref_id}`}
-            className='pl-1 text-[#000000e6] font-medium'
-          >
-            {profession.Profes_name}
-          </label>
-        </div>
-      ))}
-    </div>
-  </div>
   return (
     <div className='bg-white p-5 rounded shadow-md'>
       <h4
@@ -317,9 +281,18 @@ export const EditProfileVisibility: React.FC<formProps> = ({
 
           {/* Profession Checkboxes */}
           <div className="w-full mt-6">
-            <h5 className="text-[18px] text-black font-semibold mb-2 cursor-pointer" onClick={handleSelectAllProfessions}>
-              Profession
-            </h5>
+            <div className="flex items-center mb-2">
+              <h5 className="text-[18px] text-black font-semibold mr-3 cursor-pointer"  onClick={handleSelectAllProfessions}>
+                Profession
+              </h5>
+              {/* <button
+                type="button"
+                onClick={handleSelectAllProfessions}
+                className="text-sm text-blue-500 hover:underline"
+              >
+                {selectedProfessions.length === profession?.length ? 'Unselect All' : 'Select All'}
+              </button> */}
+            </div>
             <div className="flex flex-wrap justify-between items-center">
               {profession?.map((profession: ProfessionPref) => (
                 <div key={profession.Profes_Pref_id}>
@@ -342,9 +315,18 @@ export const EditProfileVisibility: React.FC<formProps> = ({
 
           {/* Education Checkboxes */}
           <div className='mt-6'>
-            <label className="text-[18px] text-black font-semibold mb-2 cursor-pointer" onClick={handleSelectAllEducations}>
-              Education
-            </label>
+            <div className="flex items-center mb-2">
+              <label className="text-[18px] text-black font-semibold mr-3 cursor-pointer" onClick={handleSelectAllEducations}>
+                Education
+              </label>
+              {/* <button
+                type="button"
+                onClick={handleSelectAllEducations}
+                className="text-sm text-blue-500 hover:underline"
+              >
+                {selectedEducations.length === educationVisibility.length ? 'Unselect All' : 'Select All'}
+              </button> */}
+            </div>
             <div className="flex flex-wrap gap-4">
               {educationVisibility.map((option) => (
                 <div key={option.Edu_Pref_id} className="flex items-center">
@@ -367,9 +349,18 @@ export const EditProfileVisibility: React.FC<formProps> = ({
 
           {/* Annual Income Checkboxes */}
           <div className='mt-6'>
-            <label className="text-[18px] text-black font-semibold mb-2 cursor-pointer" onClick={handleSelectAllAnnualIncomes}>
-              Annual Income
-            </label>
+            <div className="flex items-center mb-2">
+              <label className="text-[18px] text-black font-semibold mr-3 cursor-pointer"   onClick={handleSelectAllAnnualIncomes}>
+                Annual Income
+              </label>
+              {/* <button
+                type="button"
+                onClick={handleSelectAllAnnualIncomes}
+                className="text-sm text-blue-500 hover:underline"
+              >
+                {selectedAnnualIncomes.length === annualIncomeVisibility?.length ? 'Unselect All' : 'Select All'}
+              </button> */}
+            </div>
             <div className="flex flex-wrap gap-4">
               {annualIncomeVisibility?.map((option: AnnualIncome) => (
                 <div key={option.income_id} className="flex items-center">
@@ -390,48 +381,43 @@ export const EditProfileVisibility: React.FC<formProps> = ({
             </div>
           </div>
 
-          <div className="w-full py-1">
-            <label className="block text-black font-bold mb-1">
-              Family Status
-            </label>
-            <div className="w-full inline-flex rounded max-md:flex-col">
+          {/* Family Status Checkboxes */}
+          <div className='mt-6'>
+            <div className="flex items-center mb-2">
+              <h5 className="text-[18px] text-black font-semibold mr-3 cursor-pointer" onClick={handleSelectAllFamilyStatus}>
+                Family Status
+              </h5>
+              {/* <button
+                type="button"
+                onClick={handleSelectAllFamilyStatus}
+                className="text-sm text-blue-500 hover:underline"
+              >
+                {selectedFamilyStatus.length === FamilyStatus?.length ? 'Unselect All' : 'Select All'}
+              </button> */}
+            </div>
+            <div className="flex flex-wrap gap-x-6 gap-y-2">
               {FamilyStatus?.map((status) => (
-
-                <label
-                  key={status.family_status_id}
-                  // className='w-full px-5 py-3 text-sm font-medium border cursor-pointer'
-                  className={`w-full px-5 py-3 text-sm font-bold border border-black cursor-pointer ${String(selectedFamilyStatus) ===
-                    String(status.family_status_id)
-                    ? 'bg-blue-500 text-white'
-                    : ''
-                    }`}
-                  onClick={() =>
-                    setSelectedFamilyStatus(status.family_status_id)
-                  }
-                >
+                <div key={status.family_status_id} className="flex items-center">
                   <input
-                    value={status.family_status_id}
-                    {...register('profile_visibility.visibility_family_status')}
-                    type="radio"
-                    className="w-0"
+                    type="checkbox"
+                    id={`profileVisibility-${status.family_status_id}`}
+                    checked={selectedFamilyStatus.includes(status.family_status_id.toString())}
+                    onChange={() => handleFamilyStatusChange(status.family_status_id.toString())}
+                    className="mr-2"
                   />
-                  {status.family_status_name}
-                </label>
+                  <label
+                    htmlFor={`profileVisibility-${status.family_status_id}`}
+                    className='text-[#000000e6] font-medium'
+                  >
+                    {status.family_status_name}
+                  </label>
+                </div>
               ))}
             </div>
-            {/* {errors?.PartnerPreference?.FamilyStatus && (
-                  <p className="text-red-600">Family status is required</p>
-                )}  */}
-            {/* {errors?.profile_visibility.visibility_family_status && (
-                  <p className="text-red-600">
-                    {errors.profile_visibility.visibility_family_status.message}
-                  </p>
-                )} */}
           </div>
 
-
           {/* Other Options */}
-          <div className='grid grid-cols-3 gap-4'>
+          <div className='grid grid-cols-3 gap-4 mt-6'>
             <div className="mb-5 ">
               <label className="block  text-black font-bold mb-1">
                 Rahu/Ketu Dhosam

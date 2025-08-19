@@ -29,6 +29,7 @@ export const ViewProfileVisibility: React.FC<formProps> = ({
   const [selectedEducations, setSelectedEducations] = useState<string[]>([]);
   const [selectedAnnualIncomes, setSelectedAnnualIncomes] = useState<string[]>([]);
   const [selectedFamilyStatus, setSelectedFamilyStatus] = useState('');
+   const [editFamilyStatus, setEditFamilyStatus] = useState('');
 
   const fromAge = watch('profile_visibility.visibility_age_from')
   // Initialize form values from EditData
@@ -67,6 +68,7 @@ export const ViewProfileVisibility: React.FC<formProps> = ({
       }
 
       setSelectedFamilyStatus(visibility.visibility_family_status);
+      setEditFamilyStatus(profile[9].visibility_family_status || '');
     }
   }, [profile, setValue]);
 
@@ -327,7 +329,7 @@ export const ViewProfileVisibility: React.FC<formProps> = ({
           </div> */}
 
 
-          <div className="w-full py-1">
+          {/* <div className="w-full py-1">
             <label className="block text-black font-medium mb-1">
               Family Status
             </label>
@@ -357,15 +359,43 @@ export const ViewProfileVisibility: React.FC<formProps> = ({
                 </label>
               ))}
             </div>
-            {/* {errors?.PartnerPreference?.FamilyStatus && (
-                  <p className="text-red-600">Family status is required</p>
-                )}  */}
-            {/* {errors?.profile_visibility.visibility_family_status && (
-                  <p className="text-red-600">
-                    {errors.profile_visibility.visibility_family_status.message}
-                  </p>
-                )} */}
-          </div>
+        
+          </div> */}
+
+
+
+             <div>
+              <h5 className="text-[18px] text-black font-semibold mb-2 cursor-pointer"
+              
+              >
+                Family Status
+              </h5>
+
+              <div className="flex flex-wrap gap-x-6 gap-y-2">
+                {FamilyStatus?.map((status) => (
+                  <div key={status.family_status_id} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id={`profileVisibility-${status.family_status_id}`}
+                      value={status.family_status_id}
+                      checked={(editFamilyStatus || '').split(',').includes(
+                        status.family_status_id.toString()
+                      )}
+                    
+                      className="mr-2"
+                    />
+                    <label
+                      htmlFor={`profileVisibility-${status.family_status_id}`}
+                      className='text-[#000000e6] font-medium'
+                    >
+                      {status.family_status_name}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            
+            </div>
+
 
 
           {/* Other Options */}

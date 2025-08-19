@@ -45,7 +45,7 @@ const ViewHoroDetails: React.FC<pageProps> = ({ profile, setBirthStar }) => {
   });
   const { data: Rasi } = useQuery({
     queryKey: [horoDetails.birth_rasi_name, 'Rasi'],
-    queryFn: () => fetchRasi(horoDetails.birth_rasi_name),
+    queryFn: () => fetchRasi(horoDetails.birthstar_name),
     enabled: !!horoDetails.birth_rasi_name,
   });
   const { data: lagnam } = useQuery({
