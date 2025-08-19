@@ -93,6 +93,9 @@ interface RenewalProfile {
     profession: string;
     anual_income: string;
     years: number;
+    city_name: string;
+    state_name: string;
+    district_name: string;
 }
 
 
@@ -103,6 +106,7 @@ const columns: Column[] = [
     { id: 'Mobile_no', label: 'Mobile No', minWidth: 150 },
     { id: 'Profile_whatsapp', label: 'WhatsApp', minWidth: 150 },
     { id: 'EmailId', label: 'Email', minWidth: 200 },
+    { id: 'Profile_alternate_mobile', label: 'Alternate Mobile', minWidth: 200 },
     { id: 'Profile_dob', label: 'DOB', minWidth: 120 },
     { id: 'years', label: 'Age', minWidth: 80, align: 'center' },
     { id: 'DateOfJoin', label: 'Renewal Date', minWidth: 150 },
@@ -110,10 +114,14 @@ const columns: Column[] = [
     { id: 'MaritalStatus', label: 'Marital Status', minWidth: 150 },
     { id: 'complexion_desc', label: 'Complexion', minWidth: 130 },
     { id: 'country_name', label: 'Country', minWidth: 120 },
+    { id: 'state_name', label: 'State', minWidth: 120 },
+    { id: 'district_name', label: 'District', minWidth: 120 },
+    { id: 'city_name', label: 'City', minWidth: 120 },
     { id: 'Profile_for', label: 'Profile For', minWidth: 120 },
     { id: 'highest_education', label: 'Education', minWidth: 180 },
     { id: 'profession', label: 'Profession', minWidth: 150 },
     { id: 'anual_income', label: 'Annual Income', minWidth: 180 },
+    { id: 'years', label: 'Years', minWidth: 180 },
 ];
 
 
