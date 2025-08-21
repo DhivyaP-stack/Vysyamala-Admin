@@ -122,9 +122,6 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
 
   useEffect(() => {
     if (EditData) {
-
-
-
       const dasaBalance = EditData[3].dasa_balance;
       setValue('HororScopeDetails.timeOfBirth', EditData[3].time_of_birth);
       setValue('HororScopeDetails.PlaceofBirth', EditData[3].place_of_birth);
@@ -145,8 +142,24 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
       setAmsaKattam(EditData[3].amsa_kattam)
       setValue('HororScopeDetails.rasiKattam', EditData[3].rasi_kattam || '');
       setValue('HororScopeDetails.amsaKattam', EditData[3].amsa_kattam || '');
+      setValue('HororScopeDetails.didi', EditData[3].didi || '');
 
-      if (dasaBalance && dasaBalance.includes(":")) {
+      if (dasaBalance && typeof dasaBalance === 'string') {
+        // Extract numbers using regex
+        const yearMatch = dasaBalance.match(/(\d+)\s*Years?/);
+        const monthMatch = dasaBalance.match(/(\d+)\s*Months?/);
+        const dayMatch = dasaBalance.match(/(\d+)\s*Days?/);
+
+        const year = yearMatch ? yearMatch[1] : "";
+        const month = monthMatch ? monthMatch[1] : "";
+        const day = dayMatch ? dayMatch[1] : "";
+
+        setValue("HororScopeDetails.DasaBalanceDay", day || "");
+        setValue("HororScopeDetails.DasaBalanceMonth", month || "");
+        setValue("HororScopeDetails.DasaBalanceYear", year || "");
+      }
+      // Handle the old colon format as fallback
+      else if (dasaBalance && dasaBalance.includes(":")) {
         const [year, month, day] = dasaBalance
           .split(",")
           .map((item: string) => item.split(":")[1]);
@@ -154,8 +167,6 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
         setValue("HororScopeDetails.DasaBalanceDay", day || "");
         setValue("HororScopeDetails.DasaBalanceMonth", month || "");
         setValue("HororScopeDetails.DasaBalanceYear", year || "");
-
-        console.log(day, month, year);
       } else {
         console.warn("Invalid or missing dasa_balance:", dasaBalance);
         setValue("HororScopeDetails.DasaBalanceDay", "");
@@ -573,7 +584,26 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
                   className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
                 />
               </div>
-              <div className=" mb-1 w-[50%]"></div>
+              {/* <div className=" mb-1 w-[50%]"></div> */}
+              <div className=" mb-1 w-[50%]">
+                <label
+                  htmlFor="didi"
+                  className="block text-black font-semibold mb-1"
+                >
+                  Didi
+                </label>
+                <input
+                  {...register('HororScopeDetails.didi')}
+                  id="didi"
+                  type="text"
+                  className="outline-none w-full px-4 py-2 text-[#000000e6] font-medium border border-black rounded"
+                />
+                {errors?.HororScopeDetails?.didi && (
+                  <p className="text-red-600">
+                    {errors.HororScopeDetails.didi.message}
+                  </p>
+                )}
+              </div>
             </div>
 
             {/* Rasi Grid and Amsam Grid components */}

@@ -38,7 +38,7 @@ export const FileInput: React.FC<FileInputProps> = ({
     <div>
         {/* This div is now the main flex container for the label, input, and selected files */}
         <div className="flex items-center flex-wrap gap-2"> 
-            <span className="w-100 font-semibold text-black">{label}</span>
+            <span className="w-50 font-semibold text-black">{label}</span>
             <input
                 type="file"
                 accept={accept}

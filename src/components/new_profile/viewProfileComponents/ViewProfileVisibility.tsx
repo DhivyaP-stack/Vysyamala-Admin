@@ -414,6 +414,7 @@ export const ViewProfileVisibility: React.FC<formProps> = ({
                   <option value="">Select</option>
                   <option value="Yes">Yes</option>
                   <option value="No">No</option>
+                   <option value="Both">Both</option>
                 </select>
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
                   ▼
@@ -436,6 +437,7 @@ export const ViewProfileVisibility: React.FC<formProps> = ({
                   <option value="">Select</option>
                   <option value="Yes">Yes</option>
                   <option value="No">No</option>
+                   <option value="Both">Both</option>
                 </select>
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
                   ▼

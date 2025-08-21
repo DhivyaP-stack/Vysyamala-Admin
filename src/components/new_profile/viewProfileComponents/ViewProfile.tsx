@@ -818,12 +818,20 @@ const ViewProfile: React.FC<pageProps> = ({
   const [openCallManagement, setOpenCallManagement] = useState<boolean>(false)
   const [OpenAdminDetails, setOpenAdminDetails] = useState<boolean>(false)
   const [openDataHistory, setOpenDataHistory] = useState<boolean>(false)
+  const [pass, setPass] = useState<any>({});
+
   // const [profileCountt,setProfileCountt]=useState()
   //   import moment from "moment";
   //   npm install moment
   //   npm install @types/moment --save-dev
   console.log('profileView7', profileView7);
   console.log("profileView", profileView)
+
+  useEffect(() => {
+    if (profile) {
+      setPass(profile[0]);
+    }
+  }, [pass])
 
   useEffect(() => {
     if (profile) {
@@ -1081,7 +1089,12 @@ const ViewProfile: React.FC<pageProps> = ({
                 <WhatsApp fontSize="small" className="text-green-700" />
                 <span>WhatsApp</span>
               </div> */}
-              <div className="flex items-center gap-2 cursor-pointer hover:text-gray-900" onClick={() => navigate(`/UploadApprovalProfileImg?profileId=${profileView.ProfileId}`)}>
+              <div
+                className="flex items-center gap-2 cursor-pointer hover:text-gray-900"
+                onClick={() =>
+                  window.open(`/UploadApprovalProfileImg?profileId=${profileId}`, "_blank")
+                }
+              >
                 <CameraAlt fontSize="small" />
                 <span>Photo Update</span>
               </div>
@@ -1188,6 +1201,9 @@ const ViewProfile: React.FC<pageProps> = ({
                 <span className="text-green-600">{profileView.Package_name}</span>
                 <div className="h-4 border-l-2 border-green-800 mx-1"></div>
                 <span className="text-green-600">valid till: {profileView.valid_till}</span>
+                <div className="h-4 border-l-2 border-green-800 mx-1"></div>
+                <span className="text-green-600">Password: {pass.Password}</span>
+
               </div>
 
               <div className="w-full border-t-2 border-blue-600 my-2"></div>

@@ -68,8 +68,8 @@ useEffect(() => {
   });
   const { data: WorkDistrict } = useQuery({
     queryKey: [educationalDetails.work_state, 'District'],
-    queryFn: () => GetDistrict(educationalDetails.work_country),
-    enabled: !!educationalDetails.work_country,
+    queryFn: () => GetDistrict(educationalDetails.work_state),
+    enabled: !!educationalDetails.work_state,
   });
   const { data: City } = useQuery({
     queryKey: [educationalDetails.work_city, 'City'],

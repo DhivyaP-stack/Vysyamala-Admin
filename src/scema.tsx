@@ -56,7 +56,8 @@ export const parentSchema = z.object({
     }),
     Mobile_no: z
       .string().min(1, 'Mobile Number is required'),
-     
+    Alt_Mobile_Number: z.string().optional(),
+    WhatsAppNumber: z.string().optional(),
     // Mobile_no: z
     //   .string()
     //   .length(10, 'Mobile number must be exactly 10 digits long')
@@ -94,7 +95,7 @@ export const parentSchema = z.object({
     family_name: z.string().optional(),
     MyHobbies: z.string().optional(),
     weight: z.string().optional(),
-    EyeWear: z.enum(['Yes', 'No']).optional(),
+    EyeWear: z.enum(['Yes', 'No', 'Both']).optional(),
     PropertyDetails: z.string().optional(),
     PropertyWorth: z.string().optional(),
     SuyaGothram: z.string().min(1, "Suya Gothram is required"),
@@ -156,6 +157,7 @@ export const parentSchema = z.object({
     BirthStar: z.string().min(1, 'BirthStar is required'),
     Rasi: z.string().min(1, 'Birth rasi is required'),
     nalikai: z.string().optional(),
+    didi: z.string().optional(),
     lagnam: z.string().optional(),
     ChevvaiDhosam: z.string().optional(),
     SarpaDhosham: z.string().optional(),

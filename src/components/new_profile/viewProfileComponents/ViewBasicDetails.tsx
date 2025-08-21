@@ -154,15 +154,16 @@ const ViewBasicDetails: React.FC<pageProps> = ({ profile, setGennder }) => {
   const { data: District } = useQuery({
     queryKey: [basicDetails.Profile_state, 'District'],
     queryFn: () => GetDistrict(basicDetails.Profile_state),
-    enabled: !!basicDetails.Profile_state && basicDetails.Profile_country === '1',
+    enabled: !!basicDetails.Profile_state ,
   });
-
+console.log('5656',District);
   const { data: City } = useQuery({
     queryKey: [basicDetails.Profile_district, 'City'],
     queryFn: () => GetCity(basicDetails.Profile_district),
-    enabled: !!basicDetails.Profile_district && basicDetails.Profile_country === '1',
+    enabled: !!basicDetails.Profile_district ,
   });
-
+console.log('5656',basicDetails.Profile_district);
+console.log('5656',City);
   useEffect(() => {
     setGennder(basicDetails.Gender);
   }, [basicDetails]);
@@ -401,7 +402,8 @@ const ViewBasicDetails: React.FC<pageProps> = ({ profile, setGennder }) => {
                   </option>
                   {City?.map((option: any) => (
                     <option key={option.city_id} value={option.city_id}>
-                      {option.city_name}
+                      {/* {option.city_name} */}
+                      {basicDetails.Profile_city}
                     </option>
                   ))}
                 </select>

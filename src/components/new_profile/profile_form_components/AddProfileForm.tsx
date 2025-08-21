@@ -706,7 +706,7 @@ const AddProfileForm: React.FC<AddProfileForm> = ({
                         Select City
                       </option>
                       {City?.map((option: any) => (
-                        <option key={option.city_id} value={option.city_id}>
+                        <option key={option.city_id} value={option.city_name}>
                           {option.city_name}
                         </option>
                       ))}

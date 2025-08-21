@@ -777,7 +777,8 @@ export const uploadProofFiles = async (
     profileId: string,
     horoscopeFile: File | null,
     idProofFile: File | null,
-    divorceFile: File | null // Assuming the API parameter is 'divorce_file'
+    divorceFile: File | null, // Assuming the API parameter is 'divorce_file'
+    horoscopeAdminFile: File | null // 1. Add this new parameter
 ) => {
     const formData = new FormData();
     formData.append('profile_id', profileId);
@@ -790,11 +791,12 @@ export const uploadProofFiles = async (
         formData.append('idproof_file', idProofFile);
     }
     if (divorceFile) {
-        // IMPORTANT: The backend key might be different, e.g., 'divorce_certificate_file'.
-        // I'm assuming 'divorce_file' based on the pattern. Please confirm with your backend developer.
         formData.append('divorce_file', divorceFile);
     }
 
+    if (horoscopeAdminFile) {
+        formData.append('horoscope_file_admin', horoscopeAdminFile);
+    }
 
     try {
         const response = await apiAxios.post(`auth/Photo_Id_Settings/`, formData, {

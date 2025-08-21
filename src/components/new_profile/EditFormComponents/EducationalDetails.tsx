@@ -447,7 +447,7 @@ const EducationalDetails: React.FC<formProps> = ({
         className="text-red-600 flex row items-center justify-between text-xl font-semibold  dark:text-white cursor-pointer  after-red-line::after"
         onClick={toggleSection4}
       >
-        Education Details
+        Education Details 
         <svg
           className={`fill-current transform ${isEducationDetailsOpen ? 'rotate-180' : ''
             }`}

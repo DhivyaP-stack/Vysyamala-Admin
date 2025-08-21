@@ -806,6 +806,7 @@ const FamilyDetailsForm: React.FC<pageProp> = ({
                 >
                   <option value="Yes">Yes</option>
                   <option value="No">No</option>
+                  <option value="Both">Both</option>
                 </select>
                 {errors?.FamilyDetailsForm?.EyeWear && (
                   <p className="text-red-600">

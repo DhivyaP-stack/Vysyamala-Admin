@@ -117,13 +117,13 @@ const Partner_preference: React.FC<Partnerpreference> = ({
 
   // In Partner_preference.tsx, add these two useEffects
 
-//  useEffect(() => {
-//     setFamilyStatus(selectedFamilyStatus);
-//   }, [selectedFamilyStatus, setFamilyStatus]);
+  //  useEffect(() => {
+  //     setFamilyStatus(selectedFamilyStatus);
+  //   }, [selectedFamilyStatus, setFamilyStatus]);
 
-//   useEffect(() => {
-//     setPrefState(selectedPrefState);
-//   }, [selectedPrefState, setPrefState]);
+  //   useEffect(() => {
+  //     setPrefState(selectedPrefState);
+  //   }, [selectedPrefState, setPrefState]);
   // In Partner_preference.tsx, add these handlers
 
   // Handler for Family Status
@@ -249,14 +249,22 @@ const Partner_preference: React.FC<Partnerpreference> = ({
   }, []);
 
   ////mar status
-   const [selectedMaritalStatuses, setSelectedMaritalStatuses] = useState<string[]>([]);
-  const [selectedFamilyStatus, setSelectedFamilyStatus] = useState<string>('');
-  const [selectedPrefState, setSelectedPrefState] = useState<string>('');
+  const [selectedMaritalStatuses, setSelectedMaritalStatuses] = useState<string[]>([]);
+  const [selectedFamilyStatus, setSelectedFamilyStatus] = useState<string>('');
+  const [selectedPrefState, setSelectedPrefState] = useState<string>('');
   const handleMaritalStatusChange = (id: string, isChecked: boolean) => {
     setSelectedMaritalStatuses((prev) =>
       isChecked ? [...prev, id] : prev.filter((statusId) => statusId !== id),
     );
   };
+
+  useEffect(() => {
+    setPrefState(selectedPrefState);
+  }, [selectedPrefState, setPrefState]);
+
+  useEffect(() => {
+    setFamilyStatus(selectedFamilyStatus);
+  }, [selectedFamilyStatus, setFamilyStatus]);
 
   useEffect(() => {
     selectSetMaridStatus(selectedMaritalStatuses);

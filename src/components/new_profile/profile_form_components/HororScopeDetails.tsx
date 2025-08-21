@@ -67,9 +67,7 @@ const HororScopeDetails: React.FC<hororScopeProp> = ({
 
   const [rasiContent, setRasiContent] = useState<string>('');
   const [amsamContent, setAmsamContent] = useState<string>('');
-  const [hours, sethour] = useState('');
-  const [minutes, setminute] = useState('');
-  const [periods, setperiod] = useState('');
+
 
   // const handleTimeChange = () => {
   //   const hour = hours;
@@ -90,47 +88,66 @@ const HororScopeDetails: React.FC<hororScopeProp> = ({
   // };
 
 
-  // In HororScopeDetails component
+  // // In HororScopeDetails component
+  // const handleTimeChange = () => {
+  //   if (!hours || !minutes || !periods) return;
+
+  //   let formattedHour = parseInt(hours, 10);
+  //   if (periods === 'PM' && formattedHour < 12) {
+  //     formattedHour += 12;
+  //   } else if (periods === 'AM' && formattedHour === 12) {
+  //     formattedHour = 0;
+  //   }
+
+  //   const formattedTime = `${formattedHour.toString().padStart(2, '0')}:${minutes.padStart(2, '0')}`;
+  //   setValue('HororScopeDetails.timeOfBirth', formattedTime);
+  // };
+
+
+  const [hours, setHours] = useState('');
+  const [minutes, setMinutes] = useState('');
+  const [period, setPeriod] = useState('AM');
+
+  // This function combines the selected time values and updates the form state.
   const handleTimeChange = () => {
-    if (!hours || !minutes || !periods) return;
-
-    let formattedHour = parseInt(hours, 10);
-    if (periods === 'PM' && formattedHour < 12) {
-      formattedHour += 12;
-    } else if (periods === 'AM' && formattedHour === 12) {
-      formattedHour = 0;
+    if (hours && minutes && period) {
+      const combinedTime = `${hours}:${minutes} ${period}`;
+      // Set the value for react-hook-form so it can be submitted
+      setValue("HororScopeDetails.timeOfBirth", combinedTime, { shouldValidate: true });
     }
-
-    const formattedTime = `${formattedHour.toString().padStart(2, '0')}:${minutes.padStart(2, '0')}`;
-    setValue('HororScopeDetails.timeOfBirth', formattedTime);
   };
 
+  // This useEffect triggers the time update whenever one of the dropdowns changes.
+  useEffect(() => {
+    handleTimeChange();
+  }, [hours, minutes, period, setValue]);
+
   // Add this useEffect to initialize time if needed
-  useEffect(() => {
-    const time = watch('HororScopeDetails.timeOfBirth');
-    if (time) {
-      const [hourStr, minuteStr] = time.split(':');
-      let hour = parseInt(hourStr, 10);
-      let period = 'AM';
+  // useEffect(() => {
+  //   const time = watch('HororScopeDetails.timeOfBirth');
+  //   if (time) {
+  //     const [hourStr, minuteStr] = time.split(':');
+  //     let hour = parseInt(hourStr, 10);
+  //     let period = 'AM';
 
-      if (hour >= 12) {
-        period = 'PM';
-        if (hour > 12) hour -= 12;
-      } else if (hour === 0) {
-        hour = 12;
-      }
+  //     if (hour >= 12) {
+  //       period = 'PM';
+  //       if (hour > 12) hour -= 12;
+  //     } else if (hour === 0) {
+  //       hour = 12;
+  //     }
 
-      sethour(hour.toString().padStart(2, '0'));
-      setminute(minuteStr);
-      setperiod(period);
-    }
-  }, []);
+  //     sethour(hour.toString().padStart(2, '0'));
+  //     setminute(minuteStr);
+  //     setperiod(period);
+  //   }
+  // }, []);
 
-  useEffect(() => {
-    if (hours && minutes && periods) {
-      handleTimeChange();
-    }
-  }, [hours, minutes, periods]);
+  // useEffect(() => {
+  //   if (hours && minutes && periods) {
+  //     handleTimeChange();
+  //   }
+  // }, [hours, minutes, periods]);
   const onRasiContentsChange = (newContent: any) => {
     setRasiContent(newContent);
   };
@@ -146,6 +163,7 @@ const HororScopeDetails: React.FC<hororScopeProp> = ({
   }, [selectedBirthStarId, rasiContent, amsamContent]);
   // console.log(rasiContent, 'rasiContent');
   // console.log(amsamContent, 'amsamContent');
+  
 
   return (
     <div>
@@ -153,7 +171,7 @@ const HororScopeDetails: React.FC<hororScopeProp> = ({
         <h4
           className="text-red-600 flex row items-center justify-between text-xl font-semibold  dark:text-white cursor-pointer  after-red-line::after"
           onClick={toggleSection4}
-        >
+        > 
           Horoscope Details
           <svg
             className={`fill-current transform ${isHoroscopeDetailsOpen ? 'rotate-180' : ''
@@ -175,19 +193,27 @@ const HororScopeDetails: React.FC<hororScopeProp> = ({
           <div className="flex flex-col gap-5 pt-2">
             <div className="flex w-full flex-row gap-4 max-md:flex-col">
               <div className="w-full">
-                <label
-                  htmlFor="timeOfBirth"
-                  className="block text-black font-medium mb-1"
-                >
+                <label className="block text-black font-semibold mb-1">
                   Time of Birth
                 </label>
-               
+                <div className="flex items-center space-x-2">
+                  <select value={hours} onChange={(e) => setHours(e.target.value)} className="px-3 py-2 border rounded border-gray-500 w-full">
+                    <option value="" >Hour</option>
+                    {Array.from({ length: 12 }, (_, i) => (<option key={i + 1} value={(i + 1).toString().padStart(2, '0')}>{(i + 1).toString().padStart(2, '0')}</option>))}
+                  </select>
+                  <span>:</span>
+                  <select value={minutes} onChange={(e) => setMinutes(e.target.value)} className="px-3 py-2 border rounded border-gray-500 w-full">
+                    <option value="" >Min</option>
+                    {Array.from({ length: 60 }, (_, i) => (<option key={i} value={i.toString().padStart(2, '0')}>{i.toString().padStart(2, '0')}</option>))}
+                  </select>
+                  <select value={period} onChange={(e) => setPeriod(e.target.value)} className="px-3 py-2 border rounded border-gray-500">
+                    <option value="AM">AM</option><option value="PM">PM</option>
+                  </select>
+                </div>
+                {/* Hidden input to store the combined time for react-hook-form */}
                 <input
-                  id="time_of_birth"
-                  type="time"
-
-                  {...register('HororScopeDetails.timeOfBirth')}
-                  className="outline-none w-full px-4 py-2 border border-black rounded"
+                  type="hidden"
+                  {...register('HororScopeDetails.timeOfBirth', { required: "Time is required" })}
                 />
                 {errors?.HororScopeDetails?.timeOfBirth && (
                   <p className="text-red-600">
@@ -482,22 +508,47 @@ const HororScopeDetails: React.FC<hororScopeProp> = ({
 
             </div>
 
-            <div className="w-2/4 mb-1 max-md:w-full">
-              <label htmlFor="horoscopeHints" className="block">
-                Horoscope Hints
-              </label>
-              <input
-                id="horoscopeHints"
-                type="text"
-                onChange={(e) => setHoroHint(e.target.value)}
-                className="outline-none w-full px-4 py-2 border border-black rounded"
-              />
-              {/* {errors.horoscopeHints && (
+            <div className='grid grid-cols-2 gap-4'>
+
+              <div className="w-full mb-1 max-md:w-full">
+                <label htmlFor="horoscopeHints" className="block">
+                  Horoscope Hints
+                </label>
+                <input
+                  id="horoscopeHints"
+                  type="text"
+                  onChange={(e) => setHoroHint(e.target.value)}
+                  className="outline-none w-full px-4 py-2 border border-black rounded"
+                />
+                {/* {errors.horoscopeHints && (
         <span className="text-red-500">
           {errors.horoscopeHints.message}
         </span>
       )} */}
+
+
+              </div>
+              <div className="w-full">
+                <label
+                  htmlFor="Didi"
+                  className="block text-black font-medium mb-0"
+                >
+                  Didi
+                </label>
+                <input
+                  id="Didi"
+                  type="text"
+                  {...register('HororScopeDetails.didi')}
+                  className="outline-none w-full px-4 py-2 border border-black rounded"
+                />
+                {/* {errors?.HororScopeDetails?.nalikai && (
+                  <p className="text-red-600">
+                    {errors.HororScopeDetails.nalikai.message}
+                  </p>
+                )} */}
+              </div>
             </div>
+
 
             {/* Rasi Grid and Amsam Grid components */}
             <div>

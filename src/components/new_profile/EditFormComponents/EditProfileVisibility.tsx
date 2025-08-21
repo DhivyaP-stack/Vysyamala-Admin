@@ -26,7 +26,7 @@ export const EditProfileVisibility: React.FC<formProps> = ({
   setFamilyStatusVisibility
 }) => {
   const { setValue, register, watch, formState: { errors }, handleSubmit } = useFormContext<ProfileVisibilityResponse>();
-  
+
   const toggleSection = () => {
     setIsProfileVisibility(!isProfileVisibility);
   };
@@ -282,7 +282,7 @@ export const EditProfileVisibility: React.FC<formProps> = ({
           {/* Profession Checkboxes */}
           <div className="w-full mt-6">
             <div className="flex items-center mb-2">
-              <h5 className="text-[18px] text-black font-semibold mr-3 cursor-pointer"  onClick={handleSelectAllProfessions}>
+              <h5 className="text-[18px] text-black font-semibold mr-3 cursor-pointer" onClick={handleSelectAllProfessions}>
                 Profession
               </h5>
               {/* <button
@@ -350,7 +350,7 @@ export const EditProfileVisibility: React.FC<formProps> = ({
           {/* Annual Income Checkboxes */}
           <div className='mt-6'>
             <div className="flex items-center mb-2">
-              <label className="text-[18px] text-black font-semibold mr-3 cursor-pointer"   onClick={handleSelectAllAnnualIncomes}>
+              <label className="text-[18px] text-black font-semibold mr-3 cursor-pointer" onClick={handleSelectAllAnnualIncomes}>
                 Annual Income
               </label>
               {/* <button
@@ -430,6 +430,7 @@ export const EditProfileVisibility: React.FC<formProps> = ({
                   <option value="">Select</option>
                   <option value="Yes">Yes</option>
                   <option value="No">No</option>
+                  <option value="Both">Both</option>
                 </select>
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
                   ▼
@@ -449,6 +450,7 @@ export const EditProfileVisibility: React.FC<formProps> = ({
                   <option value="">Select</option>
                   <option value="Yes">Yes</option>
                   <option value="No">No</option>
+                  <option value="Both">Both</option>
                 </select>
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
                   ▼

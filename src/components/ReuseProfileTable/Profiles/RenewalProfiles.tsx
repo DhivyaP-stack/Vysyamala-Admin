@@ -22,20 +22,6 @@ import { MdDeleteOutline } from 'react-icons/md';
 import { GrEdit } from 'react-icons/gr';
 import { FaRegEye } from 'react-icons/fa';
 
-// --- Helper components for SVG icons to remove external dependencies ---
-const EditIcon = () => (
-    <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 512 512" height="18" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M497.9 142.1l-46.1 46.1c-4.7 4.7-12.3 4.7-17 0l-111-111c-4.7-4.7-4.7-12.3 0-17l46.1-46.1c18.7-18.7 49.1-18.7 67.9 0l60.1 60.1c18.8 18.7 18.8 49.1 0 67.9zM284.2 99.8L21.6 362.4.4 483.9c-2.9 16.4 11.4 30.6 27.8 27.8l121.5-21.3 262.6-262.6c4.7-4.7 4.7-12.3 0-17l-111-111c-4.8-4.7-12.4-4.7-17.1 0zM124.1 339.9c-5.5-5.5-5.5-14.3 0-19.8l154-154c5.5-5.5 14.3-5.5 19.8 0s5.5 14.3 0 19.8l-154 154c-5.5 5.5-14.3 5.5-19.8 0zM88 424h48v36.3l-64.5 11.3-31.1-31.1L51.7 376H88v48z"></path></svg>
-);
-
-const DeleteIcon = () => (
-    <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 1024 1024" height="20" width="20" xmlns="http://www.w3.org/2000/svg" style={{ color: 'rgb(255, 51, 51)' }}><path d="M864 256H736v-80c0-35.3-28.7-64-64-64H352c-35.3 0-64 28.7-64 64v80H160c-17.7 0-32 14.3-32 32v32c0 4.4 3.6 8 8 8h60.4l24.7 523c1.6 34.1 29.8 61 63.9 61h454c34.2 0 62.3-26.8 63.9-61l24.7-523H888c4.4 0 8-3.6 8-8v-32c0-17.7-14.3-32-32-32zm-200-80h-248v-48h248v48zM352 864H288l-24-512h88l24 512zm192 0h-88l24-512h40l-24 512zm136-448l-24 512H672l24-512h-88z"></path></svg>
-);
-
-const ViewIcon = () => (
-    <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 576 512" height="18" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M572.52 241.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19zM288 400a144 144 0 1 1 144-144 143.93 143.93 0 0 1-144 144zm0-240a95.31 95.31 0 0 0-25.31 3.79 47.85 47.85 0 0 1-66.9 66.9A95.78 95.78 0 1 0 288 160z"></path></svg>
-);
-
-
 // --- 1. Updated API endpoint ---
 const RENEWAL_API_URL = 'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/renewal-profiles/';
 const API_URL = 'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api'; // Base API for delete
@@ -137,7 +123,8 @@ const RenewalProfiles: React.FC = () => {
     });
     const [search, setSearch] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
-    const [selectAll, setSelectAll] = useState<boolean>(false);
+    // const [selectAll, setSelectAll] = useState<boolean>(false);
+    const [, setSelectAll] = useState<boolean>(false);
     const [selectedRows, setSelectedRows] = useState<string[]>([]); // Store ProfileId (string)
 
     useEffect(() => {

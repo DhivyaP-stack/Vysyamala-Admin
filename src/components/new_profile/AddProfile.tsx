@@ -111,6 +111,7 @@ export interface FormValues {
     dhasaBalanceYear: string;
     dhasaBalanceMonth: string;
     dhasaBalanceDay: string;
+    didi: string;
   };
   PartnerPreference: {
     pref_state: any;
@@ -247,11 +248,18 @@ const AddProfile = () => {
     }
     console.log("Submitting Data:", data);
 
-    const dasaDay = data.HororScopeDetails.dhasaBalanceDay;
-    const dasaMonth = data.HororScopeDetails.dhasaBalanceMonth;
-    const dasaYear = data.HororScopeDetails.dhasaBalanceYear;
+  
+  const dasaDay = data.HororScopeDetails.dhasaBalanceDay;
+  const dasaMonth = data.HororScopeDetails.dhasaBalanceMonth;
+  const dasaYear = data.HororScopeDetails.dhasaBalanceYear;
 
-    const dasaBalance = `year:${dasaYear},month:${dasaMonth},day:${dasaDay}`;
+  // --- CORRECTED LINE ---
+  // This creates the desired format "15 Years, 11 Months, 16 Days"
+  // It also ensures an empty string is used if any value is missing.
+  const dasaBalance = (dasaYear && dasaMonth && dasaDay)
+    ? `${dasaYear} Years, ${dasaMonth} Months, ${dasaDay} Days`
+    : "";
+
     const today = new Date();
     const DateOfJoinToday = today.toISOString().split('T')[0];
     //console.log("today",DateOfJoinToday)
@@ -324,12 +332,11 @@ const AddProfile = () => {
         about_edu: data.EducationDetails.AboutEducation,
         field_ofstudy: data.EducationDetails.field_ofstudy,
         degree: data.EducationDetails.degree,
-
         profession: data.EducationDetails.profession,
         anual_income: data.EducationDetails.AnnualIncome,
         actual_income: data.EducationDetails.ActualIncome,
         work_pincode: data.EducationDetails.pincode,
-        ug_degeree: data.EducationDetails.ug_degeree,
+        // ug_degeree: data.EducationDetails.ug_degeree,
         career_plans: data.EducationDetails.CareerPlans,
       },
       partner_pref_details: {
@@ -340,7 +347,7 @@ const AddProfile = () => {
         pref_profession: prefProf.join(','),
         pref_age_differences: data.PartnerPreference.agePreference,
         pref_height_from: data.PartnerPreference.heightFrom,
-        pref_height_to: data.PartnerPreference.heightFrom,
+        pref_height_to: data.PartnerPreference.toHeight,
         pref_chevvai: data.PartnerPreference.ChevvaiDhosam,
         pref_ragukethu: data.PartnerPreference.ragukethu,
         pref_foreign_intrest: data.PartnerPreference.foreignInterest,
@@ -366,6 +373,7 @@ const AddProfile = () => {
         horoscope_hints: horoHint,
         rasi_kattam: rasiKattam,
         amsa_kattam: amsaKattam,
+        didi: data.HororScopeDetails.didi
         // horoscope_file: horoImage[0],
       },
       suggested_pref_details: {

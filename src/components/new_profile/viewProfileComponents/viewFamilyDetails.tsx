@@ -188,6 +188,7 @@ const ViewFamilyDetailsForm: React.FC<pageProp> = ({ profile }) => {
                 >
                   <option value="Yes" className='text-black font-semibold'>Yes</option>
                   <option value="No" className='text-black font-semibold'>No</option>
+                    <option value="Both" className='text-black font-semibold'>Both</option>
                 </select>
               </div>
             </div>
@@ -391,7 +392,7 @@ cursor-pointer  ${buttonClass(
                 <div className="mt-3 flex items-center space-x-48">
                   <div>
                     <h1 className="block text-black font-semibold mb-1">
-                      Sister 
+                      Sister
                     </h1>
                     <div className="flex flex-col">
                       <div className="inline-flex rounded">
@@ -415,7 +416,7 @@ cursor-pointer  ${buttonClass(
                   {familyDetails.no_of_sister > 0 && (
                     <div>
                       <h1 className="mb-3 text-black font-medium">
-                        Married 
+                        Married
                       </h1>
                       <div className="flex flex-col">
                         <div className="inline-flex rounded">
@@ -473,10 +474,10 @@ cursor-pointer  ${buttonClass(
                   />
                 </div>
                 <div className="w-full">
-                  <label className="block text-black  font-semibold mb-1">
+                  {/* <label className="block text-black  font-semibold mb-1">
                     Property Worth
-                  </label>
-                  <select
+                  </label> */}
+                  {/* <select
                     disabled
                     value={familyDetails.property_worth}
                     className="outline-none w-full px-4 py-2 text-black font-medium border border-black rounded"
@@ -492,7 +493,14 @@ cursor-pointer  ${buttonClass(
                         {property.property_description}
                       </option>
                     ))}
-                  </select>
+                  </select> */}
+                  <Input
+                    readOnly
+                    value={familyDetails.property_worth}
+                    label={'Property Worth'}
+                    type={'text'}
+
+                  />
                 </div>
               </div>
             </div>

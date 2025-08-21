@@ -508,6 +508,8 @@ const EditProfile = () => {
         horoscope_hints: data.HororScopeDetails.horoscopeHints,
         rasi_kattam: rasiKattam || data.HororScopeDetails.rasiKattam,
         amsa_kattam: amsaKattam || data.HororScopeDetails.amsaKattam,
+        didi: data.HororScopeDetails.didi
+
       },
     }
     const Name = " horoscope details"

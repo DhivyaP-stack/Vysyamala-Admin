@@ -56,15 +56,54 @@ const ViewHoroDetails: React.FC<pageProps> = ({ profile, setBirthStar }) => {
     queryKey: ['Dasa'],
     queryFn: getDasaName,
   });
+  // useEffect(() => {
+  //   const dasaBalance = horoDetails.dasa_balance ?? ''; // Ensure it's a string, or default to empty
+  //   const [day, month, year] = dasaBalance
+  //     ? dasaBalance.split(',').map((item: string) => item.split(':')[1])
+  //     : [undefined, undefined, undefined];
+  //   setDay(day);
+  //   setMonth(month);
+  //   setYear(year);
+  // }, [horoDetails]);
+
   useEffect(() => {
-    const dasaBalance = horoDetails.dasa_balance ?? ''; // Ensure it's a string, or default to empty
-    const [day, month, year] = dasaBalance
-      ? dasaBalance.split(',').map((item: string) => item.split(':')[1])
-      : [undefined, undefined, undefined];
+    // Get dasaBalance from horoDetails instead of hardcoding
+    const dasaBalance = horoDetails?.dasa_balance_display || "";
+    console.log("Dasa Balance:", dasaBalance);
+
+    // Handle different possible formats
+    let day, month, year;
+
+    if (dasaBalance) {
+      try {
+        // Handle format: "14 Years, 1 Months, 12 Days"
+        const parts = dasaBalance.split(',');
+
+        if (parts.length === 3) {
+          year = parts[0].trim().split(' ')[0];    // "14 Years" → "14"
+          month = parts[1].trim().split(' ')[0];   // "1 Months" → "1"
+          day = parts[2].trim().split(' ')[0];     // "12 Days" → "12"
+        }
+
+        // Alternative approach using regex for more flexibility
+        const yearMatch = dasaBalance.match(/(\d+)\s*Years?/);
+        const monthMatch = dasaBalance.match(/(\d+)\s*Months?/);
+        const dayMatch = dasaBalance.match(/(\d+)\s*Days?/);
+
+        year = yearMatch ? yearMatch[1] : undefined;
+        month = monthMatch ? yearMatch[1] : undefined;
+        day = dayMatch ? dayMatch[1] : undefined;
+
+      } catch (error) {
+        console.error("Error parsing dasaBalance:", error);
+      }
+    }
+
     setDay(day);
     setMonth(month);
     setYear(year);
   }, [horoDetails]);
+
   //     const  dasaBalance=EditData[3].dasa_balance;
 
   //       const splitValue = dasaBalance
@@ -93,25 +132,30 @@ const ViewHoroDetails: React.FC<pageProps> = ({ profile, setBirthStar }) => {
 
 
   useEffect(() => {
-    if (horoDetails.time_of_birth) {
-      const [hours24, minutes] = horoDetails.time_of_birth.split(":");
-      let period = 'AM';
-      let hours12 = parseInt(hours24, 10);
+    // This effect parses the time_of_birth string to set the hour, minute, and period.
+    // It expects the time format to be "HH:MM AM/PM".
+    if (horoDetails.time_of_birth && typeof horoDetails.time_of_birth === 'string') {
+      // Split the string into time and period parts, e.g., ["03:04", "AM"]
+      const timeParts = horoDetails.time_of_birth.split(' ');
 
-      if (hours12 >= 12) {
-        period = 'PM';
-        if (hours12 > 12) {
-          hours12 -= 12;
+      // Check if the split resulted in two parts (time and period)
+      if (timeParts.length === 2) {
+        const time = timeParts[0]; // "03:04"
+        const period = timeParts[1]; // "AM"
+
+        // Split the time part into hours and minutes
+        const [hours, minutes] = time.split(':');
+
+        // Check if we successfully got hours and minutes
+        if (hours && minutes) {
+          setHour(hours);
+          setMinute(minutes);
+          setPeriod(period);
         }
-      } else if (hours12 === 0) {
-        hours12 = 12;
       }
-
-      setHour(hours12.toString().padStart(2, '0'));
-      setMinute(minutes.padStart(2, '0'));
-      setPeriod(period);
     }
   }, [horoDetails.time_of_birth]);
+
   return (
     <div>
       <div className="bg-white p-5 mb-10 rounded shadow-md">
@@ -264,7 +308,7 @@ const ViewHoroDetails: React.FC<pageProps> = ({ profile, setBirthStar }) => {
                   htmlFor="lagnam"
                   className="block text-black font-semibold mb-1"
                 >
-                  Lagnam  
+                  Lagnam
                 </label>
                 <select
                   value={horoDetails.lagnam_didi}
@@ -313,7 +357,7 @@ const ViewHoroDetails: React.FC<pageProps> = ({ profile, setBirthStar }) => {
                   htmlFor="ragu_dosham"
                   className="block text-black font-semibold mb-1"
                 >
-                  Sarpa Dhosham 
+                  Sarpa Dhosham
                 </label>
                 <select
                   value={horoDetails.ragu_dosham}
@@ -369,7 +413,7 @@ const ViewHoroDetails: React.FC<pageProps> = ({ profile, setBirthStar }) => {
               </div>
             </div>
 
-            <div className="flex w-full flex-row gap-4">
+            {/* <div className="flex w-full flex-row gap-4">
 
 
               <div className="w-2/4 text-[#000000e6] font-medium">
@@ -450,9 +494,103 @@ const ViewHoroDetails: React.FC<pageProps> = ({ profile, setBirthStar }) => {
                   className="outline-none w-1/2 px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
                 />
               </div>
+            </div> */}
+
+            <div className="flex w-full flex-row gap-4 items-start">
+              {/* Dasa Balance */}
+              <div className="w-1/3 text-[#000000e6] font-medium">
+                <label htmlFor="dasaBalance" className="block mb-1">
+                  Dasa Balance
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  <div>
+                    <select
+                      value={day}
+                      disabled
+                      id="dasa_balance"
+                      className="outline-none w-full px-4 py-2 text-[#000000e6] font-medium border border-black rounded"
+                      defaultValue=""
+                    >
+                      <option value="" disabled>
+                        Day
+                      </option>
+                      {[...Array(31)].map((_, i) => (
+                        <option key={i + 1} value={i + 1}>
+                          {i + 1}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <select
+                      value={month}
+                      disabled
+                      id="month"
+                      className="outline-none w-full px-4 py-2 border border-black rounded"
+                    >
+                      <option value="" disabled>
+                        Month
+                      </option>
+                      {[...Array(12)].map((_, i) => (
+                        <option key={i + 1} value={i + 1}>
+                          {i + 1}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <select
+                      disabled
+                      value={year}
+                      id="year"
+                      className="outline-none w-full px-4 py-2 border border-black rounded"
+                    >
+                      <option value="" disabled>
+                        Year
+                      </option>
+                      {Array.from({ length: 30 }, (_, i) => i + 1).map(
+                        (year) => (
+                          <option key={year} value={year}>
+                            {year}
+                          </option>
+                        ),
+                      )}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Horoscope Hints */}
+              <div className="w-1/3">
+                <label htmlFor="horoscopeHints" className="block text-black font-semibold mb-1">
+                  Horoscope Hints
+                </label>
+                <input
+                  disabled
+                  value={horoDetails.horoscope_hints}
+                  id="horoscopeHints"
+                  type="text"
+                  className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                />
+              </div>
+
+              {/* Didi */}
+              <div className="w-1/3">
+                <label
+                  htmlFor="Didi"
+                  className="block text-black font-semibold mb-1"
+                >
+                  Didi
+                </label>
+                <input
+                  value={horoDetails.didi}
+                  disabled
+                  id="Didi"
+                  type="text"
+                  className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                />
+              </div>
             </div>
-
-
 
             {/* Rasi Grid and Amsam Grid components */}
             <div>

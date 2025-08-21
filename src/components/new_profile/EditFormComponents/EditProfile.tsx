@@ -371,10 +371,16 @@ const EditViewProfile: React.FC<pageProps> = ({
 
                 {/* Other Texts with Icons on Right */}
                 <div className="flex gap-6 text-gray-700">
-                   <div className="flex items-center gap-2 cursor-pointer hover:text-gray-900"   onClick={() => navigate(`/UploadApprovalProfileImg?profileId=${profileId}`)}>  
+                  <div
+                    className="flex items-center gap-2 cursor-pointer hover:text-gray-900"
+                    onClick={() =>
+                      window.open(`/UploadApprovalProfileImg?profileId=${profileId}`, "_blank")
+                    }
+                  >
                     <CameraAlt fontSize="small" />
                     <span>Photo Update</span>
                   </div>
+
                   <div className="flex items-center gap-2 cursor-pointer hover:text-green-600" onClick={toggleShareVisibility} >
                     <WhatsApp fontSize="small" className=" text-green-700" />
                     <span>WhatsApp</span>
