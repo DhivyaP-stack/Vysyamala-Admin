@@ -87,8 +87,15 @@ export interface FormValues {
     AboutEducation: string;
     workdistrict: string;
     degree: string;
+    other_degree:string;
     WorkState: string;
     profession: string;
+    company_name:string;
+    designation:string;
+    profession_details:string;
+    business_name:string;
+    business_address:string;
+    nature_of_business:string;
     AnnualIncome: string;
     ActualIncome: string;
     pincode: string;
@@ -298,7 +305,7 @@ const AddProfile = () => {
         mother_occupation: data.FamilyDetailsForm.motherOccupation,
         about_self: data.FamilyDetailsForm.aboutMyself,
         weight: data.FamilyDetailsForm.weight,
-        eye_wear: data.FamilyDetailsForm.EyeWear === "Yes" ? "1" : data.FamilyDetailsForm.EyeWear === "No" ? "0" : data.FamilyDetailsForm.EyeWear,
+        eye_wear: data.FamilyDetailsForm.EyeWear,
         family_name: data.FamilyDetailsForm.family_name,
         hobbies: data.FamilyDetailsForm.MyHobbies,
         blood_group: data.FamilyDetailsForm.bloodGroup,
@@ -332,7 +339,14 @@ const AddProfile = () => {
         about_edu: data.EducationDetails.AboutEducation,
         field_ofstudy: data.EducationDetails.field_ofstudy,
         degree: data.EducationDetails.degree,
+        other_degree: data.EducationDetails.other_degree, 
         profession: data.EducationDetails.profession,
+        company_name:data.EducationDetails.company_name ,
+        designation:data.EducationDetails.designation,
+        profession_details:data.EducationDetails.profession_details,
+        business_name:data.EducationDetails.business_name,
+        business_address:data.EducationDetails.business_address ,
+        nature_of_business:data.EducationDetails.nature_of_business,
         anual_income: data.EducationDetails.AnnualIncome,
         actual_income: data.EducationDetails.ActualIncome,
         work_pincode: data.EducationDetails.pincode,

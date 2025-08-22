@@ -56,53 +56,48 @@ const ViewHoroDetails: React.FC<pageProps> = ({ profile, setBirthStar }) => {
     queryKey: ['Dasa'],
     queryFn: getDasaName,
   });
-  // useEffect(() => {
-  //   const dasaBalance = horoDetails.dasa_balance ?? ''; // Ensure it's a string, or default to empty
-  //   const [day, month, year] = dasaBalance
-  //     ? dasaBalance.split(',').map((item: string) => item.split(':')[1])
-  //     : [undefined, undefined, undefined];
-  //   setDay(day);
-  //   setMonth(month);
-  //   setYear(year);
-  // }, [horoDetails]);
+  
+useEffect(() => {
+  // Get dasaBalance from horoDetails instead of hardcoding
+  const dasaBalance = horoDetails?.dasa_balance_display || "";
+  console.log("Dasa Balance:", dasaBalance);
 
-  useEffect(() => {
-    // Get dasaBalance from horoDetails instead of hardcoding
-    const dasaBalance = horoDetails?.dasa_balance_display || "";
-    console.log("Dasa Balance:", dasaBalance);
+  // Handle different possible formats
+  let day, month, year;
 
-    // Handle different possible formats
-    let day, month, year;
+  if (dasaBalance) {
+    try {
+      // Handle format: "12 Years, 11 Months, 13 Days"
+      const parts = dasaBalance.split(',');
+      console.log('parts:', parts);
 
-    if (dasaBalance) {
-      try {
-        // Handle format: "14 Years, 1 Months, 12 Days"
-        const parts = dasaBalance.split(',');
-
-        if (parts.length === 3) {
-          year = parts[0].trim().split(' ')[0];    // "14 Years" → "14"
-          month = parts[1].trim().split(' ')[0];   // "1 Months" → "1"
-          day = parts[2].trim().split(' ')[0];     // "12 Days" → "12"
-        }
-
-        // Alternative approach using regex for more flexibility
-        const yearMatch = dasaBalance.match(/(\d+)\s*Years?/);
-        const monthMatch = dasaBalance.match(/(\d+)\s*Months?/);
-        const dayMatch = dasaBalance.match(/(\d+)\s*Days?/);
-
-        year = yearMatch ? yearMatch[1] : undefined;
-        month = monthMatch ? yearMatch[1] : undefined;
-        day = dayMatch ? dayMatch[1] : undefined;
-
-      } catch (error) {
-        console.error("Error parsing dasaBalance:", error);
+      if (parts.length === 3) {
+        year = parts[0].trim().split(' ')[0];    // "12 Years" → "12"
+        month = parts[1].trim().split(' ')[0];   // "11 Months" → "11"
+        day = parts[2].trim().split(' ')[0];     // "13 Days" → "13"
       }
-    }
 
-    setDay(day);
-    setMonth(month);
-    setYear(year);
-  }, [horoDetails]);
+      // Alternative approach using regex for more flexibility
+      const yearMatch = dasaBalance.match(/(\d+)\s*Years?/);
+      const monthMatch = dasaBalance.match(/(\d+)\s*Months?/);
+      const dayMatch = dasaBalance.match(/(\d+)\s*Days?/);
+
+      // Use the correct match variables
+      year = yearMatch ? yearMatch[1] : year;
+      month = monthMatch ? monthMatch[1] : month;
+      day = dayMatch ? dayMatch[1] : day;
+
+      console.log("Parsed values:", { year, month, day });
+
+    } catch (error) {
+      console.error("Error parsing dasaBalance:", error);
+    }
+  }
+
+  setDay(day);
+  setMonth(month);
+  setYear(year);
+}, [horoDetails]);
 
   //     const  dasaBalance=EditData[3].dasa_balance;
 
@@ -503,22 +498,24 @@ const ViewHoroDetails: React.FC<pageProps> = ({ profile, setBirthStar }) => {
                   Dasa Balance
                 </label>
                 <div className="grid grid-cols-3 gap-2">
+                 
                   <div>
                     <select
-                      value={day}
                       disabled
-                      id="dasa_balance"
-                      className="outline-none w-full px-4 py-2 text-[#000000e6] font-medium border border-black rounded"
-                      defaultValue=""
+                      value={year}
+                      id="year"
+                      className="outline-none w-full px-4 py-2 border border-black rounded"
                     >
                       <option value="" disabled>
-                        Day
+                        Year
                       </option>
-                      {[...Array(31)].map((_, i) => (
-                        <option key={i + 1} value={i + 1}>
-                          {i + 1}
-                        </option>
-                      ))}
+                      {Array.from({ length: 30 }, (_, i) => i + 1).map(
+                        (year) => (
+                          <option key={year} value={year}>
+                            {year}
+                          </option>
+                        ),
+                      )}
                     </select>
                   </div>
                   <div>
@@ -538,23 +535,23 @@ const ViewHoroDetails: React.FC<pageProps> = ({ profile, setBirthStar }) => {
                       ))}
                     </select>
                   </div>
-                  <div>
+                 
+                   <div>
                     <select
+                      value={day}
                       disabled
-                      value={year}
-                      id="year"
-                      className="outline-none w-full px-4 py-2 border border-black rounded"
+                      id="dasa_balance"
+                      className="outline-none w-full px-4 py-2 text-[#000000e6] font-medium border border-black rounded"
+                      defaultValue=""
                     >
                       <option value="" disabled>
-                        Year
+                        Day
                       </option>
-                      {Array.from({ length: 30 }, (_, i) => i + 1).map(
-                        (year) => (
-                          <option key={year} value={year}>
-                            {year}
-                          </option>
-                        ),
-                      )}
+                      {[...Array(31)].map((_, i) => (
+                        <option key={i + 1} value={i + 1}>
+                          {i + 1}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 </div>

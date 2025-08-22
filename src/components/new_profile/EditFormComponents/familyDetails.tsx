@@ -921,7 +921,7 @@ cursor-pointer  ${selectedSister === num.toString() ? 'bg-blue-500 text-white' :
                   </option>
                   <option value="Yes">Yes</option>
                   <option value="No">No</option>
-                  <option value="Both">Both</option>
+                  <option value="Unknown">Unknown</option>
                 </select>
 
                 {errors?.FamilyDetails?.EyeWear && (

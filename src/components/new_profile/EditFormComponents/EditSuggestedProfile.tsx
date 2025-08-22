@@ -516,9 +516,10 @@ const EditSuggestedProfile: React.FC<EditSuggestedProfileProps> = ({
                 className="w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
               >
                 <option value="" className='pl-1 text-[#000000e6] font-medium'>Select</option>
-                <option value="Both" className='pl-1 text-[#000000e6] font-medium'>Both</option>
+
                 <option value="Yes" className='pl-1 text-[#000000e6] font-medium'>Yes</option>
                 <option value="No" className='pl-1 text-[#000000e6] font-medium'>No</option>
+                <option value="Both" className='pl-1 text-[#000000e6] font-medium'>Both</option>
               </select>
               {errors?.suggested_pref_details?.pref_chevvai && (
                 <p className="text-red-600">
@@ -535,9 +536,10 @@ const EditSuggestedProfile: React.FC<EditSuggestedProfileProps> = ({
                 className="w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
               >
                 <option value="" className='pl-1 text-[#000000e6] font-medium'>Select</option>
-                <option value="Both" className='pl-1 text-[#000000e6] font-medium'>Both</option>
+
                 <option value="Yes" className='pl-1 text-[#000000e6] font-medium'>Yes</option>
                 <option value="No" className='pl-1 text-[#000000e6] font-medium'>No</option>
+                <option value="Both" className='pl-1 text-[#000000e6] font-medium'>Both</option>
               </select>
               {errors?.suggested_pref_details?.pref_ragukethu && (
                 <p className="text-red-600">
@@ -555,9 +557,10 @@ const EditSuggestedProfile: React.FC<EditSuggestedProfileProps> = ({
                 className="w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
               >
                 <option value="" className='pl-1 text-[#000000e6] font-medium'>Select</option>
-                <option value="Both" className='pl-1 text-[#000000e6] font-medium'>Both</option>
+
                 <option value="Yes" className='pl-1 text-[#000000e6] font-medium'>Yes</option>
                 <option value="No" className='pl-1 text-[#000000e6] font-medium'>No</option>
+                <option value="Both" className='pl-1 text-[#000000e6] font-medium'>Both</option>
               </select>
               {errors?.suggested_pref_details?.pref_foreign_intrest && (
                 <p className="text-red-600">

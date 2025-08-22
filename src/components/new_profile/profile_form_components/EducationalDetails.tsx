@@ -188,6 +188,10 @@ const EducationalDetails: React.FC<pageprop> = ({
   console.log("selectedDegrees", selectedDegrees)
   // Fetch degrees when both selections are valid
   const [selectedCurrency, setSelectedCurrency] = useState('');
+  const [showOtherInput, setShowOtherInput] = useState(false);
+
+  // State to store the value of the custom degree text
+  const [otherDegree, setOtherDegree] = useState('');
   useEffect(() => {
     const fetchDegrees = async () => {
       if (selectedEducation && selectedFieldOfStudy) {
@@ -215,21 +219,33 @@ const EducationalDetails: React.FC<pageprop> = ({
   console.log("watchHighestEducation", watchHighestEducation)
   const showStudyAndDegree = ['1', '2', '3', '4'].includes(selectedEducation);
 
-  const removeSelectedDegree = (degreeId: string) => {
-    // Filter out the degree from the selectedDegrees array
-    const updatedDegrees = selectedDegrees.filter((id) => id !== degreeId);
-    setSelectedDegrees(updatedDegrees); // Update the state
-    // Update the value in react-hook-form
-    setValue('EducationDetails.degree', updatedDegrees.join(','));
-  };
 
   // This function updates 'EducationDetails.degree', not 'degree'
   const handleDegreeChange = (newValue: any) => {
+    // Check if "Others" (assuming its value is '86') is among the selected options.
+    const hasOthers = newValue.some((option: any) => option.value === '86');
+    // Show or hide the text input based on the selection.
+    setShowOtherInput(hasOthers);
+    // Get all selected degree IDs.
     const selectedDegreeIds = newValue.map((option: any) => option.value);
     setSelectedDegrees(selectedDegreeIds);
-    // Correctly update the registered field 'degree'
-    setValue('EducationDetails.degree', selectedDegreeIds.join(','), { shouldValidate: true });
+    // Update the main 'degree' field in the form with a comma-separated string of IDs.
+    setValue('EducationDetails.degree', selectedDegreeIds.join(','));
+    // If "Others" is no longer selected, clear the text input and its form value.
+    if (!hasOthers) {
+      setOtherDegree('');
+      setValue('EducationDetails.other_degree', '');
+    }
   };
+
+  // A separate handler for the text input itself
+  const handleOtherDegreeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newOtherDegree = event.target.value;
+    setOtherDegree(newOtherDegree);
+    // This line correctly updates the form data
+    setValue('EducationDetails.other_degree', newOtherDegree);
+  };
+
   const getSelectedOptions = () => {
     return selectedDegrees.map(id => {
       const degree = degrees.find(d => d.degeree_id.toString() === id);
@@ -368,6 +384,15 @@ const EducationalDetails: React.FC<pageprop> = ({
     fetchDegrees();
   }, [selectedEducation, selectedFieldOfStudy]);
 
+  useEffect(() => {
+    setValue('EducationDetails.company_name', '');
+    setValue('EducationDetails.designation', '');
+    setValue('EducationDetails.profession_details', '');
+    setValue('EducationDetails.business_name', '');
+    setValue('EducationDetails.business_address', '');
+    setValue('EducationDetails.nature_of_business', '');
+  }, [profession, setValue]);
+
   return (
     <div className="bg-white p-5 mb-10 rounded shadow-md">
       <h4
@@ -456,48 +481,53 @@ const EducationalDetails: React.FC<pageprop> = ({
           {showStudyAndDegree && (
             <div className="w-full">
               <label className="block text-black font-medium mb-1">Degree</label>
+
               {noDegreeOptions ? (
                 <input
                   type="text"
                   className="outline-none w-full px-4 py-2 border border-black rounded"
-                  {...register('EducationDetails.degree', {
-                    required: 'Degree is required',
+                  {...register("EducationDetails.degree", {
+                    required: "Degree is required",
                   })}
                   placeholder="Enter your degree"
                 />
               ) : (
-                // <Select
-                //   {...register('EducationDetails.degree')}
-                //   isMulti
-                //   options={[
-                //     ...degrees?.map((degree) => ({
-                //       value: degree.degeree_id.toString(),
-                //       label: degree.degeree_description,
-                //     })),
-                //   ]}
-                //   value={getSelectedOptions()}
-                //   onChange={handleDegreeChange}
-                //   className="basic-multi-select"
-                //   classNamePrefix="select"
-                //   placeholder="Select Degree(s)"
-                // />
-                // Corrected Code
-<Select
-  // The {...register} call has been removed.
-  isMulti
-  options={[
-    ...degrees?.map((degree) => ({
-      value: degree.degeree_id.toString(),
-      label: degree.degeree_description,
-    })),
-  ]}
-  value={getSelectedOptions()}
-  onChange={handleDegreeChange}
-  className="basic-multi-select"
-  classNamePrefix="select"
-  placeholder="Select Degree"
-/>
+                <>
+                  <Select
+                    isMulti
+                    options={[
+                      ...degrees?.map((degree) => ({
+                        value: degree.degeree_id.toString(),
+                        label: degree.degeree_description,
+                      })),
+                    ]}
+                    value={getSelectedOptions()}
+                    onChange={handleDegreeChange}
+                    className="basic-multi-select"
+                    classNamePrefix="select"
+                    placeholder="Select Degree"
+                  />
+
+                  {showOtherInput && (
+                    <input
+                      type="text"
+                      value={otherDegree}
+                      {...register("EducationDetails.other_degree")} // Register with React Hook Form
+                      onChange={handleOtherDegreeChange}
+                      placeholder="Enter Specific field"
+                      className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded mt-2"
+                    />
+                  )}
+
+                  {/* Hidden input for comma-separated degree IDs */}
+                  <input
+                    type="hidden"
+                    {...register("EducationDetails.degree")}
+                    value={selectedDegrees.join(",")}
+                  />
+                </>
               )}
+
               {errors?.EducationDetails?.degree && (
                 <p className="text-red-600">
                   {errors.EducationDetails?.degree.message}
@@ -505,6 +535,7 @@ const EducationalDetails: React.FC<pageprop> = ({
               )}
             </div>
           )}
+
 
           <div className="flex w-full flex-row gap-4 max-md:flex-col">
             <div className="w-full">
@@ -634,6 +665,7 @@ const EducationalDetails: React.FC<pageprop> = ({
                   <input
                     id="companyName"
                     type="text"
+                    {...register("EducationDetails.company_name")}
                     className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
                     placeholder="Enter company name"
                   />
@@ -649,6 +681,7 @@ const EducationalDetails: React.FC<pageprop> = ({
                   <input
                     id="designation"
                     type="text"
+                    {...register("EducationDetails.designation")}
                     className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
                     placeholder="Enter designation"
                   />
@@ -663,6 +696,7 @@ const EducationalDetails: React.FC<pageprop> = ({
                   </label>
                   <textarea
                     id="professionDetail"
+                    {...register("EducationDetails.profession_details")}
                     className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
                     placeholder="Enter profession details"
                   />
@@ -679,39 +713,42 @@ const EducationalDetails: React.FC<pageprop> = ({
                     Business Name
                   </label>
                   <input
-                    id="companyName"
+                    id="BusinessName"
                     type="text"
+                    {...register("EducationDetails.business_name")}
                     className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
-                    placeholder="Enter company name"
+                    placeholder="Enter Business name"
                   />
                 </div>
 
                 <div className="mb-3 text-black">
                   <label
-                    htmlFor="designation"
+                    htmlFor="BusinessAdress"
                     className="block text-sm font-medium text-gray-700"
                   >
                     Business Address
                   </label>
                   <input
-                    id="designation"
+                    id="BusinessAdress"
                     type="text"
+                    {...register("EducationDetails.business_address")}
                     className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
-                    placeholder="Enter designation"
+                    placeholder="Enter Business Adress"
                   />
                 </div>
 
                 <div className="mb-3 text-black">
                   <label
-                    htmlFor="professionDetail"
+                    htmlFor="NatureofBusiness"
                     className="block text-sm font-medium text-gray-700"
                   >
                     Nature of Buisness
                   </label>
                   <textarea
-                    id="professionDetail"
+                    id="NatureofBusiness"
+                    {...register("EducationDetails.nature_of_business")}
                     className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
-                    placeholder="Enter profession details"
+                    placeholder="Enter Nature of Business"
                   />
                 </div>
               </div>
@@ -729,6 +766,7 @@ const EducationalDetails: React.FC<pageprop> = ({
                   <input
                     id="companyName"
                     type="text"
+                    {...register("EducationDetails.company_name")}
                     className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
                     placeholder="Enter company name"
                   />
@@ -744,6 +782,7 @@ const EducationalDetails: React.FC<pageprop> = ({
                   <input
                     id="designation"
                     type="text"
+                    {...register("EducationDetails.designation")}
                     className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
                     placeholder="Enter designation"
                   />
@@ -758,6 +797,7 @@ const EducationalDetails: React.FC<pageprop> = ({
                   </label>
                   <textarea
                     id="professionDetail"
+                    {...register("EducationDetails.profession_details")}
                     className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
                     placeholder="Enter profession details"
                   />
@@ -770,39 +810,42 @@ const EducationalDetails: React.FC<pageprop> = ({
                     Business Name
                   </label>
                   <input
-                    id="companyName"
+                    id="BusinessName"
                     type="text"
+                    {...register("EducationDetails.business_name")}
                     className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
-                    placeholder="Enter company name"
+                    placeholder="Enter Business name"
                   />
                 </div>
 
                 <div className="mb-3 text-black">
                   <label
-                    htmlFor="designation"
+                    htmlFor="BusinessAdress"
                     className="block text-sm font-medium text-gray-700"
                   >
                     Business Address
                   </label>
                   <input
-                    id="designation"
+                    id="BusinessAdress"
                     type="text"
+                    {...register("EducationDetails.business_address")}
                     className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
-                    placeholder="Enter designation"
+                    placeholder="Enter Business Adress"
                   />
                 </div>
 
                 <div className="mb-3 text-black">
                   <label
-                    htmlFor="professionDetail"
+                    htmlFor="NatureofBusiness"
                     className="block text-sm font-medium text-gray-700"
                   >
                     Nature of Buisness
                   </label>
                   <textarea
-                    id="professionDetail"
+                    id="NatureofBusiness"
+                    {...register("EducationDetails.nature_of_business")}
                     className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
-                    placeholder="Enter profession details"
+                    placeholder="Enter Nature of Business"
                   />
                 </div>
               </div>
@@ -820,6 +863,7 @@ const EducationalDetails: React.FC<pageprop> = ({
                   <input
                     id="companyName"
                     type="text"
+                    {...register("EducationDetails.company_name")}
                     className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
                     placeholder="Enter company name"
                   />
@@ -835,6 +879,7 @@ const EducationalDetails: React.FC<pageprop> = ({
                   <input
                     id="designation"
                     type="text"
+                    {...register("EducationDetails.designation")}
                     className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
                     placeholder="Enter designation"
                   />
@@ -844,12 +889,12 @@ const EducationalDetails: React.FC<pageprop> = ({
                   <label
                     htmlFor="professionDetail"
                     className="block text-sm font-medium text-gray-700"
-                  //style={{ color: "#1A73E8" }} // Replace with the exact color if different
                   >
-                    Profession Detail
+                    Profession Details
                   </label>
                   <textarea
                     id="professionDetail"
+                    {...register("EducationDetails.profession_details")}
                     className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
                     placeholder="Enter profession details"
                   />

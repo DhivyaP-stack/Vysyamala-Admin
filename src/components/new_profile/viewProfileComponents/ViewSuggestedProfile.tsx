@@ -42,8 +42,8 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
   const [eduPref, setEduPref] = useState<any>([]);
   const [selectedFamilyStatus, setSelectedFamilyStatus] = useState('');
   const [selectedPrefState, setSelectedPrefState] = useState('');
-   const [editFamilyStatus, setEditFamilyStatus] = useState('');
-     const [editPrefState, setEditPrefState] = useState('');
+  const [editFamilyStatus, setEditFamilyStatus] = useState('');
+  const [editPrefState, setEditPrefState] = useState('');
   const toggleSection5 = () => {
     setIsSugggestedProfileOpen(!isSuggestedProfileOpen);
   };
@@ -76,17 +76,19 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
       setSelectedPrefState(prefState);
       setValue("profileView.pref_family_status", prefFamilyStatus);
       setValue("profileView.pref_state", prefState);
-       
+      setValue("profileView.pref_anual_income", profile[8].pref_anual_income);
+      setValue("profileView.pref_anual_income_max", profile[8].pref_anual_income_max);
+
     }
   }, [profile, setValue]);
 
 
   useEffect(() => {
-  if (profile && profile.length > 0) {
-    setEditFamilyStatus(profile[8].pref_family_status || '');
+    if (profile && profile.length > 0) {
+      setEditFamilyStatus(profile[8].pref_family_status || '');
       setEditPrefState(profile[8].pref_state || '');
-  }
-}, [profile]);
+    }
+  }, [profile]);
 
   useEffect(() => {
     if (profile && profile.length > 0) {
@@ -144,8 +146,8 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
   const professionArray = SuggestedProfileDetails.pref_education?.split(',');
   const martalStatusArray =
     SuggestedProfileDetails.pref_marital_status?.split(',');
-  const annualIncomeArray =
-    SuggestedProfileDetails.pref_anual_income?.split(',');
+  // const annualIncomeArray =
+  //   SuggestedProfileDetails.pref_anual_income?.split(',');
 
   useEffect(() => {
     if (SuggestedProfileDetails?.pref_porutham_star) {
@@ -267,6 +269,7 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
                   <option value="">Select</option>
                   <option value="Yes">Yes</option>
                   <option value="No">No</option>
+                  <option value="Both">Both</option>
                 </select>
               </div>
               <div className="w-full text-black font-semibold">
@@ -281,6 +284,7 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
                   <option value="">Select</option>
                   <option value="Yes">Yes</option>
                   <option value="No">No</option>
+                  <option value="Both">Both</option>
                 </select>
               </div>
               <div className="w-full text-black font-semibold">
@@ -294,70 +298,71 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
                   className="w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
                 >
                   <option value="">Select</option>
-                  <option value="Both">Both</option>
+
                   <option value="Yes">Yes</option>
                   <option value="No">No</option>
+                  <option value="Both">Both</option>
                 </select>
               </div>
             </div>
 
 
-  <div className="w-full py-1">
-            <h5 className="text-[18px] text-black font-semibold mb-2 cursor-pointer">
-              Family Status
-            </h5>
-            <div className="flex flex-wrap gap-x-6 gap-y-2">
-              {FamilyStatus?.map((status) => (
-                <div key={status.family_status_id} className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id={`suggested-family-status-${status.family_status_id}`}
-                    value={status.family_status_id}
-                     checked={(editFamilyStatus || '').split(',').includes(status.family_status_id.toString())}
-                    // onChange={() => handleFamilyStatusChange(status.family_status_id)}
-                    className="mr-2"
-                  />
-                  <label
-                    htmlFor={`suggested-family-status-${status.family_status_id}`}
-                    className='text-[#000000e6] font-medium'
-                  >
-                    {status.family_status_name}
-                  </label>
-                </div>
-              ))}
+            <div className="w-full py-1">
+              <h5 className="text-[18px] text-black font-semibold mb-2 cursor-pointer">
+                Family Status
+              </h5>
+              <div className="flex flex-wrap gap-x-6 gap-y-2">
+                {FamilyStatus?.map((status) => (
+                  <div key={status.family_status_id} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id={`suggested-family-status-${status.family_status_id}`}
+                      value={status.family_status_id}
+                      checked={(editFamilyStatus || '').split(',').includes(status.family_status_id.toString())}
+                      // onChange={() => handleFamilyStatusChange(status.family_status_id)}
+                      className="mr-2"
+                    />
+                    <label
+                      htmlFor={`suggested-family-status-${status.family_status_id}`}
+                      className='text-[#000000e6] font-medium'
+                    >
+                      {status.family_status_name}
+                    </label>
+                  </div>
+                ))}
+              </div>
+
             </div>
-           
-          </div>
 
 
 
-            
-          <div className="w-full py-1">
-            <h5 className="text-[18px] text-black font-semibold mb-2 cursor-pointer">
-              Preferred State
-            </h5>
-            <div className="flex flex-wrap gap-x-6 gap-y-2">
-              {stateOptions?.map((state) => (
-                <div key={state.State_Pref_id} className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id={`suggested-state-${state.State_Pref_id}`}
-                    value={state.State_Pref_id}
-                    checked={(editPrefState || '').split(',').includes(state.State_Pref_id.toString())}
-                   // onChange={() => handleStateChange(state.State_Pref_id)}
-                    className="mr-2"
-                  />
-                  <label
-                    htmlFor={`suggested-state-${state.State_Pref_id}`}
-                    className='text-[#000000e6] font-medium'
-                  >
-                    {state.State_name}
-                  </label>
-                </div>
-              ))}
+
+            <div className="w-full py-1">
+              <h5 className="text-[18px] text-black font-semibold mb-2 cursor-pointer">
+                Preferred State
+              </h5>
+              <div className="flex flex-wrap gap-x-6 gap-y-2">
+                {stateOptions?.map((state) => (
+                  <div key={state.State_Pref_id} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id={`suggested-state-${state.State_Pref_id}`}
+                      value={state.State_Pref_id}
+                      checked={(editPrefState || '').split(',').includes(state.State_Pref_id.toString())}
+                      // onChange={() => handleStateChange(state.State_Pref_id)}
+                      className="mr-2"
+                    />
+                    <label
+                      htmlFor={`suggested-state-${state.State_Pref_id}`}
+                      className='text-[#000000e6] font-medium'
+                    >
+                      {state.State_name}
+                    </label>
+                  </div>
+                ))}
+              </div>
+
             </div>
-           
-          </div>
 
 
             <div className="w-full">
@@ -439,32 +444,44 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
             </div>
 
             <div>
-              <label className="text-[18px] text-black font-semibold mb-2">
+              <label
+                htmlFor="AnnualIncome"
+                className="text-[18px] text-black font-semibold mb-2"
+              >
                 Annual Income
               </label>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                {annualIncome.map((option: any) => (
-                  <div
-                    key={option.income_id}
-                    className="mb-2 flex items-center"
+              <div className="flex items-center gap-2">
+                <div className="w-full">
+                  <label className="text-black font-semibold ">Minimum Annual Income</label>
+                  <select
+                    disabled
+                    {...register('profileView.pref_anual_income')}
+                    className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded bg-gray-100"
                   >
-                    <input
-                      type="checkbox"
-                      id={`annualIncome-${option.income_id}`}
-                      value={option.income_id.toString()}
-                      checked={annualIncomeArray?.includes(
-                        option.income_id.toString(),
-                      )}
-                      onClick={(e) => e.preventDefault()}
-                    />
-                    <label
-                      htmlFor={`annualIncome-${option.income_id}`}
-                      className="pl-1 text-[#000000e6] font-medium"
-                    >
-                      {option.income_description}
-                    </label>
-                  </div>
-                ))}
+                    <option value="" disabled>Select</option>
+                    {annualIncome?.map((option: any) => (
+                      <option key={option.income_id} value={option.income_id} className='text-[#000000e6] font-medium'>
+                        {option.income_description}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="w-full">
+                  <label className="text-black font-semibold">Maximum Annual Income</label>
+                  <select
+                    disabled
+                    {...register('profileView.pref_anual_income_max')}
+                    className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded bg-gray-100"
+                  >
+                    <option value="" disabled>Select</option>
+                    {annualIncome?.map((option: any) => (
+                      <option key={option.income_id} value={option.income_id} className='text-[#000000e6] font-medium'>
+                        {option.income_description}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
             </div>
 

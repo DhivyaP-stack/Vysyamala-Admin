@@ -643,9 +643,9 @@ const EditPartnerPreference: React.FC<pageProps> = ({
                   className="w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
                 >
                   <option value="" className='text-[#000000e6] font-medium'>Select</option>
-                  <option value="Both" className='text-[#000000e6] font-medium'>Both</option>
                   <option value="Yes" className='text-[#000000e6] font-medium'>Yes</option>
                   <option value="No" className='text-[#000000e6] font-medium'>No</option>
+                  <option value="Both" className='text-[#000000e6] font-medium'>Both</option>
                 </select>
                 {errors?.PartnerPreference?.ChevvaiDhosam && (
                   <p className="text-red-600">
@@ -662,9 +662,9 @@ const EditPartnerPreference: React.FC<pageProps> = ({
                   className="w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
                 >
                   <option value="" className='text-[#000000e6] font-medium'>Select</option>
-                  <option value="Both" className='text-[#000000e6] font-medium'>Both</option>
                   <option value="Yes" className='text-[#000000e6] font-medium'>Yes</option>
                   <option value="No" className='text-[#000000e6] font-medium'>No</option>
+                  <option value="Both" className='text-[#000000e6] font-medium'>Both</option>
                 </select>
                 {errors?.PartnerPreference?.ragukethu && (
                   <p className="text-red-600">
@@ -681,9 +681,10 @@ const EditPartnerPreference: React.FC<pageProps> = ({
                   className="w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
                 >
                   <option value="" className='text-[#000000e6] font-medium'>Select</option>
-                  <option value="Both" className='text-[#000000e6] font-medium'>Both</option>
+
                   <option value="Yes" className='text-[#000000e6] font-medium'>Yes</option>
                   <option value="No" className='text-[#000000e6] font-medium'>No</option>
+                  <option value="Both" className='text-[#000000e6] font-medium'>Both</option>
                 </select>
                 {errors?.PartnerPreference?.foreignInterest && (
                   <p className="text-red-600">

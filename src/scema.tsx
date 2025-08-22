@@ -139,6 +139,7 @@ export const parentSchema = z.object({
     work_city: z.string().optional(),
     heighestEducation: z.string().min(1, "Highest Education Level is required"),
     degree: z.string().optional(),
+    other_degree:z.string().optional(),
     field_ofstudy: z.string().optional(),
     AboutEducation: z.string().optional(),
     AnnualIncome: z.string().optional(),
@@ -148,6 +149,12 @@ export const parentSchema = z.object({
     ///ug_degeree: z.string().min(1, "UG Degree is required").optional(),
     //ug_degeree: z.string().optional(),
     profession: z.string().optional(),
+    company_name: z.string().optional(),
+    designation: z.string().optional(),
+    profession_details: z.string().optional(),
+    business_name: z.string().optional(),
+    business_address: z.string().optional(),
+    nature_of_business: z.string().optional(),
     work_place: z.string().optional(),
   }),
 
@@ -182,22 +189,7 @@ export const parentSchema = z.object({
     pref_state: z.string().optional().nullable(),
   }),
 
-  // SuggestedProfileForm:z.object({
-
-
-  //   heightFrom: z.string().min(3,"Height is required"),
-  //   heightTo: z.string().min(3,"Height is required"),
-  //   agePreference: z.string().min(2,"Age difference is required"),
-  //  // agePreference: z.string().min(3,"Age difference is required"),
-  //   heightPreference: z.string().min(1,"Height preference is required"),
-  //   ragukethu: z.string().min(1,"Ragu Kethu is required"),
-  //   ChevvaiDhosam: z.string().min(1,"Chevvai Dhosam is required"),
-  //   foreignInterest: z.string().min(1,"Foreign interest is required"),
-  // }),
-
   SuggestedProfileForm: z.object({
-
-
     heightFrom: z.string().optional(),
     heightTo: z.string().optional(),
     agePreference: z.string().optional(),

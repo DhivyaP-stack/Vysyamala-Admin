@@ -247,21 +247,12 @@ export const userMatchingProfiles = async (profileID: string, pageNumber: number
 
 
 export const userMatchingProfilesFilterListMatch = async (
-    ProfileID: string,
-    pageNumber: number,
-    pageSize: number,
-    Complexion: string,
-    Education: string,
-    HeightFrom: number,
-    HeightTo: number,
-    MinAnualIncome: number,
-    MaxAnualIncome: number,
-    ForeignInterest: string,
-    State: number,
-    City: number,
-    Membership: number,
-    HasPhotos: string,
-    matching_stars: number,
+    ProfileID: string, pageNumber: number, pageSize: number, Complexion: string, Education: string, HeightFrom: number,
+    HeightTo: number, MinAnualIncome: number, MaxAnualIncome: number, ForeignInterest: string, State: number,
+    City: number, Membership: number, HasPhotos: string, matching_stars: number, ageDifference: number, sarpaDhosham: string,
+    chevvaiDhosam: string, selectedProfessions: string, fatherLive: string, motherLive: string, selectedMaritalStatus: string, selectedFamilyStatus: string, sentInWhatsapp: string
+    // hasphotos: any, selectedMembership: any,
+    //  sentInWhatsapp: any,   destRasiIds: any,
 ) => {
     try {
         const response = await apiAxios.post('/api/Get_prof_list_match/', {
@@ -280,6 +271,15 @@ export const userMatchingProfilesFilterListMatch = async (
             membership: Membership,
             has_photos: HasPhotos,
             matching_stars: matching_stars,
+            search_age: ageDifference,
+            ragu: sarpaDhosham,
+            chev: chevvaiDhosam,
+            search_profession: selectedProfessions,
+            father_alive: fatherLive,
+            mother_alive: motherLive,
+            marital_status: selectedMaritalStatus,
+            family_status: selectedFamilyStatus,
+            whatsapp_field: sentInWhatsapp
         });
         console.log("User Matching records filter fetched successfully", response);
         // Assuming the API returns an object with a `status` field and a `data` field
@@ -292,7 +292,6 @@ export const userMatchingProfilesFilterListMatch = async (
         throw new Error("Unable to fetch User Matching records filter. Please try again later.");
     }
 };
-
 
 // User Matching Profiles Page -> Matching Records filter List
 export const userMatchingProfilesFilter = async (
@@ -745,7 +744,8 @@ export const getPhotoProofDetails = async (
     imageID: string,
     isDeleted: string,
     imageApproved: string,
-    photoPassword: string
+    photoPassword: string,
+    photoProtection: string,
 ) => {
     try {
         const formData = new FormData();
@@ -754,6 +754,7 @@ export const getPhotoProofDetails = async (
         formData.append("is_deleted", isDeleted);
         formData.append("image_approved", imageApproved);
         formData.append("photo_password", photoPassword);
+        formData.append("photo_protection", photoProtection);
 
         const response = await apiAxios.post('/api/get-photo-proof-details/', formData, {
             headers: {

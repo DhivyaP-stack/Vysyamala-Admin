@@ -31,7 +31,7 @@ interface PhotoProofDetails {
 
 const CombinedPhotoProofDetailsSchema = z.object({
     photo_password: z.string().optional(),
-    permission: z.string().optional(),
+    photo_protection: z.string().optional(),
     id_proof: z.string().optional(),
     divorce_certificate: z.string().nullable().optional(),
     horoscope_file: z.string().optional(),
@@ -58,6 +58,7 @@ export const UploadApprovalProfileImg = () => {
     const [idProofFiles, setIdProofFiles] = useState<File[]>([]);
     const [divorceProofFiles, setDivorceProofFiles] = useState<File[]>([]);
     const [horoscopeAdminFiles, setHoroscopeAdminFiles] = useState<File[]>([]);
+    const [photoProtection, setPhotoProtection] = useState<number>(0); // Default to 0
     const {
         register,
         setValue,
@@ -101,83 +102,84 @@ export const UploadApprovalProfileImg = () => {
     }, [profileId, setValue]);
 
 
-   const ImageStatusSubmit = async () => {
-    if (!profileId || !photoProofDetails) {
-        NotifyError("Profile ID not found.");
-        return;
-    }
-
-    setLoading(true);
-
-    try {
-        const apiTasks = [];
-
-        // ✅ START: New Block for Profile Image Upload
-        // Check if there are new profile images to upload
-        if (newProfileImages.length > 0) {
-            // Add the new profile image upload task to our list
-            apiTasks.push(
-                uploadNewProfileImages(profileId, newProfileImages)
-            );
+    const ImageStatusSubmit = async () => {
+        if (!profileId || !photoProofDetails) {
+            NotifyError("Profile ID not found.");
+            return;
         }
-        // ✅ END: New Block for Profile Image Upload
 
-        // Task for other proof file uploads (ID, Horoscope, etc.)
-        const hasProofFilesToUpload =
-            horoscopeFiles.length > 0 ||
-            idProofFiles.length > 0 ||
-            divorceProofFiles.length > 0 ||
-            horoscopeAdminFiles.length > 0; // ✅ Corrected this line
+        setLoading(true);
 
-        if (hasProofFilesToUpload) {
+        try {
+            const apiTasks = [];
+
+            // ✅ START: New Block for Profile Image Upload
+            // Check if there are new profile images to upload
+            if (newProfileImages.length > 0) {
+                // Add the new profile image upload task to our list
+                apiTasks.push(
+                    uploadNewProfileImages(profileId, newProfileImages)
+                );
+            }
+            // ✅ END: New Block for Profile Image Upload
+
+            // Task for other proof file uploads (ID, Horoscope, etc.)
+            const hasProofFilesToUpload =
+                horoscopeFiles.length > 0 ||
+                idProofFiles.length > 0 ||
+                divorceProofFiles.length > 0 ||
+                horoscopeAdminFiles.length > 0; // ✅ Corrected this line
+
+            if (hasProofFilesToUpload) {
+                apiTasks.push(
+                    uploadProofFiles(
+                        profileId,
+                        horoscopeFiles[0] || null,
+                        idProofFiles[0] || null,
+                        divorceProofFiles[0] || null,
+                        horoscopeAdminFiles[0] || null
+                    )
+                );
+            }
+
+            // Task for updating image status and password
+            const passwordValue = watch("photo_password");
+            const imageIds = photoProofDetails.profile_images.map(img => img.id).join(",");
+            const imageApprovedStatuses = photoProofDetails.profile_images.map(img => (img.image_approved ? "1" : "0")).join(",");
+            const isDeleted = photoProofDetails.profile_images.map(img => (img.is_deleted ? "1" : "0")).join(",");
+
             apiTasks.push(
-                uploadProofFiles(
+                getPhotoProofDetails(
                     profileId,
-                    horoscopeFiles[0] || null,
-                    idProofFiles[0] || null,
-                    divorceProofFiles[0] || null,
-                    horoscopeAdminFiles[0] || null
+                    imageIds,
+                    isDeleted,
+                    imageApprovedStatuses,
+                    passwordValue || "",
+                    photoProtection.toString(),
                 )
             );
+
+            // --- Run all tasks concurrently ---
+            await Promise.all(apiTasks);
+
+            NotifySuccess("Profile updated successfully!");
+
+            // ✅ Clear the file input states on success
+            setNewProfileImages([]);
+            setHoroscopeFiles([]);
+            setIdProofFiles([]);
+            setDivorceProofFiles([]);
+            setHoroscopeAdminFiles([]);
+            // Refresh all data from the server to show new images
+            fetchPhotoProof();
+
+        } catch (error) {
+            NotifyError("An error occurred while updating the profile.");
+            console.error("Update Error:", error);
+        } finally {
+            setLoading(false);
         }
-
-        // Task for updating image status and password
-        const passwordValue = watch("photo_password");
-        const imageIds = photoProofDetails.profile_images.map(img => img.id).join(",");
-        const imageApprovedStatuses = photoProofDetails.profile_images.map(img => (img.image_approved ? "1" : "0")).join(",");
-        const isDeleted = photoProofDetails.profile_images.map(img => (img.is_deleted ? "1" : "0")).join(",");
-
-        apiTasks.push(
-            getPhotoProofDetails(
-                profileId,
-                imageIds,
-                isDeleted,
-                imageApprovedStatuses,
-                passwordValue || "",
-            )
-        );
-
-        // --- Run all tasks concurrently ---
-        await Promise.all(apiTasks);
-
-        NotifySuccess("Profile updated successfully!");
-
-        // ✅ Clear the file input states on success
-        setNewProfileImages([]);
-        setHoroscopeFiles([]);
-        setIdProofFiles([]);
-        setDivorceProofFiles([]);
-        setHoroscopeAdminFiles([]);
-        // Refresh all data from the server to show new images
-        fetchPhotoProof();
-
-    } catch (error) {
-        NotifyError("An error occurred while updating the profile.");
-        console.error("Update Error:", error);
-    } finally {
-        setLoading(false);
-    }
-};
+    };
     //Image Approval
     //Image Approval
     const handleImageApprovalChange = (imageId: number) => {
@@ -390,15 +392,19 @@ export const UploadApprovalProfileImg = () => {
                     </div>
                     {/* Permission */}
                     <div className="flex">
-                        <span className="w-50 font-semibold text-black">Permission</span>
-                        <input type="checkbox" className="mr-2p "
-                            {...register("permission")} />
+                        <span className="w-50 font-semibold text-black">Photo Lock</span>
+                        <input
+                            type="checkbox"
+                            className="mr-2p"
+                            checked={photoProtection === 1}
+                            onChange={(e) => setPhotoProtection(e.target.checked ? 1 : 0)}
+                        />
                     </div>
 
-                    <div className="flex">
+                    {/* <div className="flex">
                         <span className="w-50 font-semibold text-black">LAD</span>
                         <span>04/04/25 11:56:25 AM</span>
-                    </div>
+                    </div> */}
 
 
                     <div className="flex">

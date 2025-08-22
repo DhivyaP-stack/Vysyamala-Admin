@@ -107,7 +107,9 @@ const ViewPartnerSettings: React.FC<pageProps> = ({
       setSelectedPrefState(prefState);
       setValue("profileView.pref_family_status", prefFamilyStatus);
       setValue("profileView.pref_state", prefState);
-
+      // ✨ ADDED: Set the min and max annual income values
+      setValue("profileView.pref_anual_income", profile[4].pref_anual_income);
+      setValue("profileView.pref_anual_income_max", profile[4].pref_anual_income_max);
     }
   }, [profile, setValue]);
 
@@ -149,8 +151,8 @@ const ViewPartnerSettings: React.FC<pageProps> = ({
   const professionArray = partnerSettingsDetails.pref_education?.split(',');
   const martalStatusArray =
     partnerSettingsDetails.pref_marital_status?.split(',');
-  const annualIncomeArray =
-    partnerSettingsDetails.pref_anual_income?.split(',');
+  // const annualIncomeArray =
+  //   partnerSettingsDetails.pref_anual_income?.split(',');
 
   useEffect(() => {
     if (partnerSettingsDetails?.pref_porutham_star) {
@@ -272,6 +274,7 @@ const ViewPartnerSettings: React.FC<pageProps> = ({
                   <option value="">Select</option>
                   <option value="Yes">Yes</option>
                   <option value="No">No</option>
+                  <option value="Both">Both</option>
                 </select>
               </div>
               <div className="w-full text-black font-semibold">
@@ -286,6 +289,7 @@ const ViewPartnerSettings: React.FC<pageProps> = ({
                   <option value="">Select</option>
                   <option value="Yes">Yes</option>
                   <option value="No">No</option>
+                   <option value="Both">Both</option>
                 </select>
               </div>
               <div className="w-full text-black font-semibold">
@@ -298,9 +302,9 @@ const ViewPartnerSettings: React.FC<pageProps> = ({
                   className="w-full text-black font-semibold px-4 py-2 border border-black rounded"
                 >
                   <option value="">Select</option>
-                  <option value="Both">Both</option>
                   <option value="Yes">Yes</option>
                   <option value="No">No</option>
+                   <option value="Both">Both</option>
                 </select>
               </div>
             </div>
@@ -453,29 +457,36 @@ const ViewPartnerSettings: React.FC<pageProps> = ({
               <label className="text-[18px] text-black font-semibold mb-2">
                 Annual Income
               </label>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                {annualIncome.map((option: any) => (
-                  <div
-                    key={option.income_id}
-                    className="mb-2 flex items-center"
+              <div className="flex items-center gap-4">
+                <div className="w-full">
+                  <label className="text-gray-600 font-semibold ">Minimum Annual Income</label>
+                  <select
+                    disabled
+                    {...register('profileView.pref_anual_income')}
+                    className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded bg-gray-100"
                   >
-                    <input
-                      type="checkbox"
-                      id={`annualIncome-${option.income_id}`}
-                      value={option.income_id.toString()}
-                      checked={annualIncomeArray?.includes(
-                        option.income_id.toString(),
-                      )}
-                      onClick={(e) => e.preventDefault()}
-                    />
-                    <label
-                      htmlFor={`annualIncome-${option.income_id}`}
-                      className="pl-1 text-black font-medium"
-                    >
-                      {option.income_description}
-                    </label>
-                  </div>
-                ))}
+                    {annualIncome?.map((option: any) => (
+                      <option key={option.income_id} value={option.income_id} className='pl-1 text-[#000000e6] font-medium'>
+                        {option.income_description}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="w-full">
+                  <label className="text-gray-600 font-semibold">Maximum Annual Income</label>
+                  <select
+                    disabled
+                    {...register('profileView.pref_anual_income_max')}
+                    className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded bg-gray-100"
+                  >
+                    {annualIncome?.map((option: any) => (
+                      <option key={option.income_id} value={option.income_id} className='pl-1 text-[#000000e6] font-medium'>
+                        {option.income_description}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
             </div>
 

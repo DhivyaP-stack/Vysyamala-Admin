@@ -226,7 +226,7 @@ const EditProfile = () => {
         mother_occupation: data.FamilyDetails.motherOccupation,
         about_self: data.FamilyDetails.AboutMyself,
         weight: data.FamilyDetails.weight, // Map directly from form data
-        eye_wear: data.FamilyDetails.EyeWear === "Yes" ? "1" : "0",
+        eye_wear: data.FamilyDetails.EyeWear,
         family_name: data.FamilyDetails.FamilyName,
         hobbies: data.FamilyDetails.MyHobbies,
         blood_group: data.FamilyDetails.bloodGroup,
@@ -528,6 +528,12 @@ const EditProfile = () => {
         anual_income: data.EducationDetails.AnnualIncome,
         actual_income: data.EducationDetails.ActualIncome,
         profession: data.EducationDetails.profession,
+        company_name:data.EducationDetails.company_name ,
+        designation:data.EducationDetails.designation,
+        profession_details:data.EducationDetails.profession_details,
+        business_name:data.EducationDetails.business_name,
+        business_address:data.EducationDetails.business_address ,
+        nature_of_business:data.EducationDetails.nature_of_business,
         work_country: data.EducationDetails.work_country,
         work_state: data.EducationDetails.work_state,
         work_place: data.EducationDetails.workplace,
@@ -624,33 +630,12 @@ const EditProfile = () => {
     enabled: !!profileId,
   });
 
-
-  // const methods = useForm<>({
-  //   resolver: zodResolver(),
-  //   defaultValues: {
-
-  //   }})
-
   console.log(EditData)
-
-
 
   useEffect(() => {
     window.scrollTo(0, 0); // Scroll to the top of the page when entering
     setViewDetail(true); // Ensure ProfileView is open by default
   }, []);
-
-  // useEffect(() => {
-
-
-  //   if (ProfileViewRef.current) {
-  //     ProfileViewRef.current.scrollIntoView({ behavior: 'smooth' });
-  //   }
-
-  // }, []);
-
-
-
 
   return (
     <div className=" p-5 mb-10 max-md:p-0">

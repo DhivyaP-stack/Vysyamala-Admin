@@ -498,9 +498,10 @@ const Partner_preference: React.FC<Partnerpreference> = ({
                   className="w-full px-4 py-2 border border-black rounded"
                 >
                   <option value="">Select</option>
-                  <option value="Both">Both</option>
+
                   <option value="Yes">Yes</option>
                   <option value="No">No</option>
+                  <option value="Both">Both</option>
                 </select>
                 {errors?.PartnerPreference?.ChevvaiDhosam && (
                   <p className="text-red-600">
@@ -517,9 +518,10 @@ const Partner_preference: React.FC<Partnerpreference> = ({
                   className="w-full px-4 py-2 border border-black rounded"
                 >
                   <option value="">Select</option>
-                  <option value="Both">Both</option>
+
                   <option value="Yes">Yes</option>
                   <option value="No">No</option>
+                  <option value="Both">Both</option>
                 </select>
                 {errors?.PartnerPreference?.ragukethu && (
                   <p className="text-red-600">
@@ -536,9 +538,9 @@ const Partner_preference: React.FC<Partnerpreference> = ({
                   className="w-full px-4 py-2 border border-black rounded"
                 >
                   <option value="">Select</option>
-                  <option value="Both">Both</option>
                   <option value="Yes">Yes</option>
                   <option value="No">No</option>
+                  <option value="Both">Both</option>
                 </select>
                 {errors?.PartnerPreference?.foreignInterest && (
                   <p className="text-red-600">

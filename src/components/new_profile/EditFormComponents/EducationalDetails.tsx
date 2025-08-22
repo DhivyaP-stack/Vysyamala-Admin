@@ -110,7 +110,8 @@ const EducationalDetails: React.FC<formProps> = ({
   const [selectedFieldOfStudy, setSelectedFieldOfStudy] = useState<string>('');
   console.log(selectFieldOfStudy);
   const [noDegreeOptions, setNoDegreeOptions] = useState<boolean>(true);
-  console.log("noDegreeOptions", noDegreeOptions)
+  console.log("noDegreeOptions", noDegreeOptions);
+
 
   const preferredCurrencies = [
     'INR', // Indian Rupee - India
@@ -181,6 +182,7 @@ const EducationalDetails: React.FC<formProps> = ({
     const savedFieldOfStudy = sessionStorage.getItem('selectedFieldOfStudy');
     const savedDegrees = sessionStorage.getItem('selectedDegrees');
     const savedOtherDegree = sessionStorage.getItem('otherDegree');
+
 
     if (savedEducation) {
       setSelectedEducation(savedEducation);
@@ -277,7 +279,13 @@ const EducationalDetails: React.FC<formProps> = ({
 
       setValue('EducationDetails.work_city', EditData[2].work_city || '');
       setValue('EducationDetails.profession', EditData[2].profession || '');
-      setProfession(EditData[2].profession);
+      setProfession(Number(EditData[2].profession));
+      setValue('EducationDetails.company_name', EditData[2].company_name || '');
+      setValue('EducationDetails.designation', EditData[2].designation || '');
+      setValue('EducationDetails.profession_details', EditData[2].profession_details || '');
+      setValue('EducationDetails.business_name', EditData[2].business_name || '');
+      setValue('EducationDetails.business_address', EditData[2].business_address || '');
+      setValue('EducationDetails.nature_of_business', EditData[2].nature_of_business || '');
       setValue('EducationDetails.work_district', EditData[2].work_district || '');
       setValue('EducationDetails.pincode', EditData[2].work_pincode || '');
       setValue('EducationDetails.CareerPlans', EditData[2].career_plans || '');
@@ -440,6 +448,52 @@ const EducationalDetails: React.FC<formProps> = ({
     }
   }, [City, selectedCity]);
 
+  // Add this useEffect to manage profession-related fields
+  useEffect(() => {
+    // Define the fields for salaried and business professions
+    const salariedFields = [
+      'EducationDetails.company_name',
+      'EducationDetails.designation',
+      'EducationDetails.profession_details',
+    ];
+
+    const businessFields = [
+      'EducationDetails.business_name',
+      'EducationDetails.business_address',
+      'EducationDetails.nature_of_business',
+    ];
+
+    // A helper function to clear a list of fields
+    const clearFields = (fieldsToClear: string[]) => {
+      fieldsToClear.forEach((field) => {
+        setValue(field as any, '');
+      });
+    };
+
+    // Logic to set/clear fields based on the selected profession
+    switch (profession) {
+      case 1: // Salaried
+      case 7: // Salaried Professional
+        // Keep salaried fields, clear business fields
+        clearFields(businessFields);
+        break;
+
+      case 2: // Business/Self-employed
+        // Keep business fields, clear salaried fields
+        clearFields(salariedFields);
+        break;
+
+      case 6: // Salaried and Business
+        // Keep all fields, so we do nothing here
+        break;
+
+      default:
+        // For any other option (e.g., Not Working, Student), clear all fields
+        clearFields([...salariedFields, ...businessFields]);
+        break;
+    }
+  }, [profession, setValue]); // This hook runs whenever 'profession' or 'setValue' changes
+
 
   return (
     <div className="bg-white p-5 mb-10 rounded shadow-md">
@@ -447,7 +501,7 @@ const EducationalDetails: React.FC<formProps> = ({
         className="text-red-600 flex row items-center justify-between text-xl font-semibold  dark:text-white cursor-pointer  after-red-line::after"
         onClick={toggleSection4}
       >
-        Education Details 
+        Education Details
         <svg
           className={`fill-current transform ${isEducationDetailsOpen ? 'rotate-180' : ''
             }`}
@@ -728,14 +782,15 @@ const EducationalDetails: React.FC<formProps> = ({
                 <div className="mb-3 text-black">
                   <label
                     htmlFor="companyName"
-                    className="block text-sm font-semibold text-black"
+                    className="block text-sm font-medium text-gray-700"
                   >
                     Company Name
                   </label>
                   <input
                     id="companyName"
                     type="text"
-                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border text-[#000000e6] font-medium border-ashBorder rounded"
+                    {...register("EducationDetails.company_name")}
+                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
                     placeholder="Enter company name"
                   />
                 </div>
@@ -743,14 +798,15 @@ const EducationalDetails: React.FC<formProps> = ({
                 <div className="mb-3 text-black">
                   <label
                     htmlFor="designation"
-                    className="block text-sm text-[#000000e6] font-semibold"
+                    className="block text-sm font-medium text-gray-700"
                   >
                     Designation
                   </label>
                   <input
                     id="designation"
                     type="text"
-                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded text-[#000000e6] font-medium"
+                    {...register("EducationDetails.designation")}
+                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
                     placeholder="Enter designation"
                   />
                 </div>
@@ -758,13 +814,14 @@ const EducationalDetails: React.FC<formProps> = ({
                 <div className="mb-3 text-black">
                   <label
                     htmlFor="professionDetail"
-                    className="block text-sm text-[#000000e6] font-semibold"
+                    className="block text-sm font-medium text-gray-700"
                   >
                     Profession Details
                   </label>
                   <textarea
                     id="professionDetail"
-                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder text-[#000000e6] font-medium rounded"
+                    {...register("EducationDetails.profession_details")}
+                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
                     placeholder="Enter profession details"
                   />
                 </div>
@@ -775,44 +832,47 @@ const EducationalDetails: React.FC<formProps> = ({
                 <div className="mb-3 text-black">
                   <label
                     htmlFor="companyName"
-                    className="block text-sm text-[#000000e6] font-semibold"
+                    className="block text-sm font-medium text-gray-700"
                   >
                     Business Name
                   </label>
                   <input
-                    id="companyName"
+                    id="BusinessName"
                     type="text"
-                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder text-[#000000e6] font-medium rounded"
-                    placeholder="Enter Business Name"
+                    {...register("EducationDetails.business_name")}
+                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
+                    placeholder="Enter Business name"
                   />
                 </div>
 
                 <div className="mb-3 text-black">
                   <label
-                    htmlFor="designation"
-                    className="block text-sm text-[#000000e6] font-semibold "
+                    htmlFor="BusinessAdress"
+                    className="block text-sm font-medium text-gray-700"
                   >
                     Business Address
                   </label>
                   <input
-                    id="designation"
+                    id="BusinessAdress"
                     type="text"
-                    className="outline-none w-full text-placeHolderColor text-[#000000e6] font-medium px-4 py-[8.5px] border border-ashBorder rounded"
-                    placeholder="Enter  Business Address"
+                    {...register("EducationDetails.business_address")}
+                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
+                    placeholder="Enter Business Adress"
                   />
                 </div>
 
                 <div className="mb-3 text-black">
                   <label
-                    htmlFor="professionDetail"
-                    className="block text-sm text-[#000000e6] font-semibold"
+                    htmlFor="NatureofBusiness"
+                    className="block text-sm font-medium text-gray-700"
                   >
                     Nature of Buisness
                   </label>
                   <textarea
-                    id="professionDetail"
-                    className="outline-none w-full text-placeHolderColor text-[#000000e6] font-medium px-4 py-[8.5px] border border-ashBorder rounded"
-                    placeholder="Enter Nature of Buisness"
+                    id="NatureofBusiness"
+                    {...register("EducationDetails.nature_of_business")}
+                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
+                    placeholder="Enter Nature of Business"
                   />
                 </div>
               </div>
@@ -823,14 +883,15 @@ const EducationalDetails: React.FC<formProps> = ({
                 <div className="mb-3 text-black">
                   <label
                     htmlFor="companyName"
-                    className="block text-sm text-[#000000e6] font-semibold"
+                    className="block text-sm font-medium text-gray-700"
                   >
                     Company Name
                   </label>
                   <input
                     id="companyName"
                     type="text"
-                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] text-[#000000e6] font-medium border border-ashBorder rounded"
+                    {...register("EducationDetails.company_name")}
+                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
                     placeholder="Enter company name"
                   />
                 </div>
@@ -838,72 +899,77 @@ const EducationalDetails: React.FC<formProps> = ({
                 <div className="mb-3 text-black">
                   <label
                     htmlFor="designation"
-                    className="block text-sm text-[#000000e6] font-semibold"
+                    className="block text-sm font-medium text-gray-700"
                   >
                     Designation
                   </label>
                   <input
                     id="designation"
                     type="text"
-                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border text-[#000000e6] font-medium border-ashBorder rounded"
+                    {...register("EducationDetails.designation")}
+                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
                     placeholder="Enter designation"
                   />
                 </div>
 
-                <div className="mb-3">
+                <div className="mb-3 text-black">
                   <label
                     htmlFor="professionDetail"
-                    className="block text-sm text-[#000000e6] font-semibold"
+                    className="block text-sm font-medium text-gray-700"
                   >
                     Profession Details
                   </label>
                   <textarea
                     id="professionDetail"
-                    className="outline-none w-full text-placeHolderColor text-[#000000e6] font-medium px-4 py-[8.5px] border border-ashBorder rounded"
+                    {...register("EducationDetails.profession_details")}
+                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
                     placeholder="Enter profession details"
                   />
                 </div>
                 <div className="mb-3 text-black">
                   <label
                     htmlFor="companyName"
-                    className="block text-sm text-[#000000e6] font-semibold"
+                    className="block text-sm font-medium text-gray-700"
                   >
                     Business Name
                   </label>
                   <input
-                    id="companyName"
+                    id="BusinessName"
                     type="text"
-                    className="outline-none w-full text-placeHolderColor text-[#000000e6] font-medium px-4 py-[8.5px] border border-ashBorder rounded"
-                    placeholder="Enter Business Name"
+                    {...register("EducationDetails.business_name")}
+                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
+                    placeholder="Enter Business name"
                   />
                 </div>
 
                 <div className="mb-3 text-black">
                   <label
-                    htmlFor="designation"
-                    className="block text-sm text-[#000000e6] font-semibold"
+                    htmlFor="BusinessAdress"
+                    className="block text-sm font-medium text-gray-700"
                   >
                     Business Address
                   </label>
                   <input
-                    id="designation"
+                    id="BusinessAdress"
                     type="text"
-                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] text-[#000000e6] font-medium border border-ashBorder rounded"
-                    placeholder="Enter Business Address"
+                    {...register("EducationDetails.business_address")}
+                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
+                    placeholder="Enter Business Adress"
                   />
                 </div>
 
                 <div className="mb-3 text-black">
                   <label
-                    htmlFor="professionDetail"
-                    className="block text-sm text-[#000000e6] font-semibold"
+                    htmlFor="NatureofBusiness"
+                    className="block text-sm font-medium text-gray-700"
                   >
                     Nature of Buisness
                   </label>
                   <textarea
-                    id="professionDetail"
-                    className="outline-none w-full text-placeHolderColor text-[#000000e6] font-medium px-4 py-[8.5px] border border-ashBorder rounded"
-                    placeholder="Enter Nature of Buisness"
+                    id="NatureofBusiness"
+                    {...register("EducationDetails.nature_of_business")}
+                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
+                    placeholder="Enter Nature of Business"
                   />
                 </div>
               </div>
@@ -914,14 +980,15 @@ const EducationalDetails: React.FC<formProps> = ({
                 <div className="mb-3 text-black">
                   <label
                     htmlFor="companyName"
-                    className="block text-sm text-[#000000e6] font-semibold"
+                    className="block text-sm font-medium text-gray-700"
                   >
                     Company Name
                   </label>
                   <input
                     id="companyName"
                     type="text"
-                    className="outline-none w-full text-placeHolderColor text-[#000000e6] font-medium px-4 py-[8.5px] border border-ashBorder rounded"
+                    {...register("EducationDetails.company_name")}
+                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
                     placeholder="Enter company name"
                   />
                 </div>
@@ -929,14 +996,15 @@ const EducationalDetails: React.FC<formProps> = ({
                 <div className="mb-3 text-black">
                   <label
                     htmlFor="designation"
-                    className="block text-sm text-[#000000e6] font-semibold"
+                    className="block text-sm font-medium text-gray-700"
                   >
                     Designation
                   </label>
                   <input
                     id="designation"
                     type="text"
-                    className="outline-none w-full text-placeHolderColor text-[#000000e6] font-medium px-4 py-[8.5px] border border-ashBorder rounded"
+                    {...register("EducationDetails.designation")}
+                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
                     placeholder="Enter designation"
                   />
                 </div>
@@ -944,14 +1012,14 @@ const EducationalDetails: React.FC<formProps> = ({
                 <div className="mb-3 text-black">
                   <label
                     htmlFor="professionDetail"
-                    className="block text-sm text-[#000000e6] font-semibold"
-                  //style={{ color: "#1A73E8" }} // Replace with the exact color if different
+                    className="block text-sm font-medium text-gray-700"
                   >
-                    Profession Detail
+                    Profession Details
                   </label>
                   <textarea
                     id="professionDetail"
-                    className="outline-none w-full text-placeHolderColor text-[#000000e6] font-medium px-4 py-[8.5px] border border-ashBorder rounded"
+                    {...register("EducationDetails.profession_details")}
+                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
                     placeholder="Enter profession details"
                   />
                 </div>
@@ -1094,7 +1162,7 @@ const EducationalDetails: React.FC<formProps> = ({
                       value={selecteddistrict || ''}
                       {...register('EducationDetails.work_district')}
                       // ... other props
-                       className="outline-none w-full px-4 text-[#000000e6] font-semibold py-2 border border-black rounded"
+                      className="outline-none w-full px-4 text-[#000000e6] font-semibold py-2 border border-black rounded"
                       onChange={(e) => {
                         const value = e.target.value;
                         setValue('EducationDetails.work_district', value);

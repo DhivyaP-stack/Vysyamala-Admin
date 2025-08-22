@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
-
 import {
-
   Table,
   TableBody,
   TableCell,
@@ -14,10 +12,10 @@ import {
   Button,
   CircularProgress,
   Box,
+  Chip,
 } from '@mui/material';
 import axios from 'axios';
-
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { profileImgApproval } from '../../../services/api';
 
 interface Column {
@@ -25,11 +23,29 @@ interface Column {
   label: string;
   minWidth?: number;
   align?: 'right' | 'left' | 'center';
+  format?: (value: any, row?: any) => any;
 }
 
 interface ProfileImageApprovalData {
   results: any[];
   count: number;
+}
+
+interface ProfileImage {
+  image_url: string;
+  image_approved: boolean;
+  is_deleted: boolean;
+}
+
+interface ProfileData {
+  profile_id: string;
+  Profile_name: string;
+  Profile_mobile_no: string;
+  Profile_dob: string;
+  profile_gender: string;
+  Profile_email: string;
+  profile_whats_app_no: string | null;
+  images: ProfileImage[];
 }
 
 const getProfileImageApproval = async () => {
@@ -40,17 +56,16 @@ const getProfileImageApproval = async () => {
 
 const ProfileImageApproval: React.FC = () => {
   const [order, setOrder] = useState<'asc' | 'desc'>('asc');
-  const [orderBy, setOrderBy] = useState<string>('profile_from_id');
+  const [orderBy, setOrderBy] = useState<string>('profile_id');
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
   const [data, setData] = useState<ProfileImageApprovalData>({results: [],count: 0,});
   const [search, setSearch] = useState<string>('');
   const [fromDate, setFromDate] = useState<string>('');
   const [toDate, setToDate] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(true); // State for loading
+  const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
-  const [hoveredProfileId, setHoveredProfileId] = useState(null);
-
+  const [hoveredProfileId, setHoveredProfileId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchData();
@@ -103,17 +118,65 @@ const ProfileImageApproval: React.FC = () => {
     setPage(0);
   };
 
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB'); // Format as DD/MM/YYYY
+  };
+
   const columns: Column[] = [
-    { id: 'profile_id', label: 'Profile ID', minWidth: 150, align: 'center' }, // For profile_id
-    {
-      id: 'image_url',
-      label: 'Profile Image',
-      minWidth: 150,
-      align: 'center',
-      format: (value: string[]) => (
-        <img src={value[0]} alt="Profile" width="50" height="50" />
-      ),
-    }, // Display profile image
+    { 
+      id: 'profile_id', 
+      label: 'Profile ID', 
+      minWidth: 120, 
+      align: 'left',
+      format: (value: string, row: ProfileData) => (
+        <span
+          style={{
+            color: 'blue',
+            textDecoration: hoveredProfileId === value ? 'underline' : 'none',
+            cursor: 'pointer',
+          }}
+          onMouseEnter={() => setHoveredProfileId(value)}
+          onMouseLeave={() => setHoveredProfileId(null)}
+          onClick={() => navigate(`/UploadApprovalProfileImg?profileId=${value}`)} 
+        >
+          {value}
+        </span>
+      )
+    },
+    { 
+      id: 'Profile_name', 
+      label: 'Profile Name', 
+      minWidth: 100, 
+      align: 'left' 
+    },
+    { 
+      id: 'Profile_mobile_no', 
+      label: 'Mobile No', 
+      minWidth: 130, 
+      align: 'left' 
+    },
+    { 
+      id: 'Profile_dob', 
+      label: 'Date of Birth', 
+      minWidth: 120, 
+      align: 'left',
+      format: (value: string) => formatDate(value)
+    },
+    { 
+      id: 'profile_gender', 
+      label: 'Gender', 
+      minWidth: 100, 
+      align: 'left',
+      format: (value: string) => value.charAt(0).toUpperCase() + value.slice(1)
+    },
+    { 
+      id: 'Profile_email', 
+      label: 'Email', 
+      minWidth: 200, 
+      align: 'left' 
+    },
+
   ];
 
   const descendingComparator = (a: any, b: any, orderBy: string) => {
@@ -127,6 +190,7 @@ const ProfileImageApproval: React.FC = () => {
       ? (a: any, b: any) => descendingComparator(a, b, orderBy)
       : (a: any, b: any) => -descendingComparator(a, b, orderBy);
   };
+  
   const stableSort = (array: any[], comparator: (a: any, b: any) => number) => {
     const stabilizedThis = array.map((el, index) => [el, index] as [any, number]);
     stabilizedThis.sort((a, b) => {
@@ -146,17 +210,6 @@ const ProfileImageApproval: React.FC = () => {
     getComparator(order, orderBy)
   );
 
-  // // Filter data based on search term
-  // const filteredResults = data.results.filter((row) =>
-  //   Object.values(row).some((value) =>
-  //     String(value).toLowerCase().includes(search.toLowerCase()),
-  //   ),
-  // );
-
-  function handleDelete(_ContentId: any): void {
-    throw new Error('Function not implemented.');
-  }
-
   return (
     <>
       <h1 className="text-2xl font-bold mb-4 text-black">Profile Image Approval</h1>
@@ -169,6 +222,7 @@ const ProfileImageApproval: React.FC = () => {
               margin="normal"
               value={search}
               onChange={handleSearchChange}
+              className="mb-2"
             />
             <div className="flex items-center space-x-2">
               <TextField
@@ -178,6 +232,7 @@ const ProfileImageApproval: React.FC = () => {
                 value={fromDate}
                 onChange={handleDateChange}
                 InputLabelProps={{ shrink: true }}
+                size="small"
               />
               <TextField
                 label="To Date"
@@ -186,6 +241,7 @@ const ProfileImageApproval: React.FC = () => {
                 value={toDate}
                 onChange={handleDateChange}
                 InputLabelProps={{ shrink: true }}
+                size="small"
               />
 
               <Button variant="contained" onClick={handleSubmit}>
@@ -195,7 +251,7 @@ const ProfileImageApproval: React.FC = () => {
           </div>
         </div>
 
-        <TableContainer sx={{ border: '1px solid #E0E0E0' }} >
+        <TableContainer sx={{ border: '1px solid #E0E0E0', maxHeight: 600 }} >
           <Table stickyHeader>
             <TableHead >
               <TableRow>
@@ -215,9 +271,6 @@ const ProfileImageApproval: React.FC = () => {
                     </TableSortLabel>
                   </TableCell>
                 ))}
-                {/* <TableCell className="!text-red-600 !text-base !text-nowrap !font-semibold">
-                  Actions
-                </TableCell> */}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -230,30 +283,16 @@ const ProfileImageApproval: React.FC = () => {
               ) : (
                 filteredResults
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row, index) => (
+                  .map((row: ProfileData, index) => (
                     <TableRow hover role="checkbox" tabIndex={-1} key={index}>
                       {columns.map((column) => (
                         <TableCell key={column.id} align={column.align}>
-                          {/* {row[column.id]} */}
-                          {column.id === 'profile_id' ? (
-                            <span
-                              style={{
-                                color: 'blue',
-                                textDecoration: hoveredProfileId === row[column.id] ? 'underline' : 'none',
-                                cursor: 'pointer',
-                              }}
-                              onMouseEnter={() => setHoveredProfileId(row[column.id])}
-                              onMouseLeave={() => setHoveredProfileId(null)}
-                              onClick={() => navigate(`/UploadApprovalProfileImg?profileId=${row[column.id]}`)} 
-                            >
-                              {row[column.id]}
-                            </span>
-                          ) : (
-                            row[column.id]
-                          )}
+                          {column.format 
+                            ? column.format(row[column.id as keyof ProfileData], row)
+                            : row[column.id as keyof ProfileData]
+                          }
                         </TableCell>
                       ))}
-
                     </TableRow>
                   ))
               )}

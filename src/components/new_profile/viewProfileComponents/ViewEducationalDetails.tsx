@@ -22,22 +22,50 @@ interface pageProps {
   profile: any;
 }
 export interface getFieldOfStudy {
-  study_id:string;
-  study_description:string;
+  study_id: string;
+  study_description: string;
 }
 const ViewEducationalDetails: React.FC<pageProps> = ({ profile }) => {
   const [isEducationDetailsOpen, setIsEducationDetailsOpen] = useState(true);
   const [educationalDetails, setEducationalDetails] = useState<any>({});
-console.log(educationalDetails)
-const [selectedEducation, setSelectedEducation] = useState<string>('');
-const [selectedFieldOfStudy, setSelectedFieldOfStudy] = useState<string>('');
-const [selectedDegrees, setSelectedDegrees] = useState<string[]>([]);
+  console.log(educationalDetails)
+  const [selectedEducation, setSelectedEducation] = useState<string>('');
+  const [selectedFieldOfStudy, setSelectedFieldOfStudy] = useState<string>('');
+  const [selectedDegrees, setSelectedDegrees] = useState<string[]>([]);
 
-const selectedUgDegree=educationalDetails.ug_degeree;
-const selectedUgDegreeMap =selectedUgDegree?selectedUgDegree.split(',').map(Number):[];
-console.log(selectedUgDegreeMap)
+  const selectedUgDegree = educationalDetails.ug_degeree;
+  const selectedUgDegreeMap = selectedUgDegree ? selectedUgDegree.split(',').map(Number) : [];
+  console.log(selectedUgDegreeMap)
+  const [formData, setFormData] = useState({
+    // ... other educational fields
+    profession: '',
+    company: '',
+    designation: '',
+    professionDetails: '',
+    businessName: '',
+    businessAddress: '',
+    natureOfBusiness: '',
+    // ... other fields
+  });
 
-useEffect(() => {
+  // Load initial data from profile (similar to your useEffect)
+  useEffect(() => {
+    if (profile && profile.length > 0) {
+      const educationalDetails = profile[2];
+      setFormData({
+        profession: educationalDetails.profession || '',
+        company: educationalDetails.company || '',
+        designation: educationalDetails.designation || '',
+        professionDetails: educationalDetails.profession_details || '',
+        businessName: educationalDetails.business_name || '',
+        businessAddress: educationalDetails.business_address || '',
+        natureOfBusiness: educationalDetails.nature_of_business || '',
+        // ... load other fields
+      });
+    }
+  }, [profile]);
+
+  useEffect(() => {
     if (profile && profile.length > 0) {
       setEducationalDetails(profile[2]);
       setSelectedEducation(profile[2].highest_education);
@@ -111,9 +139,9 @@ useEffect(() => {
   const selectedDegreeIds = educationalDetails.degree ? educationalDetails.degree.split(',') : [];
   const selectedDegreeDescriptions = degreesData
     ? degreesData
-        .filter(degree => selectedDegreeIds.includes(degree.degeree_id))
-        .map(degree => degree.degeree_description)
-        .join(', ')
+      .filter(degree => selectedDegreeIds.includes(degree.degeree_id))
+      .map(degree => degree.degeree_description)
+      .join(', ')
     : '';
 
   const buttonClass = (isSelected: boolean) =>
@@ -121,20 +149,21 @@ useEffect(() => {
 
   const getSelectedOptions = () => {
     if (!degreesData) return [];
-    
+
     return selectedDegrees.map(id => {
-      const degree = Array.isArray(degreesData) 
+      const degree = Array.isArray(degreesData)
         ? degreesData.find(d => d.degeree_id.toString() === id)
-        : degreesData[Object.keys(degreesData).find(key => 
-            degreesData[key].degeree_id.toString() === id
-          ) || ''];
-      
-      return degree ? { 
+        : degreesData[Object.keys(degreesData).find(key =>
+          degreesData[key].degeree_id.toString() === id
+        ) || ''];
+
+      return degree ? {
         value: degree.degeree_id.toString(),
         label: degree.degeree_description
       } : null;
     }).filter(Boolean);
   };
+
 
   return (
     <div className="bg-white p-5 mb-10 rounded shadow-md">
@@ -144,9 +173,8 @@ useEffect(() => {
       >
         Education Details
         <svg
-          className={`fill-current transform ${
-            isEducationDetailsOpen ? 'rotate-180' : ''
-          }`}
+          className={`fill-current transform ${isEducationDetailsOpen ? 'rotate-180' : ''
+            }`}
           width={'20'}
           viewBox="0 0 20 20"
           fill="none"
@@ -178,7 +206,7 @@ useEffect(() => {
                   <option
                     key={education.education_id}
                     value={education.education_id}
-                    
+
                   >
                     {education.education_description}
                   </option>
@@ -187,7 +215,7 @@ useEffect(() => {
             </div>
             <div className="w-full">
               <label className="block text-black font-medium mb-1">
-               Field Of Study
+                Field Of Study
                 {/* <span className="text-red-500">*</span> */}
               </label>
               <select
@@ -204,12 +232,12 @@ useEffect(() => {
                 ))}
               </select>
             </div>
-         
+
           </div>
           <div className="w-full">
             <label className="block text-black font-medium mb-1">
               Degree
-               {/* <span className="text-red-500">*</span> */}
+              {/* <span className="text-red-500">*</span> */}
             </label>
             <Select
               isMulti
@@ -231,7 +259,7 @@ useEffect(() => {
             )}
           </div>
           <div className="flex w-full flex-row gap-4">
-               <div className="w-full text-black font-medium">
+            <div className="w-full text-black font-medium">
               <Input
                 disabled
                 value={educationalDetails.about_edu}
@@ -241,7 +269,7 @@ useEffect(() => {
             </div>
             <div className="w-full">
               <label className="block text-black font-medium mb-1">
-                Annual Income 
+                Annual Income
                 {/* <span className="text-red-500">*</span> */}
               </label>
               <select
@@ -281,7 +309,7 @@ useEffect(() => {
                     key={Profession.Profes_Pref_id}
                     className={`w-full px-5 py-3 text-sm font-medium border border-black text-black  text-center   ${buttonClass(
                       Number(educationalDetails.profession) ===
-                        Number(Profession.Profes_Pref_id),
+                      Number(Profession.Profes_Pref_id),
                     )}`}
                   >
                     <input
@@ -296,7 +324,172 @@ useEffect(() => {
                 ))}
               </div>
             </div>
+
           </div>
+
+          {(Number(educationalDetails.profession) === 1 || Number(educationalDetails.profession) === 7) && (
+            <div className="mt-4">
+              <div className="mb-3 text-black">
+                <label htmlFor="companyName" className="block text-sm font-medium text-gray-700">
+                  Company Name
+                </label>
+                <input
+                  id="companyName"
+                  type="text"
+                  value={educationalDetails.company_name}
+                  disabled
+                  className="outline-none w-full text-black font-medium px-4 py-[8.5px] border border-ashBorder rounded bg-gray-100 cursor-not-allowed"
+                />
+              </div>
+
+              <div className="mb-3 text-black">
+                <label htmlFor="designation" className="block text-sm font-medium text-gray-700">
+                  Designation
+                </label>
+                <input
+                  id="designation"
+                  type="text"
+                  value={educationalDetails.designation}
+                  disabled
+                  className="outline-none w-full text-black font-medium px-4 py-[8.5px] border border-ashBorder rounded bg-gray-100 cursor-not-allowed"
+                />
+              </div>
+
+              <div className="mb-3 text-black">
+                <label htmlFor="professionDetail" className="block text-sm font-medium text-gray-700">
+                  Profession Details
+                </label>
+                <textarea
+                  id="professionDetail"
+                  value={educationalDetails.profession_details}
+                  disabled
+                  className="outline-none w-full text-black font-medium px-4 py-[8.5px] border border-ashBorder rounded bg-gray-100 cursor-not-allowed"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Fields for Business (Profession ID 2) */}
+          {Number(educationalDetails.profession) === 2 && (
+            <div className="mt-4">
+              <div className="mb-3 text-black">
+                <label htmlFor="BusinessName" className="block text-sm font-medium text-gray-700">
+                  Business Name
+                </label>
+                <input
+                  id="BusinessName"
+                  type="text"
+                  value={educationalDetails.business_name}
+                  disabled
+                  className="outline-none w-full text-black font-medium px-4 py-[8.5px] border border-ashBorder rounded bg-gray-100 cursor-not-allowed"
+                />
+              </div>
+
+              <div className="mb-3 text-black">
+                <label htmlFor="BusinessAdress" className="block text-sm font-medium text-gray-700">
+                  Business Address
+                </label>
+                <input
+                  id="BusinessAdress"
+                  type="text"
+                  value={educationalDetails.business_address}
+                  disabled
+                  className="outline-none w-full text-black font-medium px-4 py-[8.5px] border border-ashBorder rounded bg-gray-100 cursor-not-allowed"
+                />
+              </div>
+
+              <div className="mb-3 text-black">
+                <label htmlFor="NatureofBusiness" className="block text-sm font-medium text-gray-700">
+                  Nature of Business
+                </label>
+                <textarea
+                  id="NatureofBusiness"
+                  value={educationalDetails.nature_of_business}
+                  disabled
+                  className="outline-none w-full text-black font-medium px-4 py-[8.5px] border border-ashBorder rounded bg-gray-100 cursor-not-allowed"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Fields for Salaried and Business (Profession ID 6) */}
+          {Number(educationalDetails.profession) === 6 && (
+            <div className="mt-4">
+              {/* Salaried Details */}
+              <div className="mb-3 text-black">
+                <label htmlFor="companyName" className="block text-sm font-medium text-gray-700">
+                  Company Name
+                </label>
+                <input
+                  id="companyName"
+                  type="text"
+                  value={educationalDetails.company_name}
+                  disabled
+                  className="outline-none w-full text-black font-medium px-4 py-[8.5px] border border-ashBorder rounded bg-gray-100 cursor-not-allowed"
+                />
+              </div>
+              <div className="mb-3 text-black">
+                <label htmlFor="designation" className="block text-sm font-medium text-gray-700">
+                  Designation
+                </label>
+                <input
+                  id="designation"
+                  type="text"
+                  value={educationalDetails.designation}
+                  disabled
+                  className="outline-none w-full text-black font-medium px-4 py-[8.5px] border border-ashBorder rounded bg-gray-100 cursor-not-allowed"
+                />
+              </div>
+              <div className="mb-3 text-black">
+                <label htmlFor="professionDetail" className="block text-sm font-medium text-gray-700">
+                  Profession Details
+                </label>
+                <textarea
+                  id="professionDetail"
+                  value={educationalDetails.profession_details}
+                  disabled
+                  className="outline-none w-full text-black font-medium px-4 py-[8.5px] border border-ashBorder rounded bg-gray-100 cursor-not-allowed"
+                />
+              </div>
+
+              {/* Business Details */}
+              <div className="mb-3 text-black">
+                <label htmlFor="BusinessName" className="block text-sm font-medium text-gray-700">
+                  Business Name
+                </label>
+                <input
+                  id="BusinessName"
+                  type="text"
+                  value={educationalDetails.business_name}
+                  disabled
+                  className="outline-none w-full text-black font-medium px-4 py-[8.5px] border border-ashBorder rounded bg-gray-100 cursor-not-allowed"
+                />
+              </div>
+              <div className="mb-3 text-black">
+                <label htmlFor="BusinessAdress" className="block text-sm font-medium text-gray-700">
+                  Business Address
+                </label>
+                <input
+                  id="BusinessAdress"
+                  type="text"
+                  value={educationalDetails.business_address}
+                  disabled
+                  className="outline-none w-full text-black font-medium px-4 py-[8.5px] border border-ashBorder rounded bg-gray-100 cursor-not-allowed"
+                />
+              </div>
+              <div className="mb-3 text-black">
+                <label htmlFor="NatureofBusiness" className="block text-sm font-medium text-gray-700">
+                  Nature of Business
+                </label>
+                <textarea
+                  id="NatureofBusiness"
+                  value={educationalDetails.nature_of_business}
+                  disabled
+                  className="outline-none w-full text-black font-medium px-4 py-[8.5px] border border-ashBorder rounded bg-gray-100 cursor-not-allowed"
+                />
+              </div>
+            </div>
+          )}
           <h4 className="text-xl font-semibold text-black dark:text-white">
             Work Location
           </h4>
@@ -362,67 +555,42 @@ useEffect(() => {
             {educationalDetails.work_country === '1' && (
               <div className="w-2/4">
                 <label className="block text-black font-semibold mb-1">
-                  District 
+                  District
                   {/* <span className="text-red-500">*</span> */}
                 </label>
-                {/* <select className="outline-none w-full px-4 py-2 border border-black rounded">
-                  <option value="" >
+
+                <select
+                  value={educationalDetails.work_district}
+                  disabled
+                  // {...register('EducationDetails.disttemp')}
+                  className="outline-none w-full px-4 py-2 text-black font-medium border border-black rounded"
+                >
+                  <option value="" disabled>
                     Select your District
-                  </option>
-                </select> */}
-                  <select
-                          value={educationalDetails.work_district}
-                          disabled
-                          // {...register('EducationDetails.disttemp')}
-                          className="outline-none w-full px-4 py-2 text-black font-medium border border-black rounded"
-                        >
-                          <option value="" disabled>
-                            Select your District
-                          </option >
-                          {WorkDistrict?.map((option: District) => (
-                            <option key={option.disctict_id} value={option.disctict_id} >
-                              {option.disctict_name}
-                            </option>
-                          ))}
-                        </select>
+                  </option >
+                  {WorkDistrict?.map((option: District) => (
+                    <option key={option.disctict_id} value={option.disctict_id} >
+                      {option.disctict_name}
+                    </option>
+                  ))}
+                </select>
               </div>
             )}
 
             {educationalDetails.work_country === '1' && (
               <div className="w-2/4">
                 <label className="block text-black font-medium mb-1">
-                  Work City 
+                  Work City
                   {/* <span className="text-red-500">*</span> */}
                 </label>
-                {/* <select className="outline-none w-full px-4 py-2 border border-black rounded">
-                  <option value={educationalDetails.work_city} disabled>
-                    Select your District
-                  </option>
-                </select> */}
-                  {/* <select
-                              className="outline-none w-full px-4 py-2 border border-black rounded"
-                              value={educationalDetails.work_city}
-                              disabled  
-                            >
-                              <option value="" disabled>
-                                Select City
-                              </option>
-                              {City?.map((option:any) => (
-                                <option key={option.city_id} value={option.city_name}>
-                                  {option.city_name}
-                                </option>
-                              ))}
-                              <option value="Others">Others</option>
-                            </select>  */}
+                <Input
+                  required
+                  value={educationalDetails.work_city}
+                  label={''}
+                  type={'text'}
+                  readOnly
+                />
 
-<Input
-                required
-                value={educationalDetails.work_city}
-                label={''}
-                type={'text'}
-                readOnly
-              />
-              
               </div>
             )}
 
@@ -439,7 +607,7 @@ useEffect(() => {
           <div className="flex w-full flex-row gap-4">
             <div className="w-2/4">
               <label className="block text-black font-semibold mb-1">
-                Career Plans / Notes 
+                Career Plans / Notes
                 {/* <span className="text-red-500">*</span> */}
               </label>
               <textarea

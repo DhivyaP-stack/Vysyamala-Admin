@@ -188,7 +188,7 @@ const ViewFamilyDetailsForm: React.FC<pageProp> = ({ profile }) => {
                 >
                   <option value="Yes" className='text-black font-semibold'>Yes</option>
                   <option value="No" className='text-black font-semibold'>No</option>
-                    <option value="Both" className='text-black font-semibold'>Both</option>
+                  <option value="Unknown" className='text-black font-semibold'>Unknown</option>
                 </select>
               </div>
             </div>
