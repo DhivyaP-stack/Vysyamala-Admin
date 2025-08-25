@@ -304,6 +304,7 @@ const EditProfile = () => {
         visibility_profession: data.profile_visibility.visibility_profession,
         visibility_education: data.profile_visibility.visibility_education,
         visibility_anual_income: data.profile_visibility.visibility_anual_income,
+         visibility_anual_income_max: data.profile_visibility.visibility_anual_income_max,
         visibility_family_status: familyStatusVisibility || data.profile_visibility.visibility_family_status || null,
         visibility_chevvai: data.profile_visibility.visibility_chevvai || "No",
         visibility_ragukethu: data.profile_visibility.visibility_ragukethu || "No",

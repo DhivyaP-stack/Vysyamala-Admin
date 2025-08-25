@@ -77,15 +77,12 @@ const BasicDetails: React.FC<formProps> = ({
   const selectAlternateNumber = watch('BasicDetail.Alt_Mobile_Number')
   const selectNumber = watch('BasicDetail.Mobile_no')
   const selectWhatsAppNumber = watch('BasicDetail.WhatsAppNumber')
-
-
   const [showCityTextInput, setShowCityTextInput] = useState(false);
   const [showCityTextField, setShowCityTextField] = useState(false); // State for "Others" option
   const [addonPackage, setAddonPackage] = useState<AddOnPackage[]>([])
   const [addonPackagecheck, setAddonPackagecheck] = useState('')
   const [isCityValid, setIsCityValid] = useState(false);
   const [maritalStatus, setMaritalStatus] = useState('');
-
   const [heightOptions, setHeightOptions] = useState<HeightOption[]>([]);
 
   useEffect(() => {
@@ -177,12 +174,6 @@ const BasicDetails: React.FC<formProps> = ({
     }
   }, [error, clearErrors]);
 
-  // useEffect(() => {
-  //   setShowCityTextInput(false);
-  //   setValue('BasicDetail.City', ""); // Reset city field when district changes
-  // }, [selectedDistrict]);
-
-
   useEffect(() => {
     // Reset showCityTextInput when district changes
     setShowCityTextInput(false);
@@ -210,8 +201,6 @@ const BasicDetails: React.FC<formProps> = ({
     setAddonPackagecheck(currentPackage.filter(Boolean).join(','));
   };
 
-
-
   const fetchAddOnPackages = async () => {
     try {
       const response = await axios.post(`${API_URL_Auth}/Get_addon_packages/`);
@@ -225,7 +214,6 @@ const BasicDetails: React.FC<formProps> = ({
       console.error(err);
     }
   }
-
 
   useEffect(() => {
     fetchAddOnPackages()
@@ -253,7 +241,6 @@ const BasicDetails: React.FC<formProps> = ({
       setValue('BasicDetail.country', EditData[0].Profile_country || '' || null);
       setValue('BasicDetail.state', EditData[0].Profile_state || '' || null);
       setValue('BasicDetail.district', EditData[0].Profile_district || '' || null);
-
       setValue('BasicDetail.City', EditData[0].Profile_city || '' || null);
       setValue('BasicDetail.status', EditData[0].status || '' || null);
       setValue('BasicDetail.Profile_height', EditData[0].Profile_height || '');
@@ -285,6 +272,16 @@ const BasicDetails: React.FC<formProps> = ({
   useEffect(() => {
     setGetMaritalStatus(maritalStatus)
   }, [maritalStatus])
+
+  useEffect(() => {
+  if (selectedCountry && selectedCountry !== "1") {
+    // Reset state, district, and city if country is not India
+    setValue("BasicDetail.state", "");
+    setValue("BasicDetail.district", "");
+    //setValue("BasicDetail.City", "");
+  }
+}, [selectedCountry, setValue]);
+
   return (
     <div className="bg-white p-5 mb-10 rounded shadow-md">
       <h4
@@ -437,7 +434,6 @@ const BasicDetails: React.FC<formProps> = ({
           </div>
 
           <div className="flex w-full flex-row gap-4">
-
             <div className="w-full relative">
               {/* The star placed relative to the label position */}
               <span className="absolute top-[2px] left-[95px] text-red-500">*</span>
@@ -454,7 +450,6 @@ const BasicDetails: React.FC<formProps> = ({
                 </p>
               )}
             </div>
-
 
             <div className="w-full">
               <label className="block text-black font-semibold mb-1">
@@ -500,10 +495,6 @@ const BasicDetails: React.FC<formProps> = ({
               )}
             </div>
           </div>
-
-
-
-
 
           <div className="flex w-full flex-row gap-4">
             <div className="w-full">
@@ -615,7 +606,7 @@ const BasicDetails: React.FC<formProps> = ({
                         setIsCityValid(true); // Set to true to show city select when district changes
                       }}
                     >
-                      <option value=""  className='text-[#000000e6] font-medium'>
+                      <option value="" className='text-[#000000e6] font-medium'>
                         Select your District
                       </option>
                       {District?.map((option: District) => (
@@ -673,46 +664,6 @@ const BasicDetails: React.FC<formProps> = ({
                         </div>
                       </div>
 
-                      {/* {!showCityTextInput  ? (
-            <select
-              className="outline-none w-full px-4 py-2 border border-black rounded"
-              value={selectedCity}
-              {...register('BasicDetail.City', { required: 'City is required' })}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (value === "Others") {
-                  setShowCityTextInput(true);
-                  setValue('BasicDetail.City', selectedCity); // Reset the city value for text input
-                } else {
-                  setShowCityTextInput(false);
-                  setValue('BasicDetail.City', value); // Set the selected city value
-                }
-              }}
-            >
-              <option value="" disabled>
-                Select City
-              </option>
-              {City?.map((option: City) => (
-                <option key={option.city_id} value={option.city_name}>
-                  {option.city_name}
-                </option>
-              ))}
-              <option value="Others">Others</option>
-            </select>
-          ) : (
-            <input
-              type="text"
-              value={selectedCity}
-              
-              className="outline-none w-full px-4 py-2 border border-black rounded"
-              {...register('BasicDetail.City')}
-              placeholder="Enter your city"
-              onBlur={(e) => setValue('BasicDetail.City', e.target.value)}
-            />
-          )} */}
-
-
-
                       {isCityValid ? (
                         <div>
                           <select
@@ -733,7 +684,7 @@ const BasicDetails: React.FC<formProps> = ({
                               }
                             }}
                           >
-                            <option value=""  className='text-[#000000e6] font-medium'>Select City</option>
+                            <option value="" className='text-[#000000e6] font-medium'>Select City</option>
                             {City?.map((option: City) => (
                               <option key={option.city_id} value={option.city_name} className='text-[#000000e6] font-medium'>
                                 {option.city_name}
@@ -765,8 +716,6 @@ const BasicDetails: React.FC<formProps> = ({
                           onChange={(e) => setValue('BasicDetail.City', e.target.value)}
                         />
                       )}
-
-
                       {!selectedCity && errors?.BasicDetail?.City && (
                         <p className="text-red-600">
                           {/* {errors.BasicDetail.City.message?.toString()} */}
@@ -802,56 +751,8 @@ const BasicDetails: React.FC<formProps> = ({
             ) : (
               selectedCountry === '1' && selectedDistrict && (
                 " "
-                // <div className="w-full">
-                //   <label className="block text-black font-semibold mb-1">
-                //     City ddddddddddddddd<span className="text-red-500">*</span>
-                //   </label>
-                //   {!showCityTextInput ? (
-                //     <select
-                //       className="outline-none w-full px-4 py-2 border border-black rounded"
-                //       value={selectedCity}
-                //       {...register('BasicDetail.City', { required: 'City is required' })}
-                //       onChange={(e) => {
-                //         const value = e.target.value;
-                //         if (value === "Others") {
-                //           setShowCityTextInput(true);
-                //           setValue('BasicDetail.City', ""); // Reset the city value for text input
-                //         } else {
-                //           setShowCityTextInput(false);
-                //           setValue('BasicDetail.City', value); // Set the selected city value
-                //         }
-                //       }}
-                //     >
-                //       <option value="" disabled>
-                //         Select City
-                //       </option>
-                //       {City?.map((option: City) => (
-                //         <option key={option.city_id} value={option.city_name}>
-                //           {option.city_name}
-                //         </option>
-                //       ))}
-                //       <option value="Others">Others</option>
-                //     </select>
-                //   ) : (
-                //     <input
-                //       type="text"
-                //       className="outline-none w-full px-4 py-2 border border-black rounded"
-                //       {...register('BasicDetail.City', { required: 'City is required' })}
-                //       placeholder="Enter your city"
-                //       onBlur={(e) => setValue('BasicDetail.City', e.target.value)}
-                //     />
-                //   )}
-
-                //   {errors?.BasicDetail?.City && (
-                //     <p className="text-red-600">
-                //       {errors.BasicDetail.City.message?.toString()}
-                //     </p>
-                //   )}
-                // </div>
               )
             )}
-
-
 
             <div className="w-2/4">
               <Input
@@ -878,12 +779,7 @@ const BasicDetails: React.FC<formProps> = ({
               )}
             </div>
           </div>
-          <div
-            className="
-flex w-full flex-row gap-4"
-          >
-
-
+          <div className="flex w-full flex-row gap-4">
             <div className="w-1/3">
               <label className="block text-black font-semibold mb-1">
                 Whatsapp Mobile Number
@@ -935,73 +831,7 @@ flex w-full flex-row gap-4"
                 <p className="text-red-600">{errors.BasicDetail.Profile_height.message?.toString()}</p>
               )}
             </div>
-            {/* <div className=" w-2/4">
-              <label className="block text-black font-semibold mb-1">
-                Whatsapp Number <span className="text-red-500">*</span>
-              </label>
-              <PhoneInput
-                preferredCountries={["in", "sg", "my", "ae", "us", "gb"]}
-                inputProps={{
-                  autoFocus: true,
-                  autoFormat: true,
-                  className: 'custom-input',
-                }}
-                country={'in'}
-                {...register('BasicDetail.WhatsAppNumber', { required: true })}
-                // Manually map the onChange to handle PhoneInput's custom format
-                onChange={(value, data, event, formattedValue) => {
-                  setValue('BasicDetail.WhatsAppNumber', value); // Use setValue from React Hook Form
-                }}
-                // Optionally, handle onBlur as needed
-                // onBlur={(event) => {
-                //   trigger('BasicDetail.WhatsAppNumber'); // Trigger validation on blur
-                // }}
-              />
-              {errors?.BasicDetail?.WhatsAppNumber && (
-                <p className="text-red-600">
-                  {errors.BasicDetail.WhatsAppNumber.message}
-                </p>
-              )}
-            </div> */}
-
           </div>
-          {/* <EditAlertSettings
-            setAlretSetting={setAlretSetting}
-            EditData={EditData}
-          /> */}
-
-          {/* 
-<div className="w-full">
-              <h5 className="text-[18px] text-black font-semibold mb-3">
-              AddOn Packages
-              </h5>
-              <div >
-                {addonPackage.map((Package:AddOnPackage) => (
-                  <div key={Package.package_id}  className='flex items-center mb-3'>
-                    <input
-                      type="checkbox"
-                      id={`package-${Package.package_id}`}
-                       className='mr-2'
-                      value={Package.package_id}
-                      checked={addonPackagecheck.split(',').includes(
-                        `${Package.package_id}`
-                      )}
-                      onChange={() =>
-                        handlePackageChange(Package.package_id)
-                      }
-                    />
-                    <label
-                      htmlFor={`package-${Package.package_id}`}
-                      className="curser-pointer"
-                    >
-                     {Package.name}-{Package.amount}
-                    </label>
-                  </div>
-                ))}
-
-
-              </div>
-            </div> */}
         </div>
 
       )}

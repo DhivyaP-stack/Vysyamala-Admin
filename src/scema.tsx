@@ -118,20 +118,6 @@ export const parentSchema = z.object({
     uncleGothramAdmin: z.string().optional(),
   }),
 
-  // EducationDetails: z.object({
-  //   workCountry: z.string().min(1, 'Work Country is required'),
-  //   heighestEducation: z.string().min(1, 'HeighestEducation is required'),
-  //   degree: z.string().min(1, 'degree is required'),
-  //   field_ofstudy: z.string().min(1, 'Field Of Study is required'),
-  //   AboutEducation: z.string().min(1, 'About your education is required'),
-  //   AnnualIncome: z.string().min(1, 'Annual income is required'),
-  //   ActualIncome: z.string().min(1, 'Actual income is required'),
-  //   pincode: z.string().length(6, 'Post Code must be 6 digits'),
-  //   CareerPlans: z.string().min(1, 'CareerPlans are required'),
-  //   ug_degeree: z.string().min(1, 'UG degree is required'),
-  //   profession: z.string().min(1, 'Profession is required'),
-  //   work_place: z.string().optional(),
-  // }),
   EducationDetails: z.object({
     workCountry: z.string().optional(),
     work_district: z.string().optional(),

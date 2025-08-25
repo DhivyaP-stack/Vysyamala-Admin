@@ -473,6 +473,18 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                               Profile Image Approval
                             </NavLink>
                           </li>
+                          <li>
+                            <NavLink
+                              to="LoginProfiles"
+                              className={({ isActive }) =>
+                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                                (isActive && '!text-PrimaryRed')
+                              }
+                            >
+                              <GoDot />
+                              Login Profiles
+                            </NavLink>
+                          </li>
 
                         </ul>
                       </div>

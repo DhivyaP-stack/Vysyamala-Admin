@@ -4,7 +4,8 @@ import InputField from '../../InputField';
 import { AnnualIncome, EduPref, ProfessionPref } from './EditPartnerPreference';
 import { useFormContext } from 'react-hook-form';
 import { ProfileVisibilityResponse } from '../../../types/EditProfileVisibiltySchema';
-import { fetchFamilyStatus, getProfession } from '../../../action';
+import { annualIncomeApi, fetchFamilyStatus, getProfession } from '../../../action';
+import axios from 'axios';
 
 export interface formProps {
   isProfileVisibility: boolean;
@@ -41,12 +42,28 @@ export const EditProfileVisibility: React.FC<formProps> = ({
   const [selectedEducations, setSelectedEducations] = useState<string[]>([]);
   const [selectedAnnualIncomes, setSelectedAnnualIncomes] = useState<string[]>([]);
   const [selectedFamilyStatus, setSelectedFamilyStatus] = useState<string[]>([]);
+  const [annualIncome, setAnnualIncome] = useState<AnnualIncome[]>([]);
+  console.log(annualIncome);
+  const [selectedMaxAnnualIncome, setSelectedMaxAnnualIncome] = useState<string>('');
+
+
+  useEffect(() => {
+    const fetchAnnualIncome = async () => {
+      try {
+        const response = await axios.post(`${annualIncomeApi}`);
+        const options = Object.values(response.data) as AnnualIncome[];
+        setAnnualIncome(options);
+      } catch (error) {
+        console.error('Error fetching Annual Income options:', error);
+      }
+    };
+    fetchAnnualIncome();
+  }, []);
 
   // Initialize form values from EditData
   useEffect(() => {
     if (EditData) {
       const visibility = EditData[9];
-
       // Set basic fields
       setValue('profile_visibility.visibility_age_from', visibility.visibility_age_from);
       setValue('profile_visibility.visibility_age_to', visibility.visibility_age_to);
@@ -69,10 +86,16 @@ export const EditProfileVisibility: React.FC<formProps> = ({
         setValue('profile_visibility.visibility_education', educations.join(','));
       }
 
+
       if (visibility.visibility_anual_income) {
         const incomes = visibility.visibility_anual_income.split(',');
         setSelectedAnnualIncomes(incomes);
         setValue('profile_visibility.visibility_anual_income', incomes.join(','));
+      }
+
+      if (visibility.visibility_anual_income_max) {
+        setSelectedMaxAnnualIncome(visibility.visibility_anual_income_max);
+        setValue('profile_visibility.visibility_anual_income_max', visibility.visibility_anual_income_max);
       }
 
       if (visibility.visibility_family_status) {
@@ -83,6 +106,11 @@ export const EditProfileVisibility: React.FC<formProps> = ({
       }
     }
   }, [EditData, setValue, setFamilyStatusVisibility]);
+
+  const handleMaxAnnualIncomeChange = (value: string) => {
+    setSelectedMaxAnnualIncome(value);
+    setValue('profile_visibility.visibility_anual_income_max', value);
+  };
 
   // Update family status in parent component
   useEffect(() => {
@@ -319,13 +347,6 @@ export const EditProfileVisibility: React.FC<formProps> = ({
               <label className="text-[18px] text-black font-semibold mr-3 cursor-pointer" onClick={handleSelectAllEducations}>
                 Education
               </label>
-              {/* <button
-                type="button"
-                onClick={handleSelectAllEducations}
-                className="text-sm text-blue-500 hover:underline"
-              >
-                {selectedEducations.length === educationVisibility.length ? 'Unselect All' : 'Select All'}
-              </button> */}
             </div>
             <div className="flex flex-wrap gap-4">
               {educationVisibility.map((option) => (
@@ -348,36 +369,61 @@ export const EditProfileVisibility: React.FC<formProps> = ({
           </div>
 
           {/* Annual Income Checkboxes */}
-          <div className='mt-6'>
-            <div className="flex items-center mb-2">
-              <label className="text-[18px] text-black font-semibold mr-3 cursor-pointer" onClick={handleSelectAllAnnualIncomes}>
-                Annual Income
-              </label>
-              {/* <button
-                type="button"
-                onClick={handleSelectAllAnnualIncomes}
-                className="text-sm text-blue-500 hover:underline"
-              >
-                {selectedAnnualIncomes.length === annualIncomeVisibility?.length ? 'Unselect All' : 'Select All'}
-              </button> */}
-            </div>
-            <div className="flex flex-wrap gap-4">
-              {annualIncomeVisibility?.map((option: AnnualIncome) => (
-                <div key={option.income_id} className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id={`incomeVisibility-${option.income_id}`}
-                    checked={selectedAnnualIncomes.includes(option.income_id.toString())}
-                    onChange={() => handleAnnualIncomeChange(option.income_id.toString())}
-                  />
-                  <label
-                    htmlFor={`incomeVisibility-${option.income_id}`}
-                    className='pl-1 text-[#000000e6] font-medium'
-                  >
-                    {option.income_description}
-                  </label>
-                </div>
-              ))}
+          <div>
+            <label
+              htmlFor="AnnualIncome"
+              className="text-[18px] text-black font-bold mb-2"
+            >
+              Annual Income
+            </label>
+            <div className="flex items-center gap-2">
+              <div className="w-full">
+                <label className="text-black font-semibold " >Minimum Annual Income</label>
+                <select
+                  id="AnnualIncome"
+
+                  {...register('profile_visibility.visibility_anual_income')}
+                  className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                >
+                  <option value="" className='text-[#000000e6] font-medium'>
+                    Select  Minimum Annual Income
+                  </option>
+                  {annualIncome?.map((option: any) => (
+                    <option key={option.income_id} value={option.income_id} className='text-[#000000e6] font-medium'>
+                      {option.income_description}
+                    </option>
+                  ))}
+                </select>
+                {errors?.profile_visibility?.visibility_anual_income && (
+                  <p className="text-red-600">
+                    {errors.profile_visibility.visibility_anual_income.message}
+                  </p>
+                )}
+              </div>
+
+              <div className="w-full">
+                <label className="text-black font-bold">Maximum Annual Income</label>
+                <select
+                  id="maxAnnualIncome"
+                  value={selectedMaxAnnualIncome}
+                  onChange={(e) => handleMaxAnnualIncomeChange(e.target.value)}
+                  className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                >
+                  <option value="" className='text-black font-semibold'>
+                    Select  Maximum Annual Income
+                  </option>
+                  {annualIncome?.map((option: any) => (
+                    <option key={option.income_id} value={option.income_id} className='text-[#000000e6] font-medium'>
+                      {option.income_description}
+                    </option>
+                  ))}
+                </select>
+                {errors?.profile_visibility?.visibility_anual_income_max && (
+                  <p className="text-red-600">
+                    {errors.profile_visibility.visibility_anual_income_max.message}
+                  </p>
+                )}
+              </div>
             </div>
           </div>
 

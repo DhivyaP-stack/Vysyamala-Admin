@@ -29,8 +29,8 @@ export const ViewProfileVisibility: React.FC<formProps> = ({
   const [selectedEducations, setSelectedEducations] = useState<string[]>([]);
   const [selectedAnnualIncomes, setSelectedAnnualIncomes] = useState<string[]>([]);
   const [selectedFamilyStatus, setSelectedFamilyStatus] = useState('');
-   const [editFamilyStatus, setEditFamilyStatus] = useState('');
-
+  const [editFamilyStatus, setEditFamilyStatus] = useState('');
+  const [selectedMaxAnnualIncome, setSelectedMaxAnnualIncome] = useState<string>('');
   const fromAge = watch('profile_visibility.visibility_age_from')
   // Initialize form values from EditData
   useEffect(() => {
@@ -66,6 +66,11 @@ export const ViewProfileVisibility: React.FC<formProps> = ({
         setSelectedAnnualIncomes(incomes);
         setValue('profile_visibility.visibility_anual_income', incomes.join(','));
       }
+
+      if (visibility.visibility_anual_income_max) {
+      setSelectedMaxAnnualIncome(visibility.visibility_anual_income_max);
+      setValue('profile_visibility.visibility_anual_income_max', visibility.visibility_anual_income_max);
+    }
 
       setSelectedFamilyStatus(visibility.visibility_family_status);
       setEditFamilyStatus(profile[9].visibility_family_status || '');
@@ -276,27 +281,48 @@ export const ViewProfileVisibility: React.FC<formProps> = ({
           </div>
 
           {/* Annual Income Checkboxes */}
+          {/* Annual Income Dropdowns */}
           <div className='mt-6'>
-            <label className="text-[18px] text-black font-semibold mb-2 cursor-pointer" >
-              Annual Income
-            </label>
-            <div className="flex flex-wrap gap-4">
-              {annualIncome?.map((option: any) => (
-                <div key={option.income_id} className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id={`incomeVisibility-${option.income_id}`}
-                    checked={selectedAnnualIncomes.includes(option.income_id.toString())}
-                    onClick={(e) => e.preventDefault()}
-                  />
-                  <label
-                    htmlFor={`incomeVisibility-${option.income_id}`}
-                    className='pl-1 text-[#000000e6] font-medium'
-                  >
-                    {option.income_description}
-                  </label>
-                </div>
-              ))}
+            <div className="flex items-center mb-2">
+              <label className="text-[18px] text-black font-semibold cursor-pointer">
+                Annual Income
+              </label>
+            </div>
+            <div className="flex gap-2">
+              <div className="w-full">
+                <label className="text-black font-semibold">Minimum Annual Income</label>
+                <select
+                  id="minAnnualIncome"
+                  {...register('profile_visibility.visibility_anual_income')}
+                  value={watch('profile_visibility.visibility_anual_income')}
+                  disabled
+                  className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded bg-gray-100"
+                >
+                  <option value="">Select Minimum Annual Income</option>
+                  {annualIncome?.map((option: any) => (
+                    <option key={option.income_id} value={option.income_id}>
+                      {option.income_description}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="w-full">
+                <label className="text-black font-semibold">Maximum Annual Income</label>
+                <select
+                  id="maxAnnualIncome"
+                  {...register('profile_visibility.visibility_anual_income_max')}
+                  value={watch('profile_visibility.visibility_anual_income_max')}
+                  disabled
+                  className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded bg-gray-100"
+                >
+                  <option value="">Select Maximum Annual Income</option>
+                  {annualIncome?.map((option: any) => (
+                    <option key={option.income_id} value={option.income_id}>
+                      {option.income_description}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
 
@@ -364,37 +390,37 @@ export const ViewProfileVisibility: React.FC<formProps> = ({
 
 
 
-             <div>
-              <h5 className="text-[18px] text-black font-semibold mb-2 cursor-pointer"
-              
-              >
-                Family Status
-              </h5>
+          <div>
+            <h5 className="text-[18px] text-black font-semibold mb-2 cursor-pointer"
 
-              <div className="flex flex-wrap gap-x-6 gap-y-2">
-                {FamilyStatus?.map((status) => (
-                  <div key={status.family_status_id} className="flex items-center">
-                    <input
-                      type="checkbox"
-                      id={`profileVisibility-${status.family_status_id}`}
-                      value={status.family_status_id}
-                      checked={(editFamilyStatus || '').split(',').includes(
-                        status.family_status_id.toString()
-                      )}
-                    
-                      className="mr-2"
-                    />
-                    <label
-                      htmlFor={`profileVisibility-${status.family_status_id}`}
-                      className='text-[#000000e6] font-medium'
-                    >
-                      {status.family_status_name}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            
+            >
+              Family Status
+            </h5>
+
+            <div className="flex flex-wrap gap-x-6 gap-y-2">
+              {FamilyStatus?.map((status) => (
+                <div key={status.family_status_id} className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id={`profileVisibility-${status.family_status_id}`}
+                    value={status.family_status_id}
+                    checked={(editFamilyStatus || '').split(',').includes(
+                      status.family_status_id.toString()
+                    )}
+
+                    className="mr-2"
+                  />
+                  <label
+                    htmlFor={`profileVisibility-${status.family_status_id}`}
+                    className='text-[#000000e6] font-medium'
+                  >
+                    {status.family_status_name}
+                  </label>
+                </div>
+              ))}
             </div>
+
+          </div>
 
 
 
@@ -414,7 +440,7 @@ export const ViewProfileVisibility: React.FC<formProps> = ({
                   <option value="">Select</option>
                   <option value="Yes">Yes</option>
                   <option value="No">No</option>
-                   <option value="Both">Both</option>
+                  <option value="Both">Both</option>
                 </select>
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
                   ▼
@@ -437,7 +463,7 @@ export const ViewProfileVisibility: React.FC<formProps> = ({
                   <option value="">Select</option>
                   <option value="Yes">Yes</option>
                   <option value="No">No</option>
-                   <option value="Both">Both</option>
+                  <option value="Both">Both</option>
                 </select>
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
                   ▼

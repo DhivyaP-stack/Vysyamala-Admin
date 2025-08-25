@@ -77,9 +77,11 @@ interface UserMatchingProfilesFilterProps {
     profileID: string | null;
     onFilterSubmit: (filters: any) => void;
     loading: boolean;
+    profileType: 'matching' | 'suggested';
+    Name: string
 }
 
-export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading }: UserMatchingProfilesFilterProps) => {
+export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading, Name }: UserMatchingProfilesFilterProps) => {
     const [annualIncome, setAnnualIncome] = useState<AnnualIncome[]>([]);
     const [profession, setProfession] = useState<Profession[]>([]);
     const [maritalStatus, setMaritalStatus] = useState<MaritalStatus[]>([]);
@@ -108,7 +110,7 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading 
     const [motherLive, setMotherLive] = useState<string>('');
     const [sentInWhatsapp, setSentInWhatsapp] = useState<string>('');
     const [sarpaDhosham, setSarpaDhosham] = useState<string>('');
-    const[ageDifference,setAgeDifference]=useState<string>('')
+    const [ageDifference, setAgeDifference] = useState<string>('')
     const [chevvaiDhosam, setChevvaiDhosam] = useState<string>('');
     const [edit3, setEdit3] = useState<HoroscopeDetails>()
     const [edit0, setEdit0] = useState<gender>()
@@ -220,10 +222,10 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading 
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        
+
         // Extract dest_rasi_id from selectedStarIds
         const destRasiIds = selectedStarIds.map((item) => item.star);
-        
+
         const filters = {
             selectedComplexions: String(selectedComplexions),
             selectedEducation: String(selectedEducation),
@@ -247,7 +249,7 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading 
             destRasiIds: destRasiIds.join(","),
             ageDifference
         };
-        
+
         onFilterSubmit(filters);
     };
 
@@ -262,7 +264,7 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading 
                         fontWeight: 'bold',
                     }}
                 >
-                    Matching Profile Lists For Profile ID : {profileID}
+                    {Name} Profile Lists For Profile ID : {profileID}
                 </Typography>
             </div>
 
@@ -276,7 +278,7 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading 
                         <select
                             className="w-full outline-none px-4 py-2.5 border border-black rounded"
                             defaultValue="5"
-                            onChange={(e)=>setAgeDifference(e.target.value)}
+                            onChange={(e) => setAgeDifference(e.target.value)}
                         >
                             <option value="" disabled>-- Select Age difference--</option>
                             <option value="1">1</option>
@@ -291,7 +293,7 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading 
                             <option value="10">10</option>
                         </select>
                     </div>
-                    
+
                     {/* Height from and to */}
                     <div className="flex items-center space-x-5">
                         <div className="flex flex-col">
@@ -316,13 +318,13 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading 
                                 className="w-full px-4 py-2 border border-black rounded" />
                         </div>
                     </div>
-                    
+
                     {/* Sarpa Dhosham */}
                     <div className="flex flex-col">
                         <label className="text-[18px] text-black font-semibold mb-2">
                             Sarpa Dhosham
                         </label>
-                        <select 
+                        <select
                             className="w-full outline-none px-4 py-2.5 border border-black rounded"
                             value={sarpaDhosham}
                             onChange={(e) => setSarpaDhosham(e.target.value)}
@@ -333,13 +335,13 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading 
                             <option value="no">No</option>
                         </select>
                     </div>
-                    
+
                     {/* Chevvai Dhosam */}
                     <div className="flex flex-col">
                         <label className="text-[18px] text-black font-semibold mb-2">
                             Chevvai Dhosam
                         </label>
-                        <select 
+                        <select
                             className="w-full outline-none px-4 py-2.5 border border-black rounded"
                             value={chevvaiDhosam}
                             onChange={(e) => setChevvaiDhosam(e.target.value)}
@@ -350,7 +352,7 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading 
                             <option value="no">No</option>
                         </select>
                     </div>
-                    
+
                     {/* Matching stars */}
                     <div className="py-4 col-span-full">
                         <div className="w-fit text-start">
@@ -387,7 +389,7 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading 
                             )}
                         </div>
                     </div>
-                    
+
                     {/* Highest Education */}
                     <div className="py-4 col-span-full">
                         <div className="w-fit text-start">
@@ -411,7 +413,7 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading 
                             ))}
                         </div>
                     </div>
-                    
+
                     {/* Profession */}
                     <div className="py-4 col-span-full">
                         <div className="w-fit text-start">
@@ -435,13 +437,13 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading 
                             ))}
                         </div>
                     </div>
-                    
+
                     {/* Father Live */}
                     <div className="py-4">
                         <div className="w-fit text-start">
                             <h2 className="text-lg text-black font-semibold mb-2">Father Live</h2>
                         </div>
-                        <select 
+                        <select
                             className="w-full outline-none px-4 py-2.5 border border-black rounded"
                             value={fatherLive}
                             onChange={(e) => setFatherLive(e.target.value)}
@@ -451,13 +453,13 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading 
                             <option value="no">No</option>
                         </select>
                     </div>
-                    
+
                     {/* Mother Live */}
                     <div className="py-4">
                         <div className="w-fit text-start">
                             <h2 className="text-lg text-black font-semibold mb-2">Mother Live</h2>
                         </div>
-                        <select 
+                        <select
                             className="w-full outline-none px-4 py-2.5 border border-black rounded"
                             value={motherLive}
                             onChange={(e) => setMotherLive(e.target.value)}
@@ -467,7 +469,7 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading 
                             <option value="no">No</option>
                         </select>
                     </div>
-                    
+
                     {/* Marital Status */}
                     <div className="py-4 col-span-full">
                         <div className="w-fit text-start">
@@ -491,7 +493,7 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading 
                             ))}
                         </div>
                     </div>
-                    
+
                     {/* Complexion */}
                     <div className="py-4 col-span-full">
                         <div className="w-fit text-start">
@@ -515,7 +517,7 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading 
                             ))}
                         </div>
                     </div>
-                    
+
                     {/* Family Status */}
                     <div className="py-4 col-span-full">
                         <div className="w-fit text-start">
@@ -539,7 +541,7 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading 
                             ))}
                         </div>
                     </div>
-                    
+
                     {/* Annual Income */}
                     <div className="py-4 col-span-full">
                         <div className="w-fit text-start">
@@ -547,7 +549,7 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading 
                         </div>
                         <div className="flex items-center space-x-5">
                             <div>
-                                <select 
+                                <select
                                     name="minAnnualIncome"
                                     id="minAnnualIncome"
                                     value={minAnnualIncome}
@@ -563,8 +565,8 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading 
                                 </select>
                             </div>
                             <div>
-                                <select 
-                                    name="maxAnnualIncome" 
+                                <select
+                                    name="maxAnnualIncome"
                                     id="maxAnnualIncome"
                                     value={maxAnnualIncome}
                                     onChange={(e) => setMaxAnnualIncome(e.target.value)}
@@ -580,7 +582,7 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading 
                             </div>
                         </div>
                     </div>
-                    
+
                     {/* State & City */}
                     <div className="py-4 col-span-full">
                         <div className="w-fit text-start">
@@ -621,7 +623,7 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading 
                             </div>
                         </div>
                     </div>
-                    
+
                     {/* Membership */}
                     <div className="py-4 col-span-full">
                         <div className="w-fit text-start">
@@ -645,7 +647,7 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading 
                             ))}
                         </div>
                     </div>
-                    
+
                     {/* Foreign Interest */}
                     <div className="py-4">
                         <div className="w-fit text-start">
@@ -664,13 +666,13 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading 
                             <option value="no">No</option>
                         </select>
                     </div>
-                    
+
                     {/* Sent in Whatsapp */}
                     <div className="py-4">
                         <div className="w-fit text-start">
                             <h2 className="text-lg text-black font-semibold mb-2">Sent in Whatsapp</h2>
                         </div>
-                        <select 
+                        <select
                             className="w-full outline-none px-4 py-2.5 border border-black rounded"
                             value={sentInWhatsapp}
                             onChange={(e) => setSentInWhatsapp(e.target.value)}
@@ -680,7 +682,7 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading 
                             <option value="no">No</option>
                         </select>
                     </div>
-                    
+
                     {/* Has Photo */}
                     <div className="py-4">
                         <div className="w-fit text-start">
@@ -701,9 +703,9 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading 
                 </div>
 
                 <div className="mt-4">
-                    <Button 
-                        type="submit" 
-                        variant="contained" 
+                    <Button
+                        type="submit"
+                        variant="contained"
                         color="primary"
                         disabled={loading}
                     >

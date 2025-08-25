@@ -108,7 +108,7 @@ const CKEditorComponent: React.FC = () => {
         
       }
       console.log("api response:", result)
-      alert('Content saved successfully!');
+      //alert('Content saved successfully!');
       setEditorData('<p></p>');
       setPageName('');
       setMetaTitle('');

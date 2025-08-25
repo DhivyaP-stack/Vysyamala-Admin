@@ -103,10 +103,12 @@ import CToCReceivedProfile from './matchingProfile/CToCReceived';
 import CToCSentProfile from './matchingProfile/CToCSentProfiles';
 import ExpressInterestMutualProfiles from './matchingProfile/ExpressIntrestMutual';
 import ExpressInterestReceivedProfiles from './matchingProfile/ExpressIntrestReceived';
-import { UserMatchingProfiles } from './matchingProfile/UserMatchingProfiles';
+// import { UserMatchingProfiles } from './matchingProfile/UserMatchingProfiles';
 import { UploadApprovalProfileImg } from './components/ReuseProfileTable/userActions/ProfileImgApproval.tsx/UploadApprovalProfileImg';
 import SearchProfile from './pages/SearchProfile';
 import RenewalProfiles from './components/ReuseProfileTable/Profiles/RenewalProfiles';
+import UserMatchingProfiles from './matchingProfile/UserMatchingProfiles';
+import LoginProfiles from './components/ReuseProfileTable/userActions/LoginProfiles';
 
 
 function App() {
@@ -1038,6 +1040,15 @@ function App() {
                     <>
                       <PageTitle title="ProfileImageApproval" />
                       <ProfileImageApproval />
+                    </>
+                  }
+                />
+                <Route
+                  path="/LoginProfiles"
+                  element={
+                    <>
+                      <PageTitle title="LoginProfiles" />
+                      <LoginProfiles />
                     </>
                   }
                 />

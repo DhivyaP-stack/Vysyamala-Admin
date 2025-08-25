@@ -17,9 +17,9 @@ interface pageProps {
 }
 const ViewHoroDetails: React.FC<pageProps> = ({ profile, setBirthStar }) => {
   const [horoDetails, setHoroDetails] = useState<any>({});
-  const [day, setDay] = useState<any>(0);
-  const [month, setMonth] = useState<any>(0);
-  const [year, setYear] = useState<any>(0);
+  const [day, setDay] = useState<any>('');
+  const [month, setMonth] = useState<any>('');
+  const [year, setYear] = useState<any>('');
   const [hour, setHour] = useState('');
   const [minute, setMinute] = useState('');
   const [period, setPeriod] = useState('');
@@ -189,7 +189,9 @@ useEffect(() => {
                     disabled
                     className="px-3 py-2 border rounded border-gray-300 text-black font-medium focus:outline-none focus:border-blue-500"
                   >
+                    <option value="">Hours</option>
                     {Array.from({ length: 12 }, (_, i) => i + 1).map((hour) => (
+                      
                       <option
                         key={hour}
                         value={hour.toString().padStart(2, '0')}
@@ -204,6 +206,7 @@ useEffect(() => {
                     disabled
                     className="px-3 py-2 border rounded border-gray-300 text-black font-medium focus:outline-none focus:border-blue-500"
                   >
+                    <option value="">Mins</option>
                     {Array.from({ length: 60 }, (_, i) => i).map((minute) => (
                       <option
                         key={minute}
@@ -506,7 +509,7 @@ useEffect(() => {
                       id="year"
                       className="outline-none w-full px-4 py-2 border border-black rounded"
                     >
-                      <option value="" disabled>
+                      <option value="">
                         Year
                       </option>
                       {Array.from({ length: 30 }, (_, i) => i + 1).map(
@@ -525,7 +528,7 @@ useEffect(() => {
                       id="month"
                       className="outline-none w-full px-4 py-2 border border-black rounded"
                     >
-                      <option value="" disabled>
+                      <option value="">
                         Month
                       </option>
                       {[...Array(12)].map((_, i) => (
@@ -544,7 +547,7 @@ useEffect(() => {
                       className="outline-none w-full px-4 py-2 text-[#000000e6] font-medium border border-black rounded"
                       defaultValue=""
                     >
-                      <option value="" disabled>
+                      <option value="" >
                         Day
                       </option>
                       {[...Array(31)].map((_, i) => (

@@ -1,22 +1,5 @@
 import { z } from "zod";
 
-// export const profileVisibilitySchema = z.object({
-//   profile_id: z.string().optional(),
-//   visibility_age_from: z.string().optional(),
-//   visibility_age_to: z.string().optional(),
-//   visibility_height_from: z.string().optional(),
-//   visibility_height_to: z.string().optional(),
-//   visibility_profession: z.string().optional(), // comma-separated string
-//   visibility_education: z.string().optional(),
-//   visibility_anual_income: z.string().optional(),
-//   visibility_family_status: z.string().nullable().optional(),
-//   visibility_chevvai: z.enum(["Yes", "No", "YES", "NO"]).optional(),
-//   visibility_ragukethu: z.enum(["Yes", "No", "YES", "NO"]).optional(),
-//   visibility_foreign_interest: z.enum(["Yes", "No", "BOTH", "YES", "NO"]).optional(),
-//   status: z.string().optional()
-// });
-
-
 export const profileVisibilitySchema = z.object({
   profile_visibility: z.object({
     visibility_age_from: z.string().optional(),
@@ -26,6 +9,7 @@ export const profileVisibilitySchema = z.object({
     visibility_profession: z.string().optional(),
     visibility_education: z.string().optional(),
     visibility_anual_income: z.string().optional(),
+    visibility_anual_income_max:z.string().optional(),
     visibility_family_status: z.string().nullable().optional(),
     visibility_chevvai: z.string().optional(),
     visibility_ragukethu: z.string().optional(),
@@ -84,6 +68,7 @@ export interface ProfileVisibilityResponse {
     visibility_profession: string;
     visibility_education: string;
     visibility_anual_income: string;
+    visibility_anual_income_max:string;
     visibility_family_status: string | null;
     visibility_chevvai: string;
     visibility_ragukethu: string;

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import {
-    Box, Button, Checkbox, CircularProgress, IconButton, Paper, Table, TableBody,
-    TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField,
-    Typography
+import { 
+    Box, Button, Checkbox, CircularProgress, IconButton, Paper, Table, TableBody, 
+    TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField, 
+    Typography 
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
@@ -53,10 +53,11 @@ interface UserMatchingProfilesTableProps {
     profileID: string | null;
     filters: any;
     onBack: () => void;
-    No_Image_Available: any
+    No_Image_Available:any;
+    profileType: 'matching' | 'suggested'; 
 }
 
-export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image_Available }: UserMatchingProfilesTableProps) => {
+export const UserMatchingProfilesTable = ({ profileID, filters, onBack,No_Image_Available, profileType }: UserMatchingProfilesTableProps) => {
     const navigate = useNavigate();
     const [matchingData, setMatchingData] = useState<UserMatchingProfilesProps[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -73,18 +74,19 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
     const [goToPageInput, setGoToPageInput] = useState<string>('');
     const roleId = sessionStorage.getItem('role_id');
 
-    useEffect(() => {
+
+        useEffect(() => {
         const fetchMatchingData = async () => {
             if (!profileID) return;
             setLoading(true);
             try {
                 let data;
                 if (filters) {
-                    // Use filtered data
+                    // Use filtered data with profileType
                     data = await userMatchingProfilesFilterListMatch(
-                        String(profileID),
-                        currentPage + 1,
-                        itemsPerPage,
+                        String(profileID), 
+                        currentPage + 1, 
+                        itemsPerPage, 
                         filters.selectedComplexions,
                         filters.selectedEducation,
                         filters.heightFrom,
@@ -105,13 +107,20 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
                         filters.fatherLive,
                         filters.selectedMaritalStatus,
                         filters.selectedFamilyStatus,
-                        filters.sentInWhatsapp
+                        filters.sentInWhatsapp,
+                        profileType // Pass the profileType here
                     );
                 } else {
-                    // Use default data
-                    data = await userMatchingProfiles(String(profileID), currentPage + 1, itemsPerPage);
+                    // You might need to create separate functions for default data
+                    // For now, using the same function with empty filters
+                    data = await userMatchingProfilesFilterListMatch(
+                        String(profileID), 
+                        currentPage + 1, 
+                        itemsPerPage, 
+                        "", "", 0, 0, 0, 0, "", 0, 0, 0, "", 0, 0, "", "", "", "", "", "", "", "", profileType
+                    );
                 }
-
+                
                 setMatchingData(data.profiles || []);
                 setTotalItems(data.total_count || 0);
             } catch (error: any) {
@@ -122,61 +131,10 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
         };
 
         fetchMatchingData();
-    }, [profileID, currentPage, itemsPerPage, filters]);
+    }, [profileID, currentPage, itemsPerPage, filters, profileType]);
+    
 
 
-
-    // In the useEffect where you fetch data, update the API call:
-    // useEffect(() => {
-    //     const fetchMatchingData = async () => {
-    //         if (!profileID) return;
-    //         setLoading(true);
-    //         try {
-    //             let data;
-    //             if (filters) {
-    //                 // Use filtered data with all the new filters
-    //                 data = await userMatchingProfilesFilterListMatch(
-    //                     String(profileID), 
-    //                     currentPage + 1, 
-    //                     itemsPerPage, 
-    //                     filters.selectedComplexions,
-    //                     filters.selectedEducation,
-    //                     filters.selectedProfessions,
-    //                     filters.selectedMaritalStatus,
-    //                     filters.selectedFamilyStatus,
-    //                     filters.heightFrom,
-    //                     filters.heightTo,
-    //                     filters.minAnnualIncome,
-    //                     filters.maxAnnualIncome,
-    //                     filters.foreignInterest,
-    //                     filters.selectedState,
-    //                     filters.selectedCity,
-    //                     filters.hasphotos,
-    //                     filters.selectedMembership,
-
-    //                     filters.fatherLive,
-    //                     filters.motherLive,
-    //                     filters.sentInWhatsapp,
-    //                     filters.sarpaDhosham,
-    //                     filters.chevvaiDhosam,
-    //                     filters.destRasiIds
-    //                 );
-    //             } else {
-    //                 // Use default data
-    //                 data = await userMatchingProfiles(String(profileID), currentPage + 1, itemsPerPage);
-    //             }
-
-    //             setMatchingData(data.profiles || []);
-    //             setTotalItems(data.total_count || 0);
-    //         } catch (error: any) {
-    //             NotifyError(error.message);
-    //         } finally {
-    //             setLoading(false);
-    //         }
-    //     };
-
-    //     fetchMatchingData();
-    // }, [profileID, currentPage, itemsPerPage, filters]);
 
     const handleChangePage = (_event: unknown, newPage: number) => {
         setCurrentPage(newPage);
@@ -250,7 +208,7 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
                 String(profileID),
                 String(roleId),
             );
-
+            
             if (response instanceof Blob) {
                 const url = window.URL.createObjectURL(response);
                 const a = document.createElement('a');
@@ -291,7 +249,7 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
                 "whatsapp",
                 String(roleId),
             );
-
+            
             if (response instanceof Blob) {
                 const url = window.URL.createObjectURL(response);
                 const a = document.createElement('a');
@@ -323,8 +281,8 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
 
     return (
         <div className="container mx-auto p-4">
-            <Button
-                variant="contained"
+            <Button 
+                variant="contained" 
                 onClick={onBack}
                 sx={{ mb: 2 }}
             >
@@ -340,8 +298,8 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
                     <div>
                         <div className="flex items-center space-x-2">
                             <div>
-                                <select
-                                    name="printFormat"
+                                <select 
+                                    name="printFormat" 
                                     id="printFormat"
                                     value={printFormat}
                                     onChange={(e) => setPrintFormat(e.target.value)}
@@ -367,7 +325,7 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
                         </div>
                     </div>
                 </div>
-
+                
                 {/* Whatsapp */}
                 <div>
                     <div>
@@ -403,7 +361,7 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
                         </div>
                     </div>
                 </div>
-
+                
                 {/* Email */}
                 <div>
                     <div>
@@ -412,8 +370,8 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
                     <div>
                         <div className="flex items-center space-x-2">
                             <div>
-                                <select
-                                    name="selectedFormat"
+                                <select 
+                                    name="selectedFormat" 
                                     id="selectedFormat"
                                     value={selectedFormat}
                                     onChange={(e) => setSelectedFormat(e.target.value)}
@@ -510,7 +468,7 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
                                                 sx={{
                                                     color: 'blue',
                                                     cursor: 'pointer',
-                                                    textDecoration: 'none',
+                                                    textDecoration: 'none', 
                                                     '&:hover': { textDecoration: 'underline' }
                                                 }}
                                             >

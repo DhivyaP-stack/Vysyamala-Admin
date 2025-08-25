@@ -246,19 +246,91 @@ export const userMatchingProfiles = async (profileID: string, pageNumber: number
 
 
 
+// export const userMatchingProfilesFilterListMatch = async (
+//     ProfileID: string, pageNumber: number, pageSize: number, Complexion: string, Education: string, HeightFrom: number,
+//     HeightTo: number, MinAnualIncome: number, MaxAnualIncome: number, ForeignInterest: string, State: number,
+//     City: number, Membership: number, HasPhotos: string, matching_stars: number, ageDifference: number, sarpaDhosham: string,
+//     chevvaiDhosam: string, selectedProfessions: string, fatherLive: string, motherLive: string, selectedMaritalStatus: string, selectedFamilyStatus: string, sentInWhatsapp: string
+//     // hasphotos: any, selectedMembership: any,
+//     //  sentInWhatsapp: any,   destRasiIds: any,
+// ) => {
+//     try {
+//         const response = await apiAxios.post('/api/Get_prof_list_match/', {
+//             profile_id: ProfileID,
+//             page_number: pageNumber, // Replace with the actual branch ID
+//             per_page: pageSize, // Replace with the actual branch ID
+//             complexion: Complexion,
+//             education: Education,
+//             height_from: HeightFrom,
+//             height_to: HeightTo,
+//             min_anual_income: MinAnualIncome,
+//             max_anual_income: MaxAnualIncome,
+//             foreign_intrest: ForeignInterest,
+//             state: State,
+//             city: City,
+//             membership: Membership,
+//             has_photos: HasPhotos,
+//             matching_stars: matching_stars,
+//             search_age: ageDifference,
+//             ragu: sarpaDhosham,
+//             chev: chevvaiDhosam,
+//             search_profession: selectedProfessions,
+//             father_alive: fatherLive,
+//             mother_alive: motherLive,
+//             marital_status: selectedMaritalStatus,
+//             family_status: selectedFamilyStatus,
+//             whatsapp_field: sentInWhatsapp
+//         });
+//         console.log("User Matching records filter fetched successfully", response);
+//         // Assuming the API returns an object with a `status` field and a `data` field
+//         if (!response.data || response.status !== 200) {
+//             throw new Error("Failed to fetch User Matching records filter");
+//         }
+//         return response.data; // Adjust based on the actual response structure
+//     } catch (error: any) {
+//         console.error("Error fetching User Matching records filter:", error.message || error);
+//         throw new Error("Unable to fetch User Matching records filter. Please try again later.");
+//     }
+// };
+
+
 export const userMatchingProfilesFilterListMatch = async (
-    ProfileID: string, pageNumber: number, pageSize: number, Complexion: string, Education: string, HeightFrom: number,
-    HeightTo: number, MinAnualIncome: number, MaxAnualIncome: number, ForeignInterest: string, State: number,
-    City: number, Membership: number, HasPhotos: string, matching_stars: number, ageDifference: number, sarpaDhosham: string,
-    chevvaiDhosam: string, selectedProfessions: string, fatherLive: string, motherLive: string, selectedMaritalStatus: string, selectedFamilyStatus: string, sentInWhatsapp: string
-    // hasphotos: any, selectedMembership: any,
-    //  sentInWhatsapp: any,   destRasiIds: any,
+    ProfileID: string,
+    pageNumber: number,
+    pageSize: number,
+    Complexion: string,
+    Education: string,
+    HeightFrom: number,
+    HeightTo: number,
+    MinAnualIncome: number,
+    MaxAnualIncome: number,
+    ForeignInterest: string,
+    State: number,
+    City: number,
+    Membership: number,
+    HasPhotos: string,
+    matching_stars: number,
+    ageDifference: number,
+    sarpaDhosham: string,
+    chevvaiDhosam: string,
+    selectedProfessions: string,
+    fatherLive: string,
+    motherLive: string,
+    selectedMaritalStatus: string,
+    selectedFamilyStatus: string,
+    sentInWhatsapp: string,
+    profileType: 'matching' | 'suggested' = 'matching'
 ) => {
     try {
-        const response = await apiAxios.post('/api/Get_prof_list_match/', {
+        // Determine the endpoint based on profileType
+        const endpoint = profileType === 'suggested'
+            ? '/api/Get_suggest_list_match/'
+            : '/api/Get_prof_list_match/';
+
+        const response = await apiAxios.post(endpoint, {
             profile_id: ProfileID,
-            page_number: pageNumber, // Replace with the actual branch ID
-            per_page: pageSize, // Replace with the actual branch ID
+            page_number: pageNumber,
+            per_page: pageSize,
             complexion: Complexion,
             education: Education,
             height_from: HeightFrom,
@@ -281,17 +353,21 @@ export const userMatchingProfilesFilterListMatch = async (
             family_status: selectedFamilyStatus,
             whatsapp_field: sentInWhatsapp
         });
-        console.log("User Matching records filter fetched successfully", response);
-        // Assuming the API returns an object with a `status` field and a `data` field
+
+        console.log(`User ${profileType} records filter fetched successfully`, response);
+
         if (!response.data || response.status !== 200) {
-            throw new Error("Failed to fetch User Matching records filter");
+            throw new Error(`Failed to fetch User ${profileType} records filter`);
         }
-        return response.data; // Adjust based on the actual response structure
+
+        return response.data;
     } catch (error: any) {
-        console.error("Error fetching User Matching records filter:", error.message || error);
-        throw new Error("Unable to fetch User Matching records filter. Please try again later.");
+        console.error(`Error fetching User ${profileType} records filter:`, error.message || error);
+        throw new Error(`Unable to fetch User ${profileType} records filter. Please try again later.`);
     }
 };
+
+
 
 // User Matching Profiles Page -> Matching Records filter List
 export const userMatchingProfilesFilter = async (

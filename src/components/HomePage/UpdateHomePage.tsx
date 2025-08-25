@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { TextField, Button, Box, Typography } from '@mui/material';
@@ -7,7 +5,8 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import  { notify } from '../TostNotification';
+import { notify, notifyDelete } from '../TostNotification';
+import { apiAxios } from '../../api/apiUrl';
 
 interface FormData {
   why_vysyamala: string;
@@ -17,51 +16,42 @@ interface FormData {
 }
 
 const EditHomepageForm: React.FC = () => {
+  // The 'id' from useParams is not used in the API URL, but kept for context
   const { id } = useParams<{ id: string }>();
- 
+
   const { control, handleSubmit, setValue } = useForm<FormData>();
   const [existingImage, setExistingImage] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(` https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/homepage-list/${1}/`);
-        const { why_vysyamala, youtube_links, vysyamala_apps, image } = response.data;
-        setValue('why_vysyamala', why_vysyamala);
-        setValue('youtube_links', youtube_links);
-        setValue('vysyamala_apps', vysyamala_apps);
-        setExistingImage(image);
+        // 1. Use the correct API endpoint to fetch the data list
+        const response = await apiAxios.get(`api/home_page_list/`);
+
+        // 2. Access the first item in the nested 'data' array
+        if (response.data && response.data.data && response.data.data.length > 0) {
+          const homepageData = response.data.data[0];
+          const { why_vysyamala, youtube_links, vysyamala_apps, image } = homepageData;
+
+          setValue('why_vysyamala', why_vysyamala);
+          setValue('youtube_links', youtube_links);
+          setValue('vysyamala_apps', vysyamala_apps);
+
+          // Set the existing image if the API provides it
+          if (image) {
+            setExistingImage(image);
+          }
+        }
       } catch (error) {
         console.error('Error fetching data:', error);
+        notify("Error occurred while fetching data.");
       }
     };
 
     fetchData();
-  }, [id, setValue]);
+  }, [setValue]); // 'id' is removed as it's not used in the GET request
 
-  // const onSubmit = async (data: FormData) => {
-  //   const formData = new FormData();
-  //   formData.append('why_vysyamala', data.why_vysyamala);
-  //   formData.append('youtube_links', data.youtube_links);
-  //   formData.append('vysyamala_apps', data.vysyamala_apps);
-  //   if (data.image && data.image[0]) {
-  //     formData.append('image', data.image[0]);
-  //   }
 
-  //   try {
-  //     const response = await axios.put(` https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/homepage/edit/${1}/`, formData, {
-  //       headers: {
-  //         'Content-Type': 'multipart/form-data',
-  //       },
-  //     });
-  //     console.log('Successfully updated entry:', response.data);
-  //    if(response.data === 200){
-  //     notify("Updated Successfully")
-  //    }
-  //   } catch (error) {
-  //     console.error('Error updating entry:', error);
-  //   }
-  // };
   const onSubmit = async (data: FormData) => {
     const formData = new FormData();
     formData.append('why_vysyamala', data.why_vysyamala);
@@ -70,36 +60,37 @@ const EditHomepageForm: React.FC = () => {
     if (data.image && data.image[0]) {
       formData.append('image', data.image[0]);
     }
-  
+
     try {
-      const response = await axios.put(` https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/homepage/edit/${1}/`, formData, {
+      // Ensure this PUT endpoint is correct for updating the entry with id=1
+      const response = await apiAxios.put(`api/home_page_list/`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-  
+
       if (response.status === 200) {
-        notify("Updated Successfully");
+        notify("Homepage updated successfully");
       } else {
-        notify("Update failed. Please try again.");
+        notifyDelete("Update failed. Please try again.");
       }
     } catch (error) {
       console.error('Error updating entry:', error);
-      notify("Error occurred. Please try again.");
+      notifyDelete("Error occurred. Please try again.");
     }
   };
-  
+
   return (
     <Box
       component="form"
       onSubmit={handleSubmit(onSubmit)}
       sx={{ width: '100%', maxWidth: 1500, mx: 'auto', mt: 4, padding: 2, borderRadius: 2, boxShadow: 2 }}
     >
-      <Typography sx={{color:"black"}} variant="h6" gutterBottom>
+      <Typography sx={{ color: "black" }} variant="h6" gutterBottom>
         Homepage
       </Typography>
 
-      {/* Why Vysyamala (CKEditor with Image Upload Support) */}
+      {/* Why Vysyamala (CKEditor) */}
       <Controller
         name="why_vysyamala"
         control={control}
@@ -112,7 +103,7 @@ const EditHomepageForm: React.FC = () => {
               data={field.value || ""}
               config={{
                 ckfinder: {
-                  uploadUrl: ' https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/upload-image/', // Your server endpoint for image upload
+                  uploadUrl: 'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/upload-image/',
                 },
                 toolbar: [
                   'heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', '|',
@@ -131,6 +122,7 @@ const EditHomepageForm: React.FC = () => {
         )}
       />
 
+      {/* This section for the image is kept, but the list API you provided does not include an 'image' field. */}
       {existingImage && (
         <Box sx={{ mb: 2 }}>
           <Typography variant="subtitle1">Existing Image:</Typography>
@@ -176,7 +168,6 @@ const EditHomepageForm: React.FC = () => {
       <Button variant="contained" color="primary" type="submit" sx={{ mt: 2 }}>
         Update Entry
       </Button>
-     
     </Box>
   );
 };
