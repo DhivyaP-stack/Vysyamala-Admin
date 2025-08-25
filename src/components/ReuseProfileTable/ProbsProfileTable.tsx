@@ -22,7 +22,7 @@ import { API_URL, baseUrl, downloadExcel } from '../../services/api';
 import { GrEdit } from 'react-icons/gr';
 import { MdDeleteOutline } from 'react-icons/md';
 import { FaRegEye } from 'react-icons/fa';
-import { TextTransformation } from 'ckeditor5';
+// import { TextTransformation } from 'ckeditor5';
 
 interface ProbsProfiletableProps {
   pageNameValue: number; // Accept pageNameValue as a prop
@@ -67,7 +67,6 @@ interface Column {
 const columns: Column[] = [
   { id: 'ProfileId', label: 'Profile ID' },
   { id: 'Profile_name', label: 'Name' },
-
   { id: 'Profile_dob', label: 'Date of Birth' },
   { id: 'Profile_city', label: 'City' },
   { id: 'state_name', label: 'State' },
@@ -76,7 +75,6 @@ const columns: Column[] = [
   { id: 'Profile_whatsapp', label: 'WhatsApp' },
   { id: 'Gender', label: 'Gender' },
   { id: 'Profile_alternate_mobile', label: 'Alternate Mobile' },
-
   { id: 'DateOfJoin', label: 'Date Of Join' },
   { id: 'birthstar_name', label: 'BirthStar' },
   { id: 'EmailId', label: 'Email' },
@@ -84,11 +82,8 @@ const columns: Column[] = [
   { id: 'family_status', label: 'Family Status' },
   { id: 'anual_income', label: 'Annual Income' },
   { id: 'Last_login_date', label: 'Last Act Date' },
-
   { id: 'Profile_for', label: 'Profile For' },
-
   { id: 'profession', label: 'Profession' },
-
   { id: 'complexion_desc', label: 'Complexion' },
   { id: 'years', label: 'Years' },
   { id: 'country_name', label: 'Country' },
@@ -110,10 +105,10 @@ const ProbsProfiletable: React.FC<ProbsProfiletableProps> = ({
   });
   const [search, setSearch] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-
   const [selectAll, setSelectAll] = useState<boolean>(false);
   const [selectedRows, setSelectedRows] = useState<number[]>([]); // To track selected profile IDs
   console.log(selectedRows);
+   const [totalCount, setTotalCount] = useState<number>(0);
 
   useEffect(() => {
     fetchData();
@@ -132,6 +127,7 @@ const ProbsProfiletable: React.FC<ProbsProfiletableProps> = ({
         plan_ids
       ); // Pass pageNameValue
       setData(response.data);
+       setTotalCount(response.data.count); // Store the total count
       console.log(response.data);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -151,27 +147,22 @@ const ProbsProfiletable: React.FC<ProbsProfiletableProps> = ({
           responseType: 'blob', // Important for handling binary data
         },
       );
-
       // Create a URL for the PDF blob
       const url = window.URL.createObjectURL(new Blob([response.data]));
-
       // Create a link element
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', 'profile.pdf'); // Specify the file name
-
       // Append to the body
       document.body.appendChild(link);
-
       // Trigger the download
       link.click();
-
       // Clean up and remove the link
     } catch (error) {
       console.error('Error downloading the PDF:', error);
-    }finally{
+    } finally {
       setSelectedRows([])
-setSelectAll(false)
+      setSelectAll(false)
     }
   };
 
@@ -215,22 +206,7 @@ setSelectAll(false)
       console.error('Error deleting data:', error);
     }
   };
-  // const handleDownload = async () => {
-  //   try {
-  //     const blob = await downloadExcel();
-  //     const url = window.URL.createObjectURL(blob);
-  //     const a = document.createElement('a');
-  //     a.href = url;
-  //     a.download = 'vysya_profiles.xlsx';
-  //     document.body.appendChild(a);
-  //     a.click();
-  //     a.remove();
-  //     window.URL.revokeObjectURL(url);
-  //   } catch (error) {
-  //     console.error('Error downloading file:', error);
-  //   }
-  // };
-
+  
   const handleDownload = async () => {
     try {
       const blob = await downloadExcel();  // Fetch or create the file blob
@@ -246,7 +222,7 @@ setSelectAll(false)
       console.error('Error downloading file:', error);
     }
   };
-  
+
 
   const navigate = useNavigate();
 
@@ -269,9 +245,9 @@ setSelectAll(false)
     );
   };
 
-   const [goToPageInput, setGoToPageInput] = useState<string>('');
-  
-    const handleGoToPage = () => {
+  const [goToPageInput, setGoToPageInput] = useState<string>('');
+
+  const handleGoToPage = () => {
     const pageNumber = parseInt(goToPageInput, 10);
     if (!isNaN(pageNumber)) {
       const lastPage = Math.ceil(data.count / rowsPerPage) - 1;
@@ -282,23 +258,23 @@ setSelectAll(false)
   };
   return (
     <div className="flex flex-col gap-1">
-      <h1 className="text-2xl text-black font-bold mb-4">{heading}</h1>
+      <h1 className="text-2xl text-black font-bold mb-4">{heading} <span className="text-lg font-normal">({totalCount})</span></h1>
       <div className="w-full flex justify-between  items-center  ">
         {pageNameValue === 1 && (
-          <Button sx={{textTransform:"none"}} onClick={handleDownload} variant="contained" color="primary">
+          <Button sx={{ textTransform: "none" }} onClick={handleDownload} variant="contained" color="primary">
             Download Excel
           </Button>
         )}
-      
-          <Button
-            onClick={() => generateShortProfilePDF(selectedRows)}
-            variant="contained"
-            color="primary"
-            sx={{ textTransform: 'none'}}
-          >
-            Download Short Profile
-          </Button>
-     
+
+        <Button
+          onClick={() => generateShortProfilePDF(selectedRows)}
+          variant="contained"
+          color="primary"
+          sx={{ textTransform: 'none' }}
+        >
+          Download Short Profile
+        </Button>
+
         <TextField
           size="medium"
           label="Search"
@@ -310,7 +286,7 @@ setSelectAll(false)
       </div>
       <Paper className="w-full">
         <TableContainer sx={{ border: '1px solid #E0E0E0' }} className="bg-white">
-          <Table  stickyHeader>
+          <Table stickyHeader>
             <TableHead
               style={{
                 border: '1px solid red',
@@ -323,9 +299,7 @@ setSelectAll(false)
                 <TableCell
                   style={{
                     background: '#FFF9C9',
-                  
                     borderBottom: '1px solid #E0E0E0',
-                   
                   }}
                   padding="checkbox"
                 >
@@ -341,7 +315,6 @@ setSelectAll(false)
                     align="left"
                     sx={{
                       backgroundColor: '#FFF9C9',
-                     
                       borderBottom: '1px solid #E0E0E0',
                     }}
                   >
@@ -357,9 +330,7 @@ setSelectAll(false)
                 ))}
                 <TableCell
                   sx={{
-                  
                     borderBottom: '1px solid #E0E0E0',
-                  
                     backgroundColor: '#FFF9C9',
                     display: 'flex',
                     justifyContent: 'center',
@@ -438,7 +409,6 @@ setSelectAll(false)
                         alignItems="center"
                         gap={1}
                       >
-                        
                         <Button
                           onClick={() =>
                             navigate(`/viewProfile?profileId=${row.ProfileId}`)
@@ -470,203 +440,138 @@ setSelectAll(false)
             </TableBody>
           </Table>
         </TableContainer>
-        {/* <TablePagination
-          rowsPerPageOptions={[10, 25, 100]}
-          component="div"
-          count={data.count}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        /> */}
 
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px' }}>
+          {/* Left side - Page indicator */}
+          <Typography variant="body2">
+            Page <strong>{page + 1}</strong> of <strong>{Math.ceil(data.count / rowsPerPage)}</strong>
+          </Typography>
 
-<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px' }}>
-  {/* Left side - Page indicator */}
-  <Typography variant="body2">
-    Page <strong>{page + 1}</strong> of <strong>{Math.ceil(data.count / rowsPerPage)}</strong>
-  </Typography>
+          {/* Right side - Pagination controls */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '16px' }}>
+              <Typography variant="body2">Go to page:</Typography>
+              <TextField
+                size="small"
+                type="number"
+                value={goToPageInput}
+                onChange={(e) => setGoToPageInput(e.target.value)}
+                inputProps={{
+                  min: 1,
+                  max: Math.ceil(data.count / rowsPerPage),
+                }}
+                style={{ width: '80px' }}
+              />
+              <Button
+                variant="contained"
+                size="small"
+                onClick={handleGoToPage}
+                disabled={!goToPageInput}
+              >
+                Go
+              </Button>
+            </div>
+            {/* Previous button */}
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={() => setPage(0)}
+              disabled={page === 0}
+              sx={{ minWidth: '32px' }}
+            >
+              {'<<'}
+            </Button>
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={() => setPage(Math.max(0, page - 1))}
+              disabled={page === 0}
+            >
+              Prev
+            </Button>
 
- 
-  {/* Right side - Pagination controls */}
-  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '16px' }}>
-           <Typography variant="body2">Go to page:</Typography>
-          <TextField
-            size="small"
-            type="number"
-            value={goToPageInput}
-            onChange={(e) => setGoToPageInput(e.target.value)}
-            inputProps={{
-              min: 1,
-              max: Math.ceil(data.count / rowsPerPage),
-            }}
-            style={{ width: '80px' }}
-          />
-          <Button
-            variant="contained"
-            size="small"
-            onClick={handleGoToPage}
-            disabled={!goToPageInput}
-          >
-            Go
-          </Button>
+            {/* Page numbers */}
+            {(() => {
+              const totalPages = Math.ceil(data.count / rowsPerPage);
+              const currentPage = page + 1;
+              const pages = [];
+
+              // Always show first page
+              pages.push(
+                <Button
+                  key={1}
+                  variant={currentPage === 1 ? "contained" : "outlined"}
+                  size="small"
+                  onClick={() => setPage(0)}
+                >
+                  1
+                </Button>
+              );
+
+              // Show ellipsis if needed after first page
+              if (currentPage > 3) {
+                pages.push(<Typography key="ellipsis-start">...</Typography>);
+              }
+
+              // Show pages around current page
+              const startPage = Math.max(2, currentPage - 1);
+              const endPage = Math.min(totalPages - 1, currentPage + 1);
+
+              for (let i = startPage; i <= endPage; i++) {
+                pages.push(
+                  <Button
+                    key={i}
+                    variant={currentPage === i ? "contained" : "outlined"}
+                    size="small"
+                    onClick={() => setPage(i - 1)}
+                  >
+                    {i}
+                  </Button>
+                );
+              }
+
+              // Show ellipsis if needed before last page
+              if (currentPage < totalPages - 2) {
+                pages.push(<Typography key="ellipsis-end">...</Typography>);
+              }
+
+              // Always show last page if there's more than one page
+              if (totalPages > 1) {
+                pages.push(
+                  <Button
+                    key={totalPages}
+                    variant={currentPage === totalPages ? "contained" : "outlined"}
+                    size="small"
+                    onClick={() => setPage(totalPages - 1)}
+                  >
+                    {totalPages}
+                  </Button>
+                );
+              }
+
+              return pages;
+            })()}
+
+            {/* Next button */}
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={() => setPage(Math.min(Math.ceil(data.count / rowsPerPage) - 1, page + 1))}
+              disabled={page >= Math.ceil(data.count / rowsPerPage) - 1}
+            >
+              Next
+            </Button>
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={() => setPage(Math.max(0, Math.ceil(data.count / rowsPerPage) - 1))}
+              disabled={page >= Math.ceil(data.count / rowsPerPage) - 1}
+              sx={{ minWidth: '32px' }}
+            >
+              {'>>'}
+            </Button>
           </div>
-    {/* Previous button */}
-      <Button
-    variant="outlined"
-    size="small"
-    onClick={() => setPage(0)}
-    disabled={page === 0}
-    sx={{ minWidth: '32px' }}
-  >
-    {'<<'}
-  </Button>
-    <Button
-      variant="outlined"
-      size="small"
-      onClick={() => setPage(Math.max(0, page - 1))}
-      disabled={page === 0}
-    >
-      Prev
-    </Button>
-
-    {/* Page numbers */}
-    {(() => {
-      const totalPages = Math.ceil(data.count / rowsPerPage);
-      const currentPage = page + 1;
-      const pages = [];
-
-      // Always show first page
-      pages.push(
-        <Button
-          key={1}
-          variant={currentPage === 1 ? "contained" : "outlined"}
-          size="small"
-          onClick={() => setPage(0)}
-        >
-          1
-        </Button>
-      );
-
-      // Show ellipsis if needed after first page
-      if (currentPage > 3) {
-        pages.push(<Typography key="ellipsis-start">...</Typography>);
-      }
-
-      // Show pages around current page
-      const startPage = Math.max(2, currentPage - 1);
-      const endPage = Math.min(totalPages - 1, currentPage + 1);
-      
-      for (let i = startPage; i <= endPage; i++) {
-        pages.push(
-          <Button
-            key={i}
-            variant={currentPage === i ? "contained" : "outlined"}
-            size="small"
-            onClick={() => setPage(i - 1)}
-          >
-            {i}
-          </Button>
-        );
-      }
-
-      // Show ellipsis if needed before last page
-      if (currentPage < totalPages - 2) {
-        pages.push(<Typography key="ellipsis-end">...</Typography>);
-      }
-
-      // Always show last page if there's more than one page
-      if (totalPages > 1) {
-        pages.push(
-          <Button
-            key={totalPages}
-            variant={currentPage === totalPages ? "contained" : "outlined"}
-            size="small"
-            onClick={() => setPage(totalPages - 1)}
-          >
-            {totalPages}
-          </Button>
-        );
-      }
-
-      return pages;
-    })()}
-
-    {/* Next button */}
-    <Button
-      variant="outlined"
-      size="small"
-      onClick={() => setPage(Math.min(Math.ceil(data.count / rowsPerPage) - 1, page + 1))}
-      disabled={page >= Math.ceil(data.count / rowsPerPage) - 1}
-    >
-      Next
-    </Button>
-     <Button
-    variant="outlined"
-    size="small"
-    onClick={() => setPage(Math.max(0, Math.ceil(data.count / rowsPerPage) - 1))}
-    disabled={page >= Math.ceil(data.count / rowsPerPage) - 1}
-    sx={{ minWidth: '32px' }}
-  >
-    {'>>'}
-  </Button>
-  </div>
-</div>
-
-          {/* <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '16px',justifyContent:'end' }}>
-         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '16px' }}>
-           <Typography variant="body2">Go to page:</Typography>
-          <TextField
-            size="small"
-            type="number"
-            value={goToPageInput}
-            onChange={(e) => setGoToPageInput(e.target.value)}
-            inputProps={{
-              min: 1,
-              max: Math.ceil(data.count / rowsPerPage),
-            }}
-            style={{ width: '80px' }}
-          />
-          <Button
-            variant="contained"
-            size="small"
-            onClick={handleGoToPage}
-            disabled={!goToPageInput}
-          >
-            Go
-          </Button>
-         </div>
-          <Button
-    variant="outlined"
-    size="small"
-    onClick={() => setPage(0)}
-    disabled={page === 0}
-    sx={{ minWidth: '32px' }}
-  >
-    {'<<'}
-  </Button>
-             <TablePagination
-          rowsPerPageOptions={[10, 25, 100]}
-          component="div"
-          count={data.count}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-
-         <Button
-    variant="outlined"
-    size="small"
-    onClick={() => setPage(Math.max(0, Math.ceil(data.count / rowsPerPage) - 1))}
-    disabled={page >= Math.ceil(data.count / rowsPerPage) - 1}
-    sx={{ minWidth: '32px' }}
-  >
-    {'>>'}
-  </Button>
-        </div> */}
-        
+        </div>
       </Paper>
     </div>
   );

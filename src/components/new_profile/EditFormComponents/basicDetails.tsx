@@ -278,7 +278,7 @@ const BasicDetails: React.FC<formProps> = ({
     // Reset state, district, and city if country is not India
     setValue("BasicDetail.state", "");
     setValue("BasicDetail.district", "");
-    //setValue("BasicDetail.City", "");
+    setValue("BasicDetail.City", "");
   }
 }, [selectedCountry, setValue]);
 

@@ -95,6 +95,8 @@ const QuickUploadProfiles: React.FC = () => {
   const [selectAll, setSelectAll] = useState<boolean>(false);
   const [selectedRows, setSelectedRows] = useState<number[]>([]); // To track selected profile IDs
   console.log(selectedRows);
+  const [totalCount, setTotalCount] = useState<number>(0);
+
   useEffect(() => {
     fetchData();
   }, [page, rowsPerPage, order, orderBy, search]);
@@ -110,6 +112,7 @@ const QuickUploadProfiles: React.FC = () => {
         page + 1,
       );
       setData(response.data);
+      setTotalCount(response.data.count);
       console.log(response.data);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -257,7 +260,7 @@ const QuickUploadProfiles: React.FC = () => {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl text-black font-bold mb-4">Quick Upload</h1>
+      <h1 className="text-2xl text-black font-bold mb-4">Quick Upload <span className="text-lg font-normal">({totalCount})</span></h1>
       <div>
         <Button
           onClick={() => generateShortProfilePDF(selectedRows)}

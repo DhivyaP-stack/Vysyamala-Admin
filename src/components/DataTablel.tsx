@@ -227,6 +227,10 @@ const DataTable: React.FC = () => {
   };
   return (
     <div>
+       <h1 className="text-2xl text-black font-bold mb-4">
+        New Registered Profiles <span className="text-lg font-normal">({data.count})</span>
+      </h1>
+      
       <div>
         <div className="">
           <Button

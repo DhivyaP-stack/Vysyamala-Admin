@@ -20,7 +20,7 @@ const newProfileColumns = [
 const AdminPage: React.FC = () => {
   return (
     <div className="p-4">
-        <h1 className="text-2xl text-black font-bold mb-4">New Registered Profiles</h1>
+        <h1 className="text-2xl text-black font-bold mb-4"></h1>
       <DataTable columns={newProfileColumns} apiEndpoint="" />
     </div>
   );

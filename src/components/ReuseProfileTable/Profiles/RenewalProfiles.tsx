@@ -126,6 +126,7 @@ const RenewalProfiles: React.FC = () => {
     // const [selectAll, setSelectAll] = useState<boolean>(false);
     const [, setSelectAll] = useState<boolean>(false);
     const [selectedRows, setSelectedRows] = useState<string[]>([]); // Store ProfileId (string)
+     const [totalCount, setTotalCount] = useState<number>(0);
 
     useEffect(() => {
         fetchData();
@@ -143,6 +144,7 @@ const RenewalProfiles: React.FC = () => {
                 page + 1,
             );
             setData(response.data);
+            setTotalCount(response.data.count);
         } catch (error) {
             console.error('Error fetching data:', error);
         } finally {
@@ -260,7 +262,7 @@ const RenewalProfiles: React.FC = () => {
 
     return (
         <div className="p-4">
-            <h1 className="text-2xl text-black font-bold mb-4">Renewal Profiles</h1>
+            <h1 className="text-2xl text-black font-bold mb-4">Renewal Profiles <span className="text-lg font-normal">({totalCount})</span></h1>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                 <Button
                     onClick={() => generateShortProfilePDF(selectedRows)}
