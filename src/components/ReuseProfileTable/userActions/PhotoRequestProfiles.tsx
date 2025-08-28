@@ -31,11 +31,11 @@ interface PhotoRequestProfilesData {
   count: number;
 }
 
-const getPhotoRequestProfiles = async (fromDate: string, toDate: string,page:number) => {
+const getPhotoRequestProfiles = async (fromDate: string, toDate: string, page: number) => {
   const params = new URLSearchParams({
     from_date: fromDate,
     to_date: toDate,
-    page:(page+1).toString()
+    page: (page + 1).toString()
   });
 
   const url = `${photoRequest}?${params.toString()}`;
@@ -53,21 +53,21 @@ const PhotoRequestProfiles: React.FC = () => {
     count: 0,
   });
   const [search, setSearch] = useState<string>('');
-
   const [fromDate, setFromDate] = useState<string>('');
   const [toDate, setToDate] = useState<string>('');
-
-  const [loading, setLoading] = useState<boolean>(true); // State for loading
+  const [loading, setLoading] = useState<boolean>(true);
+  const [totalCount, setTotalCount] = useState<number>(0);
 
   useEffect(() => {
     fetchData();
-  }, [fromDate, toDate,page]);
+  }, [fromDate, toDate, page]);
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await getPhotoRequestProfiles(fromDate, toDate,page);
+      const response = await getPhotoRequestProfiles(fromDate, toDate, page);
       setData(response);
+      setTotalCount(response.count);
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -122,14 +122,12 @@ const PhotoRequestProfiles: React.FC = () => {
     { id: 'profile_from_gender', label: 'From Gender', minWidth: 100 },
     { id: 'profile_from_city', label: 'From City', minWidth: 150 },
     { id: 'profile_from_state', label: 'From State', minWidth: 150 },
-
     { id: 'profile_to_id', label: 'To Profile ID', minWidth: 150 },
     { id: 'profile_to_name', label: 'To Name', minWidth: 150 },
     { id: 'profile_to_mobile', label: 'To Mobile', minWidth: 150 },
     { id: 'profile_to_gender', label: 'To Gender', minWidth: 100 },
     { id: 'profile_to_city', label: 'To City', minWidth: 150 },
     { id: 'profile_to_state', label: 'To State', minWidth: 150 },
-
     { id: 'req_datetime', label: 'Request Date/Time', minWidth: 200 },
     { id: 'response_datetime', label: 'Response Date/Time', minWidth: 200 },
     { id: 'response_message', label: 'Response Message', minWidth: 200 },
@@ -167,20 +165,10 @@ const PhotoRequestProfiles: React.FC = () => {
     ),
     getComparator(order, orderBy),
   );
-  // // Filter data based on search term
-  // const filteredResults = data.results.filter(row =>
-  //   Object.values(row).some(value =>
-  //     String(value).toLowerCase().includes(search.toLowerCase())
-  //   )
-  // );
-
-  function handleDelete(_ContentId: any): void {
-    throw new Error('Function not implemented.');
-  }
 
   return (
     <>
-      <h1 className="text-2xl font-bold mb-4 text-black">Photo Request Profiles</h1>
+      <h1 className="text-2xl font-bold mb-4 text-black">Photo Request Profiles <span className="text-lg font-normal">({totalCount})</span></h1>
       <div className="w-full py-2 flex justify-between">
         <div className="w-full flex text-right justify-between">
           <div className="flex items-center space-x-2">

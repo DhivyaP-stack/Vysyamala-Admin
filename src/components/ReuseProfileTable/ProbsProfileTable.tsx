@@ -65,28 +65,43 @@ interface Column {
 }
 
 const columns: Column[] = [
+  // { id: 'ProfileId', label: 'Profile ID' },
+  // { id: 'Profile_name', label: 'Name' },
+  // { id: 'Profile_dob', label: 'Date of Birth' },
+  // { id: 'Profile_city', label: 'City' },
+  // { id: 'state_name', label: 'State' },
+  // { id: 'MaritalStatus', label: 'Marital' },
+  // { id: 'Mobile_no', label: 'Mobile' },
+  // { id: 'Profile_whatsapp', label: 'WhatsApp' },
+  // { id: 'Gender', label: 'Gender' },
+  // { id: 'Profile_alternate_mobile', label: 'Alternate Mobile' },
+  // { id: 'DateOfJoin', label: 'Date Of Join' },
+  // { id: 'birthstar_name', label: 'BirthStar' },
+  // { id: 'EmailId', label: 'Email' },
+  // { id: 'highest_education', label: 'Education Details' },
+  // { id: 'family_status', label: 'Family Status' },
+  // { id: 'anual_income', label: 'Annual Income' },
+  // { id: 'Last_login_date', label: 'Last Act Date' },
+  // { id: 'Profile_for', label: 'Profile For' },
+  // { id: 'profession', label: 'Profession' },
+  // { id: 'complexion_desc', label: 'Complexion' },
+  // { id: 'years', label: 'Years' },
+  // { id: 'country_name', label: 'Country' },
   { id: 'ProfileId', label: 'Profile ID' },
+  { id: 'DateOfJoin', label: 'Date Of Registration' },
   { id: 'Profile_name', label: 'Name' },
-  { id: 'Profile_dob', label: 'Date of Birth' },
-  { id: 'Profile_city', label: 'City' },
-  { id: 'state_name', label: 'State' },
-  { id: 'MaritalStatus', label: 'Marital' },
-  { id: 'Mobile_no', label: 'Mobile' },
   { id: 'Profile_whatsapp', label: 'WhatsApp' },
-  { id: 'Gender', label: 'Gender' },
-  { id: 'Profile_alternate_mobile', label: 'Alternate Mobile' },
-  { id: 'DateOfJoin', label: 'Date Of Join' },
+  { id: 'Mobile_no', label: 'Mobile' },
+  { id: 'years', label: 'Age' },
+  { id: 'Profile_dob', label: 'Date of Birth' },
   { id: 'birthstar_name', label: 'BirthStar' },
-  { id: 'EmailId', label: 'Email' },
+  { id: 'Profile_city', label: 'City' },
+  { id: 'MaritalStatus', label: 'Marital Status' },
   { id: 'highest_education', label: 'Education Details' },
-  { id: 'family_status', label: 'Family Status' },
   { id: 'anual_income', label: 'Annual Income' },
-  { id: 'Last_login_date', label: 'Last Act Date' },
-  { id: 'Profile_for', label: 'Profile For' },
   { id: 'profession', label: 'Profession' },
-  { id: 'complexion_desc', label: 'Complexion' },
-  { id: 'years', label: 'Years' },
-  { id: 'country_name', label: 'Country' },
+  { id: 'plan_name', label: 'Plan Name' },
+  { id: 'status', label: 'Status' },
 ];
 
 const ProbsProfiletable: React.FC<ProbsProfiletableProps> = ({
@@ -108,7 +123,7 @@ const ProbsProfiletable: React.FC<ProbsProfiletableProps> = ({
   const [selectAll, setSelectAll] = useState<boolean>(false);
   const [selectedRows, setSelectedRows] = useState<number[]>([]); // To track selected profile IDs
   console.log(selectedRows);
-   const [totalCount, setTotalCount] = useState<number>(0);
+  const [totalCount, setTotalCount] = useState<number>(0);
 
   useEffect(() => {
     fetchData();
@@ -127,7 +142,7 @@ const ProbsProfiletable: React.FC<ProbsProfiletableProps> = ({
         plan_ids
       ); // Pass pageNameValue
       setData(response.data);
-       setTotalCount(response.data.count); // Store the total count
+      setTotalCount(response.data.count); // Store the total count
       console.log(response.data);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -206,7 +221,7 @@ const ProbsProfiletable: React.FC<ProbsProfiletableProps> = ({
       console.error('Error deleting data:', error);
     }
   };
-  
+
   const handleDownload = async () => {
     try {
       const blob = await downloadExcel();  // Fetch or create the file blob

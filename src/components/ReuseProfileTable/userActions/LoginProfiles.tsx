@@ -60,7 +60,7 @@ const LoginProfiles: React.FC = () => {
   const [fromDate, setFromDate] = useState<string>('');
   const [toDate, setToDate] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
-
+  const [totalCount, setTotalCount] = useState<number>(0);
   const navigate = useNavigate(); // ✅ hook
 
   useEffect(() => {
@@ -72,6 +72,7 @@ const LoginProfiles: React.FC = () => {
     try {
       const response = await getLoginLogs(date, fromDate, toDate, page, rowsPerPage);
       setData(response);
+      setTotalCount(response.count);
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -164,7 +165,7 @@ const LoginProfiles: React.FC = () => {
 
   return (
     <>
-      <h1 className="text-2xl font-bold mb-4 text-black">Login Profiles</h1>
+      <h1 className="text-2xl font-bold mb-4 text-black">Login Profiles <span className="text-lg font-normal">({totalCount})</span></h1>
       <div className="w-full py-2 flex justify-between">
         <div className="w-full text-right flex justify-between">
           <div className="flex items-center space-x-2">
@@ -272,11 +273,11 @@ const LoginProfiles: React.FC = () => {
                           sx={
                             column.id === 'ProfileId'
                               ? {
-                                  color: 'blue',
-                                  cursor: 'pointer',
-                                  textDecoration: 'none',
-                                  '&:hover': { textDecoration: 'underline' },
-                                }
+                                color: 'blue',
+                                cursor: 'pointer',
+                                textDecoration: 'none',
+                                '&:hover': { textDecoration: 'underline' },
+                              }
                               : {}
                           }
                         >

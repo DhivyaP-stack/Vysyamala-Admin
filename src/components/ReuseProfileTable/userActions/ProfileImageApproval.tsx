@@ -59,13 +59,14 @@ const ProfileImageApproval: React.FC = () => {
   const [orderBy, setOrderBy] = useState<string>('profile_id');
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
-  const [data, setData] = useState<ProfileImageApprovalData>({results: [],count: 0,});
+  const [data, setData] = useState<ProfileImageApprovalData>({ results: [], count: 0, });
   const [search, setSearch] = useState<string>('');
   const [fromDate, setFromDate] = useState<string>('');
   const [toDate, setToDate] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
   const [hoveredProfileId, setHoveredProfileId] = useState<string | null>(null);
+  const [totalCount, setTotalCount] = useState<number>(0);
 
   useEffect(() => {
     fetchData();
@@ -76,6 +77,7 @@ const ProfileImageApproval: React.FC = () => {
     try {
       const response = await getProfileImageApproval();
       setData(response);
+      setTotalCount(response.count);
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -124,10 +126,10 @@ const ProfileImageApproval: React.FC = () => {
   };
 
   const columns: Column[] = [
-    { 
-      id: 'profile_id', 
-      label: 'Profile ID', 
-      minWidth: 120, 
+    {
+      id: 'profile_id',
+      label: 'Profile ID',
+      minWidth: 120,
       align: 'left',
       format: (value: string, row: ProfileData) => (
         <span
@@ -138,43 +140,43 @@ const ProfileImageApproval: React.FC = () => {
           }}
           onMouseEnter={() => setHoveredProfileId(value)}
           onMouseLeave={() => setHoveredProfileId(null)}
-          onClick={() => navigate(`/UploadApprovalProfileImg?profileId=${value}`)} 
+          onClick={() => navigate(`/UploadApprovalProfileImg?profileId=${value}`)}
         >
           {value}
         </span>
       )
     },
-    { 
-      id: 'Profile_name', 
-      label: 'Profile Name', 
-      minWidth: 100, 
-      align: 'left' 
+    {
+      id: 'Profile_name',
+      label: 'Profile Name',
+      minWidth: 100,
+      align: 'left'
     },
-    { 
-      id: 'Profile_mobile_no', 
-      label: 'Mobile No', 
-      minWidth: 130, 
-      align: 'left' 
+    {
+      id: 'Profile_mobile_no',
+      label: 'Mobile No',
+      minWidth: 130,
+      align: 'left'
     },
-    { 
-      id: 'Profile_dob', 
-      label: 'Date of Birth', 
-      minWidth: 120, 
+    {
+      id: 'Profile_dob',
+      label: 'Date of Birth',
+      minWidth: 120,
       align: 'left',
       format: (value: string) => formatDate(value)
     },
-    { 
-      id: 'profile_gender', 
-      label: 'Gender', 
-      minWidth: 100, 
+    {
+      id: 'profile_gender',
+      label: 'Gender',
+      minWidth: 100,
       align: 'left',
       format: (value: string) => value.charAt(0).toUpperCase() + value.slice(1)
     },
-    { 
-      id: 'Profile_email', 
-      label: 'Email', 
-      minWidth: 200, 
-      align: 'left' 
+    {
+      id: 'Profile_email',
+      label: 'Email',
+      minWidth: 200,
+      align: 'left'
     },
 
   ];
@@ -190,7 +192,7 @@ const ProfileImageApproval: React.FC = () => {
       ? (a: any, b: any) => descendingComparator(a, b, orderBy)
       : (a: any, b: any) => -descendingComparator(a, b, orderBy);
   };
-  
+
   const stableSort = (array: any[], comparator: (a: any, b: any) => number) => {
     const stabilizedThis = array.map((el, index) => [el, index] as [any, number]);
     stabilizedThis.sort((a, b) => {
@@ -212,7 +214,7 @@ const ProfileImageApproval: React.FC = () => {
 
   return (
     <>
-      <h1 className="text-2xl font-bold mb-4 text-black">Profile Image Approval</h1>
+      <h1 className="text-2xl font-bold mb-4 text-black">Profile Image Approval <span className="text-lg font-normal">({totalCount})</span></h1>
       <Box className="w-full">
         <div className="w-full p-2 flex justify-between">
           <div className="w-full text-right px-2">
@@ -287,7 +289,7 @@ const ProfileImageApproval: React.FC = () => {
                     <TableRow hover role="checkbox" tabIndex={-1} key={index}>
                       {columns.map((column) => (
                         <TableCell key={column.id} align={column.align}>
-                          {column.format 
+                          {column.format
                             ? column.format(row[column.id as keyof ProfileData], row)
                             : row[column.id as keyof ProfileData]
                           }

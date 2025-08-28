@@ -30,12 +30,12 @@ interface WishlistsProfileData {
   count: number;
 }
 
-const getWishlistsProfile = async (fromDate: string, toDate: string,page:number,rowsPerPage:number) => {
+const getWishlistsProfile = async (fromDate: string, toDate: string, page: number, rowsPerPage: number) => {
   const params = new URLSearchParams({
     from_date: fromDate,
     to_date: toDate,
-    page:(page+1).toString(),
-    rowsPerPage:rowsPerPage.toString()
+    page: (page + 1).toString(),
+    rowsPerPage: rowsPerPage.toString()
   });
 
   const url = `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/bookmarks/?${params.toString()}`;
@@ -53,21 +53,21 @@ const WishlistsProfile: React.FC = () => {
     count: 0,
   });
   const [search, setSearch] = useState<string>('');
-
   const [fromDate, setFromDate] = useState<string>('');
   const [toDate, setToDate] = useState<string>('');
-
-  const [loading, setLoading] = useState<boolean>(true); // State for loading
+  const [loading, setLoading] = useState<boolean>(true);
+  const [totalCount, setTotalCount] = useState<number>(0);
 
   useEffect(() => {
     fetchData();
-  }, [fromDate, toDate,page,rowsPerPage,search]);
+  }, [fromDate, toDate, page, rowsPerPage, search]);
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await getWishlistsProfile(fromDate, toDate,page,rowsPerPage);
+      const response = await getWishlistsProfile(fromDate, toDate, page, rowsPerPage);
       setData(response);
+      setTotalCount(response.count);
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -122,14 +122,12 @@ const WishlistsProfile: React.FC = () => {
     { id: 'profile_from_gender', label: 'Profile From Gender', minWidth: 100 },
     { id: 'profile_from_city', label: 'Profile From City', minWidth: 150 },
     { id: 'profile_from_state', label: 'Profile From State', minWidth: 150 },
-
     { id: 'profile_to_id', label: 'Profile To ID', minWidth: 150 },
     { id: 'profile_to_name', label: 'Profile To Name', minWidth: 150 },
     { id: 'profile_to_mobile', label: 'Profile To Mobile', minWidth: 150 },
     { id: 'profile_to_gender', label: 'Profile To Gender', minWidth: 100 },
     { id: 'profile_to_city', label: 'Profile To City', minWidth: 150 },
     { id: 'profile_to_state', label: 'Profile To State', minWidth: 150 },
-
     { id: 'marked_datetime', label: 'Marked Date/Time', minWidth: 200 },
     { id: 'status', label: 'Status', minWidth: 100 },
   ];
@@ -165,20 +163,10 @@ const WishlistsProfile: React.FC = () => {
     ),
     getComparator(order, orderBy),
   );
-  // // Filter data based on search term
-  // const filteredResults = data.results.filter(row =>
-  //   Object.values(row).some(value =>
-  //     String(value).toLowerCase().includes(search.toLowerCase())
-  //   )
-  // );
-
-  function handleDelete(_ContentId: any): void {
-    throw new Error('Function not implemented.');
-  }
 
   return (
     <>
-      <h1 className="text-2xl font-bold mb-4 text-black">Wishlist Profiles</h1>
+      <h1 className="text-2xl font-bold mb-4 text-black">Wishlist Profiles <span className="text-lg font-normal">({totalCount})</span></h1>
       <div className="w-full py-2 flex justify-between">
         <div className="w-full text-right flex justify-between">
           <div className="flex items-center space-x-2">
@@ -215,7 +203,7 @@ const WishlistsProfile: React.FC = () => {
 
       <Paper className="w-full">
         <TableContainer sx={{ border: '1px solid #E0E0E0' }} className="bg-white">
-          <Table  stickyHeader>
+          <Table stickyHeader>
             <TableHead>
               <TableRow>
                 {columns.map((column, index) => (
