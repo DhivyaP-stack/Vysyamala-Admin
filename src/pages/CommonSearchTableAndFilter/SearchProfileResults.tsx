@@ -18,7 +18,7 @@ import {
   Typography,
 } from '@mui/material';
 import { userMatchingProfilesFilter, userMatchingProfilesSendEmail, userMatchingProfilesPrintProfile, userMatchingProfilesWhatsapp } from '../../api/apiConfig';
-import { NotifyError, NotifySuccess } from  '../../common/Toast/ToastMessage';
+import { NotifyError, NotifySuccess } from '../../common/Toast/ToastMessage';
 import { MdVerified } from 'react-icons/md';
 import { GoUnverified } from 'react-icons/go';
 //import No_Image_Available from '../images/No_Image_Available .jpg';
@@ -45,7 +45,7 @@ interface SearchProfileProps {
 interface SearchProfileResultsProps {
   filters: any;
   onBack: () => void;
-  No_Image_Available:any
+  No_Image_Available: any
 }
 
 const columns = [
@@ -65,10 +65,10 @@ const columns = [
   { id: 'verified', label: 'Verified' },
 ];
 
-const SearchProfileResults = ({ filters, onBack ,No_Image_Available}: SearchProfileResultsProps) => {
+const SearchProfileResults = ({ filters, onBack, No_Image_Available }: SearchProfileResultsProps) => {
   const navigate = useNavigate();
   const roleId = sessionStorage.getItem('role_id');
-  
+
   const [matchingData, setMatchingData] = useState<SearchProfileProps[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [totalItems, setTotalItems] = useState(0);
@@ -76,7 +76,7 @@ const SearchProfileResults = ({ filters, onBack ,No_Image_Available}: SearchProf
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedProfiles, setSelectedProfiles] = useState<string[]>([]);
   const [goToPageInput, setGoToPageInput] = useState<string>('');
-  
+
   // Action states
   const [selectedFormat, setSelectedFormat] = useState<string>('');
   const [isSendingEmail, setIsSendingEmail] = useState<boolean>(false);
@@ -95,25 +95,25 @@ const SearchProfileResults = ({ filters, onBack ,No_Image_Available}: SearchProf
           itemsPerPage,
           String(filters.selectedComplexions),
           String(filters.selectedEducation),
-          Number(filters.heightFrom),
-          Number(filters.heightTo),
-          Number(filters.minAnnualIncome),
-          Number(filters.maxAnnualIncome),
+          String(filters.heightFrom),
+          String(filters.heightTo),
+          String(filters.minAnnualIncome),
+          String(filters.maxAnnualIncome),
           filters.foreignInterest,
-          Number(filters.selectedState),
-          Number(filters.selectedCity),
-          filters.selectedMembership.length,
+          String(filters.selectedState),
+          String(filters.selectedCity),
+          String(filters.selectedMembership.length), 
           filters.hasphotos,
           filters.selectedBirthStars,
-          Number(filters.ageDifference),
+          String(filters.ageDifference),
           filters.selectedProfessions.join(','),
-          Number(filters.ageFrom),
-          Number(filters.ageTo),
+          String(filters.ageFrom),
+          String(filters.ageTo),
           String(filters.sarpaDhosam),
           String(filters.chevvaiDhosam),
           String(filters.profileName),
         );
-        
+
         setMatchingData(MatchingprofileFilter.profiles || []);
         setTotalItems(MatchingprofileFilter.total_count || 0);
       } catch (error: any) {
@@ -266,8 +266,8 @@ const SearchProfileResults = ({ filters, onBack ,No_Image_Available}: SearchProf
 
   return (
     <div className="container mx-auto p-4">
-      <Button 
-        variant="contained" 
+      <Button
+        variant="contained"
         onClick={onBack}
         sx={{ mb: 2 }}
       >
@@ -275,114 +275,8 @@ const SearchProfileResults = ({ filters, onBack ,No_Image_Available}: SearchProf
       </Button>
 
       <div className="flex items-center justify-end space-x-10 mb-4">
-     
-        {/* <div>
-          <div>
-            <p className="text-sm text-black font-semibold">Print Profile</p>
-          </div>
-          <div>
-            <div className="flex items-center space-x-2">
-              <div>
-                <select 
-                  name="printFormat" 
-                  id="printFormat"
-                  value={printFormat}
-                  onChange={(e) => setPrintFormat(e.target.value)}
-                  disabled={isPrintProfile}
-                  className="text-sm border-[1px] border-black rounded-md px-2 py-0.5 focus-within:outline-none"
-                >
-                  <option value="p1">Choose Format</option>
-                  <option value="fullprofile">Full Profile</option>
-                  <option value="withoutaddress">Without Address</option>
-                  <option value="shortprofile">Short Profile</option>
-                  <option value="p4">Intimation</option>
-                </select>
-              </div>
-              <div>
-                <button
-                  onClick={handlePrintProfile}
-                  disabled={isPrintProfile}
-                  className={`bg-amber-500 text-white rounded-md px-3 py-0.5 ${isPrintProfile ? 'opacity-50 cursor-not-allowed' : ''}`}
-                >
-                  {isPrintProfile ? 'Moving to Print...' : 'Move to print'}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-       
-        <div>
-          <div>
-            <p className="text-sm text-black font-semibold">Whatsapp</p>
-          </div>
-          <div>
-            <div className="flex items-center space-x-2">
-              <div>
-                <select
-                  name="whatsappFormat"
-                  id="whatsappFormat"
-                  value={whatsappFormat}
-                  onChange={(e) => setWhatsappFormat(e.target.value)}
-                  disabled={iswhatsappProfile}
-                  className="text-sm border-[1px] border-black rounded-md px-2 py-1 focus-within:outline-none"
-                >
-                  <option value="w1">Choose Format</option>
-                  <option value="fullprofile">Full Profile</option>
-                  <option value="withoutaddress">Without Address</option>
-                  <option value="shortprofile">Short Profile</option>
-                  <option value="w5">Intimation</option>
-                </select>
-              </div>
-              <div>
-                <button
-                  onClick={handleProfileWhatsapp}
-                  disabled={iswhatsappProfile}
-                  className={`bg-green-500 text-white rounded-md px-3 py-0.5 ${iswhatsappProfile ? 'opacity-50 cursor-not-allowed' : ''}`}
-                >
-                  {iswhatsappProfile ? 'Viewing...' : 'View'}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-      
-        <div>
-          <div>
-            <p className="text-sm text-black font-semibold">Send Email</p>
-          </div>
-          <div>
-            <div className="flex items-center space-x-2">
-              <div>
-                <select 
-                  name="selectedFormat" 
-                  id="selectedFormat"
-                  value={selectedFormat}
-                  onChange={(e) => setSelectedFormat(e.target.value)}
-                  disabled={isSendingEmail}
-                  className="text-sm border-[1px] border-black rounded-md px-2 py-1 focus-within:outline-none"
-                >
-                  <option value="w1">Choose Format</option>
-                  <option value="fullprofile">Full Profile</option>
-                  <option value="withoutaddress">Without Address</option>
-                  <option value="shortprofile">Short Profile</option>
-                  <option value="w5">Intimation</option>
-                </select>
-              </div>
-              <div>
-                <button
-                  onClick={handleSendEmail}
-                  disabled={isSendingEmail}
-                  className={`bg-blue-500 text-white rounded-md px-3 py-0.5 ${isSendingEmail ? 'opacity-50 cursor-not-allowed' : ''}`}
-                >
-                  {isSendingEmail ? 'Sending...' : 'Send'}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>*/}
-      </div> 
+
+      </div>
 
       {/* Table */}
       {loading ? (
@@ -455,7 +349,7 @@ const SearchProfileResults = ({ filters, onBack ,No_Image_Available}: SearchProf
                           sx={{
                             color: 'blue',
                             cursor: 'pointer',
-                            textDecoration: 'none', 
+                            textDecoration: 'none',
                             '&:hover': { textDecoration: 'underline' }
                           }}
                         >

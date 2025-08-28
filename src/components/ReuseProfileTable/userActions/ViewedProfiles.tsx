@@ -201,6 +201,9 @@ const ViewedProfiles: React.FC = () => {
               value={toDate}
               onChange={handleDateChange}
               InputLabelProps={{ shrink: true }}
+              inputProps={{
+                max: new Date().toISOString().split('T')[0] // This disables future dates
+              }}
             />
 
             <Button variant="contained" onClick={handleSubmit}>

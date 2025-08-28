@@ -16,9 +16,7 @@ import {
   getStatus,
 } from '../../../action';
 import axios from 'axios';
-import { ViewAlertSettings } from './ViewAlertSettings';
-import { API_URL, API_URL_Auth } from '../../../services/api';
-import { AddOnView } from './AddOnView';
+import {API_URL_Auth } from '../../../services/api';
 import { HeightOption } from '../profile_form_components/AddProfileForm';
 
 interface pageProps {
@@ -402,7 +400,7 @@ console.log('5656',City);
                   </option>
                   {City?.map((option: any) => (
                     <option key={option.city_id} value={option.city_id}>
-                      {/* {option.city_name} */}
+                    
                       {basicDetails.Profile_city}
                     </option>
                   ))}
@@ -412,16 +410,6 @@ console.log('5656',City);
           ) : isNonIndiaCountry ? (
             // Non-India country fields
             <div className="flex w-full flex-row gap-4">
-              {/* <div className="w-2/4">
-                <Input
-                  required
-                  value={basicDetails.Profile_state || ''}
-                  label={'State/Province'}
-                  type={'text'}
-                  readOnly
-                />
-              </div> */}
-
               <div className="w-2/4">
                 <Input
                   required

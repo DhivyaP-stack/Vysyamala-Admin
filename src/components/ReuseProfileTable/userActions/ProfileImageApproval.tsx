@@ -244,6 +244,9 @@ const ProfileImageApproval: React.FC = () => {
                 onChange={handleDateChange}
                 InputLabelProps={{ shrink: true }}
                 size="small"
+                inputProps={{
+                  max: new Date().toISOString().split('T')[0] // This disables future dates
+                }}
               />
 
               <Button variant="contained" onClick={handleSubmit}>

@@ -156,6 +156,9 @@ const ExpressInterest: React.FC = () => {
                 value={toDate}
                 onChange={handleDateChange}
                 InputLabelProps={{ shrink: true }}
+                inputProps={{
+                  max: new Date().toISOString().split('T')[0] // This disables future dates
+                }}
               />
               <div className="flex flex-wrap p-2">
                 {loading ? (
