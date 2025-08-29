@@ -395,6 +395,8 @@ export const userMatchingProfilesFilter = async (
     chevvaiDhosam: string,
     profileName: string,
     // selectedBirthStarIds
+    fatherAlive: string,
+    motherAlive: string,
 ) => {
     try {
         const response = await apiAxios.post('/api/common-search/', {
@@ -419,7 +421,9 @@ export const userMatchingProfilesFilter = async (
             age_to: ageTo,
             ragu_dosham: sarpaDhosam,
             chevvai_dosham: chevvaiDhosam,
-            profile_name: profileName
+            profile_name: profileName,
+            father_alive: fatherAlive,
+            mother_alive: motherAlive
         });
         console.log("User Matching records filter fetched successfully", response);
         // Assuming the API returns an object with a `status` field and a `data` field

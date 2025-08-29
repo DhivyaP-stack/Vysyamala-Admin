@@ -102,7 +102,7 @@ const SearchProfileResults = ({ filters, onBack, No_Image_Available }: SearchPro
           filters.foreignInterest,
           String(filters.selectedState),
           String(filters.selectedCity),
-          String(filters.selectedMembership.length), 
+          String(filters.selectedMembership),
           filters.hasphotos,
           filters.selectedBirthStars,
           String(filters.ageDifference),
@@ -112,6 +112,8 @@ const SearchProfileResults = ({ filters, onBack, No_Image_Available }: SearchPro
           String(filters.sarpaDhosam),
           String(filters.chevvaiDhosam),
           String(filters.profileName),
+          String(filters.fatherAlive),
+          String(filters.motherAlive)
         );
 
         setMatchingData(MatchingprofileFilter.profiles || []);
