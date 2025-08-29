@@ -119,10 +119,67 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
   useEffect(() => {
     handleTimeChange();
   }, [hours, minutes, periods, setValue]);
+  const [horoDetails, setHoroDetails] = useState<any>({});
+  useEffect(() => {
+    if (EditData) {
+      setHoroDetails(EditData[3]);
+    }
+  }, [EditData]);
+
+  const [day, setDay] = useState<any>('');
+  const [month, setMonth] = useState<any>('');
+  const [year, setYear] = useState<any>('');
+
+  useEffect(() => {
+    // Get dasaBalance from horoDetails instead of hardcoding
+    const dasaBalance = horoDetails?.dasa_balance_display || "";
+    console.log("Dasa Balance:", dasaBalance);
+
+    // Handle different possible formats
+    let day, month, year;
+
+    if (dasaBalance) {
+      try {
+        // Handle format: "12 Years, 11 Months, 13 Days"
+        const parts = dasaBalance.split(',');
+        console.log('parts:', parts);
+
+        if (parts.length === 3) {
+          year = parts[0].trim().split(' ')[0];    // "12 Years" → "12"
+          month = parts[1].trim().split(' ')[0];   // "11 Months" → "11"
+          day = parts[2].trim().split(' ')[0];     // "13 Days" → "13"
+        }
+
+        // Alternative approach using regex for more flexibility
+        const yearMatch = dasaBalance.match(/(\d+)\s*Years?/);
+        const monthMatch = dasaBalance.match(/(\d+)\s*Months?/);
+        const dayMatch = dasaBalance.match(/(\d+)\s*Days?/);
+
+        // Use the correct match variables
+        year = yearMatch ? yearMatch[1] : year;
+        month = monthMatch ? monthMatch[1] : month;
+        day = dayMatch ? dayMatch[1] : day;
+
+        console.log("Parsed values:", { year, month, day });
+
+      } catch (error) {
+        console.error("Error parsing dasaBalance:", error);
+      }
+    }
+
+    setDay(day);
+    setMonth(month);
+    setYear(year);
+  }, [horoDetails]);
 
   useEffect(() => {
     if (EditData) {
       const dasaBalance = EditData[3].dasa_balance;
+      console.log("45", dasaBalance);
+
+      const dasaBalanceView = EditData[3].dasa_balance_display;
+      console.log("45", dasaBalanceView);
+
       setValue('HororScopeDetails.timeOfBirth', EditData[3].time_of_birth);
       setValue('HororScopeDetails.PlaceofBirth', EditData[3].place_of_birth);
       setValue('HororScopeDetails.BirthStar', EditData[3].birthstar_name);
@@ -521,6 +578,7 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
                 <div className="flex space-x-2">
                   <div className="w-full">
                     <select
+                      value={year}
                       {...register('HororScopeDetails.DasaBalanceYear')}
                       id="year"
                       className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
@@ -540,6 +598,7 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
                   <div className="w-full">
                     <select
                       id="month"
+                      value={month}
                       {...register('HororScopeDetails.DasaBalanceMonth')}
                       className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
                     >
@@ -557,6 +616,7 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
                     <select
                       {...register('HororScopeDetails.DasaBalanceDay')}
                       id="dasa_balance"
+                      value={day}
                       className="outline-none w-full px-4 py-2 border border-black text-[#000000e6] font-medium rounded"
                       defaultValue=""
                     >
