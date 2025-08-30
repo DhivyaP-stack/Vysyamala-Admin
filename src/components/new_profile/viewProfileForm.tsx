@@ -106,7 +106,7 @@ const ViewProfileForm: React.FC = () => {
   const [birthStarId, setBirthStar] = useState<string>('');
   const [isViewDetais, setViewDetail] = useState(true);
   const [isViewDetai, setViewDetails] = useState(true);
-  const viewProfileViewRef =useRef<HTMLDivElement|null>(null)
+  const viewProfileViewRef = useRef<HTMLDivElement | null>(null)
   useEffect(() => {
     getProfileListMatch(profileId);
   }, []);
@@ -130,12 +130,12 @@ const ViewProfileForm: React.FC = () => {
       viewProfileViewRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, []);
-  
+
   return (
-    <div  className=" p-5 mb-10 max-md:p-0">
-     
+    <div className=" p-5 mb-10 max-md:p-0">
+
       {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 p-4 gap-4"> */}
-       {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 p-4 gap-4">
+      {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 p-4 gap-4">
 
         <ViewProfileButton
           type="submit"
@@ -207,30 +207,46 @@ const ViewProfileForm: React.FC = () => {
           profileId={profileId ?? ''}
         />
       </div> */}
-      
-       <div className='flex justify-end'>
-      <button   className={`bg-blue-500 text-white px-4 py-2 rounded al `} onClick={() =>
-                            navigate(`/editProfile?profileId=${profileId}`)
-                          }>To edit this form</button>
-      </div> 
+
+      {/* <div className='flex justify-end'>
+        <button className={`bg-blue-500 text-white px-4 py-2 rounded al `} onClick={() =>
+          navigate(`/editProfile?profileId=${profileId}`)
+        }>To edit this form</button>
+      </div> */}
+      <div className="fixed bottom-150 z-50 flex justify-end mr-4">
+        <button
+          className="  text-orange-500 text-title-md  "
+
+        >
+          {profileId}
+        </button>
+      </div>
+      <div className="fixed bottom-150 right-4 z-50 mr-12">
+        <button
+          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded shadow-md transition-colors"
+          onClick={() => navigate(`/editProfile?profileId=${profileId}`)}
+        >
+          To edit this form
+        </button>
+      </div>
       <div className='mt-6'>
-      <div ref={viewProfileViewRef}>
-      <ViewProfile isViewDetai={isViewDetai} setViewDetails={setViewDetails} profile={profile} /> 
+        <div ref={viewProfileViewRef}>
+          <ViewProfile isViewDetai={isViewDetai} setViewDetails={setViewDetails} profile={profile} />
+        </div>
+        {/* <ViewProfileView isViewDetais={isViewDetais} setViewDetail={setViewDetail} profile={profile}  />  */}
+        <ViewBasicDetails setGennder={setGennder} profile={profile} />
+        <ViewFamilyDetailsForm profile={profile} />
+        <ViewEducationalDetails profile={profile} />
+        <ViewHoroDetails setBirthStar={setBirthStar} profile={profile} />
+        <ViewPartnerSettings gender={gender} birthStarId={birthStarId} profile={profile} />
+        <ViewSuggestedProfile gender={gender} birthStarId={birthStarId} profile={profile} />
+        <ViewProfileVisibility profile={profile} />
+        {/* <ViewUpLoadImages /> */}
+        {/* <ViewAddonPackage profile={profile} /> */}
       </div>
-      {/* <ViewProfileView isViewDetais={isViewDetais} setViewDetail={setViewDetail} profile={profile}  />  */}
-      <ViewBasicDetails setGennder={setGennder} profile={profile} />
-      <ViewFamilyDetailsForm profile={profile} />
-      <ViewEducationalDetails profile={profile} />
-      <ViewHoroDetails setBirthStar={setBirthStar} profile={profile} />
-      <ViewPartnerSettings gender={gender} birthStarId={birthStarId} profile={profile}/>
-       <ViewSuggestedProfile  gender={gender}  birthStarId={birthStarId}  profile={profile}/> 
-       <ViewProfileVisibility profile={profile}/>
-      {/* <ViewUpLoadImages /> */}
-      {/* <ViewAddonPackage profile={profile} /> */}
-      </div>
-     
+
     </div>
-    
+
   );
 };
 

@@ -222,20 +222,7 @@ console.log('5656',City);
                 label={'Name'}
               />
             </div>
-
-            {/* Gender Selector */}
-            <div className="w-2/4 py-1">
-              <label className="block text-black font-semibold mb-1">
-                Gender <span className="text-red-500">*</span>
-              </label>
-              <input
-                value={basicDetails.Gender}
-                required
-                className="outline-none w-full px-4 py-2 border border-black rounded text-black font-semibold"
-                readOnly
-              />
-            </div>
-            <div className="w-2/4">
+  <div className="w-2/4">
               <label className="block mb-1 font-bold text-black">
                 Mobile Number <span className="text-red-500">*</span>
               </label>
@@ -246,6 +233,23 @@ console.log('5656',City);
                 label={''}
               />
             </div>
+            {/* Gender Selector */}
+            <div className="w-2/4 py-1">
+              <label className="block text-black font-semibold mb-1">
+                Gender <span className="text-red-500">*</span>
+              </label>
+
+              <label className="block text-black font-bold mb-1 ml-30 capitalize">
+                {basicDetails.Gender} 
+              </label>
+              {/* <input
+                value={basicDetails.Gender}
+                required
+                className="outline-none w-full px-4 py-2 border border-black rounded text-black font-semibold"
+                readOnly
+              /> */}
+            </div>
+          
 
           </div>
 
@@ -258,7 +262,34 @@ console.log('5656',City);
                 label={'Email'}
               />
             </div>
+             <div className="w-2/4">
+              <Input
+                required
+                readOnly
+                value={basicDetails.Profile_alternate_mobile}
+                label={'Alternate Mobile Number'}
+              />
+            </div>
+           
             <div className="w-2/4">
+              <label className="block mb-1 font-bold text-black">
+                Date of Birth <span className="text-red-500">*</span>
+              </label>
+              <Input
+                value={basicDetails.Profile_dob}
+                readOnly
+                required
+                label={''}
+                type={'date'}
+              />
+            </div>
+
+           
+          </div>
+
+          <div className="flex w-full flex-row gap-4">
+            
+             <div className="w-full">
               <label className="block text-black font-semibold mb-1">
                 Select your Marital Status{' '}
                 <span className="text-red-500">*</span>
@@ -279,41 +310,7 @@ console.log('5656',City);
                 ))}
               </select>
             </div>
-            <div className="w-2/4">
-              <label className="block mb-1 font-bold text-black">
-                Date of Birth <span className="text-red-500">*</span>
-              </label>
-              <Input
-                value={basicDetails.Profile_dob}
-                readOnly
-                required
-                label={''}
-                type={'date'}
-              />
-            </div>
-          </div>
-
-          <div className="flex w-full flex-row gap-4">
-            <div className="w-full">
-              <label className="block text-black font-semibold mb-1">
-                Complexion
-              </label>
-              <select
-                value={basicDetails.Profile_complexion}
-                disabled
-                className="outline-none w-full px-4 py-2 border border-black rounded text-black font-semibold"
-              >
-                <option value="">Select your complexion</option>
-                {Complexion?.map((option: any) => (
-                  <option
-                    key={option.complexion_id}
-                    value={option.complexion_id}
-                  >
-                    {option.complexion_description}
-                  </option>
-                ))}
-              </select>
-            </div>
+           
             <div className="w-full">
               <Input
                 readOnly
@@ -423,23 +420,36 @@ console.log('5656',City);
           ) : null}
 
           <div className="flex w-full flex-row gap-4">
+             <div className="w-2/4">
+              <label className="block text-black font-semibold mb-1">
+                Complexion
+              </label>
+              <select
+                value={basicDetails.Profile_complexion}
+                disabled
+                className="outline-none w-full px-4 py-2 border border-black rounded text-black font-semibold"
+              >
+                <option value="">Select your complexion</option>
+                {Complexion?.map((option: any) => (
+                  <option
+                    key={option.complexion_id}
+                    value={option.complexion_id}
+                  >
+                    {option.complexion_description}
+                  </option>
+                ))}
+              </select>
+            </div>
             <div className="w-2/4">
               <Input
                 required
                 value={basicDetails.Profile_pincode}
-                label={'Post code'}
+                label={'Pincode'}
                 type={'text'}
                 readOnly
               />
             </div>
-            <div className="w-2/4">
-              <Input
-                required
-                readOnly
-                value={basicDetails.Profile_alternate_mobile}
-                label={'Alternate Mobile Number'}
-              />
-            </div>
+           
             <div className="w-2/4">
               <Input
                 required
@@ -449,14 +459,14 @@ console.log('5656',City);
               />
             </div>
           </div>
-          <div className="w-2/4">
+          <div className="w-1/3">
             <label className='block text-black font-medium mb-1'>
               Profile Height
               {/* <span className="text-red-500">*</span> */}
             </label>
             <select
               id="height"
-              className={`text-ash font-medium block w-full px-3 py-2 border-[1px] border-footer-text-gray rounded-[4px] focus-visible:outline-none`}
+              className={`text-ash font-medium block w-full px-3 py-2 border-[1px] border-black border-footer-text-gray rounded-[4px] focus-visible:outline-none`}
               // {...register("BasicDetail.Profile_height")}
               value={basicDetails.Profile_height}
               disabled

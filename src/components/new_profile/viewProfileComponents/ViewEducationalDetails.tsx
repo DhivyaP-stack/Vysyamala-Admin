@@ -303,7 +303,7 @@ const ViewEducationalDetails: React.FC<pageProps> = ({ profile }) => {
                 </h1>
               </label>
 
-              <div className="w-full inline-flex rounded">
+              <div className="w-full inline-flex border border-b-black-2 rounded">
                 {ProfessionalPreference?.map((Profession: any) => (
                   <label
                     key={Profession.Profes_Pref_id}
@@ -490,133 +490,138 @@ const ViewEducationalDetails: React.FC<pageProps> = ({ profile }) => {
               </div>
             </div>
           )}
-          <h4 className="text-xl font-semibold text-black dark:text-white">
-            Work Location
-          </h4>
-          <div className="flex w-full flex-row gap-4">
-            <div className="w-full">
-              <label className="block text-black font-semibold mb-1">
-                Country
-                {/* <span className="text-red-500">*</span> */}
-              </label>
-              <select
-                value={educationalDetails.work_country}
-                disabled
-                className="outline-none w-full px-4 py-2 border text-black font-medium border-black rounded"
-              >
-                <option value="">-- Select your Country --</option>
-                {WorkCountry?.map((option) => (
-                  <option key={option.country_id} value={option.country_id}>
-                    {option.country_name}
-                  </option>
-                ))}
-              </select>
-            </div>
 
-            {educationalDetails.work_country === '1' ? (
-              <div className="w-full">
-                <label className="block text-black font-semibold mb-1">
-                  State (Based on country selection){' '}
-                  {/* <span className="text-red-500">*</span> */}
-                </label>
-                <select
-                  value={educationalDetails.work_state}
-                  disabled
-                  className="outline-none w-full px-4 py-2 border text-black font-medium border-black rounded"
-                >
-                  <option value="" disabled>
-                    Select your state
-                  </option>
-                  {WorkState?.map((option: any) => (
-                    <option key={option.state_id} value={option.state_id}>
-                      {option.state_name}
-                    </option>
-                  ))}
-                </select>
-                {sessionStorage.getItem('stateError') && (
-                  <p className="text-red-600">
-                    {sessionStorage.getItem('stateError')}
-                  </p>
+          {!(Number(educationalDetails.profession) === 3 || Number(educationalDetails.profession) === 4) && (
+            <>
+              <h4 className="text-xl font-semibold text-black dark:text-white">
+                Work Location
+              </h4>
+              <div className="flex w-full flex-row gap-4">
+                <div className="w-full">
+                  <label className="block text-black font-semibold mb-1">
+                    Country
+                    {/* <span className="text-red-500">*</span> */}
+                  </label>
+                  <select
+                    value={educationalDetails.work_country}
+                    disabled
+                    className="outline-none w-full px-4 py-2 border text-black font-medium border-black rounded"
+                  >
+                    <option value="">-- Select your Country --</option>
+                    {WorkCountry?.map((option) => (
+                      <option key={option.country_id} value={option.country_id}>
+                        {option.country_name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {educationalDetails.work_country === '1' ? (
+                  <div className="w-full">
+                    <label className="block text-black font-semibold mb-1">
+                      State (Based on country selection){' '}
+                      {/* <span className="text-red-500">*</span> */}
+                    </label>
+                    <select
+                      value={educationalDetails.work_state}
+                      disabled
+                      className="outline-none w-full px-4 py-2 border text-black font-medium border-black rounded"
+                    >
+                      <option value="" disabled>
+                        Select your state
+                      </option>
+                      {WorkState?.map((option: any) => (
+                        <option key={option.state_id} value={option.state_id}>
+                          {option.state_name}
+                        </option>
+                      ))}
+                    </select>
+                    {sessionStorage.getItem('stateError') && (
+                      <p className="text-red-600">
+                        {sessionStorage.getItem('stateError')}
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  <div className="flex w-full text-black font-medium flex-row gap-4">
+                    <Input
+                      value={educationalDetails.work_city}
+                      disabled
+                      label={'work place'}
+                      placeholder="Work place"
+                    />
+                  </div>
                 )}
               </div>
-            ) : (
-              <div className="flex w-full text-black font-medium flex-row gap-4">
-                <Input
-                  value={educationalDetails.work_city}
-                  disabled
-                  label={'work place'}
-                  placeholder="Work place"
-                />
+
+              <div className="flex w-full flex-row gap-4">
+                {educationalDetails.work_country === '1' && (
+                  <div className="w-2/4">
+                    <label className="block text-black font-semibold mb-1">
+                      District
+                      {/* <span className="text-red-500">*</span> */}
+                    </label>
+
+                    <select
+                      value={educationalDetails.work_district}
+                      disabled
+                      // {...register('EducationDetails.disttemp')}
+                      className="outline-none w-full px-4 py-2 text-black font-medium border border-black rounded"
+                    >
+                      <option value="" disabled>
+                        Select your District
+                      </option >
+                      {WorkDistrict?.map((option: District) => (
+                        <option key={option.disctict_id} value={option.disctict_id} >
+                          {option.disctict_name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {educationalDetails.work_country === '1' && (
+                  <div className="w-2/4">
+                    <label className="block text-black font-medium mb-1">
+                      Work City
+                      {/* <span className="text-red-500">*</span> */}
+                    </label>
+                    <Input
+                      required
+                      value={educationalDetails.work_city}
+                      label={''}
+                      type={'text'}
+                      readOnly
+                    />
+
+                  </div>
+                )}
+
+                <div className="flex w-2/4 flex-row gap-4">
+                  <Input
+                    required
+                    disabled
+                    value={educationalDetails.work_pincode}
+                    label={'Post code (Based on Country Selection)'}
+                  />
+                </div>
               </div>
-            )}
-          </div>
 
-          <div className="flex w-full flex-row gap-4">
-            {educationalDetails.work_country === '1' && (
-              <div className="w-2/4">
-                <label className="block text-black font-semibold mb-1">
-                  District
-                  {/* <span className="text-red-500">*</span> */}
-                </label>
-
-                <select
-                  value={educationalDetails.work_district}
-                  disabled
-                  // {...register('EducationDetails.disttemp')}
-                  className="outline-none w-full px-4 py-2 text-black font-medium border border-black rounded"
-                >
-                  <option value="" disabled>
-                    Select your District
-                  </option >
-                  {WorkDistrict?.map((option: District) => (
-                    <option key={option.disctict_id} value={option.disctict_id} >
-                      {option.disctict_name}
-                    </option>
-                  ))}
-                </select>
+              <div className="flex w-full flex-row gap-4">
+                <div className="w-2/4">
+                  <label className="block text-black font-semibold mb-1">
+                    Career Plans / Notes
+                    {/* <span className="text-red-500">*</span> */}
+                  </label>
+                  <textarea
+                    disabled
+                    value={educationalDetails.career_plans}
+                    className="outline-none w-full px-4 py-2 text-black font-medium border border-black rounded"
+                  ></textarea>
+                </div>
               </div>
-            )}
-
-            {educationalDetails.work_country === '1' && (
-              <div className="w-2/4">
-                <label className="block text-black font-medium mb-1">
-                  Work City
-                  {/* <span className="text-red-500">*</span> */}
-                </label>
-                <Input
-                  required
-                  value={educationalDetails.work_city}
-                  label={''}
-                  type={'text'}
-                  readOnly
-                />
-
-              </div>
-            )}
-
-            <div className="flex w-2/4 flex-row gap-4">
-              <Input
-                required
-                disabled
-                value={educationalDetails.work_pincode}
-                label={'Post code (Based on Country Selection)'}
-              />
-            </div>
-          </div>
-
-          <div className="flex w-full flex-row gap-4">
-            <div className="w-2/4">
-              <label className="block text-black font-semibold mb-1">
-                Career Plans / Notes
-                {/* <span className="text-red-500">*</span> */}
-              </label>
-              <textarea
-                disabled
-                value={educationalDetails.career_plans}
-                className="outline-none w-full px-4 py-2 text-black font-medium border border-black rounded"
-              ></textarea>
-            </div>
-          </div>
+            </>
+          )}
         </div>
       )}
     </div>

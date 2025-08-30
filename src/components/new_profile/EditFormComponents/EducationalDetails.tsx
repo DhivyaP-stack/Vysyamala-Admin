@@ -94,7 +94,8 @@ const EducationalDetails: React.FC<formProps> = ({
   const selecteddistrict = watch('EducationDetails.work_district') || '';
   const selectedCity = watch('EducationDetails.work_city') || '';
   const selectFieldOfStudy = watch('EducationDetails.field_ofstudy') || '';
-  console.log("selectFieldOfStudy", selectFieldOfStudy);
+  const selectProfession = watch('EducationDetails.profession_details') || '';
+  console.log("selectFieldOfStudy", selectProfession);
   const selectedUgDegree = watch('EducationDetails.degree') || '';
   const [showCityTextInput, setShowCityTextInput] = useState(false);
   const [isCityValid, setIsCityValid] = useState(false);
@@ -1026,11 +1027,10 @@ const EducationalDetails: React.FC<formProps> = ({
               </div>
             )}
           </div>
-          <h4 className="text-xl font-semibold text-black dark:text-white">
+    {!(profession === 3||profession === 4) && (  <>    <h4 className="text-xl font-semibold text-black dark:text-white">
             Work Location
           </h4>
-          {/*           
-          {/* from basic details india country */}
+        
           <div className="flex flex-row gap-4">
             <div className="w-2/4">
               <label className="block text-black font-semibold mb-1">
@@ -1360,7 +1360,7 @@ const EducationalDetails: React.FC<formProps> = ({
                 </div>
               </div>
             </div>
-          </div>
+          </div></>)}
         </div>
       )}
       <div className="flex justify-end mt-10 ">

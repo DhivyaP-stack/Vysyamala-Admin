@@ -359,9 +359,12 @@ const BasicDetails: React.FC<formProps> = ({
             {/* Gender Selector */}
             <div className="w-full py-1">
               <label className="block text-black font-semibold mb-1">
-                Select Gender <span className="text-red-500">*</span>
+                 Gender <span className="text-red-500">*</span>
               </label>
-              <input
+               <label className="block text-black font-bold mb-1 ml-30 capitalize">
+                {selectedGender} 
+              </label>
+              {/* <input
                 {...register('BasicDetail.Gender')}
                 type="radio"
                 value="male"
@@ -379,7 +382,7 @@ const BasicDetails: React.FC<formProps> = ({
                 <p className="text-red-600">
                   {errors.BasicDetail.Gender.message}
                 </p>
-              )}
+              )} */}
             </div>
           </div>
           <div className="flex w-full flex-row gap-4">
@@ -431,10 +434,8 @@ const BasicDetails: React.FC<formProps> = ({
                 </p>
               )}
             </div>
-          </div>
 
-          <div className="flex w-full flex-row gap-4">
-            <div className="w-full relative">
+              <div className="w-full relative">
               {/* The star placed relative to the label position */}
               <span className="absolute top-[2px] left-[95px] text-red-500">*</span>
               <Input
@@ -450,6 +451,10 @@ const BasicDetails: React.FC<formProps> = ({
                 </p>
               )}
             </div>
+          </div>
+
+          <div className="flex w-full flex-row gap-4">
+          
 
             <div className="w-full">
               <label className="block text-black font-semibold mb-1">
@@ -494,36 +499,7 @@ const BasicDetails: React.FC<formProps> = ({
                 </p>
               )}
             </div>
-          </div>
-
-          <div className="flex w-full flex-row gap-4">
-            <div className="w-full">
-              <label className="block text-black font-semibold mb-1">
-                Complexion
-                {/* <span className="text-red-500">*</span> */}
-              </label>
-              <select
-                {...register('BasicDetail.complexion')}
-                className="outline-none w-full px-4 py-2 border border-black rounded text-[#000000e6] font-medium"
-              >
-                <option value="" className='text-[#000000e6] font-medium'>Select your complexion</option>
-                {Complexion?.map((option: Complexion) => (
-                  <option
-                    key={option.complexion_id}
-                    value={option.complexion_id}
-                    className='text-[#000000e6] font-medium'
-                  >
-                    {option.complexion_description}
-                  </option>
-                ))}
-              </select>
-              {errors?.BasicDetail?.complexion && (
-                <p className="text-red-600">
-                  {errors.BasicDetail.complexion.message}
-                </p>
-              )}
-            </div>
-            <div className="w-full">
+               <div className="w-full">
               <label className="block text-black font-semibold mb-1">
                 Country
                 <span className="text-red-500">*</span>
@@ -546,8 +522,13 @@ const BasicDetails: React.FC<formProps> = ({
                 </p>
               )}
             </div>
+          </div>
+
+          <div className="flex w-full flex-row gap-4">
+          
+         
             {selectedCountry === '1' && (
-              <div className="w-full">
+              <div className="w-2/4">
                 <label className="block text-black font-semibold mb-1">
                   State (Based on country selection){' '}
                   {/* <span className="text-red-500">*</span> */}
@@ -574,10 +555,9 @@ const BasicDetails: React.FC<formProps> = ({
                 )}
               </div>
             )}
-          </div>
-          <div className="flex w-full flex-row gap-4">
 
-            {selectedCountry === '1' && (
+
+               {selectedCountry === '1' && (
               <div className="flex w-full flex-row gap-4">
                 <div className="w-full">
                   <label className="block text-black font-semibold mb-1">
@@ -754,6 +734,38 @@ const BasicDetails: React.FC<formProps> = ({
               )
             )}
 
+          </div>
+          <div className="flex w-full flex-row gap-4">
+
+         
+
+              <div className="w-2/4">
+              <label className="block text-black font-semibold mb-1">
+                Complexion
+                {/* <span className="text-red-500">*</span> */}
+              </label>
+              <select
+                {...register('BasicDetail.complexion')}
+                className="outline-none w-full px-4 py-2 border border-black rounded text-[#000000e6] font-medium"
+              >
+                <option value="" className='text-[#000000e6] font-medium'>Select your complexion</option>
+                {Complexion?.map((option: Complexion) => (
+                  <option
+                    key={option.complexion_id}
+                    value={option.complexion_id}
+                    className='text-[#000000e6] font-medium'
+                  >
+                    {option.complexion_description}
+                  </option>
+                ))}
+              </select>
+              {errors?.BasicDetail?.complexion && (
+                <p className="text-red-600">
+                  {errors.BasicDetail.complexion.message}
+                </p>
+              )}
+            </div>
+
             <div className="w-2/4">
               <Input
                 required
@@ -778,9 +790,8 @@ const BasicDetails: React.FC<formProps> = ({
                 </p>
               )}
             </div>
-          </div>
-          <div className="flex w-full flex-row gap-4">
-            <div className="w-1/3">
+
+             <div className="w-2/4">
               <label className="block text-black font-semibold mb-1">
                 Whatsapp Mobile Number
               </label>
@@ -805,16 +816,19 @@ const BasicDetails: React.FC<formProps> = ({
                 </p>
               )}
             </div>
+          </div>
+          <div className="flex w-full flex-row gap-4">
+           
 
 
-            <div className="w-2/4">
-              <label className='block text-black font-medium mb-1'>
+            <div className="w-1/3">
+              <label className='block text-black   font-semibold mb-1'>
                 Profile Height
                 {/* <span className="text-red-500">*</span> */}
               </label>
               <select
                 id="height"
-                className={`text-ash font-medium block w-full px-3 py-2 border-[1px] border-footer-text-gray rounded-[4px] focus-visible:outline-none`}
+                className={`text-ash font-medium block w-full px-3 py-2 border-[1px] border-black border-footer-text-gray rounded-[4px] focus-visible:outline-none`}
                 {...register("BasicDetail.Profile_height")}
                 value={watch("BasicDetail.Profile_height") || ""}
               >
@@ -822,7 +836,7 @@ const BasicDetails: React.FC<formProps> = ({
                   Select Height
                 </option>
                 {heightOptions.map((option) => (
-                  <option key={option.height_id} value={option.height_id}>
+                  <option key={option.height_id} value={option.height_id} className='font-semibold text-black'>
                     {option.height_description}
                   </option>
                 ))}

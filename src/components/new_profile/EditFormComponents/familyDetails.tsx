@@ -127,7 +127,7 @@ const FamilyDetails: React.FC<formProps> = ({
       setValue('FamilyDetails.physicallyChalanged', EditData[1].Pysically_changed || 'no');
       setValue('FamilyDetails.PropertyDetails', EditData[1].property_details || '');
       setValue('FamilyDetails.PropertyWorth', EditData[1].property_worth || '');
-      setValue('FamilyDetails.EyeWear', EditData[1].eye_wear === "1" ? "Yes" : EditData[1].eye_wear === "0" ? "No" : '');
+      setValue('FamilyDetails.EyeWear', EditData[1].eye_wear || '');
       setValue('FamilyDetails.SuyaGothram', EditData[1].suya_gothram || '');
       setValue('FamilyDetails.AncestorOrigin', EditData[1].ancestor_origin || '');
       setValue('FamilyDetails.AboutMyFamily', EditData[1].about_family || '');
@@ -919,9 +919,10 @@ cursor-pointer  ${selectedSister === num.toString() ? 'bg-blue-500 text-white' :
                   <option value="">
                     -- Select Eye Wear --
                   </option>
+                  <option value="Unknown">Unknown</option>
                   <option value="Yes">Yes</option>
                   <option value="No">No</option>
-                  <option value="Unknown">Unknown</option>
+
                 </select>
 
                 {errors?.FamilyDetails?.EyeWear && (

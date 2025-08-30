@@ -1184,6 +1184,10 @@ const ViewProfile: React.FC<pageProps> = ({
                   valid till: {profileView.valid_till}
                 </span>
               </div>
+              <br />
+              <span className={`text-green-700 font-bold text-xl`}>
+                {profileId}
+              </span>
             </div>
 
             {/* Profile Details */}

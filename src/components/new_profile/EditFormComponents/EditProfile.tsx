@@ -340,7 +340,7 @@ const EditViewProfile: React.FC<pageProps> = ({
             onClick={toggleSection1}
             className="text-red-600 flex items-center justify-between text-xl cursor-pointer font-semibold dark:text-white"
           >
-            <span>Profile View</span>{' '}
+            <span>Edit Profile</span>{' '}
             {/* Add a title or any text here */}
             <svg
               className={`fill-current transform ${isViewDetais ? 'rotate-180' : ''
@@ -461,6 +461,10 @@ const EditViewProfile: React.FC<pageProps> = ({
                     <br />
                     <span className="text-vibrantOrange">
                       valid till:{valid_till}
+                    </span>
+                    <br />
+                    <span className={`text-green-700 font-bold text-xl`}>
+                      {profileId}
                     </span>
                   </div>
                 </div>

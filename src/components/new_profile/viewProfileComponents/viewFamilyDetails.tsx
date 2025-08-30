@@ -186,9 +186,10 @@ const ViewFamilyDetailsForm: React.FC<pageProp> = ({ profile }) => {
                   disabled
                   className="outline-none w-full px-4 py-2 border text-black font-medium border-black rounded"
                 >
+                  <option value="Unknown" className='text-black font-semibold'>Unknown</option>
                   <option value="Yes" className='text-black font-semibold'>Yes</option>
                   <option value="No" className='text-black font-semibold'>No</option>
-                  <option value="Unknown" className='text-black font-semibold'>Unknown</option>
+
                 </select>
               </div>
             </div>
@@ -449,7 +450,7 @@ cursor-pointer  ${buttonClass(
               </div>
 
               <div className="flex w-full flex-row gap-4">
-                <div className="w-full py-1">
+                {/* <div className="w-full py-1">
                   <Input
                     readOnly
                     value={familyDetails.Pysically_changed}
@@ -457,6 +458,31 @@ cursor-pointer  ${buttonClass(
                     label={' Physically Challenged'}
                     type={'text'}
                   />
+                </div> */}
+                <div className="w-full py-1">
+                  <label className="block text-black font-medium mb-1">
+                    Physically Challenged
+                  </label>
+                  <div className="flex items-center">
+                    <label className="flex items-center mr-4">
+                      <input
+                        type="radio"
+                        checked={familyDetails.Pysically_changed === "yes"}
+                        readOnly
+                        className="mr-2"
+                      />
+                      Yes
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        checked={familyDetails.Pysically_changed === "no"}
+                        readOnly
+                        className="mr-2"
+                      />
+                      No
+                    </label>
+                  </div>
                 </div>
                 {familyDetails.Pysically_changed === 'yes' && (
                   <div className="w-full">
@@ -510,8 +536,7 @@ cursor-pointer  ${buttonClass(
                 <Input
                   placeholder="Kg"
                   readOnly
-                  value={familyDetails.weight}
-
+                  value={familyDetails.weight === '0' ? "N/A" : familyDetails.weight}
                   label={'weight'}
                   type={'text'}
                   name="weight"

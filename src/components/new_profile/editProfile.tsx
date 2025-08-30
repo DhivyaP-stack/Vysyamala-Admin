@@ -304,7 +304,7 @@ const EditProfile = () => {
         visibility_profession: data.profile_visibility.visibility_profession,
         visibility_education: data.profile_visibility.visibility_education,
         visibility_anual_income: data.profile_visibility.visibility_anual_income,
-         visibility_anual_income_max: data.profile_visibility.visibility_anual_income_max,
+        visibility_anual_income_max: data.profile_visibility.visibility_anual_income_max,
         visibility_family_status: familyStatusVisibility || data.profile_visibility.visibility_family_status || null,
         visibility_chevvai: data.profile_visibility.visibility_chevvai || "No",
         visibility_ragukethu: data.profile_visibility.visibility_ragukethu || "No",
@@ -529,12 +529,12 @@ const EditProfile = () => {
         anual_income: data.EducationDetails.AnnualIncome,
         actual_income: data.EducationDetails.ActualIncome,
         profession: data.EducationDetails.profession,
-        company_name:data.EducationDetails.company_name ,
-        designation:data.EducationDetails.designation,
-        profession_details:data.EducationDetails.profession_details,
-        business_name:data.EducationDetails.business_name,
-        business_address:data.EducationDetails.business_address ,
-        nature_of_business:data.EducationDetails.nature_of_business,
+        company_name: data.EducationDetails.company_name,
+        designation: data.EducationDetails.designation,
+        profession_details: data.EducationDetails.profession_details,
+        business_name: data.EducationDetails.business_name,
+        business_address: data.EducationDetails.business_address,
+        nature_of_business: data.EducationDetails.nature_of_business,
         work_country: data.EducationDetails.work_country,
         work_state: data.EducationDetails.work_state,
         work_place: data.EducationDetails.workplace,
@@ -640,6 +640,14 @@ const EditProfile = () => {
 
   return (
     <div className=" p-5 mb-10 max-md:p-0">
+      <div className="fixed bottom-150 right-4 z-50 mr-12">
+        <button
+          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded shadow-md transition-colors"
+          onClick={() => navigate(-1)}
+        >
+          To View View form
+        </button>
+      </div>
       <FormProvider {...ProfileViwewMethod}>
         <form onSubmit={ProfileViwewMethod.handleSubmit(handleProfileView)}>
           <div ref={ProfileViewRef}>
