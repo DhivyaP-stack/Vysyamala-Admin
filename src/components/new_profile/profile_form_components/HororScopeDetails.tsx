@@ -207,6 +207,7 @@ const HororScopeDetails: React.FC<hororScopeProp> = ({
                     {Array.from({ length: 60 }, (_, i) => (<option key={i} value={i.toString().padStart(2, '0')}>{i.toString().padStart(2, '0')}</option>))}
                   </select>
                   <select value={period} onChange={(e) => setPeriod(e.target.value)} className="px-3 py-2 border rounded border-gray-500">
+                    
                     <option value="AM">AM</option><option value="PM">PM</option>
                   </select>
                 </div>

@@ -19,6 +19,11 @@ interface ProfessionPref {
   Profes_Pref_id: number;
   Profes_name: string;
 }
+
+interface FieldOfStudy {
+  study_id: number;
+  study_description: string;
+}
 interface Partnerpreference {
   birthStarId: string;
   gender: string;
@@ -28,6 +33,7 @@ interface Partnerpreference {
   setMaritalStaus: Dispatch<SetStateAction<string>>;
   setPrefProf: Dispatch<SetStateAction<number[]>>;
   setPrefEducation: Dispatch<SetStateAction<string[] | undefined>>;
+  setPrefFieldOfStudy: Dispatch<SetStateAction<string[]>>;
   setAnnualIncomesValmax: Dispatch<SetStateAction<string[]>>;
   setAnnualIncomesVal: Dispatch<SetStateAction<string[]>>;
   selectSetMaridStatus: Dispatch<SetStateAction<string[]>>;
@@ -76,6 +82,9 @@ interface AnnualIncome {
   income_id: number;
   income_description: string;
 }
+
+
+
 const Partner_preference: React.FC<Partnerpreference> = ({
   birthStarId,
   gender,
@@ -86,6 +95,7 @@ const Partner_preference: React.FC<Partnerpreference> = ({
   selectSetMaridStatus,
   setPrefProf,
   setPrefEducation,
+  setPrefFieldOfStudy,
   setAnnualIncomesVal,
   setAnnualIncomesValmax,
   isPartnerPreferenceOpen,
@@ -95,14 +105,12 @@ const Partner_preference: React.FC<Partnerpreference> = ({
 }) => {
   const {
     register,
-
     formState: { errors },
   } = useFormContext<FormValues>();
 
   // const [matchStars, setMatchStars] = useState<MatchingStar[]>([]);
   const [selectedStarIds, setSelectedStarIds] = useState<SelectedStarIdItem[]>(
-    [],
-  );
+    [],);
   const handleCheckboxChange = (updatedIds: SelectedStarIdItem[]) => {
     setSelectedStarIds(updatedIds);
   };
@@ -114,6 +122,40 @@ const Partner_preference: React.FC<Partnerpreference> = ({
       isChecked ? [...prev, id] : prev.filter((eduId) => eduId !== id),
     );
   };
+  // 3. Add state and a handler function for Field of Study
+  const [fieldOfStudyOptions, setFieldOfStudyOptions] = useState<FieldOfStudy[]>([]);
+  const [selectedFieldsOfStudy, setSelectedFieldsOfStudy] = useState<string[]>([]);
+
+  const handleFieldOfStudyChange = (id: string, isChecked: boolean) => {
+    setSelectedFieldsOfStudy((prev) =>
+      isChecked ? [...prev, id] : prev.filter((studyId) => studyId !== id),
+    );
+  };
+
+  // ... existing useEffects
+
+  // 4. Add useEffect hooks to fetch data and update the parent component
+  useEffect(() => {
+    const fetchFieldOfStudy = async () => {
+      try {
+        const response = await axios.post(
+          `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_Field_ofstudy/`,
+        );
+        const options = Object.values(response.data) as FieldOfStudy[];
+        setFieldOfStudyOptions(options);
+      } catch (error) {
+        console.error('Error fetching Field of Study options:', error);
+      }
+    };
+    fetchFieldOfStudy();
+  }, []);
+
+  useEffect(() => {
+    setPrefFieldOfStudy(selectedFieldsOfStudy);
+  }, [selectedFieldsOfStudy, setPrefFieldOfStudy]);
+
+
+  // 5. Update the form reset logic to include the new state
 
   // In Partner_preference.tsx, add these two useEffects
 
@@ -672,6 +714,72 @@ const Partner_preference: React.FC<Partnerpreference> = ({
                 ))}
               </div>
             </div>
+
+            <div className="w-full py-1">
+              <h5 className="text-[18px] text-black font-semibold mb-2">
+                Field of Study
+              </h5>
+              <div className="flex flex-wrap gap-x-6 gap-y-2">
+                {fieldOfStudyOptions.map((option) => (
+                  <div key={option.study_id} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id={`study-${option.study_id}`}
+                      value={option.study_id.toString()}
+                      checked={selectedFieldsOfStudy.includes(
+                        option.study_id.toString()
+                      )}
+                      onChange={(e) =>
+                        handleFieldOfStudyChange(
+                          option.study_id.toString(),
+                          e.target.checked
+                        )
+                      }
+                      className="mr-2"
+                    />
+                    <label
+                      htmlFor={`study-${option.study_id}`}
+                      className='text-[#000000e6] font-medium'
+                    >
+                      {option.study_description}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* <div className="w-full py-1">
+              <h5 className="text-[18px] text-black font-semibold mb-2">
+                Degree
+              </h5>
+              <div className="flex flex-wrap gap-x-6 gap-y-2">
+                {fieldOfStudyOptions.map((option) => (
+                  <div key={option.study_id} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id={`study-${option.study_id}`}
+                      value={option.study_id.toString()}
+                      checked={selectedFieldsOfStudy.includes(
+                        option.study_id.toString()
+                      )}
+                      onChange={(e) =>
+                        handleFieldOfStudyChange(
+                          option.study_id.toString(),
+                          e.target.checked
+                        )
+                      }
+                      className="mr-2"
+                    />
+                    <label
+                      htmlFor={`study-${option.study_id}`}
+                      className='text-[#000000e6] font-medium'
+                    >
+                      {option.study_description}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div> */}
 
             <div>
               <h5 className="text-[18px] text-black font-semibold mb-2 cursor-pointer" onClick={handleSelectAllMaritalStatus}>

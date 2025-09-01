@@ -186,6 +186,9 @@ const ViewFamilyDetailsForm: React.FC<pageProp> = ({ profile }) => {
                   disabled
                   className="outline-none w-full px-4 py-2 border text-black font-medium border-black rounded"
                 >
+                  <option value="">
+                    -- Select Eye Wear --
+                  </option>
                   <option value="Unknown" className='text-black font-semibold'>Unknown</option>
                   <option value="Yes" className='text-black font-semibold'>Yes</option>
                   <option value="No" className='text-black font-semibold'>No</option>

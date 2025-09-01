@@ -804,10 +804,12 @@ const FamilyDetailsForm: React.FC<pageProp> = ({
                   className="outline-none w-full px-4 py-2 border border-black rounded"
                   {...register('FamilyDetailsForm.EyeWear')}
                 >
-                    <option value="Unknown">Unknown</option>
+                  <option value="">
+                    Select Eye Wear
+                  </option>
+                  <option value="Unknown">Unknown</option>
                   <option value="Yes">Yes</option>
                   <option value="No">No</option>
-                 
                 </select>
                 {errors?.FamilyDetailsForm?.EyeWear && (
                   <p className="text-red-600">

@@ -298,7 +298,27 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
     }
   }, [EditData]);
 
+  useEffect(() => {
+    if (EditData && EditData[3]) {
+      const dasaBalance = EditData[3].dasa_balance_display;
 
+      if (dasaBalance) {
+        // Simple regex to extract numbers for years, months, days
+        const yearMatch = dasaBalance.match(/(\d+)\s*Years?/);
+        const monthMatch = dasaBalance.match(/(\d+)\s*Months?/);
+        const dayMatch = dasaBalance.match(/(\d+)\s*Days?/);
+
+        const year = yearMatch ? yearMatch[1] : "";
+        const month = monthMatch ? monthMatch[1] : "";
+        const day = dayMatch ? dayMatch[1] : "";
+
+        // Set the form values directly
+        setValue("HororScopeDetails.DasaBalanceYear", year);
+        setValue("HororScopeDetails.DasaBalanceMonth", month);
+        setValue("HororScopeDetails.DasaBalanceDay", day);
+      }
+    }
+  }, [EditData, setValue]);
 
   return (
     <div>
@@ -576,9 +596,12 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
                   Dasa Balance
                 </label>
                 <div className="flex space-x-2">
+
                   <div className="w-full">
+                    {/* <label  className="block text-black font-semibold mb-1">
+      Year
+  </label> */}
                     <select
-                      value={year}
                       {...register('HororScopeDetails.DasaBalanceYear')}
                       id="year"
                       className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
@@ -596,9 +619,11 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
                     </select>
                   </div>
                   <div className="w-full">
+                    {/* <label  className="block text-black font-semibold mb-1">
+     Month
+  </label> */}
                     <select
                       id="month"
-                      value={month}
                       {...register('HororScopeDetails.DasaBalanceMonth')}
                       className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
                     >
@@ -613,12 +638,13 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
                     </select>
                   </div>
                   <div className="w-full">
+                    {/* <label className="block text-black font-semibold mb-1">
+                      Day
+                    </label> */}
                     <select
                       {...register('HororScopeDetails.DasaBalanceDay')}
                       id="dasa_balance"
-                      value={day}
                       className="outline-none w-full px-4 py-2 border border-black text-[#000000e6] font-medium rounded"
-                      defaultValue=""
                     >
                       <option value="" className='text-[#000000e6] font-medium'>
                         Day

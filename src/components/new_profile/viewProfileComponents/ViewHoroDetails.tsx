@@ -515,7 +515,7 @@ useEffect(() => {
                       {Array.from({ length: 30 }, (_, i) => i + 1).map(
                         (year) => (
                           <option key={year} value={year}>
-                            {year}
+                            {year} Years
                           </option>
                         ),
                       )}
@@ -533,7 +533,7 @@ useEffect(() => {
                       </option>
                       {[...Array(12)].map((_, i) => (
                         <option key={i + 1} value={i + 1}>
-                          {i + 1}
+                          {i + 1} Months
                         </option>
                       ))}
                     </select>
@@ -552,7 +552,7 @@ useEffect(() => {
                       </option>
                       {[...Array(31)].map((_, i) => (
                         <option key={i + 1} value={i + 1}>
-                          {i + 1}
+                          {i + 1} Days
                         </option>
                       ))}
                     </select>

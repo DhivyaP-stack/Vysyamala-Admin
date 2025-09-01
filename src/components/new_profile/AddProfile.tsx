@@ -87,15 +87,15 @@ export interface FormValues {
     AboutEducation: string;
     workdistrict: string;
     degree: string;
-    other_degree:string;
+    other_degree: string;
     WorkState: string;
     profession: string;
-    company_name:string;
-    designation:string;
-    profession_details:string;
-    business_name:string;
-    business_address:string;
-    nature_of_business:string;
+    company_name: string;
+    designation: string;
+    profession_details: string;
+    business_name: string;
+    business_address: string;
+    nature_of_business: string;
     AnnualIncome: string;
     ActualIncome: string;
     pincode: string;
@@ -195,6 +195,8 @@ const AddProfile = () => {
   const [AnnualIncomesVal, setAnnualIncomesVal] = useState<string[]>([]);
   const [AnnualIncomesValmax, setAnnualIncomesValMax] = useState<string[]>([]);
   const [prefEducation, setprefEducation] = useState<string[]>();
+  const [sugPrefFieldOfStudy, setSugPrefFieldOfStudy] = useState<string[]>();
+  const [prefFieldOfStudy, setPrefFieldOfStudy] = useState<string[]>();
   const [prefporuthamstar, setPoruthamstar] = useState<string>('');
   const [preforuthamStarRasi, setPreforuthamStarRasi] = useState<string>('');
   const [preforuthamStarRasiSuggested, setPreforuthamStarRasiSuggested] = useState<string>('');
@@ -255,17 +257,17 @@ const AddProfile = () => {
     }
     console.log("Submitting Data:", data);
 
-  
-  const dasaDay = data.HororScopeDetails.dhasaBalanceDay;
-  const dasaMonth = data.HororScopeDetails.dhasaBalanceMonth;
-  const dasaYear = data.HororScopeDetails.dhasaBalanceYear;
 
-  // --- CORRECTED LINE ---
-  // This creates the desired format "15 Years, 11 Months, 16 Days"
-  // It also ensures an empty string is used if any value is missing.
-  const dasaBalance = (dasaYear && dasaMonth && dasaDay)
-    ? `${dasaYear} Years, ${dasaMonth} Months, ${dasaDay} Days`
-    : "";
+    const dasaDay = data.HororScopeDetails.dhasaBalanceDay;
+    const dasaMonth = data.HororScopeDetails.dhasaBalanceMonth;
+    const dasaYear = data.HororScopeDetails.dhasaBalanceYear;
+
+    // --- CORRECTED LINE ---
+    // This creates the desired format "15 Years, 11 Months, 16 Days"
+    // It also ensures an empty string is used if any value is missing.
+    const dasaBalance = (dasaYear && dasaMonth && dasaDay)
+      ? `${dasaYear} Years, ${dasaMonth} Months, ${dasaDay} Days`
+      : "";
 
     const today = new Date();
     const DateOfJoinToday = today.toISOString().split('T')[0];
@@ -339,14 +341,14 @@ const AddProfile = () => {
         about_edu: data.EducationDetails.AboutEducation,
         field_ofstudy: data.EducationDetails.field_ofstudy,
         degree: data.EducationDetails.degree,
-        other_degree: data.EducationDetails.other_degree, 
+        other_degree: data.EducationDetails.other_degree,
         profession: data.EducationDetails.profession,
-        company_name:data.EducationDetails.company_name ,
-        designation:data.EducationDetails.designation,
-        profession_details:data.EducationDetails.profession_details,
-        business_name:data.EducationDetails.business_name,
-        business_address:data.EducationDetails.business_address ,
-        nature_of_business:data.EducationDetails.nature_of_business,
+        company_name: data.EducationDetails.company_name,
+        designation: data.EducationDetails.designation,
+        profession_details: data.EducationDetails.profession_details,
+        business_name: data.EducationDetails.business_name,
+        business_address: data.EducationDetails.business_address,
+        nature_of_business: data.EducationDetails.nature_of_business,
         anual_income: data.EducationDetails.AnnualIncome,
         actual_income: data.EducationDetails.ActualIncome,
         work_pincode: data.EducationDetails.pincode,
@@ -356,6 +358,7 @@ const AddProfile = () => {
       partner_pref_details: {
         pref_marital_status: setMariedStatus.join(','),
         pref_education: prefEducation?.join(','),
+        pref_fieldof_study: prefFieldOfStudy?.join(','),
         pref_anual_income: AnnualIncomesVal.join(','),
         pref_anual_income_max: AnnualIncomesValmax.join(','),
         pref_profession: prefProf.join(','),
@@ -393,6 +396,7 @@ const AddProfile = () => {
       suggested_pref_details: {
         pref_marital_status: setMariedStatus.join(','),
         pref_education: prefEducation?.join(','),
+        pref_fieldof_study:sugPrefFieldOfStudy?.join(','),
         pref_anual_income: AnnualIncomesVal.join(','),
         pref_anual_income_max: AnnualIncomesValmax.join(','),
         pref_profession: prefProf.join(','),
@@ -418,6 +422,8 @@ const AddProfile = () => {
       setAnnualIncomesVal([]);
       setAnnualIncomesValMax([]);
       setprefEducation([]);
+      setPrefFieldOfStudy([]);
+      setSugPrefFieldOfStudy([]);
       setPrefProf([]);
       setMaritalStaus('');
       setPreforuthamStarRasi('');
@@ -697,6 +703,7 @@ const AddProfile = () => {
               setAnnualIncomesVal={setAnnualIncomesVal}
               setAnnualIncomesValmax={setAnnualIncomesValMax}
               setPrefEducation={setprefEducation}
+              setPrefFieldOfStudy={setPrefFieldOfStudy}
               setPrefProf={setPrefProf}
               setMaritalStaus={setMaritalStaus}
               setPreforuthamStarRasi={setPreforuthamStarRasi}
@@ -719,6 +726,7 @@ const AddProfile = () => {
               birthStarId={birthStarId}
               selectSetMaridStatus={selectSetMaridStatus}
               setPrefEducation={setprefEducation}
+              setSugPrefFieldOfStudy={setSugPrefFieldOfStudy}
               setPrefProf={setPrefProf}
               setMaritalStaus={setMaritalStaus}
               setIsSuggestedProfileOpen={setIsSuggestedProfileOpen}

@@ -491,7 +491,7 @@ const EditViewProfile: React.FC<pageProps> = ({
                       </span>
                       <div className="h-4 border-l-2 border-green-800 mx-1"></div>
                       <span className="text-green-600">
-                        created date:{created_date}
+                        created date:{created_date?.split('T')[0]}
                       </span>
                       <div className="h-4 border-l-2 border-green-800 mx-1"></div>
                       <span className="text-green-600">

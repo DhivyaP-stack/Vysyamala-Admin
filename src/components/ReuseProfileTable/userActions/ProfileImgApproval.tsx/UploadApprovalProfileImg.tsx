@@ -309,10 +309,8 @@ export const UploadApprovalProfileImg = () => {
             {/* Upload Images */}
             <div className="mt-4 ml-50">
                 {photoProofDetails.profile_images.map((image, index) => (
-                    // Changed flex to flex-col to stack items vertically
                     <div key={image.id} className="flex flex-col gap-2 mb-4">
                         <img
-                            // src={profileImg}
                             src={image.image_url || profileImg}
                             alt={`profileImg-${index}`}
                             className="w-30 h-30 object-cover rounded-md"
@@ -321,43 +319,47 @@ export const UploadApprovalProfileImg = () => {
                             }}
                         />
 
-                        {/* Added a new wrapper div to hold the controls in a row */}
                         <div className="flex items-center gap-4 mt-2">
-                            {/* Approve Controls */}
-                            <div className="flex items-left space-x-2">
-                                <label className="flex items-left">
-                                    <input
-                                        type="checkbox"
-                                        checked={image.image_approved}
-                                        onChange={() => handleImageApprovalChange(image.id)}
-                                        style={{
-                                            accentColor: image.image_approved ? 'green' : undefined,
-                                            width: '18px',
-                                            height: '18px',
-                                        }}
-                                    />
+                            {/* Approve Controls - Fixed */}
+                            <div className="flex items-center space-x-2">
+                                <input
+                                    id={`approve-${image.id}`}
+                                    type="checkbox"
+                                    checked={image.image_approved}
+                                    onChange={() => handleImageApprovalChange(image.id)}
+                                    style={{
+                                        accentColor: image.image_approved ? 'green' : undefined,
+                                        width: '18px',
+                                        height: '18px',
+                                    }}
+                                />
+                                <label
+                                    htmlFor={`approve-${image.id}`}
+                                    className="cursor-pointer select-none"
+                                >
+                                    Approve Image
                                 </label>
-                                <span>Approve Image</span>
                             </div>
 
-                            {/* Delete Controls - removed ml-40 for better alignment */}
+                            {/* Delete Controls - Fixed */}
                             <div className="flex items-center space-x-2">
-                                <label className="flex items-center">
-                                    <input
-                                        type="checkbox"
-                                        className="mr-2p"
-                                        checked={image.is_deleted}
-                                        onChange={() => handleDelete(image.id)}
-                                        style={{
-                                            accentColor: image.is_deleted ? 'red' : undefined,
-                                            width: '18px',
-                                            height: '18px',
-                                        }}
-                                    />
-                                </label>
-                                <button className=" text-red-500 px-3 py-1.5 text-sm rounded-md ml-2">
+                                <input
+                                    id={`delete-${image.id}`}
+                                    type="checkbox"
+                                    checked={image.is_deleted}
+                                    onChange={() => handleDelete(image.id)}
+                                    style={{
+                                        accentColor: image.is_deleted ? 'red' : undefined,
+                                        width: '18px',
+                                        height: '18px',
+                                    }}
+                                />
+                                <label
+                                    htmlFor={`delete-${image.id}`}
+                                    className="cursor-pointer select-none text-red-500 ml-2"
+                                >
                                     Delete Photo
-                                </button>
+                                </label>
                             </div>
                         </div>
                     </div>

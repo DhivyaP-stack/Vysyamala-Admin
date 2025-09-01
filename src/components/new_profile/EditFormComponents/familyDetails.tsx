@@ -204,6 +204,15 @@ const FamilyDetails: React.FC<formProps> = ({
   const selectedAdminUncleGothram = gothramOptions?.find(
     option => option.value === adminUncleGothram
   );
+
+
+  const weight = watch("FamilyDetails.weight");
+  useEffect(() => {
+    if (weight === "0") {
+      setValue("FamilyDetails.weight", "N/A");
+    }
+  }, [weight, setValue]);
+
   return (
     <div>
       <div className="bg-white p-5 mb-10 rounded shadow-md ">
@@ -879,7 +888,7 @@ cursor-pointer  ${selectedSister === num.toString() ? 'bg-blue-500 text-white' :
             <div className="flex w-full flex-row gap-4">
 
               <div className="w-full">
-                <Input
+                {/* <Input
                   onKeyDown={(e) => {
                     if (
                       e.key !== 'Backspace' &&
@@ -902,6 +911,29 @@ cursor-pointer  ${selectedSister === num.toString() ? 'bg-blue-500 text-white' :
                   label={'weight'}
                   type={'text'}
                 // name="weight"
+                /> */}
+                <Input
+                  {...register("FamilyDetails.weight", {
+                    setValueAs: (value) => {
+                      if (value === "" || value === undefined) return undefined;
+                      if (value === "N/A") return "N/A"; // keep as N/A
+                      return value;
+                    },
+                  })}
+                  placeholder="Kg"
+                  label={"Weight"}
+                  type={"text"}
+                  onKeyDown={(e) => {
+                    if (
+                      e.key !== "Backspace" &&
+                      e.key !== "ArrowLeft" &&
+                      e.key !== "ArrowRight" &&
+                      e.key !== "Tab" &&
+                      !/[0-9]/.test(e.key)
+                    ) {
+                      e.preventDefault();
+                    }
+                  }}
                 />
 
 

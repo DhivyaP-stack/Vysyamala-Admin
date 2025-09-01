@@ -89,6 +89,7 @@ const EditPartnerPreference: React.FC<pageProps> = ({
 
   // const [matchStars, setMatchStars] = useState<MatchingStar[]>([]);
   const [selectedStarIds, setSelectedStarIds] = useState<SelectedStarIdItem[]>([],);
+  console.log("edit partner settings selectedStarIds",selectedStarIds )
   const [edit3, setEdit3] = useState<HoroscopeDetails>()
   const [edit0, setEdit0] = useState<Gender>()
 
@@ -924,10 +925,8 @@ const EditPartnerPreference: React.FC<pageProps> = ({
                     </p>
                   )}
                 </div>
-
               </div>
             </div>
-
 
             <div>
               <div className="justify-start items-center gap-x-5 text-black">

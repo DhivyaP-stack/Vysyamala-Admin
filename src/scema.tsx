@@ -95,7 +95,7 @@ export const parentSchema = z.object({
     family_name: z.string().optional(),
     MyHobbies: z.string().optional(),
     weight: z.string().optional(),
-    EyeWear: z.enum(['Yes', 'No', 'Both']).optional(),
+    EyeWear: z.string().optional(),
     PropertyDetails: z.string().optional(),
     PropertyWorth: z.string().optional(),
     SuyaGothram: z.string().min(1, "Suya Gothram is required"),

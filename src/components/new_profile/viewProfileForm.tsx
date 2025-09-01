@@ -213,21 +213,19 @@ const ViewProfileForm: React.FC = () => {
           navigate(`/editProfile?profileId=${profileId}`)
         }>To edit this form</button>
       </div> */}
-      <div className="fixed bottom-150 z-50 flex justify-end mr-4">
-        <button
-          className="  text-orange-500 text-title-md  "
-
-        >
-          {profileId}
-        </button>
-      </div>
-      <div className="fixed bottom-150 right-4 z-50 mr-12">
-        <button
-          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded shadow-md transition-colors"
-          onClick={() => navigate(`/editProfile?profileId=${profileId}`)}
-        >
-          To edit this form
-        </button>
+      <div className="sticky left-0 top-[65px] w-full bg-transparent z-50 px-5 py-4">
+        <div className='container flex justify-between'>
+          <button
+            className="  text-orange-500 text-title-md">
+            {profileId}
+          </button>
+          <button
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded shadow-md transition-colors"
+            onClick={() => navigate(`/editProfile?profileId=${profileId}`)}
+          >
+            To edit this form
+          </button>
+        </div>
       </div>
       <div className='mt-6'>
         <div ref={viewProfileViewRef}>

@@ -640,13 +640,20 @@ const EditProfile = () => {
 
   return (
     <div className=" p-5 mb-10 max-md:p-0">
-      <div className="fixed bottom-150 right-4 z-50 mr-12">
-        <button
-          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded shadow-md transition-colors"
-          onClick={() => navigate(-1)}
-        >
-          To View View form
-        </button>
+      <div className="sticky left-0 top-[65px] w-full bg-transparent z-50 px-5 py-4">
+        <div className='container flex justify-between'>
+          <button
+            className="  text-orange-500 text-title-md">
+            {profileId}
+          </button>
+          <button
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded shadow-md transition-colors"
+            onClick={() => navigate(-1)}
+          >
+            To View this form
+          </button>
+        </div>
+
       </div>
       <FormProvider {...ProfileViwewMethod}>
         <form onSubmit={ProfileViwewMethod.handleSubmit(handleProfileView)}>
