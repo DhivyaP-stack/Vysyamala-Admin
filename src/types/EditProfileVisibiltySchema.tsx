@@ -8,8 +8,10 @@ export const profileVisibilitySchema = z.object({
     visibility_height_to: z.string().optional(),
     visibility_profession: z.string().optional(),
     visibility_education: z.string().optional(),
+    visibility_field_of_study: z.string().optional(),
+    degree: z.string().optional(),
     visibility_anual_income: z.string().optional(),
-    visibility_anual_income_max:z.string().optional(),
+    visibility_anual_income_max: z.string().optional(),
     visibility_family_status: z.string().nullable().optional(),
     visibility_chevvai: z.string().optional(),
     visibility_ragukethu: z.string().optional(),
@@ -17,45 +19,6 @@ export const profileVisibilitySchema = z.object({
     status: z.string().optional()
   })
 });
-
-// const fullSchema = z.object({
-//   profile_visibility: z.array(profileVisibilitySchema).optional()
-// });
-
-
-// export interface ProfileVisibility {
-//   profile_id?: string;
-//   visibility_age_from?: string;
-//   visibility_age_to?: string;
-//   visibility_height_from?: string;
-//   visibility_height_to?: string;
-//   visibility_profession?: string; // e.g., "5,1,5"
-//   visibility_education?: string;  // e.g., "5"
-//   visibility_anual_income?: string; // e.g., "1,5,1"
-//   visibility_family_status?: string | null;
-//   visibility_chevvai?: "Yes" | "No" | "YES" | "NO";
-//   visibility_ragukethu?: "Yes" | "No" | "YES" | "NO";
-//   visibility_foreign_interest?: "Yes" | "No" | "BOTH" | "YES" | "NO";
-//   status?: string;
-// }
-
-// export interface ProfileVisibilityResponse {
-//   profile_visibility?: {
-//      profile_id?: string;
-//   visibility_age_from?: string;
-//   visibility_age_to?: string;
-//   visibility_height_from?: string;
-//   visibility_height_to?: string;
-//   visibility_profession?: string; // e.g., "5,1,5"
-//   visibility_education?: string;  // e.g., "5"
-//   visibility_anual_income?: string; // e.g., "1,5,1"
-//   visibility_family_status?: string | null;
-//   visibility_chevvai?: "Yes" | "No" | "YES" | "NO";
-//   visibility_ragukethu?: "Yes" | "No" | "YES" | "NO";
-//   visibility_foreign_interest?: "Yes" | "No" | "BOTH" | "YES" | "NO";
-//   status?: string;
-//   }
-// }
 
 
 export interface ProfileVisibilityResponse {
@@ -67,8 +30,10 @@ export interface ProfileVisibilityResponse {
     visibility_height_to: string;
     visibility_profession: string;
     visibility_education: string;
+    visibility_field_of_study: string;
+    degree: string;
     visibility_anual_income: string;
-    visibility_anual_income_max:string;
+    visibility_anual_income_max: string;
     visibility_family_status: string | null;
     visibility_chevvai: string;
     visibility_ragukethu: string;

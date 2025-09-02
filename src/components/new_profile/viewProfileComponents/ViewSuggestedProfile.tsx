@@ -10,6 +10,8 @@ import {
   StatePref,
 } from '../../../action';
 import { useQuery } from '@tanstack/react-query';
+import Select from "react-select";
+
 
 interface pageProps {
   profile: any;
@@ -25,9 +27,20 @@ interface Gender {
   "Gender": string,
 }
 
+interface FieldOfStudy {
+  study_id: number;
+  study_description: string;
+}
+
+interface Degree {
+  degeree_id: number;
+  degeree_description: string;
+}
+
 import axios from 'axios';
 import ViewMatchingStars from './ViewMatchingStars';
 import { useForm } from 'react-hook-form';
+import { apiAxios } from '../../../api/apiUrl';
 
 const ViewSuggestedProfile: React.FC<pageProps> = ({
   profile,
@@ -44,6 +57,10 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
   const [selectedPrefState, setSelectedPrefState] = useState('');
   const [editFamilyStatus, setEditFamilyStatus] = useState('');
   const [editPrefState, setEditPrefState] = useState('');
+  const [fieldOfStudyOptions, setFieldOfStudyOptions] = useState<FieldOfStudy[]>([]);
+  const [degrees, setDegrees] = useState<Degree[]>([]);
+  const [selectedFieldsOfStudy, setSelectedFieldsOfStudy] = useState<string[]>([]);
+  const [selectedDegrees, setSelectedDegrees] = useState<string[]>([]);
   const toggleSection5 = () => {
     setIsSugggestedProfileOpen(!isSuggestedProfileOpen);
   };
@@ -71,9 +88,13 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
       setEdit0(profile[0]);
       const prefFamilyStatus = profile[8].pref_family_status;
       const prefState = profile[8].pref_state;
+      const prefFieldOfStudy = profile[8].visibility_field_of_study || '';
+      const prefDegree = profile[8].degree || '';
 
       setSelectedFamilyStatus(prefFamilyStatus);
       setSelectedPrefState(prefState);
+      setSelectedFieldsOfStudy(prefFieldOfStudy.split(',').filter(Boolean));
+      setSelectedDegrees(prefDegree.split(',').filter(Boolean));
       setValue("profileView.pref_family_status", prefFamilyStatus);
       setValue("profileView.pref_state", prefState);
       setValue("profileView.pref_anual_income", profile[8].pref_anual_income);
@@ -83,6 +104,24 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
   }, [profile, setValue]);
 
 
+  useEffect(() => {
+    if (profile && profile.length > 0) {
+      const suggestedProfile = profile[8];
+
+      // Set field of study from suggested profile preferences
+      if (suggestedProfile.pref_fieldof_study) {
+        const fields = suggestedProfile.pref_fieldof_study.split(',').filter(Boolean);
+        setSelectedFieldsOfStudy(fields);
+      }
+
+    // Also check profile visibility for field of study
+      const visibility = profile[9];
+      if (visibility && visibility.visibility_field_of_study) {
+        const visibilityFields = visibility.visibility_field_of_study.split(',').filter(Boolean);
+        setSelectedFieldsOfStudy(visibilityFields);
+      }
+    }
+  }, [profile, setValue]);
   useEffect(() => {
     if (profile && profile.length > 0) {
       setEditFamilyStatus(profile[8].pref_family_status || '');
@@ -97,11 +136,9 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
     }
   }, [profile]);
 
-
   const rasiId: string = edit3?.birth_rasi_name as string;
   const starId: string = edit3?.birthstar_name as string;
   const gender: string = edit0?.Gender as string;
-
 
   const { data: matchStars } = useQuery({
     queryKey: ['matchStars'],
@@ -131,23 +168,51 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
         console.error('Error fetching Annual Income options:', error);
       }
     };
+
+    const fetchFieldOfStudy = async () => {
+      try {
+        const response = await apiAxios.post(`auth/Get_Field_ofstudy/`);
+        console.log('Field of Study API response:', response.data);
+
+        // Handle different response structures
+        let options: FieldOfStudy[] = [];
+
+        if (Array.isArray(response.data)) {
+          options = response.data;
+        } else if (typeof response.data === 'object') {
+          options = Object.values(response.data);
+        }
+
+        console.log('Processed field of study options:', options);
+        setFieldOfStudyOptions(options);
+      } catch (error) {
+        console.error('Error fetching Field of Study options:', error);
+      }
+    };
+    const fetchDegrees = async () => {
+      try {
+        const response = await apiAxios.get(
+          `auth/pref_degree_list/`
+        );
+        const degreeOptions = Object.values(response.data) as Degree[];
+        setDegrees(degreeOptions);
+      } catch (error) {
+        console.error('Error fetching Degree options:', error);
+      }
+    };
+
+
     fetchAnnualIncome();
-
     fetchEduPref();
+    fetchFieldOfStudy();
+    fetchDegrees();
   }, []);
-  // useEffect(() => {
-  //   if (profile && profile.length > 0) {
-  //     setSuggestedProfiles(profile[8]);
-  //   }
-  // }, [profile]);
 
-  // console.log(suggestedProfiles)
   const educationArray = SuggestedProfileDetails.pref_profession?.split(',');
   const professionArray = SuggestedProfileDetails.pref_education?.split(',');
   const martalStatusArray =
     SuggestedProfileDetails.pref_marital_status?.split(',');
-  // const annualIncomeArray =
-  //   SuggestedProfileDetails.pref_anual_income?.split(',');
+
 
   useEffect(() => {
     if (SuggestedProfileDetails?.pref_porutham_star) {
@@ -172,9 +237,7 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
     queryFn: fetchFamilyStatus,
   });
 
-  const [stateOptions, setStateOptions] = useState<StatePref[]>([]); // ✅ Typed useState
-  console.log("bqw", stateOptions)
-
+  const [stateOptions, setStateOptions] = useState<StatePref[]>([]);
 
   useEffect(() => {
     const fetchStatePreferences = async () => {
@@ -298,7 +361,6 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
                   className="w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
                 >
                   <option value="">Select</option>
-
                   <option value="Yes">Yes</option>
                   <option value="No">No</option>
                   <option value="Both">Both</option>
@@ -331,11 +393,7 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
                   </div>
                 ))}
               </div>
-
             </div>
-
-
-
 
             <div className="w-full py-1">
               <h5 className="text-[18px] text-black font-semibold mb-2 cursor-pointer">
@@ -361,7 +419,6 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
                   </div>
                 ))}
               </div>
-
             </div>
 
 
@@ -417,6 +474,58 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
                   </div>
                 ))}
               </div>
+            </div>
+
+            <div className="w-full py-1">
+              <h5 className="text-[18px] text-black font-semibold mb-2">
+                Field of Study
+              </h5>
+              <div className="flex flex-wrap gap-x-6 gap-y-2">
+                {fieldOfStudyOptions.map((option) => (
+                  <div key={option.study_id} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id={`study-${option.study_id}`}
+                      value={option.study_id.toString()}
+                      checked={selectedFieldsOfStudy.includes(option.study_id.toString())}
+                      onClick={(e) => e.preventDefault()}
+                      className="mr-2"
+                    />
+                    <label
+                      htmlFor={`study-${option.study_id}`}
+                      className='text-[#000000e6] font-medium'
+                    >
+                      {option.study_description}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Degree Section */}
+            <div className="w-full py-1">
+              <h5 className="text-[18px] text-black font-semibold mb-2">
+                Degree
+              </h5>
+              <Select
+                isMulti
+                isDisabled // since you're just *viewing* preferences
+                options={degrees.map((degree) => ({
+                  value: degree.degeree_id.toString(),
+                  label: degree.degeree_description,
+                }))}
+                value={degrees
+                  .filter((degree) =>
+                    selectedDegrees.includes(degree.degeree_id.toString())
+                  )
+                  .map((degree) => ({
+                    value: degree.degeree_id.toString(),
+                    label: degree.degeree_description,
+                  }))}
+                className="basic-multi-select"
+                classNamePrefix="select"
+                placeholder="Select Degrees"
+              />
             </div>
 
             <div>

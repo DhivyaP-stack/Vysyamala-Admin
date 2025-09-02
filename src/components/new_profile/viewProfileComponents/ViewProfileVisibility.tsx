@@ -6,17 +6,25 @@ import { useForm, } from 'react-hook-form';
 import { ProfileVisibilityResponse } from '../../../types/EditProfileVisibiltySchema';
 import { annualIncomeApi, educationalPrefApi, fetchFamilyStatus, getProfession } from '../../../action';
 import axios from 'axios';
+import Select from "react-select";
+import { apiAxios } from '../../../api/apiUrl';
 
 export interface formProps {
-
   profile: any
+}
 
+interface FieldOfStudy {
+  study_id: number;
+  study_description: string;
+}
+
+interface Degree {
+  degeree_id: number;
+  degeree_description: string;
 }
 
 export const ViewProfileVisibility: React.FC<formProps> = ({
-
   profile,
-
 }) => {
   const { setValue, register, watch, } = useForm<ProfileVisibilityResponse>();
   const [isProfileVisibility, setIsProfileVisibility] = useState(true)
@@ -32,11 +40,19 @@ export const ViewProfileVisibility: React.FC<formProps> = ({
   const [editFamilyStatus, setEditFamilyStatus] = useState('');
   const [selectedMaxAnnualIncome, setSelectedMaxAnnualIncome] = useState<string>('');
   const fromAge = watch('profile_visibility.visibility_age_from')
+  // Add state for Field of Study and Degree
+  const [fieldOfStudyOptions, setFieldOfStudyOptions] = useState<FieldOfStudy[]>([]);
+  const [degrees, setDegrees] = useState<Degree[]>([]);
+  const [selectedFieldsOfStudy, setSelectedFieldsOfStudy] = useState<string[]>([]);
+  const [selectedDegrees, setSelectedDegrees] = useState<string[]>([]);
   // Initialize form values from EditData
   useEffect(() => {
     if (profile) {
       const visibility = profile[9];
       console.log('ns123', visibility)
+      const prefFieldOfStudy = profile[9].pref_fieldof_study || '';
+      const prefDegree = profile[9].degree || '';
+
 
       // Set basic fields
       setValue('profile_visibility.visibility_age_from', visibility.visibility_age_from);
@@ -47,6 +63,8 @@ export const ViewProfileVisibility: React.FC<formProps> = ({
       setValue('profile_visibility.visibility_chevvai', visibility.visibility_chevvai);
       setValue('profile_visibility.visibility_foreign_interest', visibility.visibility_foreign_interest);
       setValue('profile_visibility.visibility_family_status', visibility.visibility_family_status);
+      setSelectedFieldsOfStudy(prefFieldOfStudy.split(',').filter(Boolean));
+      setSelectedDegrees(prefDegree.split(',').filter(Boolean));
 
       // Set checkbox values
       if (visibility.visibility_profession) {
@@ -68,18 +86,18 @@ export const ViewProfileVisibility: React.FC<formProps> = ({
       }
 
       if (visibility.visibility_anual_income_max) {
-      setSelectedMaxAnnualIncome(visibility.visibility_anual_income_max);
-      setValue('profile_visibility.visibility_anual_income_max', visibility.visibility_anual_income_max);
-    }
-
+        setSelectedMaxAnnualIncome(visibility.visibility_anual_income_max);
+        setValue('profile_visibility.visibility_anual_income_max', visibility.visibility_anual_income_max);
+      }
+      if (visibility?.visibility_field_of_study) {
+        setSelectedFieldsOfStudy(
+          visibility.visibility_field_of_study.split(',').filter(Boolean)
+        );
+      }
       setSelectedFamilyStatus(visibility.visibility_family_status);
       setEditFamilyStatus(profile[9].visibility_family_status || '');
     }
   }, [profile, setValue]);
-
-
-
-
 
 
   // Family status radio handler
@@ -121,9 +139,31 @@ export const ViewProfileVisibility: React.FC<formProps> = ({
         console.error('Error fetching Annual Income options:', error);
       }
     };
-    fetchAnnualIncome();
+    const fetchFieldOfStudy = async () => {
+      try {
+        const response = await apiAxios.post(`auth/Get_Field_ofstudy/`);
+        const options = Object.values(response.data) as FieldOfStudy[];
+        setFieldOfStudyOptions(options);
+      } catch (error) {
+        console.error('Error fetching Field of Study options:', error);
+      }
+    };
 
+    const fetchDegrees = async () => {
+      try {
+        const response = await apiAxios.get(
+          `auth/pref_degree_list/`
+        );
+        const degreeOptions = Object.values(response.data) as Degree[];
+        setDegrees(degreeOptions);
+      } catch (error) {
+        console.error('Error fetching Degree options:', error);
+      }
+    };
+    fetchAnnualIncome();
     fetchEduPref();
+    fetchFieldOfStudy();
+    fetchDegrees();
   }, []);
 
 
@@ -280,7 +320,58 @@ export const ViewProfileVisibility: React.FC<formProps> = ({
             </div>
           </div>
 
-          {/* Annual Income Checkboxes */}
+          {/* Field of Study Section */}
+          <div className="w-full py-1 mt-2">
+            <h5 className="text-[18px] text-black font-semibold mb-2">
+              Field of Study
+            </h5>
+            <div className="flex flex-wrap gap-x-6 gap-y-2">
+              {fieldOfStudyOptions.map((option) => (
+                <div key={option.study_id} className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id={`study-${option.study_id}`}
+                    value={option.study_id.toString()}
+                    checked={selectedFieldsOfStudy.includes(option.study_id.toString())}
+                    onClick={(e) => e.preventDefault()}
+                    className="mr-2"
+                  />
+                  <label
+                    htmlFor={`study-${option.study_id}`}
+                    className='text-[#000000e6] font-medium'
+                  >
+                    {option.study_description}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Degree Section */}
+          <div className="w-full py-1 mt-2">
+            <h5 className="text-[18px] text-black font-semibold mb-2">
+              Degree
+            </h5>
+            <Select
+              isMulti
+              isDisabled // since you're just *viewing* preferences
+              options={degrees.map((degree) => ({
+                value: degree.degeree_id.toString(),
+                label: degree.degeree_description,
+              }))}
+              value={degrees
+                .filter((degree) =>
+                  selectedDegrees.includes(degree.degeree_id.toString())
+                )
+                .map((degree) => ({
+                  value: degree.degeree_id.toString(),
+                  label: degree.degeree_description,
+                }))}
+              className="basic-multi-select"
+              classNamePrefix="select"
+              placeholder="Select Degrees"
+            />
+          </div>
           {/* Annual Income Dropdowns */}
           <div className='mt-6'>
             <div className="flex items-center mb-2">
@@ -390,13 +481,10 @@ export const ViewProfileVisibility: React.FC<formProps> = ({
 
 
 
-          <div>
-            <h5 className="text-[18px] text-black font-semibold mb-2 cursor-pointer"
-
-            >
+          <div className="mt-4">
+            <h5 className="text-[18px] text-black font-semibold mb-2 cursor-pointer">
               Family Status
             </h5>
-
             <div className="flex flex-wrap gap-x-6 gap-y-2">
               {FamilyStatus?.map((status) => (
                 <div key={status.family_status_id} className="flex items-center">
@@ -425,7 +513,7 @@ export const ViewProfileVisibility: React.FC<formProps> = ({
 
 
           {/* Other Options */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-4 mt-3">
             <div className="mb-5">
               <label className="block text-black font-bold mb-1">
                 Rahu/Ketu Dhosam
@@ -433,7 +521,7 @@ export const ViewProfileVisibility: React.FC<formProps> = ({
               <div className="relative">
                 <select
                   {...register("profile_visibility.visibility_ragukethu")}
-                  value={watch("profile_visibility.visibility_ragukethu")}
+                  value={watch("profile_visibifetchFieldOfStudy lity.visibility_ragukethu")}
                   disabled
                   className="outline-none w-full text-placeHolderColor px-3 py-2.5 text-sm border border-ashBorder rounded appearance-none bg-gray-100"
                 >

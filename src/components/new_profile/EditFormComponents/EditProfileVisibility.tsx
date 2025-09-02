@@ -6,6 +6,19 @@ import { useFormContext } from 'react-hook-form';
 import { ProfileVisibilityResponse } from '../../../types/EditProfileVisibiltySchema';
 import { annualIncomeApi, fetchFamilyStatus, getProfession } from '../../../action';
 import axios from 'axios';
+import { apiAxios } from '../../../api/apiUrl';
+import Select from 'react-select'; // Import react-select
+
+
+interface FieldOfStudy {
+  study_id: number;
+  study_description: string;
+}
+
+interface Degree {
+  degeree_id: number;
+  degeree_description: string;
+}
 
 export interface formProps {
   isProfileVisibility: boolean;
@@ -45,7 +58,11 @@ export const EditProfileVisibility: React.FC<formProps> = ({
   const [annualIncome, setAnnualIncome] = useState<AnnualIncome[]>([]);
   console.log(annualIncome);
   const [selectedMaxAnnualIncome, setSelectedMaxAnnualIncome] = useState<string>('');
-
+  // --- New State for Field of Study and Degree ---
+  const [fieldOfStudyOptions, setFieldOfStudyOptions] = useState<FieldOfStudy[]>([]);
+  const [degreeOptions, setDegreeOptions] = useState<Degree[]>([]);
+  const [selectedFieldsOfStudy, setSelectedFieldsOfStudy] = useState<string[]>([]);
+  const [selectedDegrees, setSelectedDegrees] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchAnnualIncome = async () => {
@@ -57,6 +74,36 @@ export const EditProfileVisibility: React.FC<formProps> = ({
         console.error('Error fetching Annual Income options:', error);
       }
     };
+
+    // --- New API Calls to Fetch Field of Study and Degree ---
+    const fetchFieldOfStudy = async () => {
+      try {
+        const response = await apiAxios.post(`auth/Get_Field_ofstudy/`);
+        const options = Object.values(response.data) as FieldOfStudy[];
+        setFieldOfStudyOptions(options);
+      } catch (error) {
+        console.error('Error fetching Field of Study options:', error);
+      }
+    };
+
+    const fetchDegrees = async () => {
+      try {
+        const response = await apiAxios.get(`auth/pref_degree_list/`);
+        // Check the actual response structure
+        console.log('Degree API response:', response.data);
+
+        // Adjust based on actual API response structure
+        const options = Array.isArray(response.data)
+          ? response.data
+          : Object.values(response.data) as Degree[];
+
+        setDegreeOptions(options);
+      } catch (error) {
+        console.error('Error fetching Degree options:', error);
+      }
+    };
+    fetchFieldOfStudy();
+    fetchDegrees();
     fetchAnnualIncome();
   }, []);
 
@@ -72,6 +119,7 @@ export const EditProfileVisibility: React.FC<formProps> = ({
       setValue('profile_visibility.visibility_ragukethu', visibility.visibility_ragukethu);
       setValue('profile_visibility.visibility_chevvai', visibility.visibility_chevvai);
       setValue('profile_visibility.visibility_foreign_interest', visibility.visibility_foreign_interest);
+      // setValue('profile_visibility.degree', visibility.degree);
 
       // Set checkbox values
       if (visibility.visibility_profession) {
@@ -103,6 +151,18 @@ export const EditProfileVisibility: React.FC<formProps> = ({
         setSelectedFamilyStatus(familyStatuses);
         setValue('profile_visibility.visibility_family_status', familyStatuses.join(','));
         setFamilyStatusVisibility(familyStatuses.join(','));
+      }
+      // --- Set initial values for Field of Study and Degree ---
+      if (visibility.visibility_field_of_study) {
+        const fields = visibility.visibility_field_of_study.split(',');
+        setSelectedFieldsOfStudy(fields);
+        setValue('profile_visibility.visibility_field_of_study', fields.join(','));
+      }
+
+      if (visibility.degree) {
+        const degrees = visibility.degree.split(',').filter(Boolean);
+        setSelectedDegrees(degrees);
+        setValue('profile_visibility.degree', degrees.join(','));
       }
     }
   }, [EditData, setValue, setFamilyStatusVisibility]);
@@ -167,6 +227,59 @@ export const EditProfileVisibility: React.FC<formProps> = ({
       setValue('profile_visibility.visibility_family_status', newStatuses.join(','));
       return newStatuses;
     });
+  };
+
+  // Field of Study handler
+  const handleFieldOfStudyChange = (id: string) => {
+    setSelectedFieldsOfStudy(prev => {
+      const newFields = prev.includes(id)
+        ? prev.filter(fieldId => fieldId !== id)
+        : [...prev, id];
+      setValue('profile_visibility.visibility_field_of_study', newFields.join(','));
+      return newFields;
+    });
+  };
+
+  // Degree handler
+  const handleDegreeChange = (selectedOptions: any) => {
+    const selectedIds = selectedOptions ? selectedOptions.map((option: any) => option.value) : [];
+    setSelectedDegrees(selectedIds);
+    setValue('profile_visibility.degree', selectedIds.join(','));
+  };
+  const getSelectedDegreeOptions = () => {
+    return degreeOptions
+      .filter(degree => selectedDegrees.includes(degree.degeree_id.toString()))
+      .map(degree => ({
+        value: degree.degeree_id.toString(),
+        label: degree.degeree_description
+      }));
+  };
+
+  // --- New "Select All" handlers ---
+  const handleSelectAllFieldOfStudy = () => {
+    if (!fieldOfStudyOptions || fieldOfStudyOptions.length === 0) return;
+    const allIds = fieldOfStudyOptions.map(f => f.study_id.toString());
+    const isAllSelected = selectedFieldsOfStudy.length === allIds.length;
+    if (isAllSelected) {
+      setSelectedFieldsOfStudy([]);
+      setValue('profile_visibility.visibility_field_of_study', '');
+    } else {
+      setSelectedFieldsOfStudy(allIds);
+      setValue('profile_visibility.visibility_field_of_study', allIds.join(','));
+    }
+  };
+
+  const handleSelectAllDegrees = () => {
+    if (!degreeOptions || degreeOptions.length === 0) return;
+    const allIds = degreeOptions.map(d => d.degeree_id.toString());
+    const isAllSelected = selectedDegrees.length === allIds.length;
+    if (isAllSelected) {
+      setSelectedDegrees([]);
+      setValue('profile_visibility.degree', '');
+    } else {
+      setSelectedDegrees(allIds);
+      setValue('profile_visibility.degree', allIds.join(','));
+    }
   };
 
   const { data: FamilyStatus } = useQuery({
@@ -367,6 +480,57 @@ export const EditProfileVisibility: React.FC<formProps> = ({
               ))}
             </div>
           </div>
+
+
+          {/* --- Field of Study Checkboxes --- */}
+          <div className='mt-6'>
+            <div className="flex items-center mb-2">
+              <label className="text-[18px] text-black font-semibold mr-3 cursor-pointer" onClick={handleSelectAllFieldOfStudy}>
+                Field of Study
+              </label>
+            </div>
+            <div className="flex flex-wrap gap-4">
+              {fieldOfStudyOptions.map((option) => (
+                <div key={option.study_id} className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id={`fieldOfStudy-visibility-${option.study_id}`}
+                    checked={selectedFieldsOfStudy.includes(option.study_id.toString())}
+                    onChange={() => handleFieldOfStudyChange(option.study_id.toString())}
+                  />
+                  <label
+                    htmlFor={`fieldOfStudy-visibility-${option.study_id}`}
+                    className='pl-1 text-[#000000e6] font-medium'
+                  >
+                    {option.study_description}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </div>
+
+
+          {/* --- Degree Checkboxes --- */}
+          <div className='mt-6'>
+            <div className="flex items-center mb-2">
+              <label className="text-[18px] text-black font-semibold mr-3 cursor-pointer" onClick={handleSelectAllDegrees}>
+                Degree
+              </label>
+            </div>
+            <Select
+              isMulti
+              options={degreeOptions.map(degree => ({
+                value: degree.degeree_id.toString(),
+                label: degree.degeree_description,
+              }))}
+              value={getSelectedDegreeOptions()}
+              onChange={handleDegreeChange}
+              className="basic-multi-select"
+              classNamePrefix="select"
+              placeholder="Select Degrees"
+            />
+          </div>
+
 
           {/* Annual Income Checkboxes */}
           <div>

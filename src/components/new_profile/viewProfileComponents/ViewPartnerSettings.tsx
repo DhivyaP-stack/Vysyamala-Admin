@@ -10,6 +10,8 @@ import {
   StatePref,
 } from '../../../action';
 import { useQuery } from '@tanstack/react-query';
+import Select from "react-select";
+
 
 interface pageProps {
   profile: any;
@@ -25,9 +27,20 @@ interface Gender {
   "Gender": string,
 }
 
+interface FieldOfStudy {
+  study_id: number;
+  study_description: string;
+}
+
+interface Degree {
+  degeree_id: number;
+  degeree_description: string;
+}
+
 import axios from 'axios';
 import ViewMatchingStars from './ViewMatchingStars';
 import { useForm } from 'react-hook-form';
+import { apiAxios } from '../../../api/apiUrl';
 
 const ViewPartnerSettings: React.FC<pageProps> = ({
   profile,
@@ -45,6 +58,12 @@ const ViewPartnerSettings: React.FC<pageProps> = ({
   const [edit0, setEdit0] = useState<Gender>()
   const [editFamilyStatus, setEditFamilyStatus] = useState('');
   const [selectedPrefStates, setSelectedPrefStates] = useState<string[]>([]);
+  // Add state for Field of Study and Degree
+  const [fieldOfStudyOptions, setFieldOfStudyOptions] = useState<FieldOfStudy[]>([]);
+  const [degrees, setDegrees] = useState<Degree[]>([]);
+  const [selectedFieldsOfStudy, setSelectedFieldsOfStudy] = useState<string[]>([]);
+  const [selectedDegrees, setSelectedDegrees] = useState<string[]>([]);
+
   const toggleSection5 = () => {
     setIsPartnerPreferenceOpen(!isPartnerPreferenceOpen);
   };
@@ -62,13 +81,6 @@ const ViewPartnerSettings: React.FC<pageProps> = ({
     queryKey: ['MaritalStatuses'],
     queryFn: fetchMaritalStatuses,
   });
-  // const { data: matchStars } = useQuery({
-  //   queryKey: ['matchingStars'],
-  //   queryFn: () => fetchMatchPreferences(rasiId,starId,gender),
-  //   enabled: !!birthStarId && !!gender,
-  // });
-
-
 
   const rasiId: string = edit3?.birth_rasi_name as string;
   const starId: string = edit3?.birthstar_name as string;
@@ -80,21 +92,6 @@ const ViewPartnerSettings: React.FC<pageProps> = ({
     enabled: !!rasiId && !!gender,
   });
 
-
-  // useEffect(() => {
-  //   if (profile && profile.length > 0) {
-  //     setEdit3(profile[3]);
-  //     setEdit0(profile[0])
-  //      const prefFamilyStatus=profile[4].pref_family_status
-  //      setValue("profileView.pref_family_status",prefFamilyStatus)
-  //       const prefstate=profile[4].pref_state
-  //      setValue("profileView.pref_state",prefstate)
-
-  //   }
-  // }, [profile]);
-
-
-
   // Modify your useEffect to set the initial values
   useEffect(() => {
     if (profile && profile.length > 0) {
@@ -102,9 +99,13 @@ const ViewPartnerSettings: React.FC<pageProps> = ({
       setEdit0(profile[0]);
       const prefFamilyStatus = profile[4].pref_family_status;
       const prefState = profile[4].pref_state;
+      const prefFieldOfStudy = profile[4].pref_fieldof_study || '';
+      const prefDegree = profile[4].degree || '';
 
       setSelectedFamilyStatus(prefFamilyStatus);
       setSelectedPrefState(prefState);
+      setSelectedFieldsOfStudy(prefFieldOfStudy.split(',').filter(Boolean));
+      setSelectedDegrees(prefDegree.split(',').filter(Boolean));
       setValue("profileView.pref_family_status", prefFamilyStatus);
       setValue("profileView.pref_state", prefState);
       // ✨ ADDED: Set the min and max annual income values
@@ -143,9 +144,35 @@ const ViewPartnerSettings: React.FC<pageProps> = ({
         console.error('Error fetching Annual Income options:', error);
       }
     };
-    fetchAnnualIncome();
 
+    const fetchFieldOfStudy = async () => {
+      try {
+        const response = await apiAxios.post(
+          `auth/Get_Field_ofstudy/`,
+        );
+        const options = Object.values(response.data) as FieldOfStudy[];
+        setFieldOfStudyOptions(options);
+      } catch (error) {
+        console.error('Error fetching Field of Study options:', error);
+      }
+    };
+
+    const fetchDegrees = async () => {
+      try {
+        const response = await apiAxios.get(
+          `auth/pref_degree_list/`
+        );
+        const degreeOptions = Object.values(response.data) as Degree[];
+        setDegrees(degreeOptions);
+      } catch (error) {
+        console.error('Error fetching Degree options:', error);
+      }
+    };
+
+    fetchAnnualIncome();
     fetchEduPref();
+    fetchFieldOfStudy();
+    fetchDegrees();
   }, []);
   const educationArray = partnerSettingsDetails.pref_profession?.split(',');
   const professionArray = partnerSettingsDetails.pref_education?.split(',');
@@ -289,7 +316,7 @@ const ViewPartnerSettings: React.FC<pageProps> = ({
                   <option value="">Select</option>
                   <option value="Yes">Yes</option>
                   <option value="No">No</option>
-                   <option value="Both">Both</option>
+                  <option value="Both">Both</option>
                 </select>
               </div>
               <div className="w-full text-black font-semibold">
@@ -304,7 +331,7 @@ const ViewPartnerSettings: React.FC<pageProps> = ({
                   <option value="">Select</option>
                   <option value="Yes">Yes</option>
                   <option value="No">No</option>
-                   <option value="Both">Both</option>
+                  <option value="Both">Both</option>
                 </select>
               </div>
             </div>
@@ -427,6 +454,59 @@ const ViewPartnerSettings: React.FC<pageProps> = ({
                   </div>
                 ))}
               </div>
+            </div>
+
+            {/* Field of Study Section */}
+            <div className="w-full py-1">
+              <h5 className="text-[18px] text-black font-semibold mb-2">
+                Field of Study
+              </h5>
+              <div className="flex flex-wrap gap-x-6 gap-y-2">
+                {fieldOfStudyOptions.map((option) => (
+                  <div key={option.study_id} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id={`study-${option.study_id}`}
+                      value={option.study_id.toString()}
+                      checked={selectedFieldsOfStudy.includes(option.study_id.toString())}
+                      onClick={(e) => e.preventDefault()}
+                      className="mr-2"
+                    />
+                    <label
+                      htmlFor={`study-${option.study_id}`}
+                      className='text-[#000000e6] font-medium'
+                    >
+                      {option.study_description}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Degree Section */}
+            <div className="w-full py-1">
+              <h5 className="text-[18px] text-black font-semibold mb-2">
+                Degree
+              </h5>
+              <Select
+                isMulti
+                isDisabled // since you're just *viewing* preferences
+                options={degrees.map((degree) => ({
+                  value: degree.degeree_id.toString(),
+                  label: degree.degeree_description,
+                }))}
+                value={degrees
+                  .filter((degree) =>
+                    selectedDegrees.includes(degree.degeree_id.toString())
+                  )
+                  .map((degree) => ({
+                    value: degree.degeree_id.toString(),
+                    label: degree.degeree_description,
+                  }))}
+                className="basic-multi-select"
+                classNamePrefix="select"
+                placeholder="Select Degrees"
+              />
             </div>
 
             <div>

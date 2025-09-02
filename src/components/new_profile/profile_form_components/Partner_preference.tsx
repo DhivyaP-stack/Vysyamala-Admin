@@ -15,6 +15,8 @@ import { useFormContext } from 'react-hook-form';
 import { FormValues } from '../AddProfile';
 import axios from 'axios';
 import { IoMdArrowDropdown } from 'react-icons/io';
+import { apiAxios } from '../../../api/apiUrl';
+import Select from 'react-select';
 interface ProfessionPref {
   Profes_Pref_id: number;
   Profes_name: string;
@@ -24,6 +26,12 @@ interface FieldOfStudy {
   study_id: number;
   study_description: string;
 }
+
+export interface Degree {
+  degeree_id: number;
+  degeree_description: string;
+}
+
 interface Partnerpreference {
   birthStarId: string;
   gender: string;
@@ -34,6 +42,7 @@ interface Partnerpreference {
   setPrefProf: Dispatch<SetStateAction<number[]>>;
   setPrefEducation: Dispatch<SetStateAction<string[] | undefined>>;
   setPrefFieldOfStudy: Dispatch<SetStateAction<string[]>>;
+  setPrefDegree: Dispatch<SetStateAction<string[]>>;
   setAnnualIncomesValmax: Dispatch<SetStateAction<string[]>>;
   setAnnualIncomesVal: Dispatch<SetStateAction<string[]>>;
   selectSetMaridStatus: Dispatch<SetStateAction<string[]>>;
@@ -96,6 +105,7 @@ const Partner_preference: React.FC<Partnerpreference> = ({
   setPrefProf,
   setPrefEducation,
   setPrefFieldOfStudy,
+  setPrefDegree,
   setAnnualIncomesVal,
   setAnnualIncomesValmax,
   isPartnerPreferenceOpen,
@@ -125,6 +135,9 @@ const Partner_preference: React.FC<Partnerpreference> = ({
   // 3. Add state and a handler function for Field of Study
   const [fieldOfStudyOptions, setFieldOfStudyOptions] = useState<FieldOfStudy[]>([]);
   const [selectedFieldsOfStudy, setSelectedFieldsOfStudy] = useState<string[]>([]);
+  const [allFieldsOfStudySelected, setAllFieldsOfStudySelected] = useState(false);
+
+
 
   const handleFieldOfStudyChange = (id: string, isChecked: boolean) => {
     setSelectedFieldsOfStudy((prev) =>
@@ -132,14 +145,32 @@ const Partner_preference: React.FC<Partnerpreference> = ({
     );
   };
 
-  // ... existing useEffects
+  const handleSelectAllFieldsOfStudy = () => {
+    if (allFieldsOfStudySelected) {
+      // Deselect all
+      setSelectedFieldsOfStudy([]);
+    } else {
+      // Select all
+      const allIds = fieldOfStudyOptions.map(option => option.study_id.toString());
+      setSelectedFieldsOfStudy(allIds);
+    }
+    setAllFieldsOfStudySelected(!allFieldsOfStudySelected);
+  };
+
+  useEffect(() => {
+    const allSelected = fieldOfStudyOptions.length > 0 &&
+      fieldOfStudyOptions.every(option =>
+        selectedFieldsOfStudy.includes(option.study_id.toString())
+      );
+    setAllFieldsOfStudySelected(allSelected);
+  }, [selectedFieldsOfStudy, fieldOfStudyOptions]);
 
   // 4. Add useEffect hooks to fetch data and update the parent component
   useEffect(() => {
     const fetchFieldOfStudy = async () => {
       try {
-        const response = await axios.post(
-          `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_Field_ofstudy/`,
+        const response = await apiAxios.post(
+          `auth/Get_Field_ofstudy/`,
         );
         const options = Object.values(response.data) as FieldOfStudy[];
         setFieldOfStudyOptions(options);
@@ -155,18 +186,45 @@ const Partner_preference: React.FC<Partnerpreference> = ({
   }, [selectedFieldsOfStudy, setPrefFieldOfStudy]);
 
 
-  // 5. Update the form reset logic to include the new state
+  // Add degree state
+  const [degrees, setDegrees] = useState<Degree[]>([]);
+  const [selectedDegrees, setSelectedDegrees] = useState<string[]>([]);
 
-  // In Partner_preference.tsx, add these two useEffects
+  useEffect(() => {
+    const fetchDegrees = async () => {
+      try {
+        const response = await apiAxios.get(
+          `auth/pref_degree_list/`
+        );
+        const degreeOptions = Object.values(response.data) as Degree[];
+        setDegrees(degreeOptions);
+      } catch (error) {
+        console.error('Error fetching Degree options:', error);
+      }
+    };
+    fetchDegrees();
+  }, []);
 
-  //  useEffect(() => {
-  //     setFamilyStatus(selectedFamilyStatus);
-  //   }, [selectedFamilyStatus, setFamilyStatus]);
 
-  //   useEffect(() => {
-  //     setPrefState(selectedPrefState);
-  //   }, [selectedPrefState, setPrefState]);
-  // In Partner_preference.tsx, add these handlers
+  const handleDegreeChange = (selectedOptions: any) => {
+    const selectedIds = selectedOptions
+      ? selectedOptions.map((option: any) => option.value)
+      : [];
+    setSelectedDegrees(selectedIds);
+  };
+
+  // Update parent component
+  useEffect(() => {
+    setPrefDegree(selectedDegrees);
+  }, [selectedDegrees, setPrefDegree]);
+
+  // Get selected options for display
+  const getSelectedOptions = () => {
+    return selectedDegrees.map(id => {
+      const degree = degrees.find(d => d.degeree_id.toString() === id);
+      return degree ? { value: id, label: degree.degeree_description } : null;
+    }).filter(Boolean);
+  };
 
   // Handler for Family Status
   const handleFamilyStatusChange = (id: string) => {
@@ -271,8 +329,6 @@ const Partner_preference: React.FC<Partnerpreference> = ({
     };
     fetchAnnualIncome();
   }, []);
-
-
 
   useEffect(() => {
     const fetchEduPref = async () => {
@@ -413,7 +469,6 @@ const Partner_preference: React.FC<Partnerpreference> = ({
         console.error("Failed to fetch state preferences:", error);
       }
     };
-
     fetchStatePreferences();
   }, []);
 
@@ -592,8 +647,6 @@ const Partner_preference: React.FC<Partnerpreference> = ({
               </div>
             </div>
 
-
-
             <div className="w-full py-1">
               <h5 className="text-[18px] text-black font-semibold mb-2">
                 Family Status
@@ -619,9 +672,6 @@ const Partner_preference: React.FC<Partnerpreference> = ({
                 ))}
               </div>
             </div>
-
-
-
 
             <div className="w-full py-1">
               <h5 className="text-[18px] text-black font-semibold mb-2">
@@ -716,7 +766,9 @@ const Partner_preference: React.FC<Partnerpreference> = ({
             </div>
 
             <div className="w-full py-1">
-              <h5 className="text-[18px] text-black font-semibold mb-2">
+              <h5
+                onClick={handleSelectAllFieldsOfStudy}
+                className="cursor-pointer text-[18px] text-black font-semibold mb-2">
                 Field of Study
               </h5>
               <div className="flex flex-wrap gap-x-6 gap-y-2">
@@ -748,38 +800,25 @@ const Partner_preference: React.FC<Partnerpreference> = ({
               </div>
             </div>
 
-            {/* <div className="w-full py-1">
+            <div className="w-full py-1">
               <h5 className="text-[18px] text-black font-semibold mb-2">
                 Degree
               </h5>
-              <div className="flex flex-wrap gap-x-6 gap-y-2">
-                {fieldOfStudyOptions.map((option) => (
-                  <div key={option.study_id} className="flex items-center">
-                    <input
-                      type="checkbox"
-                      id={`study-${option.study_id}`}
-                      value={option.study_id.toString()}
-                      checked={selectedFieldsOfStudy.includes(
-                        option.study_id.toString()
-                      )}
-                      onChange={(e) =>
-                        handleFieldOfStudyChange(
-                          option.study_id.toString(),
-                          e.target.checked
-                        )
-                      }
-                      className="mr-2"
-                    />
-                    <label
-                      htmlFor={`study-${option.study_id}`}
-                      className='text-[#000000e6] font-medium'
-                    >
-                      {option.study_description}
-                    </label>
-                  </div>
-                ))}
+              <div className="relative">
+                <Select
+                  isMulti
+                  options={degrees.map((degree) => ({
+                    value: degree.degeree_id.toString(),
+                    label: degree.degeree_description,
+                  }))}
+                  value={getSelectedOptions()}
+                  onChange={handleDegreeChange}
+                  className="basic-multi-select"
+                  classNamePrefix="select"
+                  placeholder="Select Degrees"
+                />
               </div>
-            </div> */}
+            </div>
 
             <div>
               <h5 className="text-[18px] text-black font-semibold mb-2 cursor-pointer" onClick={handleSelectAllMaritalStatus}>

@@ -180,6 +180,7 @@ export const parentSchema = z.object({
     heightTo: z.string().optional(),
     agePreference: z.string().optional(),
     // agePreference: z.string().min(3,"Age difference is required"),
+    
     heightPreference: z.string().optional(),
     ragukethu: z.string().optional(),
     ChevvaiDhosam: z.string().optional(),
@@ -193,6 +194,7 @@ export const parentSchema = z.object({
     pref_family_status: z.string().optional().nullable(), // If you allow null
     pref_state: z.string().optional().nullable(),
   }),
+  
 
 
 });

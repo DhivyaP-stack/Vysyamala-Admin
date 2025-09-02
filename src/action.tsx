@@ -34,16 +34,16 @@ export interface FamilyValue {
   family_value_id: string;
   family_value_name: string;
 }
-export interface SuyaGothram{
-  id:number;
-  gothram_name:string;
-  rishi:string;
-  sanketha_namam:string;
-  is_deleted:boolean
+export interface SuyaGothram {
+  id: number;
+  gothram_name: string;
+  rishi: string;
+  sanketha_namam: string;
+  is_deleted: boolean
 }
 
-export interface getFamilyStatus{
-  id:number;
+export interface getFamilyStatus {
+  id: number;
   status: string;
   is_deleted: boolean;
 }
@@ -51,21 +51,21 @@ export interface StatusOption {
   status_code: string;
   status_name: string;
 }
-export interface getEditProfileView{
-    status_code: number;
-    status_name: string;
+export interface getEditProfileView {
+  status_code: number;
+  status_name: string;
 }
 
-export interface getPrimaryStatus{
-  id:number;
-  status_code:number;
-  sub_status_name:string
+export interface getPrimaryStatus {
+  id: number;
+  status_code: number;
+  sub_status_name: string
 }
 
-export interface getSecondaryStatus{
-  id:number;
-  plan_name:string;
-  plan_price:string
+export interface getSecondaryStatus {
+  id: number;
+  plan_name: string;
+  plan_price: string
 }
 export interface FamilyStatus {
   family_status_id: number;
@@ -84,11 +84,11 @@ export interface MaritalStatusOption {
   marital_sts_name: string;
 }
 // Function to fetch family types
-export interface AddOnPackage{
-  package_id:number;
-  name:string;
-  description:string;
-  amount:number;
+export interface AddOnPackage {
+  package_id: number;
+  name: string;
+  description: string;
+  amount: number;
 }
 export const fetchPropertyworth = async () => {
   try {
@@ -112,12 +112,12 @@ export const fetchFamilyTypes = async (): Promise<FamilyType[]> => {
 };
 
 
-export const fetchSuyaGothram =async():Promise<SuyaGothram[]>=>{
-  try{
-const response = await axios.get(`${API}/gothrams/`);
-console.log(response.data)
-return response.data
-  }catch(error){
+export const fetchSuyaGothram = async (): Promise<SuyaGothram[]> => {
+  try {
+    const response = await axios.get(`${API}/gothrams/`);
+    console.log(response.data)
+    return response.data
+  } catch (error) {
     console.error('Error fetching suya gothram:', error);
     return [];
   }
@@ -225,7 +225,7 @@ export const getEditProfileViewStatus = async (): Promise<getEditProfileView[]> 
 
 export const getProfilePrimaryStatus = async (status: string | number): Promise<getPrimaryStatus[]> => {
   console.log("Status received:", status);
-  
+
   // Explicit check for undefined/null/empty string (but allows 0)
   // if (status === undefined || status === null) {
   //   console.error("Primary status is missing or invalid");
@@ -236,16 +236,16 @@ export const getProfilePrimaryStatus = async (status: string | number): Promise<
     const response = await axios.post(
       `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/get_sub_status_master/`,
       {
-        primary_status:String(status),
+        primary_status: String(status),
       }
     );
-    
+
     console.log("API response:", response.data);
-    
+
     if (response.data?.status === 'success' && Array.isArray(response.data?.data)) {
       return response.data.data as getPrimaryStatus[];
     }
-    
+
     console.warn("Unexpected response format:", response.data);
     return [];
   } catch (error) {
@@ -254,21 +254,21 @@ export const getProfilePrimaryStatus = async (status: string | number): Promise<
   }
 };
 
-export const getProfileSecondaryStatus = async (secondaryStatus:string): Promise<getSecondaryStatus[]>=>{
+export const getProfileSecondaryStatus = async (secondaryStatus: string): Promise<getSecondaryStatus[]> => {
   if (!secondaryStatus) {
     console.error("Primary status is missing or invalid");
     return [];  // You might also want to return a default value here
   }
   try {
-     const response = await axios.post(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/get_plan_bystatus/`,{
-      secondary_status:secondaryStatus,
+    const response = await axios.post(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/get_plan_bystatus/`, {
+      secondary_status: secondaryStatus,
     })
     console.log(response.data)
-    if(response.data?.status === 'success'&& Array.isArray(response.data?.data)){
+    if (response.data?.status === 'success' && Array.isArray(response.data?.data)) {
       return response.data.data as getSecondaryStatus[];
     }
     console.warn("Unexpected response format:", response.data);
-    return[]
+    return []
   } catch (error) {
     console.error('Error fetching status:', error);
     return [];
@@ -276,13 +276,13 @@ export const getProfileSecondaryStatus = async (secondaryStatus:string): Promise
 }
 
 //profile detail api
-export const getStatus = async(): Promise<StatusOption[]> =>  {
+export const getStatus = async (): Promise<StatusOption[]> => {
   try {
     const response = await axios.get(
       `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/get_status_master/`,
     );
     const data = Object.values(response.data.data) as StatusOption[];
-console.log(data)
+    console.log(data)
     return data;
   } catch (error) {
     console.error('Error fetching status:', error);
@@ -306,11 +306,11 @@ export const fetchCountryStatus = async (): Promise<Country[]> => {
 };
 
 
-export const fetchAddOnPackage =async():Promise<AddOnPackage[]>=>{
-const response = await axios.post(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_addon_packages/`);
-const option =Object.values(response.data) as AddOnPackage[];
-console.log(option)
-return option
+export const fetchAddOnPackage = async (): Promise<AddOnPackage[]> => {
+  const response = await axios.post(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_addon_packages/`);
+  const option = Object.values(response.data) as AddOnPackage[];
+  console.log(option)
+  return option
 }
 
 export const fetchStateStatus = async (countryId: string | undefined): Promise<State[]> => {
@@ -322,7 +322,7 @@ export const fetchStateStatus = async (countryId: string | undefined): Promise<S
   return options;
 };
 
-export const GetDistrict = async (stateId: string | undefined |null): Promise<District[]> => {
+export const GetDistrict = async (stateId: string | undefined | null): Promise<District[]> => {
   const response = await axios.post(`${API_URL}/Get_District/`, {
     state_id: stateId,
   });
@@ -330,7 +330,7 @@ export const GetDistrict = async (stateId: string | undefined |null): Promise<Di
   return options;
 };
 
-export const GetCity = async (districtId: string| undefined|null): Promise<City[]> => {
+export const GetCity = async (districtId: string | undefined | null): Promise<City[]> => {
   const response = await axios.post(`${API_URL}/Get_City/`, {
     district_id: districtId,
   });
@@ -355,13 +355,19 @@ export const fetchFieldOfStudy = async (): Promise<
   return options;
 };
 
-export const fetchDegree = async (eduLevel: string, fieldOfStudy: string): Promise<GetDegree[]>=>{
-const response = await axios.post(`${API_URL}/Get_Degree_list/`,{
-  edu_level: eduLevel,
-  field_of_study: fieldOfStudy,
-});
-const options = Object.values(response.data) as GetDegree[];
-return options;
+export const fetchDegree = async (eduLevel: string, fieldOfStudy: string): Promise<GetDegree[]> => {
+  const response = await axios.post(`${API_URL}/Get_Degree_list/`, {
+    edu_level: eduLevel,
+    field_of_study: fieldOfStudy,
+  });
+  const options = Object.values(response.data) as GetDegree[];
+  return options;
+}
+
+export const fetchFieldDegree = async (): Promise<GetDegree[]> => {
+  const response = await axios.get(`${API_URL}/pref_degree_list/`,);
+  const options = Object.values(response.data) as GetDegree[];
+  return options;
 }
 
 export const fetchUgDegree = async (): Promise<ugDegrees[]> => {

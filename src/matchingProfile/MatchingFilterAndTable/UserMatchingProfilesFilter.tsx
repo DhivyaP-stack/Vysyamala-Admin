@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { Box, Button, Checkbox, CircularProgress, Typography } from '@mui/material';
-import { userAnnualIncome, userCity, userComplexion, userEducation, userFamilyStatus, userMaritalStatus, userProfession, userState, userMembership } from '../../api/apiConfig';
+import { userAnnualIncome, userCity, userComplexion, userEducation, userFamilyStatus, userMaritalStatus, userProfession, userState, userMembership, userFieldOfStudy, userDegrees } from '../../api/apiConfig';
 //import MatchingStars from '../components/PartnerPreference/MatchingStars';
 import { useQuery } from '@tanstack/react-query';
 import { fetchEditProfileDetails, fetchMatchPreferences } from '../../action';
 import MatchingStars from '../../components/PartnerPreference/MatchingStars';
 //import { fetchEditProfileDetails, fetchMatchPreferences } from '../action';
-
+import Select from 'react-select';
 // Type definitions (same as before)
 interface AnnualIncome {
     income_id: number;
@@ -80,6 +80,15 @@ interface UserMatchingProfilesFilterProps {
     profileType: 'matching' | 'suggested';
     Name: string
 }
+interface FieldOfStudy {
+    study_id: number;
+    study_description: string;
+}
+
+interface Degree {
+    degeree_id: number;
+    degeree_description: string;
+}
 
 export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading, Name }: UserMatchingProfilesFilterProps) => {
     const [annualIncome, setAnnualIncome] = useState<AnnualIncome[]>([]);
@@ -113,7 +122,11 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
     const [ageDifference, setAgeDifference] = useState<string>('')
     const [chevvaiDhosam, setChevvaiDhosam] = useState<string>('');
     const [edit3, setEdit3] = useState<HoroscopeDetails>()
-    const [edit0, setEdit0] = useState<gender>()
+    const [edit0, setEdit0] = useState<gender>();
+    const [fieldOfStudyOptions, setFieldOfStudyOptions] = useState<FieldOfStudy[]>([]);
+    const [selectedFieldsOfStudy, setSelectedFieldsOfStudy] = useState<String[]>([]);
+    const [degrees, setDegrees] = useState<Degree[]>([]);
+    const [selectedDegrees, setSelectedDegrees] = useState<String[]>([]);
 
     useEffect(() => {
         const fetchFilterData = async () => {
@@ -127,6 +140,8 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
                 const complexionData = await userComplexion();
                 const membershipData = await userMembership();
                 const familyStatusData = await userFamilyStatus();
+                const fieldOfStudyData = await userFieldOfStudy(); // Add this
+                const degreesData = await userDegrees(); // Add this
 
                 setAnnualIncome(Object.values(annualIncomeData));
                 setProfession(Object.values(professionData));
@@ -137,6 +152,8 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
                 setComplexion(Object.values(complexionData));
                 setMembership(membershipData.data);
                 setFamilyStatus(Object.values(familyStatusData));
+                setFieldOfStudyOptions(Object.values(fieldOfStudyData)); // Add this
+                setDegrees(Object.values(degreesData)); // Add this
             } catch (error: any) {
                 console.error("Failed to fetch filter data:", error);
             }
@@ -220,6 +237,24 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
         );
     };
 
+    // Field of Study handler
+    const handleFieldOfStudyChange = (studyId: String) => {
+        setSelectedFieldsOfStudy(prev =>
+            prev.includes(studyId)
+                ? prev.filter(id => id !== studyId)
+                : [...prev, studyId]
+        );
+    };
+
+    // Degree handler
+    const handleDegreeChange = (degreeId: String) => {
+        setSelectedDegrees(prev =>
+            prev.includes(degreeId)
+                ? prev.filter(id => id !== degreeId)
+                : [...prev, degreeId]
+        );
+    };
+
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
@@ -229,6 +264,9 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
         const filters = {
             selectedComplexions: String(selectedComplexions),
             selectedEducation: String(selectedEducation),
+            selectedFieldsOfStudy: String(selectedFieldsOfStudy), // Add this
+            // selectedDegrees: String(selectedDegrees), // Add this
+            selectedDegrees: selectedDegrees.join(","),
             selectedProfessions: String(selectedProfessions),
             selectedMaritalStatus: String(selectedMaritalStatus),
             selectedFamilyStatus: String(selectedFamilyStatus),
@@ -264,7 +302,7 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
                         fontWeight: 'bold',
                     }}
                 >
-                    {Name} Profile Lists For Profile ID : {profileID}
+                    {Name} Profile Lists For Profile ID: {profileID}
                 </Typography>
             </div>
 
@@ -412,6 +450,64 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
                                 </div>
                             ))}
                         </div>
+                    </div>
+
+                    {/* Field of Study Checkboxes */}
+                    <div className="py-4 col-span-full">
+                        <div className="w-fit text-start">
+                            <h2 className="text-lg text-black font-semibold mb-2">Field of Study</h2>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                            {fieldOfStudyOptions.map((study) => (
+                                <div key={study.study_id} className="flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        id={`fieldOfStudy-${study.study_id}`}
+                                        value={study.study_id.toString()}
+                                        className="mr-2"
+                                        checked={selectedFieldsOfStudy.includes(study.study_id.toString())}
+                                        onChange={() => handleFieldOfStudyChange(study.study_id.toString())}
+                                    />
+                                    <label htmlFor={`fieldOfStudy-${study.study_id}`} className="text-sm">
+                                        {study.study_description}
+                                    </label>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Degree Checkboxes */}
+                    {/* Degree Checkboxes - Replaced with Multi-Select */}
+                    <div className="py-4">
+                        <div className="w-fit text-start">
+                            <h2 className="text-lg text-black font-semibold mb-2">Degree</h2>
+                        </div>
+                        <Select
+                            isMulti
+                            options={degrees.map((degree) => ({
+                                value: degree.degeree_id.toString(),
+                                label: degree.degeree_description,
+                            }))}
+                            value={selectedDegrees.map(degreeId => ({
+                                value: degreeId.toString(),
+                                label: degrees.find(d => d.degeree_id.toString() === degreeId.toString())?.degeree_description || ''
+                            }))}
+                            onChange={(selectedOptions) => {
+                                const selectedIds = selectedOptions ? selectedOptions.map(option => option.value) : [];
+                                setSelectedDegrees(selectedIds);
+                            }}
+                            className="basic-multi-select"
+                            classNamePrefix="select"
+                            placeholder="Select Degrees"
+                            styles={{
+                                control: (base) => ({
+                                    ...base,
+                                    border: '1px solid black',
+                                    borderRadius: '4px',
+                                    minHeight: '44px'
+                                })
+                            }}
+                        />
                     </div>
 
                     {/* Profession */}

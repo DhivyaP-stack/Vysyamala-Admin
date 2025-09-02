@@ -31,6 +31,8 @@ export const EditScheemaPartnerPreference = z.object({
 
     ).optional()
   }),
+  pref_fieldof_study: z.string().optional(),
+  degree: z.string().optional(),
 
 });
 
@@ -57,6 +59,8 @@ export interface PartnerPreference {
       star: string;
       label: string;
     }[];
-    pref_state: string
+    pref_state: string;
+    pref_fieldof_study:string;
+    degree:string;
   };
 }

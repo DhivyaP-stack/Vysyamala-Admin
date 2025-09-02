@@ -15,6 +15,8 @@ import axios from 'axios';
 import MatchingStars from './EditMatchingStar';
 import { SelectChangeEvent } from '@mui/material';
 import { PartnerPreference } from '../../../types/EditScemaPartnerPref';
+import { apiAxios } from '../../../api/apiUrl';
+import Select from 'react-select';
 // import { apiAxios } from '../../../api/apiUrl';
 
 interface pageProps {
@@ -23,6 +25,8 @@ interface pageProps {
   birthStarId: string;
   setPrefProf: Dispatch<SetStateAction<string>>;
   setprefEducation: Dispatch<SetStateAction<string>>;
+  setprefFieldOfStudy: Dispatch<SetStateAction<string>>;
+  setprefdegree: Dispatch<SetStateAction<string>>;
   selectSetMaridStatus: Dispatch<SetStateAction<string>>;
   setAnnualIncomesVal: Dispatch<SetStateAction<string>>;
   setPoruthamstar: Dispatch<SetStateAction<string>>;
@@ -56,6 +60,16 @@ interface HoroscopeDetails {
 interface Gender {
   "Gender": string,
 }
+
+interface FieldOfStudy {
+  study_id: number;
+  study_description: string;
+}
+
+interface Degree {
+  degeree_id: number;
+  degeree_description: string;
+}
 export interface SelectedStarIdItem {
   id: string;
   rasi: string;
@@ -70,6 +84,8 @@ const EditPartnerPreference: React.FC<pageProps> = ({
   setPoruthamstar,
   setAnnualIncomesVal,
   setprefEducation,
+  setprefFieldOfStudy,
+  setprefdegree,
   selectSetMaridStatus,
   setProfessionVisibility,
   isPartnerPreferenceOpen,
@@ -89,7 +105,13 @@ const EditPartnerPreference: React.FC<pageProps> = ({
 
   // const [matchStars, setMatchStars] = useState<MatchingStar[]>([]);
   const [selectedStarIds, setSelectedStarIds] = useState<SelectedStarIdItem[]>([],);
-  console.log("edit partner settings selectedStarIds",selectedStarIds )
+  console.log("edit partner settings selectedStarIds", selectedStarIds)
+  // Add these state variables to your component
+  const [fieldOfStudyOptions, setFieldOfStudyOptions] = useState<FieldOfStudy[]>([]);
+  const [degrees, setDegrees] = useState<Degree[]>([]);
+  const [selectedFieldsOfStudy, setSelectedFieldsOfStudy] = useState<string>('');
+  const [selectedDegrees, setSelectedDegrees] = useState<string>('');
+
   const [edit3, setEdit3] = useState<HoroscopeDetails>()
   const [edit0, setEdit0] = useState<Gender>()
 
@@ -391,8 +413,86 @@ const EditPartnerPreference: React.FC<pageProps> = ({
         console.error('Error fetching Edu Pref options:', error);
       }
     };
+
+    const fetchFieldOfStudy = async () => {
+      try {
+        const response = await apiAxios.post(`auth/Get_Field_ofstudy/`);
+        const options = Object.values(response.data) as FieldOfStudy[];
+        setFieldOfStudyOptions(options);
+      } catch (error) {
+        console.error('Error fetching Field of Study options:', error);
+      }
+    };
+
+    const fetchDegrees = async () => {
+      try {
+        const response = await apiAxios.get(`auth/pref_degree_list/`);
+        const degreeOptions = Object.values(response.data) as Degree[];
+        setDegrees(degreeOptions);
+      } catch (error) {
+        console.error('Error fetching Degree options:', error);
+      }
+    };
     fetchEduPref();
+    fetchFieldOfStudy();
+    fetchDegrees();
   }, []);
+  // Field of Study handler
+  const handleFieldOfStudyChange = (id: number) => {
+    let currentFieldOfStudy = selectedFieldsOfStudy ? selectedFieldsOfStudy.split(',') : [];
+    const idString = id.toString();
+    const index = currentFieldOfStudy.indexOf(idString);
+
+    if (index === -1) {
+      currentFieldOfStudy.push(idString);
+    } else {
+      currentFieldOfStudy.splice(index, 1);
+    }
+
+    const newFieldOfStudyString = currentFieldOfStudy.filter(Boolean).join(',');
+    setSelectedFieldsOfStudy(newFieldOfStudyString);
+    setValue('PartnerPreference.pref_fieldof_study', newFieldOfStudyString, { shouldValidate: true });
+  };
+
+  // Degree handler for react-select
+  const handleDegreeChange = (selectedOptions: any) => {
+    const selectedIds = selectedOptions
+      ? selectedOptions.map((option: any) => option.value).join(',')
+      : '';
+    setSelectedDegrees(selectedIds);
+    setValue('PartnerPreference.degree', selectedIds, { shouldValidate: true });
+  };
+
+  // Helper function to get selected options for react-select display
+  const getSelectedDegreeOptions = () => {
+    if (!selectedDegrees) return [];
+    return degrees
+      .filter(degree => selectedDegrees.split(',').includes(degree.degeree_id.toString()))
+      .map(degree => ({
+        value: degree.degeree_id.toString(),
+        label: degree.degeree_description
+      }));
+  };
+
+  // Select All handler for Field of Study
+  const handleSelectAllFieldOfStudy = () => {
+    if (!fieldOfStudyOptions || fieldOfStudyOptions.length === 0) return;
+
+    const allIds = fieldOfStudyOptions.map(study => study.study_id.toString());
+    const currentSelectedIds = selectedFieldsOfStudy.split(',').filter(Boolean);
+
+    const isAllSelected = currentSelectedIds.length === allIds.length &&
+      allIds.every(id => currentSelectedIds.includes(id));
+
+    if (isAllSelected) {
+      setSelectedFieldsOfStudy('');
+      setValue('PartnerPreference.pref_fieldof_study', '');
+    } else {
+      const idsString = allIds.join(',');
+      setSelectedFieldsOfStudy(idsString);
+      setValue('PartnerPreference.pref_fieldof_study', idsString);
+    }
+  };
 
   const [selectedMaritalStatuses, setSelectedMaritalStatuses] = useState('');
 
@@ -443,6 +543,10 @@ const EditPartnerPreference: React.FC<pageProps> = ({
       // setSelectedFamilyStatus(EditData[4].pref_family_status || '');
       setFamilyStatus(EditData[4].pref_family_status || '');
       setValue('PartnerPreference.annualIncome', String(EditData[4].pref_anual_income));
+      setValue('PartnerPreference.pref_fieldof_study', EditData[4].pref_fieldof_study || '');
+      setValue('PartnerPreference.degree', EditData[4].degree || '');
+      setSelectedFieldsOfStudy(EditData[4].pref_fieldof_study || '');
+      setSelectedDegrees(EditData[4].degree || '');
       setEditProfession(EditData[4].pref_profession ?? '');
       setEditMartualStatus(EditData[4].pref_marital_status);
       setEditEducation(EditData[4].pref_education);
@@ -476,9 +580,11 @@ const EditPartnerPreference: React.FC<pageProps> = ({
     setprefEducation(EditEducation);
     setPrefProf(EditProfession);
     setEducationVisibility(eduPref);
-    setAnnualIncomeVisibility(annualIncome)
+    setAnnualIncomeVisibility(annualIncome);
+    setprefFieldOfStudy(selectedFieldsOfStudy);
+    setprefdegree(selectedDegrees);
     //setPrefferedStatePartner(selectedPrefState)
-  }, [EditProfession, editMartualStatus, EditEducation, EditAnnualIncome, eduPref, annualIncome]);
+  }, [EditProfession, editMartualStatus, EditEducation, EditAnnualIncome, eduPref, annualIncome, selectedFieldsOfStudy, selectedDegrees]);
 
 
 
@@ -836,6 +942,68 @@ const EditPartnerPreference: React.FC<pageProps> = ({
                   </div>
                 ))}
               </div>
+            </div>
+
+            {/* Field of Study Checkboxes */}
+            <div className="w-full py-1">
+              <h5
+                className="text-[18px] text-black font-semibold mb-2 cursor-pointer"
+                onClick={handleSelectAllFieldOfStudy}
+              >
+                Field of Study
+              </h5>
+              <div className="flex flex-wrap gap-x-6 gap-y-2">
+                {fieldOfStudyOptions.map((option) => (
+                  <div key={option.study_id} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id={`fieldOfStudy-${option.study_id}`}
+                      value={option.study_id.toString()}
+                      checked={selectedFieldsOfStudy.split(',').includes(option.study_id.toString())}
+                      onChange={() => handleFieldOfStudyChange(option.study_id)}
+                      className="mr-2"
+                    />
+                    <label
+                      htmlFor={`fieldOfStudy-${option.study_id}`}
+                      className='text-[#000000e6] font-medium'
+                    >
+                      {option.study_description}
+                    </label>
+                  </div>
+                ))}
+              </div>
+              {errors?.PartnerPreference?.pref_fieldof_study && (
+                <p className="text-red-600 mt-1">
+                  {errors.PartnerPreference.pref_fieldof_study.message}
+                </p>
+              )}
+            </div>
+
+            {/* Degree Multi-Select Dropdown */}
+            <div className="w-full py-1">
+              <h5 className="text-[18px] text-black font-semibold mb-2">
+                Degree
+              </h5>
+              <div className="max-w-2xl">
+                <Select
+                  isMulti
+                  options={degrees.map((degree) => ({
+                    value: degree.degeree_id.toString(),
+                    label: degree.degeree_description,
+                  }))}
+                  value={getSelectedDegreeOptions()}
+                  onChange={handleDegreeChange}
+                  className="basic-multi-select"
+                  classNamePrefix="select"
+                  placeholder="Select Degrees"
+
+                />
+              </div>
+              {errors?.PartnerPreference?.degree && (
+                <p className="text-red-600 mt-1">
+                  {errors.PartnerPreference.degree.message}
+                </p>
+              )}
             </div>
 
             <div>

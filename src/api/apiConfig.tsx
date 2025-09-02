@@ -300,6 +300,8 @@ export const userMatchingProfilesFilterListMatch = async (
     pageSize: number,
     Complexion: string,
     Education: string,
+    selectedFieldsOfStudy: string, // Add this
+    selectedDegrees: string, // Add this
     HeightFrom: number,
     HeightTo: number,
     MinAnualIncome: number,
@@ -319,7 +321,7 @@ export const userMatchingProfilesFilterListMatch = async (
     selectedMaritalStatus: string,
     selectedFamilyStatus: string,
     sentInWhatsapp: string,
-    profileType: 'matching' | 'suggested' = 'matching'
+    profileType: 'matching' | 'suggested' = 'matching',
 ) => {
     try {
         // Determine the endpoint based on profileType
@@ -351,7 +353,9 @@ export const userMatchingProfilesFilterListMatch = async (
             mother_alive: motherLive,
             marital_status: selectedMaritalStatus,
             family_status: selectedFamilyStatus,
-            whatsapp_field: sentInWhatsapp
+            whatsapp_field: sentInWhatsapp,
+            pref_fieldof_study: selectedFieldsOfStudy, // Add this
+            degree: selectedDegrees, // Add this
         });
 
         console.log(`User ${profileType} records filter fetched successfully`, response);
@@ -976,5 +980,26 @@ export const fetchProfilestatus = async (): Promise<SubStatus[]> => {
     } catch (error: any) {
         console.error("Error fetching profile status:", error.message || error);
         throw new Error("Unable to fetch profile status");
+    }
+};
+
+// Add these API functions to your api/apiConfig.ts file
+export const userFieldOfStudy = async (): Promise<any> => {
+    try {
+        const response = await apiAxios.post(`auth/Get_Field_ofstudy/`);
+        return response.data;
+    } catch (error: any) {
+        console.error("Error fetching field of study:", error);
+        throw error;
+    }
+};
+
+export const userDegrees = async (): Promise<any> => {
+    try {
+        const response = await apiAxios.get(`auth/pref_degree_list/`);
+        return response.data;
+    } catch (error: any) {
+        console.error("Error fetching degrees:", error);
+        throw error;
     }
 };

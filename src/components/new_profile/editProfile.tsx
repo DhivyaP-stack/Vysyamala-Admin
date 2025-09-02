@@ -178,6 +178,8 @@ const EditProfile = () => {
   const [prefferedStateSuggested, setPrefferedStateSuggested] = useState<string>('')
   const [prefferedStatePartner, setPrefferedStatePartner] = useState<string>('')
   const [prefEducation, setprefEducation] = useState('');
+  const [prefFieldOfStudy, setprefFieldOfStudy] = useState('');
+  const [prefdegree, setprefdegree] = useState('');
   const [setMariedStatus, selectSetMaridStatus] = useState('');
   const [gender, setGender] = useState<string>('');
   const [prefProf, setPrefProf] = useState('');
@@ -192,6 +194,9 @@ const EditProfile = () => {
   const [annualIncomeVisibility, setAnnualIncomeVisibility] = useState<AnnualIncome[]>([])
   const [getMaritalStatus, setGetMaritalStatus] = useState<string>('')
   const [childrenn, setChildrenn] = useState<boolean>(false)
+  const [fieldOfStudySuggested, setFieldOfStudySuggested] = useState('');
+  const [prefDegreeSuggested, setPreDegreeSuggested] = useState<string[]>([]);
+
 
   const handleProfileUpdate = async (editData: any, Name: string) => {
     try {
@@ -303,6 +308,9 @@ const EditProfile = () => {
         visibility_height_to: data.profile_visibility.visibility_height_to,
         visibility_profession: data.profile_visibility.visibility_profession,
         visibility_education: data.profile_visibility.visibility_education,
+        // --- Add the new fields to the payload ---
+        degree: data.profile_visibility.degree,
+        visibility_field_of_study: data.profile_visibility.visibility_field_of_study,
         visibility_anual_income: data.profile_visibility.visibility_anual_income,
         visibility_anual_income_max: data.profile_visibility.visibility_anual_income_max,
         visibility_family_status: familyStatusVisibility || data.profile_visibility.visibility_family_status || null,
@@ -350,6 +358,8 @@ const EditProfile = () => {
           pref_height_to: data.PartnerPreference.toHeight,
           pref_marital_status: setMariedStatus,
           pref_education: prefEducation,
+          pref_fieldof_study: prefFieldOfStudy,
+          degree: prefdegree,
           pref_anual_income: data.PartnerPreference.annualIncome,
           pref_profession: prefProf,
           pref_age_differences: data.PartnerPreference.agePreference,
@@ -392,6 +402,10 @@ const EditProfile = () => {
         pref_height_to: data.suggested_pref_details.pref_height_to,
         pref_marital_status: setMariedStatus,
         pref_education: prefEducation,
+        // pref_fieldof_study: data.suggested_pref_details.pref_fieldof_study,
+        // degree: data.suggested_pref_details.degree,
+        pref_fieldof_study: data.suggested_pref_details.pref_fieldof_study || fieldOfStudySuggested,
+        degree: data.suggested_pref_details.degree || prefDegreeSuggested.join(","),
         pref_anual_income: data.suggested_pref_details.pref_anual_income,
         pref_profession: prefProf,
         pref_age_differences: data.suggested_pref_details.pref_age_differences,
@@ -777,6 +791,8 @@ const EditProfile = () => {
                 // setAnnualIncomesValmax={setAnnualIncomesValMax}
                 selectSetMaridStatus={selectSetMaridStatus}
                 setprefEducation={setprefEducation}
+                setprefFieldOfStudy={setprefFieldOfStudy}
+                setprefdegree={setprefdegree}
                 setPrefProf={setPrefProf}
                 gender={gender}
                 birthStarId={birthStarId}
@@ -810,10 +826,15 @@ const EditProfile = () => {
                 setprefEducation={setprefEducation}
                 setPrefProf={setPrefProf}
                 setFamilyStatusSuggested={setFamilyStatusSuggested}
-                // gender={''} birthStarId={''}                        
+                // gender={''} birthStarId={''}  
+
                 gender={gender}
                 birthStarId={birthStarId}
                 setPrefferedStateSuggested={setPrefferedStateSuggested}
+                setPreDegreeSuggested={setPreDegreeSuggested}
+                setFieldOfStudySuggested={setFieldOfStudySuggested}
+
+
               // setSuggestedProfiles={setSuggestedProfiles}
               />
             </div>

@@ -7,7 +7,6 @@ import FamilyDetailsForm from './profile_form_components/FamilyDetailsForm';
 import EducationalDetails from './profile_form_components/EducationalDetails';
 import HororScopeDetails from './profile_form_components/HororScopeDetails';
 import Partner_preference from './profile_form_components/Partner_preference';
-import FeatureProfile from './FeatureProfile';
 import UpLoadImages from './profile_form_components/UpLoadImages';
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
@@ -145,6 +144,7 @@ export interface FormValues {
     ragukethu: string;
     ChevvaiDhosam: string;
     foreignInterest: string;
+    pref_fieldof_study: string;
   };
 
 
@@ -195,30 +195,24 @@ const AddProfile = () => {
   const [AnnualIncomesVal, setAnnualIncomesVal] = useState<string[]>([]);
   const [AnnualIncomesValmax, setAnnualIncomesValMax] = useState<string[]>([]);
   const [prefEducation, setprefEducation] = useState<string[]>();
-  const [sugPrefFieldOfStudy, setSugPrefFieldOfStudy] = useState<string[]>();
   const [prefFieldOfStudy, setPrefFieldOfStudy] = useState<string[]>();
+  const [prefDegree, setPrefDegree] = useState<string[]>();
   const [prefporuthamstar, setPoruthamstar] = useState<string>('');
   const [preforuthamStarRasi, setPreforuthamStarRasi] = useState<string>('');
   const [preforuthamStarRasiSuggested, setPreforuthamStarRasiSuggested] = useState<string>('');
   const [prefMaritalStatus, setMaritalStaus] = useState<string>('');
   const [weight, setWeight] = useState<string>('');
-
   //hororscope
   const [dasaName, setDasaName] = useState<string>('');
   const [dasabalance, setDasaBalance] = useState<string>('');
   const [horoHint, setHoroHint] = useState<string>('');
   const [rasiKattam, setRasiKattam] = useState<string>('');
-
   const [amsaKattam, setAmsaKattam] = useState<string>('');
   const [isFamilyDetailsOpen, setIsFamilyDetailsOpen] = useState(true);
   const [isBasicDetailsOpen, setIsBasicDetailsOpen] = useState(true);
   const [isHoroscopeDetailsOpen, setIsHoroscopeDetailsOpen] = useState(true);
   const [isEducationDetailsOpen, setIsEducationDetailsOpen] = useState(true);
   const [isPartnerPreferenceOpen, setIsPartnerPreferenceOpen] = useState(true);
-  // const [isSuggestedProfileOpen, setIsSuggestedProfileOpen] = useState(true);
-  // const [prefFamilyStatusSuggested, setPrefFamilyStatusSuggested] = useState('');
-  // const [prefStateSuggested, setPrefStateSuggested] = useState('');
-
   const [isUploadImagesOpen, setIsUploadImagesOpen] = useState(true);
   const [addonOpen, setAddOnOpen] = useState(true);
   const [error, setError] = useState<any>([]);
@@ -242,6 +236,9 @@ const AddProfile = () => {
   // ADD THESE NEW STATE VARIABLES FOR PARTNER PREFERENCE:
   const [prefFamilyStatusPartner, setPrefFamilyStatusPartner] = useState('');
   const [prefStatePartner, setPrefStatePartner] = useState('');
+  const [sugPrefFieldOfStudy, setSugPrefFieldOfStudy] = useState<string[]>();
+  const [sugPrefDegree, setSugPrefDegree] = useState<string[]>();
+  console.log("sugPrefFieldOfStudy add sugested", sugPrefFieldOfStudy)
 
   useEffect(() => {
     if (topRef.current) {
@@ -359,6 +356,7 @@ const AddProfile = () => {
         pref_marital_status: setMariedStatus.join(','),
         pref_education: prefEducation?.join(','),
         pref_fieldof_study: prefFieldOfStudy?.join(','),
+        degree: prefDegree?.join(','),
         pref_anual_income: AnnualIncomesVal.join(','),
         pref_anual_income_max: AnnualIncomesValmax.join(','),
         pref_profession: prefProf.join(','),
@@ -396,7 +394,8 @@ const AddProfile = () => {
       suggested_pref_details: {
         pref_marital_status: setMariedStatus.join(','),
         pref_education: prefEducation?.join(','),
-        pref_fieldof_study:sugPrefFieldOfStudy?.join(','),
+        pref_fieldof_study: sugPrefFieldOfStudy?.join(','),
+        degree: sugPrefDegree?.join(','),
         pref_anual_income: AnnualIncomesVal.join(','),
         pref_anual_income_max: AnnualIncomesValmax.join(','),
         pref_profession: prefProf.join(','),
@@ -704,6 +703,7 @@ const AddProfile = () => {
               setAnnualIncomesValmax={setAnnualIncomesValMax}
               setPrefEducation={setprefEducation}
               setPrefFieldOfStudy={setPrefFieldOfStudy}
+              setPrefDegree={setPrefDegree}
               setPrefProf={setPrefProf}
               setMaritalStaus={setMaritalStaus}
               setPreforuthamStarRasi={setPreforuthamStarRasi}
@@ -726,7 +726,8 @@ const AddProfile = () => {
               birthStarId={birthStarId}
               selectSetMaridStatus={selectSetMaridStatus}
               setPrefEducation={setprefEducation}
-              setSugPrefFieldOfStudy={setSugPrefFieldOfStudy}
+              setPrefFieldOfStudy={setSugPrefFieldOfStudy}
+              setPrefDegree={setSugPrefDegree}
               setPrefProf={setPrefProf}
               setMaritalStaus={setMaritalStaus}
               setIsSuggestedProfileOpen={setIsSuggestedProfileOpen}

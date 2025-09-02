@@ -6,6 +6,8 @@ import { annualIncomeApi, educationalPrefApi, fetchMaritalStatuses, getProfessio
 import { useQuery } from '@tanstack/react-query';
 import MatchingStars from '../../PartnerPreference/MatchingStars';
 import { IoMdArrowDropdown } from 'react-icons/io';
+import { apiAxios } from '../../../api/apiUrl';
+import Select from 'react-select';
 interface AnnualIncome {
   income_id: number;
   income_description: string;
@@ -21,7 +23,6 @@ export interface EduPref {
   Edu_name: string;
 }
 
-
 export interface SelectedStarIdItem {
   id: string;
   rasi: string;
@@ -29,14 +30,19 @@ export interface SelectedStarIdItem {
   label: string;
 }
 
-
 interface ProfessionPref {
   Profes_Pref_id: number;
   Profes_name: string;
 }
 
-
-
+interface FieldOfStudy {
+  study_id: number;
+  study_description: string;
+}
+interface Degree {
+  degeree_id: number;
+  degeree_description: string;
+}
 interface SuggestedProfileForm {
   birthStarId: string;
   gender: string;
@@ -46,6 +52,8 @@ interface SuggestedProfileForm {
   setMaritalStaus: Dispatch<SetStateAction<string>>;
   setPrefProf: Dispatch<SetStateAction<number[]>>;
   setPrefEducation: Dispatch<SetStateAction<string[] | undefined>>;
+  setPrefFieldOfStudy: Dispatch<SetStateAction<string[]>>;
+  setPrefDegree: Dispatch<SetStateAction<string[]>>;
   setAnnualIncomesVal: Dispatch<SetStateAction<string[]>>;
   setAnnualIncomesValmax: Dispatch<SetStateAction<string[]>>;
   selectSetMaridStatus: Dispatch<SetStateAction<string[]>>;
@@ -77,6 +85,8 @@ const SuggestedProfileForm: React.FC<SuggestedProfileForm> = ({
   selectSetMaridStatus,
   setPrefProf,
   setPrefEducation,
+  setPrefFieldOfStudy,
+  setPrefDegree,
   setAnnualIncomesVal,
   setAnnualIncomesValmax,
   isSuggestedProfileOpen,
@@ -95,20 +105,20 @@ const SuggestedProfileForm: React.FC<SuggestedProfileForm> = ({
   }; setIsSuggestedProfileOpen
 
 
-  const [selectedStarIds, setSelectedStarIds] = useState<SelectedStarIdItem[]>(
-    [],
-  );
-
+  const [selectedStarIds, setSelectedStarIds] = useState<SelectedStarIdItem[]>([],);
   const [annualIncome, setAnnualIncome] = useState<AnnualIncome[]>([]);
-  const [selectedAnnualIncomes, setSelectedAnnualIncomes] = useState<string[]>(
-    [],
-  );
-  const [selectedAnnualIncomesmax, setSelectedAnnualIncomesMax] = useState<string[]>(
-    [],
-  );
-
+  const [selectedAnnualIncomes, setSelectedAnnualIncomes] = useState<string[]>([],);
+  const [selectedAnnualIncomesmax, setSelectedAnnualIncomesMax] = useState<string[]>([],);
   const [eduPref, setEduPref] = useState<EduPref[]>([]);
   const [selectedEducations, setSelectedEducations] = useState<string[]>([]);
+  // Add Field of Study state
+  const [fieldOfStudyOptions, setFieldOfStudyOptions] = useState<FieldOfStudy[]>([]);
+  const [selectedFieldsOfStudy, setSelectedFieldsOfStudy] = useState<string[]>([]);
+  const [allFieldsOfStudySelected, setAllFieldsOfStudySelected] = useState(false);
+  // Add degree state
+  const [degrees, setDegrees] = useState<Degree[]>([]);
+  const [selectedDegrees, setSelectedDegrees] = useState<string[]>([]);
+
   useEffect(() => {
     setAnnualIncomesVal(selectedAnnualIncomes);
   }, [selectedAnnualIncomes]);
@@ -116,7 +126,6 @@ const SuggestedProfileForm: React.FC<SuggestedProfileForm> = ({
   useEffect(() => {
     setAnnualIncomesValmax(selectedAnnualIncomesmax);
   }, [selectedAnnualIncomesmax]);
-
 
   useEffect(() => {
     const fetchAnnualIncome = async () => {
@@ -141,6 +150,7 @@ const SuggestedProfileForm: React.FC<SuggestedProfileForm> = ({
   const handleAnnualIncomeChangemax = (value: string) => {
     setSelectedAnnualIncomesMax([value]); // Ensure it's always a single value
   };
+
   useEffect(() => {
     const fetchEduPref = async () => {
       try {
@@ -157,10 +167,58 @@ const SuggestedProfileForm: React.FC<SuggestedProfileForm> = ({
     fetchEduPref();
   }, []);
 
-  ////mar status
-  const [selectedMaritalStatuses, setSelectedMaritalStatuses] = useState<
-    string[]
-  >([]);
+
+  // Add Field of Study handler
+  const handleFieldOfStudyChange = (id: string, isChecked: boolean) => {
+    setSelectedFieldsOfStudy((prev) =>
+      isChecked ? [...prev, id] : prev.filter((studyId) => studyId !== id),
+    );
+  };
+
+  // Add Select All handler for Field of Study
+  const handleSelectAllFieldsOfStudy = () => {
+    if (allFieldsOfStudySelected) {
+      // Deselect all
+      setSelectedFieldsOfStudy([]);
+    } else {
+      // Select all
+      const allIds = fieldOfStudyOptions.map(option => option.study_id.toString());
+      setSelectedFieldsOfStudy(allIds);
+    }
+    setAllFieldsOfStudySelected(!allFieldsOfStudySelected);
+  };
+
+  // Add useEffect to update allFieldsOfStudySelected state
+  useEffect(() => {
+    const allSelected = fieldOfStudyOptions.length > 0 &&
+      fieldOfStudyOptions.every(option =>
+        selectedFieldsOfStudy.includes(option.study_id.toString())
+      );
+    setAllFieldsOfStudySelected(allSelected);
+  }, [selectedFieldsOfStudy, fieldOfStudyOptions]);
+
+  // Add useEffect to fetch Field of Study options
+  useEffect(() => {
+    const fetchFieldOfStudy = async () => {
+      try {
+        const response = await apiAxios.post(
+          `/auth/Get_Field_ofstudy/`,
+        );
+        const options = Object.values(response.data) as FieldOfStudy[];
+        setFieldOfStudyOptions(options);
+      } catch (error) {
+        console.error('Error fetching Field of Study options:', error);
+      }
+    };
+    fetchFieldOfStudy();
+  }, []);
+
+  // Add useEffect to update parent component
+  useEffect(() => {
+    setPrefFieldOfStudy(selectedFieldsOfStudy);
+  }, [selectedFieldsOfStudy, setPrefFieldOfStudy]);
+  //mar status
+  const [selectedMaritalStatuses, setSelectedMaritalStatuses] = useState<string[]>([]);
   const [selectedFamilyStatus, setSelectedFamilyStatus] = useState<string>('');
   const [selectedPrefState, setSelectedPrefState] = useState<string>('');
 
@@ -241,7 +299,8 @@ const SuggestedProfileForm: React.FC<SuggestedProfileForm> = ({
       setSelectedEducations([]);
       setSelectedMaritalStatuses([]);
       setSelectedAnnualIncomes([]);
-      setSelectedAnnualIncomesMax([])
+      setSelectedAnnualIncomesMax([]);
+      setSelectedFieldsOfStudy([]);
       // setSelectedStarIds([]);
 
       setTimeout(() => {
@@ -282,8 +341,6 @@ const SuggestedProfileForm: React.FC<SuggestedProfileForm> = ({
   const handleCheckboxChange = (updatedIds: SelectedStarIdItem[]) => {
     setSelectedStarIds(updatedIds);
   };
-
-
 
   const { data: FamilyStatus } = useQuery({
     queryKey: ['FamilyStatus'],
@@ -328,7 +385,6 @@ const SuggestedProfileForm: React.FC<SuggestedProfileForm> = ({
     }
   };
 
-
   const handleSelectAllProfessions = () => {
     // Check if all are already selected
     const allSelected = profession?.every((p: any) =>
@@ -345,8 +401,6 @@ const SuggestedProfileForm: React.FC<SuggestedProfileForm> = ({
     }
   };
 
-
-
   const handleSelectAllEducation = () => {
     const allSelected = eduPref.every(e =>
       selectedEducations.includes(e.Edu_Pref_id.toString())
@@ -359,6 +413,43 @@ const SuggestedProfileForm: React.FC<SuggestedProfileForm> = ({
       setSelectedEducations(allIds);
     }
   };
+
+  useEffect(() => {
+    const fetchDegrees = async () => {
+      try {
+        const response = await apiAxios.get(
+          `auth/pref_degree_list/`
+        );
+        const degreeOptions = Object.values(response.data) as Degree[];
+        setDegrees(degreeOptions);
+      } catch (error) {
+        console.error('Error fetching Degree options:', error);
+      }
+    };
+    fetchDegrees();
+  }, []);
+
+
+  const handleDegreeChange = (selectedOptions: any) => {
+    const selectedIds = selectedOptions
+      ? selectedOptions.map((option: any) => option.value)
+      : [];
+    setSelectedDegrees(selectedIds);
+  };
+
+  // Update parent component
+  useEffect(() => {
+    setPrefDegree(selectedDegrees);
+  }, [selectedDegrees, setPrefDegree]);
+
+  // Get selected options for display
+  const getSelectedOptions = () => {
+    return selectedDegrees.map(id => {
+      const degree = degrees.find(d => d.degeree_id.toString() === id);
+      return degree ? { value: id, label: degree.degeree_description } : null;
+    }).filter(Boolean);
+  };
+
   return (
     <div>
       <div className="bg-white p-5 mb-10 rounded shadow-md">
@@ -475,7 +566,7 @@ const SuggestedProfileForm: React.FC<SuggestedProfileForm> = ({
                   className="w-full px-4 py-2 border border-black rounded"
                 >
                   <option value="">Select</option>
-                  
+
                   <option value="Yes">Yes</option>
                   <option value="No">No</option>
                   <option value="Both">Both</option>
@@ -495,7 +586,7 @@ const SuggestedProfileForm: React.FC<SuggestedProfileForm> = ({
                   className="w-full px-4 py-2 border border-black rounded"
                 >
                   <option value="">Select</option>
-                 
+
                   <option value="Yes">Yes</option>
                   <option value="No">No</option>
                   <option value="Both">Both</option>
@@ -515,7 +606,7 @@ const SuggestedProfileForm: React.FC<SuggestedProfileForm> = ({
                   className="w-full px-4 py-2 border border-black rounded"
                 >
                   <option value="">Select</option>
-                
+
                   <option value="Yes">Yes</option>
                   <option value="No">No</option>
                   <option value="Both">Both</option>
@@ -535,7 +626,7 @@ const SuggestedProfileForm: React.FC<SuggestedProfileForm> = ({
               <h5 className="text-[18px] text-black font-semibold mb-2">
                 Family Status
               </h5>
-               <div className="flex justify-between items-center max-md:flex-col max-md:gap-3 max-md:items-start">
+              <div className="flex justify-between items-center max-md:flex-col max-md:gap-3 max-md:items-start">
                 {FamilyStatus?.map((status) => (
                   <div key={status.family_status_id}>
                     <input
@@ -562,7 +653,7 @@ const SuggestedProfileForm: React.FC<SuggestedProfileForm> = ({
               <h5 className="text-[18px] text-black font-semibold mb-2">
                 Preferred State
               </h5>
-             <div className="flex justify-between items-center max-md:flex-col max-md:gap-3 max-md:items-start">
+              <div className="flex justify-between items-center max-md:flex-col max-md:gap-3 max-md:items-start">
                 {stateOptions?.map((state) => (
                   <div key={state.State_Pref_id}>
                     <input
@@ -647,6 +738,63 @@ const SuggestedProfileForm: React.FC<SuggestedProfileForm> = ({
                 ))}
               </div>
             </div>
+
+            <div className="w-full py-1">
+              <h5
+                onClick={handleSelectAllFieldsOfStudy}
+                className="cursor-pointer text-[18px] text-black font-semibold mb-2">
+                Field of Study
+              </h5>
+              <div className="flex flex-wrap gap-x-6 gap-y-2">
+                {fieldOfStudyOptions.map((option) => (
+                  <div key={option.study_id} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id={`suggested-study-${option.study_id}`}
+                      value={option.study_id.toString()}
+                      checked={selectedFieldsOfStudy.includes(
+                        option.study_id.toString()
+                      )}
+                      onChange={(e) =>
+                        handleFieldOfStudyChange(
+                          option.study_id.toString(),
+                          e.target.checked
+                        )
+                      }
+                      className="mr-2"
+                    />
+                    <label
+                      htmlFor={`suggested-study-${option.study_id}`}
+                      className='text-[#000000e6] font-medium'
+                    >
+                      {option.study_description}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+
+            <div className="w-full py-1">
+              <h5 className="text-[18px] text-black font-semibold mb-2">
+                Degree
+              </h5>
+              <div className="relative">
+                <Select
+                  isMulti
+                  options={degrees.map((degree) => ({
+                    value: degree.degeree_id.toString(),
+                    label: degree.degeree_description,
+                  }))}
+                  value={getSelectedOptions()}
+                  onChange={handleDegreeChange}
+                  className="basic-multi-select"
+                  classNamePrefix="select"
+                  placeholder="Select Degrees"
+                />
+              </div>
+            </div>
+
 
             {/* Marital Status */}
             <div>
