@@ -1207,6 +1207,8 @@ const ViewProfile: React.FC<pageProps> = ({
                 <span className="text-green-600">valid till: {profileView.valid_till}</span>
                 <div className="h-4 border-l-2 border-green-800 mx-1"></div>
                 <span className="text-green-600">Password: {pass.Password}</span>
+                <div className="h-4 border-l-2 border-green-800 mx-1"></div>
+                <span className="text-green-600">idle days: {profileView.idle_days}</span>
               </div>
               <div className="w-full border-t-2 border-blue-600 my-2"></div>
               <div className="w-full border-t-2 border-blue-600"></div>

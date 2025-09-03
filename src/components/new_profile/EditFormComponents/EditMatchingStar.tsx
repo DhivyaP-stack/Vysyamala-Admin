@@ -28,9 +28,9 @@ const MatchingStars: React.FC<MatchingStarsProps> = ({
   selectedStarIds,
   onCheckboxChange,
 }) => {
-  if (initialPoruthas === 'No of porutham 15') {
-    return null;
-  }
+  // if (initialPoruthas === 'No of porutham 15') {
+  //   return null;
+  // }
   const handleCheckboxChange = (
     id: string,
     rasi: string,

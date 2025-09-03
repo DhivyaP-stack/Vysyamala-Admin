@@ -1,8 +1,6 @@
-
-
 import { useState, useEffect } from 'react';
-import { Box, Button, Checkbox, CircularProgress, Typography } from '@mui/material';
-import { userAnnualIncome, userCity, userComplexion, userEducation, userFamilyStatus, userMaritalStatus, userProfession, userState, userMembership, userFieldOfStudy, userDegrees } from '../../api/apiConfig';
+import { Button, CircularProgress, Typography } from '@mui/material';
+import { userAnnualIncome, userCity, userComplexion, userEducation, userFamilyStatus, userMaritalStatus, userProfession, userState, userMembership, userFieldOfStudy, userDegrees, getProfileDetails } from '../../api/apiConfig';
 //import MatchingStars from '../components/PartnerPreference/MatchingStars';
 import { useQuery } from '@tanstack/react-query';
 import { fetchEditProfileDetails, fetchMatchPreferences } from '../../action';
@@ -128,6 +126,26 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
     const [degrees, setDegrees] = useState<Degree[]>([]);
     const [selectedDegrees, setSelectedDegrees] = useState<String[]>([]);
 
+    // Add this query to fetch profile details
+    const { data: profileDetails } = useQuery({
+        queryKey: ['profileDetails', profileID],
+        queryFn: () => getProfileDetails(profileID as string),
+        enabled: !!profileID,
+    });
+
+    // ... (rest of your component remains the same)
+
+    // Modify your useQuery for matchStars to use the values from profileDetails
+    // const rasiId: string = edit3?.birth_rasi_name as string;
+    // const starId: string = edit3?.birthstar_name as string;
+    // const genderValue: string = edit0?.Gender as string;
+
+    // const { data: matchStars } = useQuery({
+    //     queryKey: ['matchStars', rasiId, starId, genderValue],
+    //     queryFn: () => fetchMatchPreferences(rasiId, starId, genderValue),
+    //     enabled: !!rasiId && !!genderValue && !!starId,
+    // });
+
     useEffect(() => {
         const fetchFilterData = async () => {
             try {
@@ -161,6 +179,8 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
 
         fetchFilterData();
     }, []);
+
+
 
     const { data: EditData } = useQuery({
         queryKey: [profileID, 'editData'],
@@ -246,15 +266,6 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
         );
     };
 
-    // Degree handler
-    const handleDegreeChange = (degreeId: String) => {
-        setSelectedDegrees(prev =>
-            prev.includes(degreeId)
-                ? prev.filter(id => id !== degreeId)
-                : [...prev, degreeId]
-        );
-    };
-
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
@@ -291,6 +302,96 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
         onFilterSubmit(filters);
     };
 
+    useEffect(() => {
+        // Set filter values from profile details when they are available
+        if (profileDetails) {
+            const { partner_pref_details } = profileDetails;
+
+            // Set values from partner preferences
+            if (partner_pref_details) {
+                setAgeDifference(partner_pref_details.pref_age_differences || '');
+                setHeightFrom(partner_pref_details.pref_height_from || '');
+                setHeightTo(partner_pref_details.pref_height_to || '');
+                setForeignInterest(partner_pref_details.pref_foreign_intrest || '');
+
+                // Set checkbox arrays from comma-separated strings
+                if (partner_pref_details.pref_education) {
+                    setSelectedEducation(partner_pref_details.pref_education.split(','));
+                }
+                if (partner_pref_details.pref_profession) {
+                    setSelectedProfessions(partner_pref_details.pref_profession.split(','));
+                }
+                if (partner_pref_details.pref_marital_status) {
+                    setSelectedMaritalStatus(partner_pref_details.pref_marital_status.split(','));
+                }
+                if (partner_pref_details.pref_family_status) {
+                    setSelectedFamilyStatus(partner_pref_details.pref_family_status.split(','));
+                }
+                if (partner_pref_details.pref_fieldof_study) {
+                    setSelectedFieldsOfStudy(partner_pref_details.pref_fieldof_study.split(','));
+                }
+                if (partner_pref_details.degree) {
+                    setSelectedDegrees(partner_pref_details.degree.split(','));
+                }
+                if (partner_pref_details.pref_anual_income) {
+                    setMinAnnualIncome(partner_pref_details.pref_anual_income || '');
+                }
+                if (partner_pref_details.pref_anual_income_max) {
+                    setMaxAnnualIncome(partner_pref_details.pref_anual_income_max || '');
+                }
+
+                // Set state preference
+                setSelectedState(partner_pref_details.pref_state || '');
+
+                // Set dosham preferences
+                setChevvaiDhosam(partner_pref_details.pref_chevvai || '');
+
+                if (partner_pref_details && partner_pref_details.pref_porutham_star) {
+                    const starIds = partner_pref_details.pref_porutham_star.split(',');
+
+                    // Create temporary selected stars (will be updated when matchStars data arrives)
+                    const tempSelectedStars: SelectedStarIdItem[] = starIds.map((starId: any) => ({
+                        id: starId,
+                        star: starId,
+                        rasi: '', // Will be updated later
+                        label: `Star ${starId}` // Will be updated later
+                    }));
+
+                    setSelectedStarIds(tempSelectedStars);
+                }
+            }
+        }
+    }, [profileDetails]);
+
+
+    // Then update the star details when matchStars data arrives
+    useEffect(() => {
+        if (matchStars && matchStars.length > 0 && selectedStarIds.length > 0) {
+            // Create a mapping of all available stars from matchStars
+            const allStarsMap: { [key: string]: any } = {};
+            matchStars.forEach(matchCountArray => {
+                matchCountArray.forEach(star => {
+                    allStarsMap[star.dest_star_id.toString()] = star;
+                });
+            });
+
+            // Update selectedStarIds with correct details
+            const updatedSelectedStars = selectedStarIds.map(starItem => {
+                const starDetails = allStarsMap[starItem.star];
+                if (starDetails) {
+                    return {
+                        id: starItem.id,
+                        star: starDetails.dest_star_id.toString(),
+                        rasi: starDetails.dest_rasi_id.toString(),
+                        label: `${starDetails.matching_starname} (${starDetails.matching_rasiname})`
+                    };
+                }
+                return starItem;
+            });
+
+            setSelectedStarIds(updatedSelectedStars);
+        }
+    }, [matchStars, selectedStarIds]);
     return (
         <div className="container mx-auto p-4">
             <div>
@@ -368,9 +469,9 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
                             onChange={(e) => setSarpaDhosham(e.target.value)}
                         >
                             <option value="" disabled>-- Select Sarpa Dhosham --</option>
-                            <option value="unknown">Unknown</option>
-                            <option value="yes">Yes</option>
-                            <option value="no">No</option>
+                            <option value="Unknown">Unknown</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
                         </select>
                     </div>
 
@@ -385,9 +486,9 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
                             onChange={(e) => setChevvaiDhosam(e.target.value)}
                         >
                             <option value="" disabled>-- Select Chevvai Dhosam --</option>
-                            <option value="unknown">Unknown</option>
-                            <option value="yes">Yes</option>
-                            <option value="no">No</option>
+                            <option value="Unknown">Unknown</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
                         </select>
                     </div>
 
@@ -757,9 +858,9 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
                             onChange={(e) => setForeignInterest(e.target.value)}
                         >
                             <option value="">Select Option</option>
-                            <option value="both">Both</option>
-                            <option value="yes">Yes</option>
-                            <option value="no">No</option>
+                            <option value="Both">Both</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
                         </select>
                     </div>
 

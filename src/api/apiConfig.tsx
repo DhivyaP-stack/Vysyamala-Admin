@@ -925,6 +925,7 @@ export const uploadNewProfileImages = async (profileId: string, newFiles: File[]
         throw error; // Re-throw the error to be caught by the component
     }
 };
+
 //get full ProfileDetails
 export const getProfileDetails = async (profileID: string) => {
     try {

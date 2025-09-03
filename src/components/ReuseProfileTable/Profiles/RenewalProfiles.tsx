@@ -321,9 +321,9 @@ const RenewalProfiles: React.FC = () => {
                                 onChange={handleToDateChange}
                                 InputLabelProps={{ shrink: true }}
                                 size="small"
-                                inputProps={{
-                                    max: new Date().toISOString().split('T')[0] // This disables future dates
-                                }}
+                                // inputProps={{
+                                //     max: new Date().toISOString().split('T')[0] // This disables future dates
+                                // }}
                             />
 
                             <Button variant="contained"

@@ -777,40 +777,32 @@ const AddProfileForm: React.FC<AddProfileForm> = ({
                 Alternate Mobile Number
 
               </label>
-              <PhoneInput
-                preferredCountries={["in", "sg", "my", "ae", "us", "gb"]} // Ensure "in" is first
-                inputProps={{
-                  autoFocus: true,
-                  autoFormat: true,
-                  className: 'custom-input',
-                }}
-                country={'in'}
-                {...register('AddProfileForm.Alt_Mobile_Number', {
-                  required: true,
-                })}
-                // Manually map the onChange to handle PhoneInput's custom format
-                onChange={(value, data, event, formattedValue) => {
-                  setValue('AddProfileForm.Alt_Mobile_Number', value); // Use setValue from React Hook Form
-                }}
-                // Optionally, handle onBlur as needed
-                onBlur={(event) => {
-                  trigger('AddProfileForm.Alt_Mobile_Number'); // Trigger validation on blur
-                }}
+              <Controller
+                name="AddProfileForm.Alt_Mobile_Number"
+                control={control}
+                rules={{ required: true }}
+                render={({ field }) => (
+                  <input
+                    type="text"
+                    {...field}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-[#000000e6] font-medium outline-none focus:outline-none"
+                    maxLength={10} // restrict to 10 digits
+                    onKeyPress={(e) => {
+                      // Allow only numbers
+                      if (!/[0-9]/.test(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
+                    onInput={(e) => {
+                      // Extra check: remove any non-numeric characters if pasted
+                      const cleaned = e.currentTarget.value.replace(/\D/g, "");
+                      e.currentTarget.value = cleaned;
+                      field.onChange(cleaned);
+                    }}
+                    onBlur={() => trigger("AddProfileForm.Alt_Mobile_Number")}
+                  />
+                )}
               />
-              {/* <Input
-                onKeyDown={(e) => {
-                  if (
-                    e.key !== 'Backspace' &&
-                    e.key !== 'ArrowLeft' &&
-                    e.key !== 'ArrowRight' &&
-                    !/[0-9]/.test(e.key)
-                  ) {
-                    e.preventDefault();
-                  }
-                }}
-                label={'Alternate Mobile Number'}
-                {...register('AddProfileForm.Alt_Mobile_Number')}
-              /> */}
             </div>
           </div>
 
@@ -860,28 +852,34 @@ const AddProfileForm: React.FC<AddProfileForm> = ({
             </div>
 
             <div className="w-2/4 max-md:w-full">
-
               <label className="block text-black font-medium mb-1">
                 Whatsapp Number
               </label>
-              <PhoneInput
-                preferredCountries={["in", "sg", "my", "ae", "us", "gb"]} // Ensure "in" is first
-
-                inputProps={{
-                  autoFocus: true,
-                  autoFormat: true,
-                  className: 'custom-input',
-                }}
-                country={'in'}
-                {...register('AddProfileForm.WhatsAppNumber', { required: true })}
-                // Manually map the onChange to handle PhoneInput's custom format
-                onChange={(value, data, event, formattedValue) => {
-                  setValue('AddProfileForm.WhatsAppNumber', value); // Use setValue from React Hook Form
-                }}
-              // Optionally, handle onBlur as needed
-              // onBlur={(event) => {
-              //   trigger('AddProfileForm.WhatsAppNumber'); // Trigger validation on blur
-              // }}
+              <Controller
+                name="AddProfileForm.WhatsAppNumber"
+                control={control}
+                rules={{ required: true }}
+                render={({ field }) => (
+                  <input
+                    type="text"
+                    {...field}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-[#000000e6] font-medium outline-none focus:outline-none"
+                    maxLength={10} // restrict to 10 digits
+                    onKeyPress={(e) => {
+                      // Allow only digits
+                      if (!/[0-9]/.test(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
+                    onInput={(e) => {
+                      // Clean pasted input (remove non-digits)
+                      const cleaned = e.currentTarget.value.replace(/\D/g, "");
+                      e.currentTarget.value = cleaned;
+                      field.onChange(cleaned);
+                    }}
+                    onBlur={() => trigger("AddProfileForm.WhatsAppNumber")}
+                  />
+                )}
               />
               {errors?.AddProfileForm?.WhatsAppNumber && (
                 <p className="text-red-600">

@@ -1,9 +1,7 @@
 import { Dispatch, SetStateAction, useEffect, useLayoutEffect, useState } from 'react';
-import { Button } from '@mui/material';
 import {
   ArrowBack,
   CameraAlt,
-  Numbers,
   Print,
   Settings,
   WhatsApp,
@@ -91,6 +89,7 @@ const EditViewProfile: React.FC<pageProps> = ({
   const gender = watch('profileView.Gender')
   const created_date = watch('profileView.created_date');
   const idle_days = watch('profileView.idle_days');
+  console.log("idle_days edit profile view ", idle_days);
   const visit_count = watch('profileView.visit_count');
   const exp_int_lock = watch('profileView.exp_int_lock');
   const exp_int_count = watch('profileView.exp_int_count');
@@ -130,6 +129,7 @@ const EditViewProfile: React.FC<pageProps> = ({
       setValue('profileView.profile_image', EditData[6].profile_image);
       setValue('profileView.Package_name', data.Package_name ?? '');
       setValue('profileView.valid_till', data.valid_till ?? '');
+      setValue('profileView.idle_days', data.idle_days ?? '');
       setValue('profileView.age', data.age ?? '');
       setValue('profileView.created_date', data.created_date ?? '');
       setValue('profileView.visit_count', data.visit_count === null || "" || 0 ? 0 : data.visit_count);
@@ -257,65 +257,6 @@ const EditViewProfile: React.FC<pageProps> = ({
       // Show error message to user
     }
   };
-
-  //   const handleProfileView = async (data: profileView, event?: React.BaseSyntheticEvent) => {
-  //     event?.preventDefault();
-  //     try {
-  //         // Check for empty membership dates
-  //         if (!data.profileView.membership_fromdate || data.profileView.membership_fromdate.trim() === '') {
-  //             notifyDelete("Membership from date is required");
-  //             return;
-  //         }
-  //         if (!data.profileView.membership_todate || data.profileView.membership_todate.trim() === '') {
-  //             notifyDelete("Membership to date is required");
-  //             return;
-  //         }
-
-  //         // Check for mobile verification
-  //         if (data.profileView.mobile_otp_verify === null || 
-  //             data.profileView.mobile_otp_verify === undefined || 
-  //             data.profileView.mobile_otp_verify.trim() === '') {
-  //             notifyDelete("Please select mobile verification status (Yes/No)");
-  //             return;
-  //         }
-
-  //         const editDataProfileView = {
-  //             profile_common_details: {
-  //                 Addon_package: data.profileView.Addon_package,
-  //                 Notifcation_enabled: data.profileView.Notifcation_enabled,
-  //                 status: data.profileView.status,
-  //                 DateOfJoin: data.profileView.DateOfJoin,
-  //                 ProfileId: data.profileView.ProfileId,
-  //                 Gender: data.profileView.Gender,
-  //                 Profile_name: data.profileView.Profile_name,
-  //                 Mobile_no: data.profileView.Mobile_no,
-  //                 calc_chevvai_dhosham: data.profileView.calc_chevvai_dhosham,
-  //                 calc_raguketu_dhosham: data.profileView.calc_raguketu_dhosham,
-  //                 horoscope_hints: data.profileView.horoscope_hints,
-  //                 family_status: data.profileView.family_status,
-  //                 Admin_comments: data.profileView.Admin_comments,
-  //                 suya_gothram: data.profileView.suya_gothram,
-  //                 profile_completion: data.profileView.profile_completion,
-  //                 primary_status: data.profileView.primary_status,
-  //                 secondary_status: data.profileView.secondary_status,
-  //                 plan_status: data.profileView.plan_status,
-  //                 profile_image: data.profileView.profile_image,
-  //                 mobile_otp_verify: data.profileView.mobile_otp_verify,
-  //                 membership_fromdate: data.profileView.membership_fromdate,
-  //                 membership_todate: data.profileView.membership_todate,
-  //                 visit_count: data.profileView.visit_count === null || "" || 0 ? 0 : data.profileView.visit_count,
-  //                 exp_int_count: data.profileView.exp_int_count === null || "" || 0 ? 0 : data.profileView.exp_int_count,
-  //                 exp_int_lock: data.profileView.exp_int_lock === null || data.profileView.exp_int_lock === 0 ? 0 : data.profileView.exp_int_lock
-  //             },
-  //         };
-
-  //         const Name = "profileView";
-  //         await handleSubmit();
-  //     } catch (error) {
-  //         console.error("Update failed:", error);
-  //         notifyDelete("Failed to update profile");
-  //     }
-  // };
 
   const [isShareVisible, setIsShareVisible] = useState(false);
   const [isPdfOptionsVisible, setIsPdfOptionsVisible] = useState(false);

@@ -451,20 +451,16 @@ const BasicDetails: React.FC<formProps> = ({
                 name="BasicDetail.Alt_Mobile_Number"
                 control={control}
                 render={({ field }) => (
-                  <PhoneInput
-                    preferredCountries={["in", "sg", "my", "ae", "us", "gb"]}
-                    inputProps={{
-                      autoFocus: true,
-                      autoFormat: true,
-                      className: 'custom-input text-[#000000e6] font-medium',
-                    }}
-                    country={'in'}
-                    {...register('BasicDetail.Mobile_no', { required: true })}
-
-                    value={field.value}
-                    // Manually map the onChange to handle PhoneInput's custom format
-                    onChange={(value, data, event, formattedValue) => {
-                      setValue('BasicDetail.Alt_Mobile_Number', value); // Use setValue from React Hook Form
+                  <input
+                    type="text"
+                    {...field}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-[#000000e6] font-medium outline-none focus:outline-none "
+                    maxLength={10} // optional if you want to restrict to 10 digits
+                    onKeyPress={(e) => {
+                      // Allow only digits (0-9)
+                      if (!/[0-9]/.test(e.key)) {
+                        e.preventDefault();
+                      }
                     }}
                   />
                 )}
@@ -874,13 +870,21 @@ const BasicDetails: React.FC<formProps> = ({
                 name="BasicDetail.WhatsAppNumber"
                 control={control}
                 render={({ field }) => (
-                  <PhoneInput
-                    preferredCountries={["in", "sg", "my", "ae", "us", "gb"]}
-                    country={'in'}  // Set default country
-                    value={field.value}  // Display value from form state
-                    onChange={(value) => field.onChange(value)}  // Handle value change
-                    inputProps={{
-                      className: 'custom-input text-[#000000e6] font-medium',
+                  <input
+                    type="text"
+                    {...field}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-[#000000e6] font-medium outline-none focus:outline-none"
+                    maxLength={10} // restrict to 10 digits
+                    onKeyPress={(e) => {
+                      // Allow only digits (0-9)
+                      if (!/[0-9]/.test(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
+                    onInput={(e) => {
+                      // Extra safety: remove non-digits if pasted
+                      e.currentTarget.value = e.currentTarget.value.replace(/\D/g, "");
+                      field.onChange(e.currentTarget.value);
                     }}
                   />
                 )}
