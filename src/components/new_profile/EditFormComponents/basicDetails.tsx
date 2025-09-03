@@ -84,6 +84,7 @@ const BasicDetails: React.FC<formProps> = ({
   const [isCityValid, setIsCityValid] = useState(false);
   const [maritalStatus, setMaritalStatus] = useState('');
   const [heightOptions, setHeightOptions] = useState<HeightOption[]>([]);
+  const [showCityAsTextInput, setShowCityAsTextInput] = useState(false);
 
   useEffect(() => {
     const fetchHeight = async () => {
@@ -251,8 +252,29 @@ const BasicDetails: React.FC<formProps> = ({
         formattedWhatsupNumber || '');
       setValue('BasicDetail.pincode', EditData[0].Profile_pincode || '' || null);
       setAddonPackagecheck(EditData[0].Addon_package || '' || null)
+
+      if (EditData && EditData[0]?.Profile_city &&
+        (!EditData[0]?.Profile_state || !EditData[0]?.Profile_district)) {
+        setShowCityAsTextInput(true);
+      }
+
+      // Check if we need to show city as text input
+      // if (EditData[0]?.Profile_city &&
+      //   (!EditData[0]?.Profile_state || !EditData[0]?.Profile_district)) {
+      //   setShowCityAsTextInput(true);
+      //   setValue('BasicDetail.City', EditData[0].Profile_city || '' || null);
+      // }
+      if (EditData[0]?.Profile_city &&
+        (!EditData[0]?.Profile_state || !EditData[0]?.Profile_district)) {
+        setShowCityAsTextInput(true);
+        setValue('BasicDetail.City', EditData[0].Profile_city || '' || null);
+      } else {
+        setShowCityAsTextInput(false);
+      }
+
     }
   }, [EditData]);
+
   const selectedGender = watch('BasicDetail.Gender');
   useEffect(() => {
     if (selectedGender) {
@@ -273,14 +295,33 @@ const BasicDetails: React.FC<formProps> = ({
     setGetMaritalStatus(maritalStatus)
   }, [maritalStatus])
 
+  // useEffect(() => {
+  //   if (selectedCountry && selectedCountry !== "1") {
+  //     // Reset state, district, and city if country is not India
+  //     setValue("BasicDetail.state", "");
+  //     setValue("BasicDetail.district", "");
+  //     setValue("BasicDetail.City", "");
+  //   }
+  // }, [selectedCountry, setValue]);
+
+
   useEffect(() => {
-  if (selectedCountry && selectedCountry !== "1") {
-    // Reset state, district, and city if country is not India
-    setValue("BasicDetail.state", "");
-    setValue("BasicDetail.district", "");
-    setValue("BasicDetail.City", "");
-  }
-}, [selectedCountry, setValue]);
+    if (selectedCountry && selectedCountry !== "1") {
+      // For non-India countries, show city as text input
+      setShowCityAsTextInput(true);
+      // Reset state, district
+      setValue("BasicDetail.state", "");
+      setValue("BasicDetail.district", "");
+    } else if (selectedCountry === "1") {
+      // For India, check if we should show city as text input
+      if (EditData && EditData[0]?.Profile_city &&
+        (!EditData[0]?.Profile_state || !EditData[0]?.Profile_district)) {
+        setShowCityAsTextInput(true);
+      } else {
+        setShowCityAsTextInput(false);
+      }
+    }
+  }, [selectedCountry, setValue, EditData]);
 
   return (
     <div className="bg-white p-5 mb-10 rounded shadow-md">
@@ -359,10 +400,10 @@ const BasicDetails: React.FC<formProps> = ({
             {/* Gender Selector */}
             <div className="w-full py-1">
               <label className="block text-black font-semibold mb-1">
-                 Gender <span className="text-red-500">*</span>
+                Gender <span className="text-red-500">*</span>
               </label>
-               <label className="block text-black font-bold mb-1 ml-30 capitalize">
-                {selectedGender} 
+              <label className="block text-black font-bold mb-1 ml-30 capitalize">
+                {selectedGender}
               </label>
               {/* <input
                 {...register('BasicDetail.Gender')}
@@ -435,7 +476,7 @@ const BasicDetails: React.FC<formProps> = ({
               )}
             </div>
 
-              <div className="w-full relative">
+            <div className="w-full relative">
               {/* The star placed relative to the label position */}
               <span className="absolute top-[2px] left-[95px] text-red-500">*</span>
               <Input
@@ -454,7 +495,7 @@ const BasicDetails: React.FC<formProps> = ({
           </div>
 
           <div className="flex w-full flex-row gap-4">
-          
+
 
             <div className="w-full">
               <label className="block text-black font-semibold mb-1">
@@ -499,7 +540,7 @@ const BasicDetails: React.FC<formProps> = ({
                 </p>
               )}
             </div>
-               <div className="w-full">
+            <div className="w-full">
               <label className="block text-black font-semibold mb-1">
                 Country
                 <span className="text-red-500">*</span>
@@ -507,6 +548,19 @@ const BasicDetails: React.FC<formProps> = ({
               <select
                 value={selectedCountry}
                 {...register('BasicDetail.country')}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setValue('BasicDetail.country', value);
+
+                  setValue('BasicDetail.state', "");
+
+                  // reset dependent fields
+                  setValue('BasicDetail.district', "");
+                  setValue('BasicDetail.City', "");
+
+                  // hide manual city input when state changes
+                  setShowCityAsTextInput(false);
+                }}
                 className="outline-none w-full px-4 py-2 border border-black rounded text-[#000000e6] font-medium"
               >
                 <option value="">Select your Country </option>
@@ -525,8 +579,6 @@ const BasicDetails: React.FC<formProps> = ({
           </div>
 
           <div className="flex w-full flex-row gap-4">
-          
-         
             {selectedCountry === '1' && (
               <div className="w-2/4">
                 <label className="block text-black font-semibold mb-1">
@@ -536,6 +588,19 @@ const BasicDetails: React.FC<formProps> = ({
                 <select
                   value={selectedState}
                   {...register('BasicDetail.state')}
+                  onChange={(e) => {
+                    const value = e.target.value;
+
+                    // set state value
+                    setValue('BasicDetail.state', value);
+
+                    // reset dependent fields
+                    setValue('BasicDetail.district', "");
+                    setValue('BasicDetail.City', "");
+
+                    // hide manual city input when state changes
+                    setShowCityAsTextInput(false);
+                  }}
                   className="outline-none w-full px-4 py-2 border border-black rounded text-[#000000e6] font-medium"
                 >
                   <option value="" className='text-[#000000e6] font-medium' selected>
@@ -557,7 +622,7 @@ const BasicDetails: React.FC<formProps> = ({
             )}
 
 
-               {selectedCountry === '1' && (
+            {selectedCountry === '1' && (
               <div className="flex w-full flex-row gap-4">
                 <div className="w-full">
                   <label className="block text-black font-semibold mb-1">
@@ -577,13 +642,26 @@ const BasicDetails: React.FC<formProps> = ({
                       value={selectedDistrict}
                       {...register('BasicDetail.district')}
                       className="outline-none w-full px-4 py-2 border border-black rounded text-[#000000e6] font-medium"
+                      // onChange={(e) => {
+                      //   const value = e.target.value;
+                      //   setValue('BasicDetail.district', value);
+                      //   // Reset city when district changes
+                      //   setValue('BasicDetail.City', '');
+                      //   setShowCityTextInput(false);
+                      //   setIsCityValid(true); // Set to true to show city select when district changes
+                      // }}
                       onChange={(e) => {
                         const value = e.target.value;
                         setValue('BasicDetail.district', value);
                         // Reset city when district changes
                         setValue('BasicDetail.City', '');
                         setShowCityTextInput(false);
-                        setIsCityValid(true); // Set to true to show city select when district changes
+                        setIsCityValid(true);
+
+                        // If district is selected, don't show city as text input
+                        if (value) {
+                          setShowCityAsTextInput(false);
+                        }
                       }}
                     >
                       <option value="" className='text-[#000000e6] font-medium'>
@@ -709,7 +787,7 @@ const BasicDetails: React.FC<formProps> = ({
             )}
 
 
-            {Number(selectedCountry) > 1 ? (
+            {Number(selectedCountry) > 1 || showCityAsTextInput ? (
               <div className="w-2/4">
                 <label className="block text-black font-semibold mb-1">
                   City
@@ -736,10 +814,7 @@ const BasicDetails: React.FC<formProps> = ({
 
           </div>
           <div className="flex w-full flex-row gap-4">
-
-         
-
-              <div className="w-2/4">
+            <div className="w-2/4">
               <label className="block text-black font-semibold mb-1">
                 Complexion
                 {/* <span className="text-red-500">*</span> */}
@@ -791,7 +866,7 @@ const BasicDetails: React.FC<formProps> = ({
               )}
             </div>
 
-             <div className="w-2/4">
+            <div className="w-2/4">
               <label className="block text-black font-semibold mb-1">
                 Whatsapp Mobile Number
               </label>
@@ -818,7 +893,7 @@ const BasicDetails: React.FC<formProps> = ({
             </div>
           </div>
           <div className="flex w-full flex-row gap-4">
-           
+
 
 
             <div className="w-1/3">

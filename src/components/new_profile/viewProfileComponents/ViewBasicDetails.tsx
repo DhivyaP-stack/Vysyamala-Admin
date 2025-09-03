@@ -16,7 +16,7 @@ import {
   getStatus,
 } from '../../../action';
 import axios from 'axios';
-import {API_URL_Auth } from '../../../services/api';
+import { API_URL_Auth } from '../../../services/api';
 import { HeightOption } from '../profile_form_components/AddProfileForm';
 
 interface pageProps {
@@ -39,8 +39,6 @@ const ViewBasicDetails: React.FC<pageProps> = ({ profile, setGennder }) => {
   const toggleSection1 = () => {
     setIsBasicDetailsOpen(!isBasicDetailsOpen);
   };
-
-
 
   useEffect(() => {
     const fetchHeight = async () => {
@@ -152,16 +150,18 @@ const ViewBasicDetails: React.FC<pageProps> = ({ profile, setGennder }) => {
   const { data: District } = useQuery({
     queryKey: [basicDetails.Profile_state, 'District'],
     queryFn: () => GetDistrict(basicDetails.Profile_state),
-    enabled: !!basicDetails.Profile_state ,
+    enabled: !!basicDetails.Profile_state,
   });
-console.log('5656',District);
+  console.log('5656', District);
+
   const { data: City } = useQuery({
     queryKey: [basicDetails.Profile_district, 'City'],
     queryFn: () => GetCity(basicDetails.Profile_district),
-    enabled: !!basicDetails.Profile_district ,
+    enabled: !!basicDetails.Profile_district,
   });
-console.log('5656',basicDetails.Profile_district);
-console.log('5656',City);
+  console.log('5656', basicDetails.Profile_district);
+  console.log('5656', City);
+
   useEffect(() => {
     setGennder(basicDetails.Gender);
   }, [basicDetails]);
@@ -222,7 +222,7 @@ console.log('5656',City);
                 label={'Name'}
               />
             </div>
-  <div className="w-2/4">
+            <div className="w-2/4">
               <label className="block mb-1 font-bold text-black">
                 Mobile Number <span className="text-red-500">*</span>
               </label>
@@ -240,7 +240,7 @@ console.log('5656',City);
               </label>
 
               <label className="block text-black font-bold mb-1 ml-30 capitalize">
-                {basicDetails.Gender} 
+                {basicDetails.Gender}
               </label>
               {/* <input
                 value={basicDetails.Gender}
@@ -249,7 +249,7 @@ console.log('5656',City);
                 readOnly
               /> */}
             </div>
-          
+
 
           </div>
 
@@ -262,7 +262,7 @@ console.log('5656',City);
                 label={'Email'}
               />
             </div>
-             <div className="w-2/4">
+            <div className="w-2/4">
               <Input
                 required
                 readOnly
@@ -270,7 +270,7 @@ console.log('5656',City);
                 label={'Alternate Mobile Number'}
               />
             </div>
-           
+
             <div className="w-2/4">
               <label className="block mb-1 font-bold text-black">
                 Date of Birth <span className="text-red-500">*</span>
@@ -284,12 +284,12 @@ console.log('5656',City);
               />
             </div>
 
-           
+
           </div>
 
           <div className="flex w-full flex-row gap-4">
-            
-             <div className="w-full">
+
+            <div className="w-full">
               <label className="block text-black font-semibold mb-1">
                 Select your Marital Status{' '}
                 <span className="text-red-500">*</span>
@@ -310,7 +310,7 @@ console.log('5656',City);
                 ))}
               </select>
             </div>
-           
+
             <div className="w-full">
               <Input
                 readOnly
@@ -321,7 +321,7 @@ console.log('5656',City);
             </div>
             <div className="w-full">
               <label className="block text-black font-semibold mb-1">
-                Country<span className='text-red-500'>*</span> 
+                Country<span className='text-red-500'>*</span>
               </label>
               <select
                 disabled
@@ -345,7 +345,7 @@ console.log('5656',City);
               <div className="w-2/4">
                 <label className="block text-black font-semibold mb-1">
                   State (Based on country selection){' '}
-                 
+
                 </label>
                 <select
                   disabled
@@ -365,7 +365,7 @@ console.log('5656',City);
 
               <div className="w-2/4">
                 <label className="block text-black font-semibold mb-1">
-                  District 
+                  District
                 </label>
                 <select
                   disabled
@@ -384,24 +384,40 @@ console.log('5656',City);
               </div>
 
               <div className="w-2/4">
-                <label className="block text-black font-semibold mb-1">
-                  City
-                </label>
-                <select
-                  disabled
-                  value={basicDetails.Profile_city}
-                  className="outline-none w-full px-4 py-2 border border-black rounded text-black font-semibold"
-                >
-                  <option value="" selected disabled>
-                    -- Select City --
-                  </option>
-                  {City?.map((option: any) => (
-                    <option key={option.city_id} value={option.city_id}>
-                    
-                      {basicDetails.Profile_city}
+                <label className="block text-black font-semibold mb-1">City</label>
+
+                {/* If Case 1 or Case 2 -> show Input, else show dropdown */}
+                {(
+                  (!basicDetails.Profile_state &&
+                    !basicDetails.Profile_district &&
+                    basicDetails.Profile_city) ||
+                  (basicDetails.Profile_state &&
+                    !basicDetails.Profile_district &&
+                    basicDetails.Profile_city)
+                ) ? (
+                  <Input
+                    required
+                    value={basicDetails.Profile_city}
+                    label={''}
+                    type={'text'}
+                    readOnly
+                  />
+                ) : (
+                  <select
+                    disabled
+                    value={basicDetails.Profile_city}
+                    className="outline-none w-full px-4 py-2 border border-black rounded text-black font-semibold"
+                  >
+                    <option value="" selected disabled>
+                      -- Select City --
                     </option>
-                  ))}
-                </select>
+                    {City?.map((option: any) => (
+                      <option key={option.city_id} value={option.city_id}>
+                        {basicDetails.Profile_city}
+                      </option>
+                    ))}
+                  </select>
+                )}
               </div>
             </div>
           ) : isNonIndiaCountry ? (
@@ -419,8 +435,29 @@ console.log('5656',City);
             </div>
           ) : null}
 
+          {/* {basicDetails.Profile_country &&
+            (
+              // Case 1: state & district null
+              (!basicDetails.Profile_state && !basicDetails.Profile_district && basicDetails.Profile_city) ||
+              // Case 2: state exists, district null
+              (basicDetails.Profile_state && !basicDetails.Profile_district && basicDetails.Profile_city)
+            ) && (
+              <div className="flex w-full flex-row gap-4 mt-2">
+                <div className="w-2/4">
+                  <Input
+                    required
+                    value={basicDetails.Profile_city}
+                    label={'City'}
+                    type={'text'}
+                    readOnly
+                  />
+                </div>
+              </div>
+            )} */}
+
+
           <div className="flex w-full flex-row gap-4">
-             <div className="w-2/4">
+            <div className="w-2/4">
               <label className="block text-black font-semibold mb-1">
                 Complexion
               </label>
@@ -449,7 +486,7 @@ console.log('5656',City);
                 readOnly
               />
             </div>
-           
+
             <div className="w-2/4">
               <Input
                 required

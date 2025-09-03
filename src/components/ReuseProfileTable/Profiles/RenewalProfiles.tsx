@@ -33,6 +33,9 @@ export const getRenewalProfiles = async (
     order: 'asc' | 'desc',
     rowsPerPage: number,
     page: number,
+    fromDate?: string,  // Add fromDate parameter
+    toDate?: string     // Add toDate parameter
+
 ) => {
     const params = new URLSearchParams({
         page_size: rowsPerPage.toString(),
@@ -42,7 +45,13 @@ export const getRenewalProfiles = async (
     if (search) {
         params.append('search', search);
     }
-
+    // Add date parameters if they exist
+    if (fromDate) {
+        params.append('from_date', fromDate);
+    }
+    if (toDate) {
+        params.append('to_date', toDate);
+    }
     // Add sorting parameters if needed by the API
     // params.append('ordering', `${order === 'desc' ? '-' : ''}${orderBy}`);
 
@@ -67,6 +76,7 @@ interface RenewalProfile {
     Gender: string;
     Mobile_no: string;
     Profile_whatsapp: string;
+    Profile_alternate_mobile: string;
     EmailId: string;
     Profile_dob: string;
     DateOfJoin: string;
@@ -82,12 +92,14 @@ interface RenewalProfile {
     city_name: string;
     state_name: string;
     district_name: string;
+    membership_startdate?: string;
+    membership_enddate?: string;
 }
 
 
 const columns: Column[] = [
     { id: 'ProfileId', label: 'Profile ID', minWidth: 120 },
-    { id: 'Profile_name', label: 'Profile Name', minWidth: 170 },
+    { id: 'Profile_name', label: 'Name', minWidth: 170 },
     { id: 'Gender', label: 'Gender', minWidth: 100 },
     { id: 'Mobile_no', label: 'Mobile No', minWidth: 150 },
     { id: 'Profile_whatsapp', label: 'WhatsApp', minWidth: 150 },
@@ -95,7 +107,7 @@ const columns: Column[] = [
     { id: 'Profile_alternate_mobile', label: 'Alternate Mobile', minWidth: 200 },
     { id: 'Profile_dob', label: 'DOB', minWidth: 120 },
     { id: 'years', label: 'Age', minWidth: 80, align: 'center' },
-    { id: 'DateOfJoin', label: 'Renewal Date', minWidth: 150 },
+    { id: 'DateOfJoin', label: 'Date of Join', minWidth: 150 },
     { id: 'birthstar_name', label: 'Birth Star', minWidth: 130 },
     { id: 'MaritalStatus', label: 'Marital Status', minWidth: 150 },
     { id: 'complexion_desc', label: 'Complexion', minWidth: 130 },
@@ -108,6 +120,8 @@ const columns: Column[] = [
     { id: 'profession', label: 'Profession', minWidth: 150 },
     { id: 'anual_income', label: 'Annual Income', minWidth: 180 },
     { id: 'years', label: 'Years', minWidth: 180 },
+    { id: 'membership_startdate', label: 'Membership Start Date', minWidth: 180 },
+    { id: 'membership_enddate', label: 'Membership End Date', minWidth: 180 },
 ];
 
 
@@ -126,7 +140,10 @@ const RenewalProfiles: React.FC = () => {
     // const [selectAll, setSelectAll] = useState<boolean>(false);
     const [, setSelectAll] = useState<boolean>(false);
     const [selectedRows, setSelectedRows] = useState<string[]>([]); // Store ProfileId (string)
-     const [totalCount, setTotalCount] = useState<number>(0);
+    const [totalCount, setTotalCount] = useState<number>(0);
+    // Add state for date filters
+    const [fromDate, setFromDate] = useState<string>('');
+    const [toDate, setToDate] = useState<string>('');
 
     useEffect(() => {
         fetchData();
@@ -142,6 +159,8 @@ const RenewalProfiles: React.FC = () => {
                 order,
                 rowsPerPage,
                 page + 1,
+                fromDate,  // Pass fromDate
+                toDate     // Pass toDate
             );
             setData(response.data);
             setTotalCount(response.data.count);
@@ -150,6 +169,20 @@ const RenewalProfiles: React.FC = () => {
         } finally {
             setLoading(false);
         }
+    };
+
+    // Add handlers for date changes
+    const handleFromDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setFromDate(event.target.value);
+    };
+
+    const handleToDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setToDate(event.target.value);
+    };
+
+    const handleDateFilterSubmit = () => {
+        setPage(0); // Reset to first page when applying new filters
+        fetchData();
     };
 
     const handleRequestSort = (property: keyof RenewalProfile) => {
@@ -257,6 +290,9 @@ const RenewalProfiles: React.FC = () => {
                 </Typography>
             );
         }
+        if (columnId === 'membership_startdate' || columnId === 'membership_enddate') {
+            return value ? new Date(value).toISOString().split('T')[0] : 'N/A';
+        }
         return value ?? 'N/A'; // Return 'N/A' for null or undefined values
     };
 
@@ -264,14 +300,49 @@ const RenewalProfiles: React.FC = () => {
         <div className="p-4">
             <h1 className="text-2xl text-black font-bold mb-4">Renewal Profiles <span className="text-lg font-normal">({totalCount})</span></h1>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                <Button
-                    onClick={() => generateShortProfilePDF(selectedRows)}
-                    variant="contained"
-                    color="primary"
-                    disabled={selectedRows.length === 0}
-                >
-                    Download Short Profile(s)
-                </Button>
+                <div className="w-full p-2 flex justify-between">
+                    <div className="w-full text-right px-2">
+
+                        <div className="flex items-center space-x-2">
+                            <TextField
+                                label="From Date"
+                                type="date"
+                                name="fromDate"
+                                value={fromDate}
+                                onChange={handleFromDateChange}
+                                InputLabelProps={{ shrink: true }}
+                                size="small"
+                            />
+                            <TextField
+                                label="To Date"
+                                type="date"
+                                name="toDate"
+                                value={toDate}
+                                onChange={handleToDateChange}
+                                InputLabelProps={{ shrink: true }}
+                                size="small"
+                                inputProps={{
+                                    max: new Date().toISOString().split('T')[0] // This disables future dates
+                                }}
+                            />
+
+                            <Button variant="contained"
+                                onClick={handleDateFilterSubmit}
+                            >
+                                Submit
+                            </Button>
+                            <Button
+                                onClick={() => generateShortProfilePDF(selectedRows)}
+                                variant="contained"
+                                color="primary"
+                                disabled={selectedRows.length === 0}
+                            >
+                                Download Short Profile(s)
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+
                 <TextField
                     size="medium"
                     label="Search"
