@@ -321,6 +321,7 @@ export const userMatchingProfilesFilterListMatch = async (
     selectedMaritalStatus: string,
     selectedFamilyStatus: string,
     sentInWhatsapp: string,
+    prefPoruthamStarRasi: string,
     profileType: 'matching' | 'suggested' = 'matching',
 ) => {
     try {
@@ -356,6 +357,7 @@ export const userMatchingProfilesFilterListMatch = async (
             whatsapp_field: sentInWhatsapp,
             pref_fieldof_study: selectedFieldsOfStudy, // Add this
             degree: selectedDegrees, // Add this
+            pref_porutham_star_rasi: prefPoruthamStarRasi
         });
 
         console.log(`User ${profileType} records filter fetched successfully`, response);

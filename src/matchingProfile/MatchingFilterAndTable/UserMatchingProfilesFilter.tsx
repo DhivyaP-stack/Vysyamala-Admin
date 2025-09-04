@@ -5,7 +5,6 @@ import { userAnnualIncome, userCity, userComplexion, userEducation, userFamilySt
 import { useQuery } from '@tanstack/react-query';
 import { fetchEditProfileDetails, fetchMatchPreferences } from '../../action';
 import MatchingStars from '../../components/PartnerPreference/MatchingStars';
-//import { fetchEditProfileDetails, fetchMatchPreferences } from '../action';
 import Select from 'react-select';
 // Type definitions (same as before)
 interface AnnualIncome {
@@ -205,6 +204,8 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
         enabled: !!rasiId && !!genderValue && !!starId,
     });
 
+
+
     const handleCheckboxMatchingStars = (updatedIds: SelectedStarIdItem[]) => {
         setSelectedStarIds(updatedIds);
     };
@@ -270,7 +271,10 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
         event.preventDefault();
 
         // Extract dest_rasi_id from selectedStarIds
-        const destRasiIds = selectedStarIds.map((item) => item.star);
+        // const prefPoruthamStar = selectedStarIds.map((item) => item.star);
+        const prefPoruthamStarRasi = selectedStarIds.map((item) =>
+            `${item.star}-${item.rasi}`
+        ).join(",");
 
         const filters = {
             selectedComplexions: String(selectedComplexions),
@@ -295,8 +299,9 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
             sentInWhatsapp,
             sarpaDhosham,
             chevvaiDhosam,
-            destRasiIds: destRasiIds.join(","),
-            ageDifference
+            destRasiIds: prefPoruthamStarRasi,
+            ageDifference,
+            prefPoruthamStarRasi
         };
 
         onFilterSubmit(filters);
@@ -346,22 +351,59 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
                 // Set dosham preferences
                 setChevvaiDhosam(partner_pref_details.pref_chevvai || '');
 
-                if (partner_pref_details && partner_pref_details.pref_porutham_star) {
-                    const starIds = partner_pref_details.pref_porutham_star.split(',');
+                // if (partner_pref_details.pref_porutham_star_rasi && matchStars && matchStars.length > 0) {
+                //     // 2. Parse the saved "star-rasi" string into a lookup set for efficiency
+                //     const savedPairs = new Set(partner_pref_details.pref_porutham_star_rasi.split(','));
 
-                    // Create temporary selected stars (will be updated when matchStars data arrives)
-                    const tempSelectedStars: SelectedStarIdItem[] = starIds.map((starId: any) => ({
-                        id: starId,
-                        star: starId,
-                        rasi: '', // Will be updated later
-                        label: `Star ${starId}` // Will be updated later
-                    }));
+                //     const initialSelectedStars: SelectedStarIdItem[] = [];
 
-                    setSelectedStarIds(tempSelectedStars);
-                }
+                //     // 3. Iterate through all available stars from the matchStars query
+                //     matchStars.flat().forEach(starOption => {
+                //         const currentPair = `${starOption.dest_star_id}-${starOption.dest_rasi_id}`;
+
+                //         // 4. If a star option matches a saved preference, add its full details to our state
+                //         if (savedPairs.has(currentPair)) {
+                //             initialSelectedStars.push({
+                //                 id: starOption.id.toString(),
+                //                 star: starOption.dest_star_id.toString(),
+                //                 rasi: starOption.dest_rasi_id.toString(),
+                //                 label: `${starOption.matching_starname} (${starOption.matching_rasiname})`
+                //             });
+                //         }
+                //     });
+
+                //     // 5. Set the state once with the fully formed, correct data
+                //     setSelectedStarIds(initialSelectedStars);
+                // }
             }
         }
     }, [profileDetails]);
+
+    useEffect(() => {
+        if (profileDetails && matchStars && matchStars.length > 0) {
+            const { partner_pref_details } = profileDetails;
+
+            if (partner_pref_details && partner_pref_details.pref_porutham_star_rasi) {
+                const savedPairs = new Set(partner_pref_details.pref_porutham_star_rasi.split(','));
+                const initialSelectedStars: SelectedStarIdItem[] = [];
+
+                matchStars.flat().forEach(starOption => {
+                    const currentPair = `${starOption.dest_star_id}-${starOption.dest_rasi_id}`;
+
+                    if (savedPairs.has(currentPair)) {
+                        initialSelectedStars.push({
+                            id: starOption.id.toString(),
+                            star: starOption.dest_star_id.toString(),
+                            rasi: starOption.dest_rasi_id.toString(),
+                            label: `${starOption.matching_starname} (${starOption.matching_rasiname})`
+                        });
+                    }
+                });
+
+                setSelectedStarIds(initialSelectedStars);
+            }
+        }
+    }, [profileDetails, matchStars]);
 
 
     // Then update the star details when matchStars data arrives
@@ -392,6 +434,7 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
             setSelectedStarIds(updatedSelectedStars);
         }
     }, [matchStars, selectedStarIds]);
+
     return (
         <div className="container mx-auto p-4">
             <div>
@@ -486,9 +529,10 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
                             onChange={(e) => setChevvaiDhosam(e.target.value)}
                         >
                             <option value="" disabled>-- Select Chevvai Dhosam --</option>
-                            <option value="Unknown">Unknown</option>
+                            {/* <option value="Unknown">Unknown</option> */}
                             <option value="Yes">Yes</option>
                             <option value="No">No</option>
+                            <option value="Both">Both</option>
                         </select>
                     </div>
 

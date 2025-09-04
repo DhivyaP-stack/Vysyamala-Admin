@@ -94,34 +94,44 @@ interface RenewalProfile {
     district_name: string;
     membership_startdate?: string;
     membership_enddate?: string;
+    family_status: string;
+    status: string;
+    plan_name: string;
+    Last_login_date: string;
 }
 
 
 const columns: Column[] = [
     { id: 'ProfileId', label: 'Profile ID', minWidth: 120 },
     { id: 'Profile_name', label: 'Name', minWidth: 170 },
-    { id: 'Gender', label: 'Gender', minWidth: 100 },
-    { id: 'Mobile_no', label: 'Mobile No', minWidth: 150 },
-    { id: 'Profile_whatsapp', label: 'WhatsApp', minWidth: 150 },
-    { id: 'EmailId', label: 'Email', minWidth: 200 },
-    { id: 'Profile_alternate_mobile', label: 'Alternate Mobile', minWidth: 200 },
-    { id: 'Profile_dob', label: 'DOB', minWidth: 120 },
-    { id: 'years', label: 'Age', minWidth: 80, align: 'center' },
-    { id: 'DateOfJoin', label: 'Date of Join', minWidth: 150 },
-    { id: 'birthstar_name', label: 'Birth Star', minWidth: 130 },
-    { id: 'MaritalStatus', label: 'Marital Status', minWidth: 150 },
-    { id: 'complexion_desc', label: 'Complexion', minWidth: 130 },
-    { id: 'country_name', label: 'Country', minWidth: 120 },
+    { id: 'years', label: 'Age', minWidth: 80 },
+    { id: 'family_status', label: 'Family Status', minWidth: 80 },
+    // { id: 'DateOfJoin', label: 'Date of Joining', minWidth: 150 },
+    { id: 'DateOfJoin', label: 'Date of Registration', minWidth: 150 },
+    { id: 'membership_enddate', label: 'End Date', minWidth: 180 },
     { id: 'state_name', label: 'State', minWidth: 120 },
-    { id: 'district_name', label: 'District', minWidth: 120 },
     { id: 'city_name', label: 'City', minWidth: 120 },
-    { id: 'Profile_for', label: 'Profile For', minWidth: 120 },
-    { id: 'highest_education', label: 'Education', minWidth: 180 },
-    { id: 'profession', label: 'Profession', minWidth: 150 },
-    { id: 'anual_income', label: 'Annual Income', minWidth: 180 },
-    { id: 'years', label: 'Years', minWidth: 180 },
-    { id: 'membership_startdate', label: 'Membership Start Date', minWidth: 180 },
-    { id: 'membership_enddate', label: 'Membership End Date', minWidth: 180 },
+    { id: 'Mobile_no', label: 'Mobile No', minWidth: 150 },
+    { id: 'status', label: 'Profile Status', minWidth: 150 },
+    { id: 'plan_name', label: 'Membership Plan', minWidth: 150 },
+    { id: 'Last_login_date', label: 'Last Login Date', minWidth: 150 },
+
+    // { id: 'Gender', label: 'Gender', minWidth: 100 },
+    // { id: 'Profile_whatsapp', label: 'WhatsApp', minWidth: 150 },
+    // { id: 'EmailId', label: 'Email', minWidth: 200 },
+    // { id: 'Profile_alternate_mobile', label: 'Alternate Mobile', minWidth: 200 },
+    // { id: 'Profile_dob', label: 'DOB', minWidth: 120 },
+    // { id: 'birthstar_name', label: 'Birth Star', minWidth: 130 },
+    // { id: 'MaritalStatus', label: 'Marital Status', minWidth: 150 },
+    // { id: 'complexion_desc', label: 'Complexion', minWidth: 130 },
+    // { id: 'country_name', label: 'Country', minWidth: 120 },
+    // { id: 'district_name', label: 'District', minWidth: 120 },
+    // { id: 'Profile_for', label: 'Profile For', minWidth: 120 },
+    // { id: 'highest_education', label: 'Education', minWidth: 180 },
+    // { id: 'profession', label: 'Profession', minWidth: 150 },
+    // { id: 'anual_income', label: 'Annual Income', minWidth: 180 },
+    // { id: 'years', label: 'Years', minWidth: 180 },
+    // { id: 'membership_startdate', label: 'Membership Start Date', minWidth: 180 },
 ];
 
 
@@ -274,6 +284,12 @@ const RenewalProfiles: React.FC = () => {
 
     // --- 5. Simplified renderCellContent function ---
     const renderCellContent = (columnId: keyof RenewalProfile, value: any, row: RenewalProfile) => {
+
+        if (columnId === 'membership_startdate' || columnId === 'membership_enddate' || columnId === 'Last_login_date') {
+            // Extract just the date part from the datetime string
+            return value ? value.split(' ')[0] : 'N/A';
+        }
+
         if (columnId === 'ProfileId') {
             return (
                 <Typography
@@ -290,9 +306,7 @@ const RenewalProfiles: React.FC = () => {
                 </Typography>
             );
         }
-        if (columnId === 'membership_startdate' || columnId === 'membership_enddate') {
-            return value ? new Date(value).toISOString().split('T')[0] : 'N/A';
-        }
+
         return value ?? 'N/A'; // Return 'N/A' for null or undefined values
     };
 
@@ -321,9 +335,9 @@ const RenewalProfiles: React.FC = () => {
                                 onChange={handleToDateChange}
                                 InputLabelProps={{ shrink: true }}
                                 size="small"
-                                // inputProps={{
-                                //     max: new Date().toISOString().split('T')[0] // This disables future dates
-                                // }}
+                            // inputProps={{
+                            //     max: new Date().toISOString().split('T')[0] // This disables future dates
+                            // }}
                             />
 
                             <Button variant="contained"
