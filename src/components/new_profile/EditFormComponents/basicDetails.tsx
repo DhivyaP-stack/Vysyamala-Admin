@@ -365,7 +365,7 @@ const BasicDetails: React.FC<formProps> = ({
             </div>
 
             <div ref={MobileNoRef} className="w-full">
-              <label className="block text-black font-semibold mb-1">
+              <label className="block text-[#5a5959e6] font-semibold mb-1">
                 Mobile Number<span className='text-red-500'>*</span>
                 {/* <span className="text-red-500">*</span> */}
               </label>
@@ -378,7 +378,7 @@ const BasicDetails: React.FC<formProps> = ({
                     inputProps={{
                       autoFocus: true,
                       autoFormat: true,
-                      className: 'custom-input text-[#000000e6] font-medium',
+                      className: 'custom-input text-[#222020e6] font-medium ',
                     }}
                     country={'in'}
                     {...register('BasicDetail.Mobile_no', { required: true })}
@@ -399,10 +399,10 @@ const BasicDetails: React.FC<formProps> = ({
             </div>
             {/* Gender Selector */}
             <div className="w-full py-1">
-              <label className="block text-black font-semibold mb-1">
+              <label className="block text-[#5a5959e6] font-semibold mb-1">
                 Gender <span className="text-red-500">*</span>
               </label>
-              <label className="block text-black font-bold mb-1 ml-30 capitalize">
+              <label className="block text-[#222020e6] font-medium mb-1 ml-30 capitalize">
                 {selectedGender}
               </label>
               {/* <input
@@ -443,7 +443,7 @@ const BasicDetails: React.FC<formProps> = ({
             </div>
 
             <div ref={MobileNoRef} className="w-full">
-              <label className="block text-black font-semibold mb-1">
+              <label className="block text-[#5a5959e6] font-semibold mb-1">
                 Alternate Mobile Number
                 {/* <span className="text-red-500">*</span> */}
               </label>
@@ -454,7 +454,7 @@ const BasicDetails: React.FC<formProps> = ({
                   <input
                     type="text"
                     {...field}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-[#000000e6] font-medium outline-none focus:outline-none "
+                    className="w-full border border-[#b5b2b2e6] rounded-md px-4 py-2 text-[#222020e6] font-medium outline-none focus:outline-none "
                     maxLength={10} // optional if you want to restrict to 10 digits
                     onKeyPress={(e) => {
                       // Allow only digits (0-9)
@@ -494,7 +494,7 @@ const BasicDetails: React.FC<formProps> = ({
 
 
             <div className="w-full">
-              <label className="block text-black font-semibold mb-1">
+              <label className="block text-[#5a5959e6] font-semibold mb-1">
                 Select your Marital Status{' '}
                 <span className="text-red-500">*</span>
               </label>
@@ -504,7 +504,7 @@ const BasicDetails: React.FC<formProps> = ({
                   setMaritalStatus(e.target.value);
                   setValue('BasicDetail.marital_status', e.target.value);
                 }}
-                className="outline-none w-full px-4 py-2 border border-black rounded text-[#000000e6] font-medium"
+                className="outline-none w-full px-4 py-2 border border-[#b5b2b2e6] rounded text-[#222020e6] font-medium"
               >
                 <option value="" className='text-[#000000e6] font-medium'>Select your Marital Status</option>
                 {MaritalStatus?.map((option: MaritalStatusOption) => (
@@ -537,7 +537,7 @@ const BasicDetails: React.FC<formProps> = ({
               )}
             </div>
             <div className="w-full">
-              <label className="block text-black font-semibold mb-1">
+              <label className="block text-[#5a5959e6] font-semibold mb-1">
                 Country
                 <span className="text-red-500">*</span>
               </label>
@@ -557,7 +557,7 @@ const BasicDetails: React.FC<formProps> = ({
                   // hide manual city input when state changes
                   setShowCityAsTextInput(false);
                 }}
-                className="outline-none w-full px-4 py-2 border border-black rounded text-[#000000e6] font-medium"
+                className="outline-none w-full px-4 py-2 border border-[#b5b2b2e6] rounded text-[#222020e6] font-medium"
               >
                 <option value="">Select your Country </option>
                 {Country?.map((option: Country) => (
@@ -577,7 +577,7 @@ const BasicDetails: React.FC<formProps> = ({
           <div className="flex w-full flex-row gap-4">
             {selectedCountry === '1' && (
               <div className="w-2/4">
-                <label className="block text-black font-semibold mb-1">
+                <label className="block text-[#5a5959e6] font-semibold mb-1">
                   State (Based on country selection){' '}
                   {/* <span className="text-red-500">*</span> */}
                 </label>
@@ -597,7 +597,7 @@ const BasicDetails: React.FC<formProps> = ({
                     // hide manual city input when state changes
                     setShowCityAsTextInput(false);
                   }}
-                  className="outline-none w-full px-4 py-2 border border-black rounded text-[#000000e6] font-medium"
+                  className="outline-none w-full px-4 py-2 border border-[#b5b2b2e6] rounded text-[#222020e6] font-medium"
                 >
                   <option value="" className='text-[#000000e6] font-medium' selected>
                     Select State
@@ -621,7 +621,7 @@ const BasicDetails: React.FC<formProps> = ({
             {selectedCountry === '1' && (
               <div className="flex w-full flex-row gap-4">
                 <div className="w-full">
-                  <label className="block text-black font-semibold mb-1">
+                  <label className="block text-[#5a5959e6] font-semibold mb-1">
                     District
                   </label>
                   {Number(selectedState) > 7 ? (
@@ -629,7 +629,7 @@ const BasicDetails: React.FC<formProps> = ({
                       <input
                         type="text"
                         {...register('BasicDetail.district')}
-                        className="outline-none w-full px-4 py-2 border border-black rounded text-[#000000e6] font-medium"
+                        className="outline-none w-full px-4 py-2 border border-[#b5b2b2e6] rounded text-[#222020e6] font-medium"
                         placeholder="Enter your District"
                       />
                     </>
@@ -637,7 +637,7 @@ const BasicDetails: React.FC<formProps> = ({
                     <select
                       value={selectedDistrict}
                       {...register('BasicDetail.district')}
-                      className="outline-none w-full px-4 py-2 border border-black rounded text-[#000000e6] font-medium"
+                      className="outline-none w-full px-4 py-2 border border-[#b5b2b2e6] rounded text-[#222020e6] font-medium"
                       // onChange={(e) => {
                       //   const value = e.target.value;
                       //   setValue('BasicDetail.district', value);
@@ -664,7 +664,7 @@ const BasicDetails: React.FC<formProps> = ({
                         Select your District
                       </option>
                       {District?.map((option: District) => (
-                        <option key={option.disctict_id} value={option.disctict_id} className='text-[#000000e6] font-medium'>
+                        <option key={option.disctict_id} value={option.disctict_id} className='text-[#222020e6] font-medium'>
                           {option.disctict_name}
                         </option>
                       ))}
@@ -681,13 +681,13 @@ const BasicDetails: React.FC<formProps> = ({
                 {/* Conditionally render City as a text input if District is a text input */}
                 {Number(selectedState) > 7 ? (
                   <div className="w-full">
-                    <label className="block text-black font-semibold mb-1">
+                    <label className="block text-[#5a5959e6] font-semibold mb-1">
                       City
                     </label>
                     <input
                       type="text"
                       {...register('BasicDetail.City', { required: 'City is required' })}
-                      className="outline-none w-full px-4 py-2 border border-black rounded text-[#000000e6] font-medium"
+                      className="outline-none w-full px-4 py-2 border border-[#b5b2b2e6] rounded text-[#222020e6] font-medium"
                       placeholder="Enter your city"
                     />
                     {errors?.BasicDetail?.City && (
@@ -703,7 +703,7 @@ const BasicDetails: React.FC<formProps> = ({
                       <div className="flex items-center gap-0">
                         <label
                           htmlFor="city"
-                          className="block mb-1 text-black font-semibold "
+                          className="block mb-1 text-[#5a5959e6] font-semibold "
                         >
                           City
                           {/* <span className="text-red-500">*</span> */}
@@ -722,7 +722,7 @@ const BasicDetails: React.FC<formProps> = ({
                         <div>
                           <select
                             value={selectedCity}
-                            className="outline-none w-full px-4 py-2 border border-black rounded text-[#000000e6] font-medium"
+                            className="outline-none w-full px-4 py-2 border border-[#b5b2b2e6] rounded text-[#222020e6] font-medium"
                             {...register('BasicDetail.City', {
                               required: 'City is required',
                             })}
@@ -750,7 +750,7 @@ const BasicDetails: React.FC<formProps> = ({
                           {showCityTextInput && (
                             <input
                               type="text"
-                              className="outline-none w-full px-4 py-2 border border-black rounded mt-2"
+                              className="outline-none w-full px-4 py-2 border border-[#b5b2b2e6] rounded mt-2"
                               {...register('BasicDetail.City', {
                                 required: 'City is required',
                               })}
@@ -762,7 +762,7 @@ const BasicDetails: React.FC<formProps> = ({
                       ) : (
                         <input
                           type="text"
-                          className="outline-none w-full px-4 py-2 border border-black rounded text-[#000000e6] font-medium"
+                          className="outline-none w-full px-4 py-2 border border-[#b5b2b2e6] rounded text-[#222020e6] font-medium"
                           {...register('BasicDetail.City', {
                             required: 'City is required',
                           })}
@@ -785,14 +785,14 @@ const BasicDetails: React.FC<formProps> = ({
 
             {Number(selectedCountry) > 1 || showCityAsTextInput ? (
               <div className="w-2/4">
-                <label className="block text-black font-semibold mb-1">
+                <label className="block text-[#5a5959e6] font-semibold mb-1">
                   City
                   {/* <span className="text-red-500">*</span> */}
                 </label>
                 <input
                   type="text"
                   {...register('BasicDetail.City', { required: 'City is required' })}
-                  className="outline-none w-full px-4 py-2 border border-black rounded text-[#000000e6] font-medium"
+                  className="outline-none w-full px-4 py-2 border border-[#b5b2b2e6] rounded text-[#222020e6] font-medium"
                   placeholder="Enter your city"
                 />
                 {errors?.BasicDetail?.City && (
@@ -811,13 +811,13 @@ const BasicDetails: React.FC<formProps> = ({
           </div>
           <div className="flex w-full flex-row gap-4">
             <div className="w-2/4">
-              <label className="block text-black font-semibold mb-1">
+              <label className="block text-[#5a5959e6] font-semibold mb-1">
                 Complexion
                 {/* <span className="text-red-500">*</span> */}
               </label>
               <select
                 {...register('BasicDetail.complexion')}
-                className="outline-none w-full px-4 py-2 border border-black rounded text-[#000000e6] font-medium"
+                className="outline-none w-full px-4 py-2 border border-[#b5b2b2e6] rounded text-[#222020e6] font-medium"
               >
                 <option value="" className='text-[#000000e6] font-medium'>Select your complexion</option>
                 {Complexion?.map((option: Complexion) => (
@@ -863,7 +863,7 @@ const BasicDetails: React.FC<formProps> = ({
             </div>
 
             <div className="w-2/4">
-              <label className="block text-black font-semibold mb-1">
+              <label className="block text-[#5a5959e6] font-semibold mb-1">
                 Whatsapp Mobile Number
               </label>
               <Controller
@@ -873,7 +873,7 @@ const BasicDetails: React.FC<formProps> = ({
                   <input
                     type="text"
                     {...field}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-[#000000e6] font-medium outline-none focus:outline-none"
+                    className="w-full border border-[#b5b2b2e6] rounded-md px-3 py-2 text-[#222020e6] font-medium outline-none focus:outline-none"
                     maxLength={10} // restrict to 10 digits
                     onKeyPress={(e) => {
                       // Allow only digits (0-9)
@@ -901,13 +901,13 @@ const BasicDetails: React.FC<formProps> = ({
 
 
             <div className="w-1/3">
-              <label className='block text-black   font-semibold mb-1'>
+              <label className='block text-[#5a5959e6]   font-semibold mb-1'>
                 Profile Height
                 {/* <span className="text-red-500">*</span> */}
               </label>
               <select
                 id="height"
-                className={`text-ash font-medium block w-full px-3 py-2 border-[1px] border-black border-footer-text-gray rounded-[4px] focus-visible:outline-none`}
+                className={`text-ash font-medium block w-full px-3 py-2 border-[1px] border-[#b5b2b2e6] border-footer-text-gray rounded-[4px] focus-visible:outline-none`}
                 {...register("BasicDetail.Profile_height")}
                 value={watch("BasicDetail.Profile_height") || ""}
               >

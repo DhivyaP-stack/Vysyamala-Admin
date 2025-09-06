@@ -28,6 +28,7 @@ import { DataHistoryPopup } from '../viewProfileComponents/ProfileViwePopup/Data
 import VerifyOTPPopup from '../verifyotp/verifyotppopup';
 import { apiAxios } from '../../../api/apiUrl';
 import { MyProfileShare } from '../WhatsUpShare/MyProfileShare';
+import PaymentPopup from './PaymentInfo/PaymentInfoPopup';
 
 interface pageProps {
   handleSubmit: () => void;
@@ -63,6 +64,7 @@ const EditViewProfile: React.FC<pageProps> = ({
   const [openDataHistory, setOpenDataHistory] = useState<boolean>(false)
   const [OpenAdminDetails, setOpenAdminDetails] = useState<boolean>(false);
   const [showOtpPopup, setShowOtpPopup] = useState(false);
+  const [open, setOpen] = useState(false);
   const status = watch('profileView.status') ?? ''; // Ensure it doesn't break
 
   const primaryStatus = watch('profileView.primary_status') ?? ''; // Prevent undefined errors
@@ -570,7 +572,18 @@ const EditViewProfile: React.FC<pageProps> = ({
 
                     </div>
                     <div className="flex max-xl:flex-wrap">
+                      
                       <div>
+                          <div>
+                        <button
+                           type="button"
+        onClick={() => setOpen(true)}
+                          className={`bg-blue-700 text-white px-5 py-1 text-md h-auto rounded whitespace-nowrap text-center`}
+                        >
+                          Payment Info
+                        </button>
+                        <PaymentPopup open={open} onClose={() => setOpen(false)} />
+                      </div>
                         <div>
                           <p className="text-black font-semibold ">
                             Payment Info:

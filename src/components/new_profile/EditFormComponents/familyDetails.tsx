@@ -254,7 +254,7 @@ const FamilyDetails: React.FC<formProps> = ({
                 )}
               </div>
               <div className="w-full">
-                <label className="block mb-1 font-bold text-black">
+                <label className="block mb-1 font-bold text-[#5a5959e6]">
                   Father Occupation <span className="text-red-500">*</span>
                 </label>
                 <Input
@@ -340,13 +340,13 @@ const FamilyDetails: React.FC<formProps> = ({
                 )}
               </div>
               <div className="w-full">
-                <label className="block text-black font-medium mb-1">
+                <label className="block text-[#5a5959e6] font-medium mb-1">
                   Blood Group
                 </label>
                 <select
                   value={BloodGroup}
                   {...register('FamilyDetails.bloodGroup')}
-                  className="outline-none w-full px-4 py-2 border border-black rounded text-[#000000e6] font-medium"
+                  className="outline-none w-full px-4 py-2 border border-[#b5b2b2e6] text-[#222020e6]  rounded  font-medium"
                 >
                   <option value="" selected>
                     -- Select Blood Group --
@@ -367,7 +367,7 @@ const FamilyDetails: React.FC<formProps> = ({
 
               {setChildrenView && (
                 <div className='w-full'>
-                  <label className="block mb-1 text-base text-black font-medium ">
+                  <label className="block mb-1 text-base text-[#5a5959e6] font-medium ">
                     Number of Children
                   </label>
                   <div className="relative">
@@ -394,7 +394,7 @@ const FamilyDetails: React.FC<formProps> = ({
 
                     <select
                       id="no_of_children"
-                      className="outline-none w-full text-placeHolderColor px-3 py-2.5 text-sm border border-ashBorder rounded appearance-none"
+                      className="outline-none w-full text-placeHolderColor px-3 py-2.5 text-sm border border-[#b5b2b2e6] text-[#222020e6] rounded appearance-none"
                       // Just use valueAsNumber to handle the type conversion automatically
                       {...register("FamilyDetails.no_of_children", {
                         valueAsNumber: true,
@@ -425,7 +425,7 @@ const FamilyDetails: React.FC<formProps> = ({
 
 
               <div className="w-full py-1">
-                <label className="block text-black font-semibold mb-1">
+                <label className="block text-[#5a5959e6] font-semibold mb-1">
                   Father Alive{' '}
 
                 </label>
@@ -437,7 +437,7 @@ const FamilyDetails: React.FC<formProps> = ({
                   id='aliveYes'
                 />
 
-                <label className="text-black px-4 font-medium" htmlFor='aliveYes'>Yes</label>
+                <label className=" text-[#222020e6] px-4 font-medium" htmlFor='aliveYes'>Yes</label>
 
                 <input
                   {...register('FamilyDetails.father_alive')}
@@ -445,7 +445,7 @@ const FamilyDetails: React.FC<formProps> = ({
                   value="no"
                   id='aliveNo'
                 />
-                <label className="text-black px-4 font-medium" htmlFor='aliveNo'>No</label>
+                <label className="text-[#222020e6] px-4 font-medium" htmlFor='aliveNo'>No</label>
                 {errors?.FamilyDetails?.father_alive && (
                   <p className="text-red-600">
                     {errors.FamilyDetails.father_alive.message}
@@ -454,7 +454,7 @@ const FamilyDetails: React.FC<formProps> = ({
               </div>
 
               <div className="w-full py-1">
-                <label className="block text-black font-semibold mb-1">
+                <label className="block text-[#5a5959e6] font-semibold mb-1">
                   Mother Alive{' '}
 
                 </label>
@@ -466,7 +466,7 @@ const FamilyDetails: React.FC<formProps> = ({
                   id='mother_aliveYes'
                 />
 
-                <label className="text-black px-4 font-medium" htmlFor='mother_aliveYes'>Yes</label>
+                <label className=" text-[#222020e6] px-4 font-medium" htmlFor='mother_aliveYes'>Yes</label>
 
                 <input
                   {...register('FamilyDetails.mother_alive')}
@@ -474,7 +474,7 @@ const FamilyDetails: React.FC<formProps> = ({
                   value="no"
                   id='mother_aliveNo'
                 />
-                <label className="text-black px-4 font-medium" htmlFor='mother_aliveNo'>No</label>
+                <label className=" text-[#222020e6] px-4 font-medium" htmlFor='mother_aliveNo'>No</label>
                 {errors?.FamilyDetails?.mother_alive && (
                   <p className="text-red-600">
                     {errors.FamilyDetails.mother_alive.message}
@@ -488,7 +488,7 @@ const FamilyDetails: React.FC<formProps> = ({
             <div>
               <div className="flex w-full flex-row gap-4">
                 <div className="w-full py-1">
-                  <label className="block text-black font-semibold mb-1">
+                  <label className="block text-[#5a5959e6] font-semibold mb-1">
                     Family Type
                   </label>
                   <div
@@ -498,7 +498,7 @@ const FamilyDetails: React.FC<formProps> = ({
                     {FamilyTypes?.map((type) => (
                       <label
                         key={type.family_id}
-                        className={`w-full px-5 py-3 text-sm font-bold border border-black  text-center cursor-pointer  ${String(selectedFamilyTypeValue) ===
+                        className={`w-full px-5 py-3 text-sm font-bold border border-[#b5b2b2e6]   text-center cursor-pointer  ${String(selectedFamilyTypeValue) ===
                           String(type.family_id)
                           ? 'bg-blue-500 text-white'
                           : ''
@@ -523,14 +523,14 @@ const FamilyDetails: React.FC<formProps> = ({
                 </div>
 
                 <div className="w-full py-1">
-                  <label className="block text-black font-semibold mb-1">
+                  <label className="block text-[#5a5959e6] font-semibold mb-1">
                     Family Value
                   </label>
                   <div className="w-full inline-flex rounded">
                     {FamilyValues?.map((value) => (
                       <label
                         key={value.family_value_id}
-                        className={`w-full px-5 py-3 text-sm font-bold border border-black cursor-pointer  ${String(selectedFamilyValues) ===
+                        className={`w-full px-5 py-3 text-sm font-bold border border-[#b5b2b2e6] cursor-pointer  ${String(selectedFamilyValues) ===
                           String(value.family_value_id)
                           ? 'bg-blue-500 text-white'
                           : ''
@@ -556,14 +556,14 @@ const FamilyDetails: React.FC<formProps> = ({
                 </div>
               </div>
               <div className="w-full py-1">
-                <label className="block text-black font-semibold mb-1">
+                <label className="block text-[#5a5959e6] font-semibold mb-1">
                   Family Status
                 </label>
                 <div className="w-full inline-flex rounded">
                   {FamilyStatus?.map((status) => (
                     <label
                       key={status.family_status_id}
-                      className={`w-full px-5 py-3 text-sm font-bold border border-black cursor-pointer ${String(selectedFamilyStatus) ===
+                      className={`w-full px-5 py-3 text-sm font-bold border border-[#b5b2b2e6]  cursor-pointer ${String(selectedFamilyStatus) ===
                         String(status.family_status_id)
                         ? 'bg-blue-500 text-white'
                         : ''
@@ -588,7 +588,7 @@ const FamilyDetails: React.FC<formProps> = ({
               </div>
               <div className="mt-3 flex items-center space-x-48">
                 <div>
-                  <h1 className="block text-black font-semibold mb-1">
+                  <h1 className="block text-[#5a5959e6] font-semibold mb-1">
                     Brother
                   </h1>
                   <div className="flex flex-col">
@@ -596,7 +596,7 @@ const FamilyDetails: React.FC<formProps> = ({
                       {[0, 1, 2, 3, 4, 5].map((num) => (
                         <label
                           key={num}
-                          className={`px-5 py-3 text-sm font-bold text-black border border-black text-center cursor-pointer ${selectedBrother === num.toString() ? 'bg-blue-500 text-white' : ''
+                          className={`px-5 py-3 text-sm font-bold  border border-[#b5b2b2e6]  text-center cursor-pointer ${selectedBrother === num.toString() ? 'bg-blue-500 text-white' : ''
                             }`}
                         >
                           <input
@@ -625,7 +625,7 @@ const FamilyDetails: React.FC<formProps> = ({
 
                 {selectedBrother !== '0' && Number(selectedBrother) > 0 && (
                   <div>
-                    <h1 className="mb-3 text-black font-bold">
+                    <h1 className="mb-3 text-[#5a5959e6] font-bold">
                       Married
                     </h1>
                     <div className="flex flex-col">
@@ -633,7 +633,7 @@ const FamilyDetails: React.FC<formProps> = ({
                         {[...Array(Math.min(Number(selectedBrother) + 1, 6)).keys()].map((num) => (
                           <label
                             key={num}
-                            className={`px-10 py-3 text-sm font-bold text-black border border-black cursor-pointer ${marriedBrother === num.toString() ? 'bg-blue-500 text-white' : ''
+                            className={`px-10 py-3 text-sm font-bold  border border-[#b5b2b2e6]   cursor-pointer ${marriedBrother === num.toString() ? 'bg-blue-500 text-white' : ''
                               }`}
                           >
                             <input
@@ -657,7 +657,7 @@ const FamilyDetails: React.FC<formProps> = ({
               </div>
               <div className="mt-3 flex items-center space-x-48">
                 <div>
-                  <h1 className="block text-black font-semibold mb-1">
+                  <h1 className="block text-[#5a5959e6] font-semibold mb-1">
                     Sister
                   </h1>
                   <div className="flex flex-col">
@@ -665,7 +665,7 @@ const FamilyDetails: React.FC<formProps> = ({
                       {[0, 1, 2, 3, 4, 5].map((num) => (
                         <label
                           key={num}
-                          className={`px-5 py-3 text-sm font-bold text-black border 
+                          className={`px-5 py-3 text-sm font-bold border border-[#b5b2b2e6] 
 cursor-pointer  ${selectedSister === num.toString() ? 'bg-blue-500 text-white' : ''}`}
                         >
                           {num === 5 ? '5+' : num}
@@ -694,7 +694,7 @@ cursor-pointer  ${selectedSister === num.toString() ? 'bg-blue-500 text-white' :
 
                 {selectedSister !== '0' && Number(selectedSister) > 0 && (
                   <div>
-                    <h1 className="mb-3 text-black font-semibold">
+                    <h1 className="mb-3 text-[#5a5959e6] font-semibold">
                       Married
                     </h1>
                     <div className="flex flex-col">
@@ -702,7 +702,7 @@ cursor-pointer  ${selectedSister === num.toString() ? 'bg-blue-500 text-white' :
                         {[...Array(Math.min(Number(selectedSister) + 1, 6)).keys()].map((num) => (
                           <label
                             key={num}
-                            className={`px-10 py-3 text-sm text-black font-bold border border-black cursor-pointer ${marriedSisters === num.toString() ? 'bg-blue-500 text-white' : ''
+                            className={`px-10 py-3 text-sm  font-bold border border-[#b5b2b2e6]  cursor-pointer ${marriedSisters === num.toString() ? 'bg-blue-500 text-white' : ''
                               }`}
                           >
                             <input
@@ -726,7 +726,7 @@ cursor-pointer  ${selectedSister === num.toString() ? 'bg-blue-500 text-white' :
               </div>
               <div className="flex w-full flex-row gap-4 mt-5">
                 <div className="w-full py-1">
-                  <label className="block text-black font-semibold mb-1">
+                  <label className="block text-[#5a5959e6] font-semibold mb-1">
                     Physically Challenged{' '}
 
                   </label>
@@ -737,14 +737,14 @@ cursor-pointer  ${selectedSister === num.toString() ? 'bg-blue-500 text-white' :
                     value="yes"
                   />
 
-                  <label className="text-black px-4 font-medium">Yes</label>
+                  <label className="text-[#5a5959e6] px-4 font-medium">Yes</label>
 
                   <input
                     {...register('FamilyDetails.physicallyChalanged')}
                     type="radio"
                     value="no"
                   />
-                  <label className="text-black px-4 font-medium">No</label>
+                  <label className="text-[#5a5959e6] px-4 font-medium">No</label>
                   {errors?.FamilyDetails?.physicallyChalanged && (
                     <p className="text-red-600">
                       {errors.FamilyDetails.physicallyChalanged.message}
@@ -770,7 +770,7 @@ cursor-pointer  ${selectedSister === num.toString() ? 'bg-blue-500 text-white' :
                     type={'text'}
                   /> */}
                   <div className='flex items-center'>
-                    <label className="block text-black font-semibold mb-1">
+                    <label className="block text-[#5a5959e6] font-semibold mb-1">
                       Property Details
                     </label>
                     <div className="relative inline-block ml-2 group">
@@ -801,7 +801,7 @@ cursor-pointer  ${selectedSister === num.toString() ? 'bg-blue-500 text-white' :
                   )}
                 </div>
                 <div className="w-full">
-                  <label className="block text-black font-semibold mb-1 items-center">
+                  <label className="block text-[#5a5959e6] font-semibold mb-1 items-center">
                     <span>Property Worth</span>
                     <div className="relative inline-block ml-2 group">
                       <AiOutlineInfoCircle className="text-primary align-middle cursor-pointer" />
@@ -817,7 +817,7 @@ cursor-pointer  ${selectedSister === num.toString() ? 'bg-blue-500 text-white' :
                     type="text"
                     placeholder="Enter property worth"
                     {...register('FamilyDetails.PropertyWorth')}
-                    className="outline-none w-full px-4 py-2 border font-bold border-black rounded"
+                    className="outline-none w-full px-4 py-2 border font-medium border-[#b5b2b2e6] text-[#222020e6] rounded"
                   />
                   {errors?.FamilyDetails?.PropertyWorth && (
                     <p className="text-red-600">
@@ -844,14 +844,14 @@ cursor-pointer  ${selectedSister === num.toString() ? 'bg-blue-500 text-white' :
               </div>
 
               <div className='w-full mt-1'>
-                <label className='block text-black font-semibold '>
+                <label className='block text-[#5a5959e6] font-semibold '>
                   Uncle Gothram (Admin)
                 </label>
                 <Select
                   options={gothramOptions}
                   value={selectedAdminUncleGothram}
                   onChange={handleAdminUncleGothramChange}
-                  className="w-full text-sm border border-black text-black font-medium rounded"
+                  className="w-full text-sm border border-[#b5b2b2e6] text-[#222020e6] font-medium rounded"
                   placeholder="Select Uncle Gothram"
                   isClearable
                 />
@@ -870,7 +870,7 @@ cursor-pointer  ${selectedSister === num.toString() ? 'bg-blue-500 text-white' :
                 )}
               </div>
               <div className='w-full mt-1'>
-                <label className='block text-black font-semibold '>
+                <label className='block text-[#5a5959e6] font-semibold '>
                   Suya Gothram (Admin)
                 </label>
 
@@ -878,7 +878,7 @@ cursor-pointer  ${selectedSister === num.toString() ? 'bg-blue-500 text-white' :
                   options={gothramOptions}
                   value={selectedAdminSuyaGothram}
                   onChange={handleAdminSuyaGothramChange}
-                  className="w-full text-sm border border-black text-black font-medium rounded"
+                  className="w-full text-sm border border-[#b5b2b2e6] text-[#222020e6] font-medium rounded"
                   placeholder="Select Suya Gothram"
                   isClearable
                 />
@@ -940,13 +940,13 @@ cursor-pointer  ${selectedSister === num.toString() ? 'bg-blue-500 text-white' :
               </div>
 
               <div className="w-full">
-                <label className="block text-black font-semibold mb-1">
+                <label className="block text-[#5a5959e6] font-semibold mb-1">
                   Eye wear
                 </label>
                 <select
                   {...register('FamilyDetails.EyeWear')}
                   // defaultValue="Select Eye Wear" // very important to show placeholder
-                  className="outline-none w-full px-4 py-2 border border-black text-[#000000e6] font-medium rounded"
+                  className="outline-none w-full px-4 py-2 border border-[#b5b2b2e6] text-[#222020e6] font-medium rounded"
                 >
                   <option value="">
                     -- Select Eye Wear --
@@ -973,11 +973,11 @@ cursor-pointer  ${selectedSister === num.toString() ? 'bg-blue-500 text-white' :
               </div>
 
               <div className="w-full ">
-                <label className="block text-black font-semibold mb-1">
+                <label className="block text-[#5a5959e6] font-semibold mb-1">
                   About my Family
                 </label>
                 <textarea
-                  className="outline-none w-full h-10.5 px-4 py-2 border text-black font-medium border-black rounded"
+                  className="outline-none w-full h-10.5 px-4 py-2 border  font-medium border-[#b5b2b2e6] text-[#222020e6] rounded"
                   {...register('FamilyDetails.AboutMyFamily')}
                 ></textarea>
                 {errors?.FamilyDetails?.AboutMyFamily && (
