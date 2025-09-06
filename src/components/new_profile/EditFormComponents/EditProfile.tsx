@@ -582,7 +582,7 @@ const EditViewProfile: React.FC<pageProps> = ({
                         >
                           Payment Info
                         </button>
-                        <PaymentPopup open={open} onClose={() => setOpen(false)} />
+                        <PaymentPopup open={open} onClose={() => setOpen(false)}  profileId={profileId} />
                       </div>
                         <div>
                           <p className="text-black font-semibold ">
