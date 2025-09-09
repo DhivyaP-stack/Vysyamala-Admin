@@ -585,7 +585,7 @@ const EditViewProfile: React.FC<pageProps> = ({
                         <PaymentPopup open={open} onClose={() => setOpen(false)}  profileId={profileId} />
                       </div>
                         <div>
-                          <p className="text-black font-semibold ">
+                          <p className="text-[#5a5959e6] font-semibold ">
                             Payment Info:
                             <span className="text-green-700">
                               {' '}
@@ -595,12 +595,12 @@ const EditViewProfile: React.FC<pageProps> = ({
                         </div>
                         <div>
                           <div className="flex mt-3 gap-2">
-                            <label className="font-semibold text-black">Profile Status:</label>
+                            <label className="font-semibold text-[#5a5959e6]">Profile Status:</label>
                             <select
                               {...register('profileView.status', {
                                 setValueAs: (value) => value === "" ? undefined : Number(value)
                               })}
-                              className="px-2 py-1 border border-black rounded  text-[#000000e6] "
+                              className="px-2 py-1 border border-[#b5b2b2e6]  text-[#222020e6] rounded   "
                             >
                               <option value="" className=' text-[#000000e6] '>Select your Status</option>
                               {Status?.map((option) => (
@@ -620,7 +620,7 @@ const EditViewProfile: React.FC<pageProps> = ({
                                 setValueAs: (value) => value === "" ? undefined : Number(value)
                               })}
                               value={watch('profileView.primary_status') || ''}
-                              className="px-2 py-1 border border-black rounded  text-[#000000e6] "
+                              className="px-2 py-1 border  rounded  border-[#b5b2b2e6]  text-[#222020e6] "
                             >
                               <option value="" className=' text-[#000000e6] '>Select Primary Status</option>
                               {Primary?.map((option) => (
@@ -639,7 +639,7 @@ const EditViewProfile: React.FC<pageProps> = ({
                                     setValueAs: (value) => value === "" ? undefined : Number(value)
                                   })}
                                   value={watch('profileView.secondary_status') || ''}
-                                  className="px-2 py-1 border border-black rounded  text-[#000000e6] "
+                                  className="px-2 py-1 border rounded  border-[#b5b2b2e6]  text-[#222020e6] "
                                 >
                                   <option value="">Select Secondary Status</option>
                                   {secondary?.map((option) => (
@@ -663,16 +663,16 @@ const EditViewProfile: React.FC<pageProps> = ({
                         </div>
 
                         <div className="flex gap-2 mt-3 ">
-                          <label className="font-semibold text-black">
+                          <label className="font-semibold text-[#5a5959e6]">
                             Membership Date:
                           </label>
                           <div className="flex flex-col">
                             <div className="flex gap-1">
-                              <label className="text-black font-medium">From:</label>
+                              <label className="text-[#5a5959e6] font-medium">From:</label>
                               <input
                                 {...register('profileView.membership_fromdate')}
                                 type="date"
-                                className='font-medium text-[#000000e6] mb-1'
+                                className='font-medium text-[#5a5959e6] mb-1'
                                 value={watch('profileView.membership_fromdate')?.split('T')[0] || ''}
                               />
                             </div>
@@ -684,11 +684,11 @@ const EditViewProfile: React.FC<pageProps> = ({
                           </div>
                           <div className="flex flex-col">
                             <div className="flex gap-1">
-                              <label className="text-black font-medium">To:</label>
+                              <label className="text-[#5a5959e6] font-medium">To:</label>
                               <input
                                 {...register('profileView.membership_todate')}
                                 type="date"
-                                className='font-medium text-[#000000e6] mb-1'
+                                className='font-medium text-[#5a5959e6] mb-1'
                                 value={watch('profileView.membership_todate')?.split('T')[0] || ''}
                               />
                             </div>
@@ -701,7 +701,7 @@ const EditViewProfile: React.FC<pageProps> = ({
                         </div>
 
                         <div className="w-full">
-                          <h5 className="text-[18px] text-black font-semibold mb-3">
+                          <h5 className="text-[18px] text-[#5a5959e6] font-semibold mb-3">
                             AddOn Packages
                           </h5>
                           <div>
@@ -713,7 +713,7 @@ const EditViewProfile: React.FC<pageProps> = ({
                                 <input
                                   type="checkbox"
                                   id={`package-${Package.package_id}`}
-                                  className="mr-2 font-medium text-[#000000e6]"
+                                  className="mr-2 font-medium text-[#5a5959e6]"
                                   value={Package.package_id}
                                   checked={getValues(
                                     'profileView.Addon_package',
@@ -750,7 +750,7 @@ const EditViewProfile: React.FC<pageProps> = ({
                                 />
                                 <label
                                   htmlFor={`package-${Package.package_id}`}
-                                  className="cursor-pointer font-medium text-[#000000e6]"
+                                  className="cursor-pointer font-medium text-[#5a5959e6]"
                                 >
                                   {Package.name} - {Package.amount}
                                 </label>
@@ -771,14 +771,14 @@ const EditViewProfile: React.FC<pageProps> = ({
                             <span className="font-medium text-[#000000e6]">{visit_count}</span>
                           </span> */}
                           <div className="flex items-center gap-2">
-                            <label className="font-semibold text-black">Visit Count No:</label>
+                            <label className="font-semibol text-[#5a5959e6]">Visit Count No:</label>
                             <input
                               {...register('profileView.visit_count', {
                                 valueAsNumber: true // Ensures the value is treated as a number
                               })}
                               type="number"
                               min="0" // Prevent negative numbers
-                              className="w-20 px-2 py-1 border border-gray-300 rounded font-medium text-[#000000e6]"
+                              className="w-20 px-2 py-1 border border-[#b5b2b2e6]  text-[#222020e6] rounded font-medium "
                             />
                           </div>
                         </div>
@@ -810,14 +810,14 @@ const EditViewProfile: React.FC<pageProps> = ({
 
                         <div className="mt-2 flex items-center gap-4">
                           <div className="flex items-center gap-2">
-                            <label className="font-semibold text-black">Exp Interest:</label>
+                            <label className="font-semibold text-[#5a5959e6]">Exp Interest:</label>
                             <select
                               {...register('profileView.exp_int_lock',
                                 {
                                   valueAsNumber: true,
                                 }
                               )}
-                              className="w-24 px-2 py-1 border border-gray-300 rounded font-medium text-[#000000e6]"
+                              className="w-24 px-2 py-1 border border-[#b5b2b2e6]  text-[#222020e6] rounded font-medium "
                             >
                               <option value={1}>Yes</option>
                               <option value={0}>No</option>
@@ -827,7 +827,7 @@ const EditViewProfile: React.FC<pageProps> = ({
 
                           {Number(watch('profileView.exp_int_lock')) !== 0 && (
                             <div className="flex items-center gap-2">
-                              <label className="font-semibold text-black">Exp No Count:</label>
+                              <label className="font-medium text-[#5a5959e6]">Exp No Count:</label>
                               <input
                                 {...register('profileView.exp_int_count', {
                                   valueAsNumber: true
@@ -846,12 +846,12 @@ const EditViewProfile: React.FC<pageProps> = ({
                           className="flex gap-6 bg-#DDDFFF mt-2"
                           style={{ backgroundColor: '#DDDFFF' }}>
                           <div className=" mt-2 flex">
-                            <p className="text-black ml-2 font-semibold">Mobile Number:</p>
+                            <p className="text-[#5a5959e6] ml-2 font-medium">Mobile Number:</p>
                             <p className="text-red-500 text-[#000000e6]">{Mobile_no}</p>
                           </div>
 
                           <div className="mt-2 flex items-center">
-                            <p className="text-black mr-2 font-semibold">Verification:</p>
+                            <p className="text-[#5a5959e6] mr-2 font-semibold">Verification:</p>
 
                             <input
                               type="radio"
@@ -917,13 +917,13 @@ const EditViewProfile: React.FC<pageProps> = ({
                         </div>
                         {/* Horo Hint Section */}
                         <div className="flex items-center space-x-4">
-                          <label className="font-semibold text-black">
+                          <label className="font-semibold text-[#5a5959e6]">
                             Horo Hint:
                           </label>
                           <textarea
                             {...register('profileView.horoscope_hints')}
                             placeholder="Enter hint..."
-                            className="w-70 h-10  border-2 text-[#000000e6] font-medium border-blue-500 rounded-lg px-4 focus:outline-none focus:border-blue-700 transition duration-300"
+                            className="w-70 h-10  border-2 text-[#5a5959e6] font-medium border-blue-500 rounded-lg px-4 focus:outline-none focus:border-blue-700 transition duration-300"
                           />
                           {errors?.profileView?.horoscope_hints && (
                             <p className="text-red-600">
@@ -936,11 +936,11 @@ const EditViewProfile: React.FC<pageProps> = ({
 
                         {/* Admin Chevvai Dhosam Section */}
                         <div className="flex items-center gap-2">
-                          <label className="font-semibold text-black ml-7">
+                          <label className="font-semibold text-[#5a5959e6] ml-7">
                             Admin Chevvai Dhosam:
                           </label>
 
-                          <span className='font-medium  text-[#000000e6] '>{chevvai}</span>
+                          <span className='font-medium  text-[#5a5959e6]'>{chevvai}</span>
                         </div>
                         {errors?.profileView?.calc_chevvai_dhosham && (
                           <p className="text-red-600">
@@ -950,10 +950,10 @@ const EditViewProfile: React.FC<pageProps> = ({
 
                         {/* Admin Rahu/Kethu Dhosam Section */}
                         <div className="flex items-center gap-2">
-                          <label className="font-semibold text-black ">
+                          <label className="font-semibold text-[#5a5959e6] ">
                             Admin Rahu/Kethu Dhosam:
                           </label>
-                          <span className='font-medium  text-[#000000e6] '>{raagu}</span>
+                          <span className='font-medium text-[#5a5959e6] '>{raagu}</span>
                         </div>
                         {errors?.profileView?.calc_raguketu_dhosham && (
                           <p className="text-red-600">

@@ -259,12 +259,12 @@ const RasiGridnew: React.FC<RasiGridProps> = ({
           ))}
 
           <div
-            className="row-start-2 amsam-center-box col-start-2 col-end-4 row-end-4 rounded font-semibold border border-gray bg-gray flex justify-center items-center"
+            className="row-start-2 amsam-center-box col-start-2 col-end-4 row-end-4 rounded text-[#5a5959e6] font-semibold border border-gray bg-gray flex justify-center items-center"
             onDrop={handleDropCenterBox}
             onDragOver={handleDragOver}
           >
             {centerGridContent ? (
-              <div className="w-32 h-auto mx-auto relative bg-white text-[9px] px-1 py-1 rounded text-center flex items-center justify-between">
+              <div className="w-32 h-auto mx-auto relative  bg-white text-[9px] px-1 py-1 rounded text-center flex items-center justify-between">
                 {centerGridContent}
                 {isEditing && (
                   <AiOutlineClose

@@ -565,11 +565,11 @@
 //           <div className="flex w-full flex-row gap-4">
 //             {/* Height */}
 //             <div className="w-full">
-//               <label className='text-black font-semibold'>Height From</label>
+//               <label className='text-[#5a5959e6] font-semibold'>Height From</label>
 //               <input
 //                 // {...register("heightFrom")}
 //                 {...register('suggested_pref_details.pref_height_from')}
-//                 className="w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+//                 className="w-full px-4 py-2 border text-[#5a5959e6] font-medium border-black rounded"
 //               // placeholder="160"
 //               />
 //               {errors?.suggested_pref_details?.pref_height_from && (
@@ -579,10 +579,10 @@
 //               )}
 //             </div>
 //             <div className="w-full">
-//               <label className='text-black font-semibold'>Height To</label>
+//               <label className='text-[#5a5959e6] font-semibold'>Height To</label>
 //               <input
 //                 {...register("suggested_pref_details.pref_height_to")}
-//                 className="w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+//                 className="w-full px-4 py-2 border text-[#5a5959e6] font-medium border-black rounded"
 //               //   placeholder="160"
 //               />
 //               {errors?.suggested_pref_details?.pref_height_to && (
@@ -594,10 +594,10 @@
 
 //             {/* Age Difference */}
 //             <div className="w-full">
-//               <label className='text-black font-semibold'>Age Difference</label>
+//               <label className='text-[#5a5959e6] font-semibold'>Age Difference</label>
 //               <input
 //                 {...register("suggested_pref_details.pref_age_differences")}
-//                 className="w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+//                 className="w-full px-4 py-2 border text-[#5a5959e6] font-medium border-black rounded"
 //               // placeholder="2"
 //               />
 //               {errors?.suggested_pref_details?.pref_age_differences && (
@@ -614,9 +614,9 @@
 //               <label className='text-black font-semibold'>Chevvai</label>
 //               <select
 //                 {...register("suggested_pref_details.pref_chevvai")}
-//                 className="w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+//                 className="w-full px-4 py-2 border text-[#5a5959e6] font-medium border-black rounded"
 //               >
-//                 <option value="" className='pl-1 text-[#000000e6] font-medium'>Select</option>
+//                 <option value="" className='pl-1 text-[#5a5959e6] font-medium'>Select</option>
 
 //                 <option value="Yes" className='pl-1 text-[#000000e6] font-medium'>Yes</option>
 //                 <option value="No" className='pl-1 text-[#000000e6] font-medium'>No</option>
@@ -1624,11 +1624,11 @@ const handleSelectAllFieldOfStudy = () => {
           <div className="flex w-full flex-row gap-4">
             {/* Height */}
             <div className="w-full">
-              <label className='text-black font-semibold'>Height From</label>
+              <label className='Height From font-semibold'>Height From</label>
               <input
                 // {...register("heightFrom")}
                 {...register('suggested_pref_details.pref_height_from')}
-                className="w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                className="w-full px-4 py-2 border  font-medium border-[#b5b2b2e6]  text-[#222020e6] rounded"
               // placeholder="160"
               />
               {errors?.suggested_pref_details?.pref_height_from && (
@@ -1638,10 +1638,10 @@ const handleSelectAllFieldOfStudy = () => {
               )}
             </div>
             <div className="w-full">
-              <label className='text-black font-semibold'>Height To</label>
+              <label className='text-[#5a5959e6] font-semibold'>Height To</label>
               <input
                 {...register("suggested_pref_details.pref_height_to")}
-                className="w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                className="w-full px-4 py-2 border  font-medium border-[#b5b2b2e6]  text-[#222020e6] rounded"
               //   placeholder="160"
               />
               {errors?.suggested_pref_details?.pref_height_to && (
@@ -1653,10 +1653,10 @@ const handleSelectAllFieldOfStudy = () => {
 
             {/* Age Difference */}
             <div className="w-full">
-              <label className='text-black font-semibold'>Age Difference</label>
+              <label className='text-[#5a5959e6] font-semibold'>Age Difference</label>
               <input
                 {...register("suggested_pref_details.pref_age_differences")}
-                className="w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                className="w-full px-4 py-2 border border-[#b5b2b2e6]  text-[#222020e6] font-medium rounded"
               // placeholder="2"
               />
               {errors?.suggested_pref_details?.pref_age_differences && (
@@ -1670,10 +1670,10 @@ const handleSelectAllFieldOfStudy = () => {
           <div className="flex w-full flex-row gap-4">
             {/* Chevvai */}
             <div className="w-full">
-              <label className='text-black font-semibold'>Chevvai</label>
+              <label className='text-[#5a5959e6] font-semibold'>Chevvai</label>
               <select
                 {...register("suggested_pref_details.pref_chevvai")}
-                className="w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                className="w-full px-4 py-2 border  font-medium border-[#b5b2b2e6]  text-[#222020e6] rounded"
               >
                 <option value="" className='pl-1 text-[#000000e6] font-medium'>Select</option>
 
@@ -1690,10 +1690,10 @@ const handleSelectAllFieldOfStudy = () => {
 
             {/* Rahu / Ketu */}
             <div className="w-full">
-              <label className='text-black font-semibold'>Rahu / Ketu</label>
+              <label className='text-[#5a5959e6] font-semibold'>Rahu / Ketu</label>
               <select
                 {...register("suggested_pref_details.pref_ragukethu")}
-                className="w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                className="w-full px-4 py-2 border border-[#b5b2b2e6]  text-[#222020e6] font-medium  rounded"
               >
                 <option value="" className='pl-1 text-[#000000e6] font-medium'>Select</option>
 
@@ -1710,11 +1710,11 @@ const handleSelectAllFieldOfStudy = () => {
 
             {/* Foreign Interest */}
             <div className="w-full">
-              <label className='text-black font-semibold'>Foreign Interest</label>
+              <label className='text-[#5a5959e6] font-semibold'>Foreign Interest</label>
               <select
 
                 {...register("suggested_pref_details.pref_foreign_intrest")}
-                className="w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                className="w-full px-4 py-2 border  font-medium border-[#b5b2b2e6]  text-[#222020e6] rounded"
               >
                 <option value="" className='pl-1 text-[#000000e6] font-medium'>Select</option>
 
@@ -1732,7 +1732,7 @@ const handleSelectAllFieldOfStudy = () => {
 
 
           <div className="w-full py-1">
-            <h5 className="text-[18px] text-black font-semibold mb-2 cursor-pointer">
+            <h5 className="text-[18px] text-[#5a5959e6] font-semibold mb-2 cursor-pointer">
               Family Status
             </h5>
             <div className="flex flex-wrap gap-x-6 gap-y-2">
@@ -1748,7 +1748,7 @@ const handleSelectAllFieldOfStudy = () => {
                   />
                   <label
                     htmlFor={`suggested-family-status-${status.family_status_id}`}
-                    className='text-[#000000e6] font-medium'
+                    className='text-[#5a5959e6] font-medium'
                   >
                     {status.family_status_name}
                   </label>
@@ -1765,7 +1765,7 @@ const handleSelectAllFieldOfStudy = () => {
 
 
           <div className="w-full py-1">
-            <h5 className="text-[18px] text-black font-semibold mb-2 cursor-pointer">
+            <h5 className="text-[18px] text-[#5a5959e6] font-semibold mb-2 cursor-pointer">
               Preferred State
             </h5>
             <div className="flex flex-wrap gap-x-6 gap-y-2">
@@ -1781,7 +1781,7 @@ const handleSelectAllFieldOfStudy = () => {
                   />
                   <label
                     htmlFor={`suggested-state-${state.State_Pref_id}`}
-                    className='text-[#000000e6] font-medium'
+                    className='text-[#5a5959e6] font-medium'
                   >
                     {state.State_name}
                   </label>
@@ -1800,7 +1800,7 @@ const handleSelectAllFieldOfStudy = () => {
           {/* Profession */}
           <div className="col-span-2">
             {/* <label>Profession</label> */}
-            <h5 className="text-[18px] text-black font-semibold mb-2 cursor-pointer" onClick={handleSelectAllProfessions}>
+            <h5 className="text-[18px] text-[#5a5959e6] font-semibold mb-2 cursor-pointer" onClick={handleSelectAllProfessions}>
               Profession
             </h5>
             <div className="flex justify-between items-center">
@@ -1819,7 +1819,7 @@ const handleSelectAllFieldOfStudy = () => {
                   />
                   <label
                     htmlFor={`profession-${profession.Profes_Pref_id}`}
-                    className='pl-1 text-[#000000e6] font-medium'
+                    className='pl-1 text-[#5a5959e6] font-medium'
                   >
                     {profession.Profes_name}
                   </label>
@@ -1832,7 +1832,7 @@ const handleSelectAllFieldOfStudy = () => {
           {/* Marital Status */}
           <div className="col-span-2">
             {/* <label>Marital Status</label> */}
-            <h5 className="text-[18px] text-black font-semibold mb-2 cursor-pointer" onClick={handleSelectAllMaritalStatus}>
+            <h5 className="text-[18px] text-[#5a5959e6] font-semibold mb-2 cursor-pointer" onClick={handleSelectAllMaritalStatus}>
               Marital Status
             </h5>
             <div className="flex justify-between items-center">
@@ -1849,7 +1849,7 @@ const handleSelectAllFieldOfStudy = () => {
                       handleMaritalStatusChange(status.marital_sts_id)
                     }
                   />
-                  <label htmlFor={`maritalStatus-${status.marital_sts_id}`} className='pl-1 text-[#000000e6] font-medium'>
+                  <label htmlFor={`maritalStatus-${status.marital_sts_id}`} className='pl-1 text-[#5a5959e6] font-medium'>
                     {status.marital_sts_name}
                   </label>
                 </div>
@@ -1862,7 +1862,7 @@ const handleSelectAllFieldOfStudy = () => {
           {/* Education */}
           <div className="col-span-2">
             {/* <label>Education</label> */}
-            <h5 className="text-[18px] text-black font-semibold mb-2 cursor-pointer" onClick={handleSelectAllEducation}>
+            <h5 className="text-[18px] text-[#5a5959e6] font-semibold mb-2 cursor-pointer" onClick={handleSelectAllEducation}>
               Education
             </h5>
             <div className="flex flex-wrap gap-4">
@@ -1881,7 +1881,7 @@ const handleSelectAllFieldOfStudy = () => {
                   />
                   <label
                     htmlFor={`education-${option.Edu_Pref_id}`}
-                    className='pl-1 text-[#000000e6] font-medium'
+                    className='pl-1 text-[#5a5959e6] font-medium'
                   >
                     {option.Edu_name}
                   </label>
@@ -1891,7 +1891,7 @@ const handleSelectAllFieldOfStudy = () => {
           </div>
 
           <div>
-            <label className="text-[18px] text-black font-semibold mb-2 cursor-pointer"
+            <label className="text-[18px] text-[#5a5959e6] font-semibold mb-2 cursor-pointer"
             //  onClick={handleSelectAllEducation}
              onClick={handleSelectAllFieldOfStudy}
             >
@@ -1917,7 +1917,7 @@ const handleSelectAllFieldOfStudy = () => {
                   <label
                     htmlFor={`FieldOfStudySuggested-${option.study_id}`}
 
-                    className='pl-1 text-[#000000e6] font-medium'
+                    className='pl-1 text-[#5a5959e6] font-medium'
                   >
                     {option.study_description}
                   </label>
@@ -1927,7 +1927,7 @@ const handleSelectAllFieldOfStudy = () => {
           </div>
 
           <div className="w-full py-1">
-            <h5 className="text-[18px] text-black font-semibold mb-2">
+            <h5 className="text-[18px] text-[#5a5959e6] font-semibold mb-2">
               Degree
             </h5>
             <div className="max-w-2xl">
@@ -1954,24 +1954,24 @@ const handleSelectAllFieldOfStudy = () => {
           <div>
             <label
               htmlFor="AnnualIncome"
-              className="text-[18px] text-black font-bold mb-2"
+              className="text-[18px] text-[#5a5959e6] font-bold mb-2"
             >
               Annual Income
             </label>
             <div className="flex items-center gap-2">
               <div className="w-full">
-                <label className="text-black font-semibold " >Minimum Annual Income</label>
+                <label className="text-[#5a5959e6] font-semibold " >Minimum Annual Income</label>
                 <select
                   id="AnnualIncome"
 
                   {...register('suggested_pref_details.pref_anual_income')}
-                  className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                  className="outline-none w-full px-4 py-2 border text-[#5a5959e6] font-medium border-black rounded"
                 >
-                  <option value="" disabled className='text-[#000000e6] font-medium'>
+                  <option value="" disabled className='text-[#5a5959e6] font-medium'>
                     Select  Minimum Annual Income
                   </option>
                   {annualIncome?.map((option: any) => (
-                    <option key={option.income_id} value={option.income_id} className='text-[#000000e6] font-medium'>
+                    <option key={option.income_id} value={option.income_id} className='text-[#5a5959e6] font-medium'>
                       {option.income_description}
                     </option>
                   ))}
@@ -1984,17 +1984,17 @@ const handleSelectAllFieldOfStudy = () => {
               </div>
 
               <div className="w-full">
-                <label className="text-black font-bold">Maximum Annual Income</label>
+                <label className="text-[#5a5959e6] font-bold">Maximum Annual Income</label>
                 <select
                   id="AnnualIncome"
                   {...register('suggested_pref_details.pref_anual_income_max')}
-                  className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                  className="outline-none w-full px-4 py-2 border text-[#5a5959e6] font-medium border-black rounded"
                 >
-                  <option value="" disabled className='text-black font-semibold'>
+                  <option value="" disabled className='text-[#5a5959e6] font-semibold'>
                     Select  Maximum Annual Income
                   </option>
                   {annualIncome?.map((option: any) => (
-                    <option key={option.income_id} value={option.income_id} className='text-[#000000e6] font-medium'>
+                    <option key={option.income_id} value={option.income_id} className='text-[#5a5959e6] font-medium'>
                       {option.income_description}
                     </option>
                   ))}
@@ -2009,7 +2009,7 @@ const handleSelectAllFieldOfStudy = () => {
           </div>
           {/* <div className="col-span-2">
           
-            <h5 className="text-[18px] text-black font-semibold mb-2">
+            <h5 className="text-[18px] text-[#5a5959e6] font-semibold mb-2">
                 Annual Income
               </h5>
            
@@ -2042,8 +2042,8 @@ const handleSelectAllFieldOfStudy = () => {
           </div> */}
 
           <div>
-            <div className="justify-start items-center gap-x-5 text-black">
-              <h5 className="text-[18px] text-black font-semibold mb-2">
+            <div className="justify-start items-center gap-x-5 text-[#5a5959e6]">
+              <h5 className="text-[18px] text-[#5a5959e6] font-semibold mb-2">
                 Matching Stars
               </h5>
               {matchStars && matchStars?.length > 0 ? (

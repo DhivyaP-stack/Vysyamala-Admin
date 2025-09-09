@@ -99,7 +99,7 @@ const ViewFamilyDetailsForm: React.FC<pageProp> = ({ profile }) => {
           <div className="flex flex-col gap-5">
             <div className="flex w-full flex-row gap-4">
               <div className="w-full">
-                <label className="block mb-1 font-bold text-black">
+                <label className="block mb-1 font-bold text-[#5a5959e6]">
                   Father name <span className="text-red-500">*</span>
                 </label>
                 <Input
@@ -110,7 +110,7 @@ const ViewFamilyDetailsForm: React.FC<pageProp> = ({ profile }) => {
                 />
               </div>
               <div className="w-full">
-                <label className="block mb-1 font-bold text-black">
+                <label className="block mb-1 font-bold text-[#5a5959e6]">
                   Father Occupation <span className="text-red-500">*</span>
                 </label>
                 <Input
@@ -178,13 +178,13 @@ const ViewFamilyDetailsForm: React.FC<pageProp> = ({ profile }) => {
                 />
               </div>
               <div className="w-full">
-                <label className="block text-black font-medium mb-1">
+                <label className="block text-[#5a5959e6] font-medium mb-1">
                   Eye wear
                 </label>
                 <select
                   value={familyDetails.eye_wear}
                   disabled
-                  className="outline-none w-full px-4 py-2 border text-black font-medium border-black rounded"
+                  className="outline-none w-full px-4 py-2 border  font-medium border-[#b5b2b2e6]  text-[#222020e6] rounded"
                 >
                   <option value="">
                     -- Select Eye Wear --
@@ -199,7 +199,7 @@ const ViewFamilyDetailsForm: React.FC<pageProp> = ({ profile }) => {
             <div className="flex w-full flex-row gap-4">
               {/* Father Alive */}
               <div className="w-full py-1">
-                <label className="block text-black font-medium mb-1">
+                <label className="block text-[#5a5959e6] font-medium mb-1">
                   Father Alive
                 </label>
                 <div className="flex items-center">
@@ -226,7 +226,7 @@ const ViewFamilyDetailsForm: React.FC<pageProp> = ({ profile }) => {
 
               {/* Mother Alive */}
               <div className="w-full py-1">
-                <label className="block text-black font-medium mb-1">
+                <label className="block text-[#5a5959e6] font-medium mb-1">
                   Mother Alive
                 </label>
                 <div className="flex items-center">
@@ -254,14 +254,14 @@ const ViewFamilyDetailsForm: React.FC<pageProp> = ({ profile }) => {
             <div>
               <div className="flex w-full flex-row gap-4">
                 <div className="w-full py-1">
-                  <label className="block text-black font-medium mb-1">
+                  <label className="block text-[#5a5959e6] font-medium mb-1">
                     Family Type
                   </label>
                   <div className="w-full inline-flex rounded">
                     {FamilyTypes?.map((type) => (
                       <label
                         key={type.family_id}
-                        className={`w-full px-5 py-3 text-sm text-black font-medium border text-center cursor-pointer  ${String(familyDetails.family_type) ===
+                        className={`w-full px-5 py-3 text-sm border-[#b5b2b2e6] font-medium border text-center cursor-pointer  ${String(familyDetails.family_type) ===
                           String(type.family_id)
                           ? 'bg-blue-500 text-white'
                           : ''
@@ -280,14 +280,14 @@ const ViewFamilyDetailsForm: React.FC<pageProp> = ({ profile }) => {
                 </div>
 
                 <div className="w-full py-1">
-                  <label className="block text-black font-medium mb-1">
+                  <label className="block text-[#5a5959e6] font-medium mb-1">
                     Family Value
                   </label>
                   <div className="w-full inline-flex rounded">
                     {FamilyValues?.map((value) => (
                       <label
                         key={familyDetails.family_value}
-                        className={`w-full px-5 py-3 text-sm text-black font-medium border cursor-pointer  ${String(familyDetails.family_value) ===
+                        className={`w-full px-5 py-3 text-sm border-[#b5b2b2e6] font-medium border cursor-pointer  ${String(familyDetails.family_value) ===
                           String(value.family_value_id)
                           ? 'bg-blue-500 text-white'
                           : ''
@@ -308,14 +308,14 @@ const ViewFamilyDetailsForm: React.FC<pageProp> = ({ profile }) => {
               </div>
 
               <div className="w-full py-1">
-                <label className="block text-black font-medium mb-1">
+                <label className="block text-[#5a5959e6] font-medium mb-1">
                   Family Status
                 </label>
                 <div className="w-full inline-flex rounded">
                   {FamilyStatus?.map((status) => (
                     <label
                       key={status.family_status_id}
-                      className={`w-full px-5 py-3 text-sm font-medium text-black border cursor-pointer ${String(familyDetails.family_status) ===
+                      className={`w-full px-5 py-3 text-sm font-medium border-[#b5b2b2e6] border cursor-pointer ${String(familyDetails.family_status) ===
                         String(status.family_status_id)
                         ? 'bg-blue-500 text-white'
                         : ''
@@ -334,7 +334,7 @@ const ViewFamilyDetailsForm: React.FC<pageProp> = ({ profile }) => {
               </div>
               <div className="mt-3 flex items-center space-x-48">
                 <div>
-                  <h1 className="block text-black font-medium mb-1">
+                  <h1 className="block text-[#5a5959e6] font-medium mb-1">
                     Brother
                   </h1>
                   <div className="flex flex-col">
@@ -342,7 +342,7 @@ const ViewFamilyDetailsForm: React.FC<pageProp> = ({ profile }) => {
                       {[0, 1, 2, 3, 4, 5].map((num) => (
                         <label
                           key={num}
-                          className={`px-5 py-3 text-sm text-black font-medium border text-center 
+                          className={`px-5 py-3 text-sm border-[#b5b2b2e6] font-medium border text-center 
 cursor-pointer  ${buttonClass(
                             familyDetails.no_of_brother !== null &&
                             Number(familyDetails.no_of_brother) === num,
@@ -362,11 +362,11 @@ cursor-pointer  ${buttonClass(
                 </div>
                 {familyDetails.no_of_brother > 0 && (
                   <div>
-                    <h1 className="mb-1 text-black font-semibold">
+                    <h1 className="mb-1 text-[#5a5959e6] font-semibold">
                       Married
                     </h1>
                     <div className="flex flex-col">
-                      <div className="inline-flex text-black font-medium rounded">
+                      <div className="inline-flex border-[#b5b2b2e6] font-medium rounded">
                         {[
                           ...Array(
                             Math.min(
@@ -463,7 +463,7 @@ cursor-pointer  ${buttonClass(
                   />
                 </div> */}
                 <div className="w-full py-1">
-                  <label className="block text-black font-medium mb-1">
+                  <label className="block text-[#5a5959e6] font-medium mb-1">
                     Physically Challenged
                   </label>
                   <div className="flex items-center">
@@ -546,13 +546,13 @@ cursor-pointer  ${buttonClass(
                 />
               </div>
               <div className="w-full">
-                <label className="block text-black font-semibold mb-1">
+                <label className="block text-[#5a5959e6] font-semibold mb-1">
                   About my Family
                 </label>
                 <textarea
                   readOnly
                   value={familyDetails.about_family}
-                  className="outline-none w-full h-10.5 font-medium text-black px-4 py-2 border border-black rounded"
+                  className="outline-none w-full h-10.5 font-medium  px-4 py-2 border border-[#b5b2b2e6]  text-[#222020e6] rounded"
                 ></textarea>
               </div>
               <div className="w-full">
@@ -565,13 +565,13 @@ cursor-pointer  ${buttonClass(
               </div>
               {childrenView && (
                 <div className='w-full'>
-                  <label className="block mb-1 text-base text-black font-medium ">
+                  <label className="block mb-1 text-base text-[#5a5959e6] font-medium ">
                     Number of Children
                   </label>
                   <div className="relative">
                     <select
                       id="no_of_children"
-                      className="outline-none w-full text-placeHolderColor px-3 py-2.5 text-sm border border-ashBorder rounded appearance-none"
+                      className="outline-none w-full text-placeHolderColor px-3 py-2.5 text-sm border border-[#b5b2b2e6]  text-[#222020e6] rounded appearance-none"
                       // {...register("FamilyDetails.no_of_children")}
                       value={profile[1].no_of_children}
                       //                 {...register("FamilyDetails.no_of_children", {
@@ -644,14 +644,14 @@ cursor-pointer  ${buttonClass(
 
                 </div>
                 <div className="w-full mt-1">
-                  <label className="block text-black font-medium mb-1">
+                  <label className="block text-[#5a5959e6] font-medium mb-1">
                     Uncle Gothram (Admin)
                   </label>
                   <div className="relative">
                     <select
                       value={familyDetails.uncle_gothram_admin || "0"}
                       disabled
-                      className="outline-none w-full text-black font-medium border border-black rounded px-4 py-2"
+                      className="outline-none w-full  font-medium border border-[#b5b2b2e6]  text-[#222020e6] rounded px-4 py-2"
                     >
                       <option value="0">Not Selected</option>
                       {SuyaGothram?.map((option) => (
@@ -694,14 +694,14 @@ className="w-full text-sm border border-black text-black font-medium rounded "
 /> */}
 
                 <div className="w-full ">
-                  <label className="block text-black font-medium mb-1">
+                  <label className="block text-[#5a5959e6] font-medium mb-1">
                     Suya Gothram (Admin)
                   </label>
                   <div className="relative">
                     <select
                       value={familyDetails.suya_gothram_admin || "0"}
                       disabled
-                      className="outline-none w-full text-black font-medium border border-black rounded px-4 py-2"
+                      className="outline-none w-full font-medium border border-[#b5b2b2e6]  text-[#222020e6] rounded px-4 py-2"
                     >
                       <option value="0">Not Selected</option>
                       {SuyaGothram?.map((option) => (

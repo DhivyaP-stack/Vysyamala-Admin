@@ -450,6 +450,18 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                           </li>
                           <li>
                             <NavLink
+                              to="TransactionHistory"
+                              className={({ isActive }) =>
+                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                                (isActive && '!text-PrimaryRed')
+                              }
+                            >
+                              <GoDot />
+                              Transaction History
+                            </NavLink>
+                          </li>
+                          <li>
+                            <NavLink
                               to="PhotoRequestProfiles"
                               className={({ isActive }) =>
                                 'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +

@@ -24,10 +24,10 @@ const ViewMatchingStars: React.FC<MatchingStarsProps> = ({
   return (
     <div>
       <div className="mb-5">
-        <h5 className="text-[18px] text-black font-semibold mb-2">
+        <h5 className="text-[18px] text-[#5a5959e6] font-semibold mb-2">
           {initialPoruthas}
         </h5>
-        <div className="grid grid-cols-5 grid-rows-1 justify-between text-[#000000e6] font-medium items-center gap-x-3 gap-y-2">
+        <div className="grid grid-cols-5 grid-rows-1 justify-between text-[#5a5959e6] font-medium items-center gap-x-3 gap-y-2">
           {starAndRasi.map((item, index) => (
             <div key={item.id}>
               <Checkbox

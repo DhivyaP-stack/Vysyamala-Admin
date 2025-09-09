@@ -193,13 +193,13 @@ const ViewEducationalDetails: React.FC<pageProps> = ({ profile }) => {
           {/* Education Details Form Fields */}
           <div className="flex w-full flex-row gap-4">
             <div className="w-full">
-              <label className="block text-black font-medium mb-1">
+              <label className="block text-[#5a5959e6] font-medium mb-1">
                 Highest Education Level <span className="text-red-500">*</span>
               </label>
               <select
                 disabled
                 value={educationalDetails.highest_education}
-                className="outline-none w-full px-4 py-2 border text-black font-medium border-black rounded"
+                className="outline-none w-full px-4 py-2 border  font-medium border-[#b5b2b2e6]  text-[#222020e6] rounded"
               >
                 <option value="">Select education level</option>
                 {GetHighestEducation?.map((education) => (
@@ -214,14 +214,14 @@ const ViewEducationalDetails: React.FC<pageProps> = ({ profile }) => {
               </select>
             </div>
             <div className="w-full">
-              <label className="block text-black font-medium mb-1">
+              <label className="block text-[#5a5959e6] font-medium mb-1">
                 Field Of Study
                 {/* <span className="text-red-500">*</span> */}
               </label>
               <select
                 disabled
                 value={educationalDetails.field_ofstudy}
-                className="outline-none w-full text-black font-medium px-4 py-2 border border-black rounded"
+                className="outline-none w-full font-medium px-4 py-2 border border-[#b5b2b2e6]  text-[#222020e6] rounded"
               >
                 <option value="">Select education level</option>
                 <option value="">Select education level</option>
@@ -235,7 +235,7 @@ const ViewEducationalDetails: React.FC<pageProps> = ({ profile }) => {
 
           </div>
           <div className="w-full">
-            <label className="block text-black font-medium mb-1">
+            <label className="block text-[#5a5959e6] font-medium mb-1">
               Degree
               {/* <span className="text-red-500">*</span> */}
             </label>
@@ -247,7 +247,7 @@ const ViewEducationalDetails: React.FC<pageProps> = ({ profile }) => {
                 value: degree.degeree_id,
                 label: degree.degeree_description
               }))}
-              className="basic-multi-select text-black font-medium"
+              className="basic-multi-select text-[#5a5959e6] font-medium"
               classNamePrefix="select"
             />
             {educationalDetails.other_degree && (
@@ -259,7 +259,7 @@ const ViewEducationalDetails: React.FC<pageProps> = ({ profile }) => {
             )}
           </div>
           <div className="flex w-full flex-row gap-4">
-            <div className="w-full text-black font-medium">
+            <div className="w-full text-[#5a5959e6] font-medium">
               <Input
                 disabled
                 value={educationalDetails.about_edu}
@@ -268,14 +268,14 @@ const ViewEducationalDetails: React.FC<pageProps> = ({ profile }) => {
               />
             </div>
             <div className="w-full">
-              <label className="block text-black font-medium mb-1">
+              <label className="block text-[#5a5959e6] font-medium mb-1">
                 Annual Income
                 {/* <span className="text-red-500">*</span> */}
               </label>
               <select
                 disabled
                 value={educationalDetails.anual_income}
-                className="outline-none w-full px-4 py-2 text-black font-medium border border-black rounded"
+                className="outline-none w-full px-4 py-2  font-medium border border-[#b5b2b2e6]  text-[#222020e6] rounded"
               >
                 <option value="">Annual Income</option>
                 {AnnualIncome?.map((education) => (
@@ -285,7 +285,7 @@ const ViewEducationalDetails: React.FC<pageProps> = ({ profile }) => {
                 ))}
               </select>
             </div>
-            <div className="w-full text-black font-medium ">
+            <div className="w-full text-[#5a5959e6] font-medium ">
               <Input
                 disabled
                 value={educationalDetails.actual_income}
@@ -297,17 +297,17 @@ const ViewEducationalDetails: React.FC<pageProps> = ({ profile }) => {
 
           <div className="mt-3">
             <div className="w-full">
-              <label className="block text-black font-medium mb-1">
-                <h1 className="mb-3 text-black font-medium">
+              <label className="block text-[#5a5959e6] font-medium mb-1">
+                <h1 className="mb-3 text-[#5a5959e6] font-medium">
                   Profession <span className="text-red-500">*</span>
                 </h1>
               </label>
 
-              <div className="w-full inline-flex border border-b-black-2 rounded">
+              <div className="w-full inline-flex border border-[#b5b2b2e6] rounded">
                 {ProfessionalPreference?.map((Profession: any) => (
                   <label
                     key={Profession.Profes_Pref_id}
-                    className={`w-full px-5 py-3 text-sm font-medium border border-black text-black  text-center   ${buttonClass(
+                    className={`w-full px-5 py-3 text-sm font-medium border border-[#b5b2b2e6]  text-[#222020e6]  text-center   ${buttonClass(
                       Number(educationalDetails.profession) ===
                       Number(Profession.Profes_Pref_id),
                     )}`}

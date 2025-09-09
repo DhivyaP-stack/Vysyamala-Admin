@@ -109,6 +109,7 @@ import SearchProfile from './pages/SearchProfile';
 import RenewalProfiles from './components/ReuseProfileTable/Profiles/RenewalProfiles';
 import UserMatchingProfiles from './matchingProfile/UserMatchingProfiles';
 import LoginProfiles from './components/ReuseProfileTable/userActions/LoginProfiles';
+import TransactionHistory from './components/ReuseProfileTable/userActions/TransactionHistory';
 
 
 function App() {
@@ -1013,6 +1014,15 @@ function App() {
                     <>
                       <PageTitle title="WishlistsProfile" />
                       <WishlistsProfile />
+                    </>
+                  }
+                />
+                <Route
+                  path="/TransactionHistory"
+                  element={
+                    <>
+                      <PageTitle title="TransactionHistory" />
+                      <TransactionHistory />
                     </>
                   }
                 />

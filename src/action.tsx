@@ -21,7 +21,7 @@ import { string } from 'zod';
 
 //family detail api's
 const API_URL = 'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth';
-const API = ' https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api';
+export const API = ' https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api';
 
 // const API_URL = 'https://gl9hwr3r-8000.inc1.devtunnels.ms/auth';
 // const API = 'https://gl9hwr3r-8000.inc1.devtunnels.ms/api';

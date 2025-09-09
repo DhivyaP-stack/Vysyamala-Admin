@@ -524,12 +524,12 @@ const EducationalDetails: React.FC<formProps> = ({
           {/* Education Details Form Fields */}
           <div className="flex w-full flex-row gap-4">
             <div className="w-full">
-              <label className="block text-black font-semibold mb-1">
+              <label className="block text-[#5a5959e6] font-semibold mb-1">
                 Highest Education Level <span className="text-red-500">*</span>
               </label>
               <select
                 {...register('EducationDetails.heighestEducation')}
-                className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                className="outline-none w-full px-4 py-2 border border-[#b5b2b2e6]  text-[#222020e6] font-medium  rounded"
                 onChange={(e) => {
                   const value = e.target.value;
                   setSelectedEducation(value);
@@ -565,13 +565,13 @@ const EducationalDetails: React.FC<formProps> = ({
               selectedEducation === '4') && (
                 <>
                   <div className="w-full">
-                    <label className="block text-black font-semibold mb-1">
+                    <label className="block text-[#5a5959e6] font-semibold mb-1">
                       Field Of Study
                       {/* <span className="text-red-500">*</span> */}
                     </label>
                     <select
                       {...register('EducationDetails.field_ofstudy', { required: false })}
-                      className="outline-none w-full px-4 py-2 border border-black rounded text-[#000000e6] font-medium"
+                      className="outline-none w-full px-4 py-2 border border-[#b5b2b2e6]  text-[#222020e6] rounded  font-medium"
                       onChange={(e) => {
                         const value = e.target.value;
                         setSelectedFieldOfStudy(value);
@@ -608,7 +608,7 @@ const EducationalDetails: React.FC<formProps> = ({
               selectedEducation === '3' ||
               selectedEducation === '4') && (
                 <div className="w-full">
-                  <label className="block text-black font-semibold mb-1">
+                  <label className="block text-[#5a5959e6] font-semibold mb-1">
                     Degree
                   </label>
 
@@ -679,18 +679,18 @@ const EducationalDetails: React.FC<formProps> = ({
 
           <div className="flex w-full flex-row gap-4">
             <div className="w-full">
-              <label className="block text-black font-semibold mb-1">
+              <label className="block text-[#5a5959e6] font-semibold mb-1">
                 Annual Income
               </label>
               <div className="flex items-center space-x-2">
-                <span className="outline-none w-1/25 text-placeHolderColor text-[#000000e6] font-bold px-4 py-[6px] border border-ashBorder rounded">
+                <span className="outline-none w-1/25 text-placeHolderColor  font-medium px-4 py-[6px] border border-[#b5b2b2e6]  text-[#222020e6] rounded">
                   INR(₹)
                 </span>
                 <select
                   {...register('EducationDetails.AnnualIncome')}
-                  className="outline-none w-full px-4 py-2 border border-black rounded text-[#000000e6] font-medium"
+                  className="outline-none w-full px-4 py-2 border  rounded border-[#b5b2b2e6]  text-[#222020e6] font-medium"
                 >
-                  <option value="" className='text-[#000000e6] font-medium'>Annual Income</option>
+                  <option value="" className='text-[#5a5959e6] font-medium'>Annual Income</option>
                   {AnnualIncome?.map((education) => (
                     <option key={education.id} value={education.id}>
                       {education.income}
@@ -708,7 +708,7 @@ const EducationalDetails: React.FC<formProps> = ({
             <div className="w-full ">
               <label
                 htmlFor="actualIncome"
-                className="block mb-1 text-black font-semibold"
+                className="block mb-1 text-[#5a5959e6] font-semibold"
               >
                 Actual Income
               </label>
@@ -718,10 +718,10 @@ const EducationalDetails: React.FC<formProps> = ({
                   value={selectedCurrency}
                   onChange={(e) => setSelectedCurrency(e.target.value)}
                   // className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"4
-                  className="outline-none text-placeHolderColor px-4 py-[6px] text-[#000000e6] font-medium border border-ashBorder rounded"
+                  className="outline-none text-placeHolderColor px-4 py-[6px]  font-medium border  rounded"
                   style={{ width: '300px' }} // Adjust the width as needed
                 >
-                  <option value="" className='text-[#000000e6] font-medium'>
+                  <option value="" className='text-[#5a5959e6] font-medium'>
                     Select Currency
                   </option>
                   {sortedCurrencyOptions.map((code) => (
@@ -748,7 +748,7 @@ const EducationalDetails: React.FC<formProps> = ({
           <div className="mt-3">
             <div className="w-full">
               <label className="block text-black font-medium mb-1">
-                <h1 className="mb-3 text-[#000000e6] font-semibold">
+                <h1 className="mb-3 text-[#5a5959e6] font-semibold">
                   Profession <span className="text-red-500">*</span>
                 </h1>
               </label>
@@ -757,7 +757,7 @@ const EducationalDetails: React.FC<formProps> = ({
                 {ProfessionalPreference?.map((Profession: ProfessionPref) => (
                   <label
                     key={Profession.Profes_Pref_id}
-                    className={`w-full px-5 py-3 text-sm font-semibold border border-b text-black   text-center cursor-pointer flex flex-wrap ${String(profession) === String(Profession.Profes_Pref_id)
+                    className={`w-full px-5 py-3 text-sm font-medium border border-b border-[#b5b2b2e6]  text-[#222020e6]   text-center cursor-pointer flex flex-wrap ${String(profession) === String(Profession.Profes_Pref_id)
                       ? 'bg-blue-500 text-white'
                       : 'bg-white'
                       } `}

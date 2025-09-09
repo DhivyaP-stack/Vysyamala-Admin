@@ -223,7 +223,7 @@ const ViewBasicDetails: React.FC<pageProps> = ({ profile, setGennder }) => {
               />
             </div>
             <div className="w-2/4">
-              <label className="block mb-1 font-bold text-black">
+              <label className="block mb-1 font-bold text-[#5a5959e6]">
                 Mobile Number <span className="text-red-500">*</span>
               </label>
               <Input
@@ -235,11 +235,11 @@ const ViewBasicDetails: React.FC<pageProps> = ({ profile, setGennder }) => {
             </div>
             {/* Gender Selector */}
             <div className="w-2/4 py-1">
-              <label className="block text-black font-semibold mb-1">
+              <label className="block text-[#5a5959e6] font-semibold mb-1">
                 Gender <span className="text-red-500">*</span>
               </label>
 
-              <label className="block text-black font-bold mb-1 ml-30 capitalize">
+              <label className="block text-[#5a5959e6] font-bold mb-1 ml-30 capitalize">
                 {basicDetails.Gender}
               </label>
               {/* <input
@@ -272,7 +272,7 @@ const ViewBasicDetails: React.FC<pageProps> = ({ profile, setGennder }) => {
             </div>
 
             <div className="w-2/4">
-              <label className="block mb-1 font-bold text-black">
+              <label className="block mb-1 font-bold text-[#5a5959e6]">
                 Date of Birth <span className="text-red-500">*</span>
               </label>
               <Input
@@ -290,14 +290,14 @@ const ViewBasicDetails: React.FC<pageProps> = ({ profile, setGennder }) => {
           <div className="flex w-full flex-row gap-4">
 
             <div className="w-full">
-              <label className="block text-black font-semibold mb-1">
+              <label className="block text-[#5a5959e6] font-semibold mb-1">
                 Select your Marital Status{' '}
                 <span className="text-red-500">*</span>
               </label>
               <select
                 disabled
                 value={basicDetails.Profile_marital_status}
-                className="outline-none w-full px-4 py-2 border border-black rounded text-black font-semibold"
+                className="outline-none w-full px-4 py-2 border  rounded border-[#b5b2b2e6]  text-[#222020e6] font-semibold"
               >
                 <option value="">Select your Marital Status</option>
                 {maritialStatus?.map((option: any) => (
@@ -320,13 +320,13 @@ const ViewBasicDetails: React.FC<pageProps> = ({ profile, setGennder }) => {
               />
             </div>
             <div className="w-full">
-              <label className="block text-black font-semibold mb-1">
+              <label className="block text-[#5a5959e6] font-semibold mb-1">
                 Country<span className='text-red-500'>*</span>
               </label>
               <select
                 disabled
                 value={basicDetails.Profile_country}
-                className="outline-none w-full px-4 py-2 border border-black rounded text-black font-semibold"
+                className="outline-none w-full px-4 py-2 border  rounded border-[#b5b2b2e6]  text-[#222020e6] font-semibold"
               >
                 <option value="">-- Select your Country --</option>
                 {Country?.map((option: any) => (
@@ -343,14 +343,14 @@ const ViewBasicDetails: React.FC<pageProps> = ({ profile, setGennder }) => {
             // India-specific fields
             <div className="flex w-full flex-row gap-4">
               <div className="w-2/4">
-                <label className="block text-black font-semibold mb-1">
+                <label className="block text-[#5a5959e6] font-semibold mb-1">
                   State (Based on country selection){' '}
 
                 </label>
                 <select
                   disabled
                   value={basicDetails.Profile_state}
-                  className="outline-none w-full px-4 py-2 border border-black rounded text-black font-semibold"
+                  className="outline-none w-full px-4 py-2 border  rounded border-[#b5b2b2e6]  text-[#222020e6] font-semibold"
                 >
                   <option value="" selected disabled>
                     -- Select State --
@@ -364,13 +364,13 @@ const ViewBasicDetails: React.FC<pageProps> = ({ profile, setGennder }) => {
               </div>
 
               <div className="w-2/4">
-                <label className="block text-black font-semibold mb-1">
+                <label className="block text-[#5a5959e6] font-semibold mb-1">
                   District
                 </label>
                 <select
                   disabled
                   value={basicDetails.Profile_district}
-                  className="outline-none w-full px-4 py-2 border border-black rounded text-black font-semibold"
+                  className="outline-none w-full px-4 py-2 border border-[#b5b2b2e6]  text-[#222020e6] rounded  font-semibold"
                 >
                   <option value="" selected disabled>
                     -- Select District --
@@ -384,7 +384,7 @@ const ViewBasicDetails: React.FC<pageProps> = ({ profile, setGennder }) => {
               </div>
 
               <div className="w-2/4">
-                <label className="block text-black font-semibold mb-1">City</label>
+                <label className="block text-[#5a5959e6] font-semibold mb-1">City</label>
 
                 {/* If Case 1 or Case 2 -> show Input, else show dropdown */}
                 {(
@@ -406,7 +406,7 @@ const ViewBasicDetails: React.FC<pageProps> = ({ profile, setGennder }) => {
                   <select
                     disabled
                     value={basicDetails.Profile_city}
-                    className="outline-none w-full px-4 py-2 border border-black rounded text-black font-semibold"
+                    className="outline-none w-full px-4 py-2 border rounded border-[#b5b2b2e6]  text-[#222020e6] font-semibold"
                   >
                     <option value="" selected disabled>
                       -- Select City --
@@ -458,13 +458,13 @@ const ViewBasicDetails: React.FC<pageProps> = ({ profile, setGennder }) => {
 
           <div className="flex w-full flex-row gap-4">
             <div className="w-2/4">
-              <label className="block text-black font-semibold mb-1">
+              <label className="block text-[#5a5959e6] font-semibold mb-1">
                 Complexion
               </label>
               <select
                 value={basicDetails.Profile_complexion}
                 disabled
-                className="outline-none w-full px-4 py-2 border border-black rounded text-black font-semibold"
+                className="outline-none w-full px-4 py-2 border  rounded border-[#b5b2b2e6]  text-[#222020e6] font-semibold"
               >
                 <option value="">Select your complexion</option>
                 {Complexion?.map((option: any) => (
@@ -497,13 +497,13 @@ const ViewBasicDetails: React.FC<pageProps> = ({ profile, setGennder }) => {
             </div>
           </div>
           <div className="w-1/3">
-            <label className='block text-black font-medium mb-1'>
+            <label className='block text-[#5a5959e6] font-medium mb-1'>
               Profile Height
               {/* <span className="text-red-500">*</span> */}
             </label>
             <select
               id="height"
-              className={`text-ash font-medium block w-full px-3 py-2 border-[1px] border-black border-footer-text-gray rounded-[4px] focus-visible:outline-none`}
+              className={`text-ash font-medium block w-full px-3 py-2 border-[1px] border-[#b5b2b2e6]  text-[#222020e6] border-footer-text-gray rounded-[4px] focus-visible:outline-none`}
               // {...register("BasicDetail.Profile_height")}
               value={basicDetails.Profile_height}
               disabled

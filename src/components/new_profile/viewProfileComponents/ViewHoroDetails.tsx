@@ -180,14 +180,14 @@ useEffect(() => {
             <div className="flex w-full flex-row gap-4">
 
               <div className="w-full">
-                <label htmlFor="timeOfBirth" className="block text-black font-semibold mb-1">
+                <label htmlFor="timeOfBirth" className="block text-[#5a5959e6] font-semibold mb-1">
                   Time of Birth
                 </label>
                 <div className="flex items-center space-x-2">
                   <select
                     value={hour}
                     disabled
-                    className="px-3 py-2 border rounded border-gray-300 text-black font-medium focus:outline-none focus:border-blue-500"
+                    className="px-3 py-2 border rounded border-[#b5b2b2e6]  text-[#222020e6]border-[#b5b2b2e6]  text-[#222020e6] font-medium focus:outline-none focus:border-blue-500"
                   >
                     <option value="">Hours</option>
                     {Array.from({ length: 12 }, (_, i) => i + 1).map((hour) => (
@@ -204,7 +204,7 @@ useEffect(() => {
                   <select
                     value={minute}
                     disabled
-                    className="px-3 py-2 border rounded border-gray-300 text-black font-medium focus:outline-none focus:border-blue-500"
+                    className="px-3 py-2 border rounded border-[#b5b2b2e6]  text-[#222020e6] font-medium focus:outline-none focus:border-blue-500"
                   >
                     <option value="">Mins</option>
                     {Array.from({ length: 60 }, (_, i) => i).map((minute) => (
@@ -219,7 +219,7 @@ useEffect(() => {
                   <select
                     value={period}
                     disabled
-                    className="px-3 py-2 border rounded border-gray-300 text-black font-medium focus:outline-none focus:border-blue-500"
+                    className="px-3 py-2 border rounded border-[#b5b2b2e6]  text-[#222020e6] font-medium focus:outline-none focus:border-blue-500"
                   >
                     <option value="AM">AM</option>
                     <option value="PM">PM</option>
@@ -230,7 +230,7 @@ useEffect(() => {
               <div className="w-full">
                 <label
                   htmlFor="place_of_birth"
-                  className="block text-black font-semibold mb-1"
+                  className="block text-[#5a5959e6] font-semibold mb-1"
                 >
                   Place of Birth <span className="text-red-500">*</span>
                 </label>
@@ -239,14 +239,14 @@ useEffect(() => {
                   readOnly
                   id="place_of_birth"
                   type="text"
-                  className="outline-none w-full px-4 text-black font-medium py-2 border border-black rounded"
+                  className="outline-none w-full px-4  font-medium py-2 border border-[#b5b2b2e6]  text-[#222020e6] rounded"
                 />
               </div>
               {/* Birth Star Selector */}
               <div className="w-full">
                 <label
                   htmlFor="birthstar_name"
-                  className="block text-black font-semibold mb-1"
+                  className="block text-[#5a5959e6] font-semibold mb-1"
                 >
                   Birth Star<span className="text-red-500">*</span>
                 </label>
@@ -254,7 +254,7 @@ useEffect(() => {
                   value={horoDetails.birthstar_name}
                   disabled
                   id="birthstar_name"
-                  className="outline-none w-full px-4 py-2 border text-black font-medium border-black rounded"
+                  className="outline-none w-full px-4 py-2 border font-medium border-[#b5b2b2e6]  text-[#222020e6] rounded"
                 >
                   <option value="" disabled>
                     -- Select your Birth Star --
@@ -277,7 +277,7 @@ useEffect(() => {
               <div className="w-full">
                 <label
                   htmlFor="birth_rasi_name"
-                  className="block text-black font-semibold mb-1"
+                  className="block text-[#5a5959e6] font-semibold mb-1"
                 >
                   Rasi <span className="text-red-500">*</span>
                 </label>
@@ -285,7 +285,7 @@ useEffect(() => {
                   value={horoDetails.birth_rasi_name}
                   disabled
                   id="birth_rasi_name"
-                  className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                  className="outline-none w-full px-4 py-2 border font-medium border-[#b5b2b2e6]  text-[#222020e6] rounded"
                 >
                   <option value="" selected disabled>
                     -- Select your Rasi --
@@ -304,7 +304,7 @@ useEffect(() => {
               <div className="w-full">
                 <label
                   htmlFor="lagnam"
-                  className="block text-black font-semibold mb-1"
+                  className="block text-[#5a5959e6] font-semibold mb-1"
                 >
                   Lagnam
                 </label>
@@ -312,7 +312,7 @@ useEffect(() => {
                   value={horoDetails.lagnam_didi}
                   disabled
                   id="lagnam"
-                  className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                  className="outline-none w-full px-4 py-2 border border-[#b5b2b2e6]  text-[#222020e6] font-medium  rounded"
                 >
                   <option value="" disabled>
                     -- Select your Lagnam
@@ -328,7 +328,7 @@ useEffect(() => {
               <div className="w-full">
                 <label
                   htmlFor="chevvai_dosaham"
-                  className="block text-black font-semibold  mb-1"
+                  className="block text-[#5a5959e6] font-semibold  mb-1"
                 >
                   Chevvai Dhosam
                 </label>
@@ -336,7 +336,7 @@ useEffect(() => {
                   value={horoDetails.chevvai_dosaham}
                   disabled
                   id="chevvai_dosaham"
-                  className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                  className="outline-none w-full px-4 py-2 border  font-medium border-[#b5b2b2e6]  text-[#222020e6] rounded"
                   defaultValue=""
                 >
                   <option value="" disabled>
@@ -353,7 +353,7 @@ useEffect(() => {
               <div className="w-full">
                 <label
                   htmlFor="ragu_dosham"
-                  className="block text-black font-semibold mb-1"
+                  className="block text-[#5a5959e6] font-semibold mb-1"
                 >
                   Sarpa Dhosham
                 </label>
@@ -361,7 +361,7 @@ useEffect(() => {
                   value={horoDetails.ragu_dosham}
                   disabled
                   id="ragu_dosham"
-                  className="outline-none w-full px-4 py-2 text-[#000000e6] font-medium border border-black rounded"
+                  className="outline-none w-full px-4 py-2  font-medium border border-[#b5b2b2e6]  text-[#222020e6] rounded"
                   defaultValue=""
                 >
                   <option value="" disabled>
@@ -376,7 +376,7 @@ useEffect(() => {
               <div className="w-full">
                 <label
                   htmlFor="nalikai"
-                  className="block text-black font-semibold mb-1"
+                  className="block text-[#5a5959e6] font-semibold mb-1"
                 >
                   Naalikai
                 </label>
@@ -385,17 +385,17 @@ useEffect(() => {
                   disabled
                   id="nalikai"
                   type="text"
-                  className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                  className="outline-none w-full px-4 py-2 border  font-medium border-[#b5b2b2e6]  text-[#222020e6] rounded"
                 />
               </div>
-              <div className="w-full text-[#000000e6] font-medium">
+              <div className="w-full text-[#5a5959e6] font-medium">
                 <label htmlFor="dasa_name" className="block mb-1">
                   Dasa Name
                 </label>
                 <select
                   value={horoDetails.dasa_name}
                   disabled
-                  className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                  className="outline-none w-full px-4 py-2 border  font-medium border-[#b5b2b2e6]  text-[#222020e6] rounded"
                   id="dasaDropdown"
                   defaultValue=""
                 >
@@ -496,7 +496,7 @@ useEffect(() => {
 
             <div className="flex w-full flex-row gap-4 items-start">
               {/* Dasa Balance */}
-              <div className="w-1/3 text-[#000000e6] font-medium">
+              <div className="w-1/3 text-[#5a5959e6] font-medium">
                 <label htmlFor="dasaBalance" className="block mb-1">
                   Dasa Balance
                 </label>
@@ -507,7 +507,7 @@ useEffect(() => {
                       disabled
                       value={year}
                       id="year"
-                      className="outline-none w-full px-4 py-2 border border-black rounded"
+                      className="outline-none w-full px-4 py-2 border border-[#b5b2b2e6]  text-[#222020e6] rounded"
                     >
                       <option value="">
                         Year
@@ -526,7 +526,7 @@ useEffect(() => {
                       value={month}
                       disabled
                       id="month"
-                      className="outline-none w-full px-4 py-2 border border-black rounded"
+                      className="outline-none w-full px-4 py-2 border border-[#b5b2b2e6]  text-[#222020e6] rounded"
                     >
                       <option value="">
                         Month
@@ -544,7 +544,7 @@ useEffect(() => {
                       value={day}
                       disabled
                       id="dasa_balance"
-                      className="outline-none w-full px-4 py-2 text-[#000000e6] font-medium border border-black rounded"
+                      className="outline-none w-full px-4 py-2 border-[#b5b2b2e6]  text-[#222020e6] font-medium border  rounded"
                       defaultValue=""
                     >
                       <option value="" >
@@ -562,7 +562,7 @@ useEffect(() => {
 
               {/* Horoscope Hints */}
               <div className="w-1/3">
-                <label htmlFor="horoscopeHints" className="block text-black font-semibold mb-1">
+                <label htmlFor="horoscopeHints" className="block text-[#5a5959e6] font-semibold mb-1">
                   Horoscope Hints
                 </label>
                 <input
@@ -570,7 +570,7 @@ useEffect(() => {
                   value={horoDetails.horoscope_hints}
                   id="horoscopeHints"
                   type="text"
-                  className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                  className="outline-none w-full px-4 py-2 border  font-medium border-[#b5b2b2e6]  text-[#222020e6] rounded"
                 />
               </div>
 
@@ -578,7 +578,7 @@ useEffect(() => {
               <div className="w-1/3">
                 <label
                   htmlFor="Didi"
-                  className="block text-black font-semibold mb-1"
+                  className="block text-[#5a5959e6] font-semibold mb-1"
                 >
                   Didi
                 </label>
@@ -587,14 +587,14 @@ useEffect(() => {
                   disabled
                   id="Didi"
                   type="text"
-                  className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                  className="outline-none w-full px-4 py-2 border  font-medium border-[#b5b2b2e6]  text-[#222020e6] rounded"
                 />
               </div>
             </div>
 
             {/* Rasi Grid and Amsam Grid components */}
             <div>
-              <h4 className="text-xl font-semibold text-black dark:text-white mb-4">
+              <h4 className="text-xl font-semibold text-[#5a5959e6] dark:text-white mb-4">
                 Rasi Grid
               </h4>
               <RasiGridview
@@ -607,7 +607,7 @@ useEffect(() => {
             <br />
 
             <div>
-              <h4 className="text-xl font-semibold text-black dark:text-white mb-4">
+              <h4 className="text-xl font-semibold text-[#5a5959e6] dark:text-white mb-4">
                 Amsam Grid
               </h4>
               <AmsamGridview

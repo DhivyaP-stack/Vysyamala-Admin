@@ -135,7 +135,7 @@ export const AdminDetailsPopup: React.FC<AdminDetaisProps> = ({ open, onClose })
           setPaymentData(Paymentdata);
           console.log("Paymentdata", Paymentdata);
 
-          if (Paymentdata.length > 0) {
+          if (Paymentdata?.length > 0) {
             const payment = Paymentdata[0];
             paymentsetValue("payment_type", payment.payment_type || "");
             paymentsetValue("payment_details", payment.payment_details || "");
@@ -168,7 +168,7 @@ export const AdminDetailsPopup: React.FC<AdminDetaisProps> = ({ open, onClose })
 
         } catch (error) {
           console.error("Error fetching payment data:", error);
-          NotifyError("Failed to load payment data");
+         NotifyError("Failed to load payment data");
         } finally {
           setLoading(false);
         }

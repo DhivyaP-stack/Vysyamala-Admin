@@ -256,47 +256,47 @@ const ViewPartnerSettings: React.FC<pageProps> = ({
         {isPartnerPreferenceOpen && (
           <div className="flex flex-col gap-5 pt-2">
             <div className="flex w-full text-black font-semibold flex-row gap-4">
-              <div className="w-full text-black font-semibold">
+              <div className="w-full text-[#5a5959e6] font-semibold">
                 <label>
                   Height from <span className="text-red-500">*</span>
                 </label>
                 <input
                   disabled
                   value={partnerSettingsDetails.pref_height_from}
-                  className="w-full text-black font-medium px-4 py-2 border border-black rounded"
+                  className="w-full border-[#b5b2b2e6]  text-[#222020e6] font-medium px-4 py-2 border  rounded"
                 />
               </div>
-              <div className="w-full text-black font-semibold">
+              <div className="w-full text-[#5a5959e6] font-semibold">
                 <label>
                   Height to <span className="text-red-500">*</span>
                 </label>
                 <input
                   disabled
                   value={partnerSettingsDetails.pref_height_to}
-                  className="w-full text-black font-medium px-4 py-2 border border-black rounded"
+                  className="w-full font-medium px-4 py-2 border border-[#b5b2b2e6]  text-[#222020e6]  rounded"
                 />
               </div>
-              <div className="w-full text-black font-semibold">
+              <div className="w-full text-[#5a5959e6] font-semibold">
                 <label>
                   Age Difference <span className="text-red-500">*</span>
                 </label>
                 <input
                   disabled
                   value={partnerSettingsDetails.pref_age_differences}
-                  className="w-full text-black font-medium px-4 py-2 border border-black rounded"
+                  className="w-full  font-medium px-4 py-2 border border-[#b5b2b2e6]  text-[#222020e6] rounded"
                 />
               </div>
             </div>
 
             <div className="flex w-full text-black font-semibold flex-row gap-4">
-              <div className="w-full text-black font-semibold">
+              <div className="w-full text-[#5a5959e6] font-semibold">
                 <label>
                   Chevvai
                 </label>
                 <select
                   disabled
                   value={partnerSettingsDetails.pref_chevvai}
-                  className="w-full text-black font-bold px-4 py-2 border border-black rounded"
+                  className="w-full  font-bold px-4 py-2 border border-[#b5b2b2e6]  text-[#222020e6] rounded"
                 >
                   <option value="">Select</option>
                   <option value="Yes">Yes</option>
@@ -304,14 +304,14 @@ const ViewPartnerSettings: React.FC<pageProps> = ({
                   <option value="Both">Both</option>
                 </select>
               </div>
-              <div className="w-full text-black font-semibold">
+              <div className="w-full text-[#5a5959e6] font-semibold">
                 <label>
                   Rahu / Ketu
                 </label>
                 <select
                   disabled
                   value={partnerSettingsDetails.pref_ragukethu}
-                  className="w-full text-black font-bold px-4 py-2 border border-black rounded"
+                  className="w-full  font-bold px-4 py-2 border border-[#b5b2b2e6]  text-[#222020e6] rounded"
                 >
                   <option value="">Select</option>
                   <option value="Yes">Yes</option>
@@ -319,14 +319,14 @@ const ViewPartnerSettings: React.FC<pageProps> = ({
                   <option value="Both">Both</option>
                 </select>
               </div>
-              <div className="w-full text-black font-semibold">
+              <div className="w-full text-[#5a5959e6] font-semibold">
                 <label>
                   Foreign Interest
                 </label>
                 <select
                   disabled
                   value={partnerSettingsDetails.pref_foreign_intrest}
-                  className="w-full text-black font-semibold px-4 py-2 border border-black rounded"
+                  className="w-full  font-semibold px-4 py-2 border border-[#b5b2b2e6]  text-[#222020e6]  rounded"
                 >
                   <option value="">Select</option>
                   <option value="Yes">Yes</option>
@@ -338,7 +338,7 @@ const ViewPartnerSettings: React.FC<pageProps> = ({
 
 
             <div>
-              <h5 className="text-[18px] text-black font-semibold mb-2 cursor-pointer"
+              <h5 className="text-[18px] text-[#5a5959e6] font-semibold mb-2 cursor-pointer"
 
               >
                 Family Status
@@ -359,7 +359,7 @@ const ViewPartnerSettings: React.FC<pageProps> = ({
                     />
                     <label
                       htmlFor={`family-status-${status.family_status_id}`}
-                      className='text-[#000000e6] font-medium'
+                      className='text-[#5a5959e6] font-medium'
                     >
                       {status.family_status_name}
                     </label>
@@ -372,7 +372,7 @@ const ViewPartnerSettings: React.FC<pageProps> = ({
 
 
             <div>
-              <h5 className="text-[18px] text-black font-semibold mb-2 cursor-pointer"
+              <h5 className="text-[18px] text-[#5a5959e6] font-semibold mb-2 cursor-pointer"
 
               >
                 Preferred State
@@ -391,7 +391,7 @@ const ViewPartnerSettings: React.FC<pageProps> = ({
                     />
                     <label
                       htmlFor={`state-${state.State_Pref_id}`}
-                      className='text-[#000000e6] font-medium'
+                      className='text-[#5a5959e6] font-medium'
                     >
                       {state.State_name}
                     </label>
@@ -402,8 +402,8 @@ const ViewPartnerSettings: React.FC<pageProps> = ({
 
             </div>
 
-            <div className="w-full text-black font-semibold">
-              <h5 className="text-[18px] text-black font-semibold mb-2">
+            <div className="w-full text-[#5a5959e6] font-semibold">
+              <h5 className="text-[18px] text-[#5a5959e6] font-semibold mb-2">
                 Profession
               </h5>
               <div className="flex justify-between items-center">
@@ -420,7 +420,7 @@ const ViewPartnerSettings: React.FC<pageProps> = ({
                     />
                     <label
                       htmlFor={`profession-${profession.Profes_Pref_id}`}
-                      className="pl-1 text-black font-medium"
+                      className="pl-1 text-[#5a5959e6] font-medium"
                     >
                       {profession.Profes_name}
                     </label>
@@ -429,7 +429,7 @@ const ViewPartnerSettings: React.FC<pageProps> = ({
               </div>
             </div>
             <div className="flex flex-wrap gap-4">
-              <label className="text-[18px] text-black font-semibold mb-2">
+              <label className="text-[18px] text-[#5a5959e6] font-semibold mb-2">
                 Education
               </label>
               <div className="flex flex-wrap gap-4">
@@ -447,7 +447,7 @@ const ViewPartnerSettings: React.FC<pageProps> = ({
                     />
                     <label
                       htmlFor={`education-${option.Edu_Pref_id}`}
-                      className="pl-1 text-black font-medium"
+                      className="pl-1 text-[#5a5959e6] font-medium"
                     >
                       {option.Edu_name}
                     </label>
@@ -458,7 +458,7 @@ const ViewPartnerSettings: React.FC<pageProps> = ({
 
             {/* Field of Study Section */}
             <div className="w-full py-1">
-              <h5 className="text-[18px] text-black font-semibold mb-2">
+              <h5 className="text-[18px] text-[#5a5959e6] font-semibold mb-2">
                 Field of Study
               </h5>
               <div className="flex flex-wrap gap-x-6 gap-y-2">
@@ -474,7 +474,7 @@ const ViewPartnerSettings: React.FC<pageProps> = ({
                     />
                     <label
                       htmlFor={`study-${option.study_id}`}
-                      className='text-[#000000e6] font-medium'
+                      className='text-[#5a5959e6] font-medium'
                     >
                       {option.study_description}
                     </label>
@@ -485,7 +485,7 @@ const ViewPartnerSettings: React.FC<pageProps> = ({
 
             {/* Degree Section */}
             <div className="w-full py-1">
-              <h5 className="text-[18px] text-black font-semibold mb-2">
+              <h5 className="text-[18px] text-[#5a5959e6] font-semibold mb-2">
                 Degree
               </h5>
               <Select
@@ -510,7 +510,7 @@ const ViewPartnerSettings: React.FC<pageProps> = ({
             </div>
 
             <div>
-              <h5 className="text-[18px] text-black font-semibold mb-2">
+              <h5 className="text-[18px] text-[#5a5959e6] font-semibold mb-2">
                 Marital Status
               </h5>
               <div className="flex justify-between items-center">
@@ -525,7 +525,7 @@ const ViewPartnerSettings: React.FC<pageProps> = ({
                       )}
                       onClick={(e) => e.preventDefault()}
                     />
-                    <label htmlFor={`maritalStatus-${status.marital_sts_id}`} className='text-black font-medium'>
+                    <label htmlFor={`maritalStatus-${status.marital_sts_id}`} className='text-[#5a5959e6] font-medium'>
                       {status.marital_sts_name}
                     </label>
                   </div>
@@ -534,7 +534,7 @@ const ViewPartnerSettings: React.FC<pageProps> = ({
             </div>
 
             <div>
-              <label className="text-[18px] text-black font-semibold mb-2">
+              <label className="text-[18px] text-[#5a5959e6] font-semibold mb-2">
                 Annual Income
               </label>
               <div className="flex items-center gap-4">

@@ -221,7 +221,7 @@ export const ViewProfileVisibility: React.FC<formProps> = ({
         <>
           <div className='flex gap-6 mt-4 flex-col md:flex-row'>
             <div className='w-full'>
-              <label htmlFor="ageFrom" className="text-[20px] text-black font-semibold block mb-2">
+              <label htmlFor="ageFrom" className="text-[20px] text-[#5a5959e6] font-semibold block mb-2">
                 Age
               </label>
               <div className='flex gap-3 items-center justify-center'>
@@ -246,7 +246,7 @@ export const ViewProfileVisibility: React.FC<formProps> = ({
             </div>
 
             <div className='w-full'>
-              <label htmlFor="ageFrom" className="text-[20px] text-black font-semibold block mb-2">
+              <label htmlFor="ageFrom" className="text-[20px] text-[#5a5959e6] font-semibold block mb-2">
                 Height
               </label>
               <div className='flex gap-3 items-center justify-center'>
@@ -272,7 +272,7 @@ export const ViewProfileVisibility: React.FC<formProps> = ({
 
           {/* Profession Checkboxes */}
           <div className="w-full mt-6">
-            <h5 className="text-[18px] text-black font-semibold mb-2 cursor-pointer"  >
+            <h5 className="text-[18px] text-[#5a5959e6] font-semibold mb-2 cursor-pointer"  >
               Profession
             </h5>
             <div className="flex flex-wrap justify-between items-center">
@@ -286,7 +286,7 @@ export const ViewProfileVisibility: React.FC<formProps> = ({
                   />
                   <label
                     htmlFor={`professionVisibility-${profession.Profes_Pref_id}`}
-                    className='pl-1 text-[#000000e6] font-medium'
+                    className='pl-1 text-[#5a5959e6] font-medium'
                   >
                     {profession.Profes_name}
                   </label>
@@ -297,7 +297,7 @@ export const ViewProfileVisibility: React.FC<formProps> = ({
 
           {/* Education Checkboxes */}
           <div className='mt-6'>
-            <label className="text-[18px] text-black font-semibold mb-2 cursor-pointer">
+            <label className="text-[18px] text-[#5a5959e6] font-semibold mb-2 cursor-pointer">
               Education
             </label>
             <div className="flex flex-wrap gap-4">
@@ -311,7 +311,7 @@ export const ViewProfileVisibility: React.FC<formProps> = ({
                   />
                   <label
                     htmlFor={`educationVisibility-${option.Edu_Pref_id}`}
-                    className='pl-1 text-[#000000e6] font-medium'
+                    className='pl-1 text-[#5a5959e6] font-medium'
                   >
                     {option.Edu_name}
                   </label>
@@ -322,7 +322,7 @@ export const ViewProfileVisibility: React.FC<formProps> = ({
 
           {/* Field of Study Section */}
           <div className="w-full py-1 mt-2">
-            <h5 className="text-[18px] text-black font-semibold mb-2">
+            <h5 className="text-[18px] text-[#5a5959e6] font-semibold mb-2">
               Field of Study
             </h5>
             <div className="flex flex-wrap gap-x-6 gap-y-2">
@@ -338,7 +338,7 @@ export const ViewProfileVisibility: React.FC<formProps> = ({
                   />
                   <label
                     htmlFor={`study-${option.study_id}`}
-                    className='text-[#000000e6] font-medium'
+                    className='text-[#5a5959e6] font-medium'
                   >
                     {option.study_description}
                   </label>
@@ -349,7 +349,7 @@ export const ViewProfileVisibility: React.FC<formProps> = ({
 
           {/* Degree Section */}
           <div className="w-full py-1 mt-2">
-            <h5 className="text-[18px] text-black font-semibold mb-2">
+            <h5 className="text-[18px] text-[#5a5959e6] font-semibold mb-2">
               Degree
             </h5>
             <Select
@@ -375,19 +375,19 @@ export const ViewProfileVisibility: React.FC<formProps> = ({
           {/* Annual Income Dropdowns */}
           <div className='mt-6'>
             <div className="flex items-center mb-2">
-              <label className="text-[18px] text-black font-semibold cursor-pointer">
+              <label className="text-[18px] text-[#5a5959e6] font-semibold cursor-pointer">
                 Annual Income
               </label>
             </div>
             <div className="flex gap-2">
               <div className="w-full">
-                <label className="text-black font-semibold">Minimum Annual Income</label>
+                <label className="text-[#5a5959e6] font-semibold">Minimum Annual Income</label>
                 <select
                   id="minAnnualIncome"
                   {...register('profile_visibility.visibility_anual_income')}
                   value={watch('profile_visibility.visibility_anual_income')}
                   disabled
-                  className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded bg-gray-100"
+                  className="outline-none w-full px-4 py-2 border  font-medium border-[#b5b2b2e6]  text-[#222020e6] rounded bg-gray-100"
                 >
                   <option value="">Select Minimum Annual Income</option>
                   {annualIncome?.map((option: any) => (
@@ -398,13 +398,13 @@ export const ViewProfileVisibility: React.FC<formProps> = ({
                 </select>
               </div>
               <div className="w-full">
-                <label className="text-black font-semibold">Maximum Annual Income</label>
+                <label className="text-[#5a5959e6] font-semibold">Maximum Annual Income</label>
                 <select
                   id="maxAnnualIncome"
                   {...register('profile_visibility.visibility_anual_income_max')}
                   value={watch('profile_visibility.visibility_anual_income_max')}
                   disabled
-                  className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded bg-gray-100"
+                  className="outline-none w-full px-4 py-2 border  font-medium border-[#b5b2b2e6]  text-[#222020e6] rounded bg-gray-100"
                 >
                   <option value="">Select Maximum Annual Income</option>
                   {annualIncome?.map((option: any) => (
@@ -482,7 +482,7 @@ export const ViewProfileVisibility: React.FC<formProps> = ({
 
 
           <div className="mt-4">
-            <h5 className="text-[18px] text-black font-semibold mb-2 cursor-pointer">
+            <h5 className="text-[18px] text-[#5a5959e6] font-semibold mb-2 cursor-pointer">
               Family Status
             </h5>
             <div className="flex flex-wrap gap-x-6 gap-y-2">
@@ -500,7 +500,7 @@ export const ViewProfileVisibility: React.FC<formProps> = ({
                   />
                   <label
                     htmlFor={`profileVisibility-${status.family_status_id}`}
-                    className='text-[#000000e6] font-medium'
+                    className='text-[#5a5959e6] font-medium'
                   >
                     {status.family_status_name}
                   </label>
@@ -515,15 +515,15 @@ export const ViewProfileVisibility: React.FC<formProps> = ({
           {/* Other Options */}
           <div className="grid grid-cols-3 gap-4 mt-3">
             <div className="mb-5">
-              <label className="block text-black font-bold mb-1">
+              <label className="block text-[#5a5959e6] font-bold mb-1">
                 Rahu/Ketu Dhosam
               </label>
               <div className="relative">
                 <select
                   {...register("profile_visibility.visibility_ragukethu")}
-                  value={watch("profile_visibifetchFieldOfStudy lity.visibility_ragukethu")}
+                  value={watch("profile_visibility.visibility_ragukethu")}
                   disabled
-                  className="outline-none w-full text-placeHolderColor px-3 py-2.5 text-sm border border-ashBorder rounded appearance-none bg-gray-100"
+                  className="outline-none w-full text-placeHolderColor px-3 py-2.5 text-sm border border-[#b5b2b2e6]  text-[#222020e6] rounded appearance-none bg-gray-100"
                 >
                   <option value="">Select</option>
                   <option value="Yes">Yes</option>
@@ -538,7 +538,7 @@ export const ViewProfileVisibility: React.FC<formProps> = ({
 
 
             <div className="mb-5">
-              <label className="block text-black font-bold mb-1">
+              <label className="block text-[#5a5959e6] font-bold mb-1">
                 Chevvai Dhosam
               </label>
               <div className="relative">
@@ -546,7 +546,7 @@ export const ViewProfileVisibility: React.FC<formProps> = ({
                   {...register("profile_visibility.visibility_chevvai")}
                   value={watch("profile_visibility.visibility_chevvai")}
                   disabled
-                  className="outline-none w-full text-placeHolderColor px-3 py-2.5 text-sm border border-ashBorder rounded appearance-none bg-gray-100"
+                  className="outline-none w-full text-placeHolderColor px-3 py-2.5 text-sm border border-[#b5b2b2e6]  text-[#222020e6] rounded appearance-none bg-gray-100"
                 >
                   <option value="">Select</option>
                   <option value="Yes">Yes</option>
@@ -560,7 +560,7 @@ export const ViewProfileVisibility: React.FC<formProps> = ({
             </div>
 
             <div className="mb-5">
-              <label className="block text-black font-bold mb-1">
+              <label className="block text-[#5a5959e6] font-bold mb-1">
                 Foreign Interest
               </label>
               <div className="relative">
@@ -568,7 +568,7 @@ export const ViewProfileVisibility: React.FC<formProps> = ({
                   {...register("profile_visibility.visibility_foreign_interest")}
                   value={watch("profile_visibility.visibility_foreign_interest")}
                   disabled
-                  className="outline-none w-full text-placeHolderColor px-3 py-2.5 text-sm border border-ashBorder rounded appearance-none bg-gray-100"
+                  className="outline-none w-full text-placeHolderColor px-3 py-2.5 text-sm border border-[#b5b2b2e6]  text-[#222020e6] rounded appearance-none bg-gray-100"
                 >
                   <option value="">Select</option>
                   <option value="Yes">Yes</option>

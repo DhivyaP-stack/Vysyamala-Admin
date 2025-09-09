@@ -287,47 +287,47 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
         {isSuggestedProfileOpen && (
           <div className="flex flex-col gap-5 pt-2">
             <div className="flex w-full flex-row gap-4">
-              <div className="w-full text-black font-semibold">
+              <div className="w-full text-[#5a5959e6] font-semibold">
                 <label>
                   Height from <span className="text-red-500">*</span>
                 </label>
                 <input
                   disabled
                   value={SuggestedProfileDetails.pref_height_from}
-                  className="w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                  className="w-full px-4 py-2 border  font-medium border-[#b5b2b2e6]  text-[#222020e6] rounded"
                 />
               </div>
-              <div className="w-full text-black font-semibold">
+              <div className="w-full text-[#5a5959e6] font-semibold">
                 <label>
                   Height to <span className="text-red-500">*</span>
                 </label>
                 <input
                   disabled
                   value={SuggestedProfileDetails.pref_height_to}
-                  className="w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                  className="w-full px-4 py-2 border  font-medium border-[#b5b2b2e6]  text-[#222020e6] rounded"
                 />
               </div>
-              <div className="w-full text-black font-semibold">
+              <div className="w-full text-[#5a5959e6] font-semibold">
                 <label>
                   Age Difference <span className="text-red-500">*</span>
                 </label>
                 <input
                   disabled
                   value={SuggestedProfileDetails.pref_age_differences}
-                  className="w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                  className="w-full px-4 py-2 border  font-medium border-[#b5b2b2e6]  text-[#222020e6] rounded"
                 />
               </div>
             </div>
 
             <div className="flex w-full flex-row gap-4">
-              <div className="w-full text-black font-semibold">
+              <div className="w-full text-[#5a5959e6] font-semibold">
                 <label>
                   Chevvai
                 </label>
                 <select
                   disabled
                   value={SuggestedProfileDetails.pref_chevvai}
-                  className="w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                  className="w-full px-4 py-2 border  font-medium border-[#b5b2b2e6]  text-[#222020e6] rounded"
                 >
                   <option value="">Select</option>
                   <option value="Yes">Yes</option>
@@ -335,14 +335,14 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
                   <option value="Both">Both</option>
                 </select>
               </div>
-              <div className="w-full text-black font-semibold">
+              <div className="w-full text-[#5a5959e6] font-semibold">
                 <label>
                   Rahu / Ketu
                 </label>
                 <select
                   disabled
                   value={SuggestedProfileDetails.pref_ragukethu}
-                  className="w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                  className="w-full px-4 py-2 border  font-medium border-[#b5b2b2e6]  text-[#222020e6] rounded"
                 >
                   <option value="">Select</option>
                   <option value="Yes">Yes</option>
@@ -350,7 +350,7 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
                   <option value="Both">Both</option>
                 </select>
               </div>
-              <div className="w-full text-black font-semibold">
+              <div className="w-full text-[#5a5959e6] font-semibold">
                 <label>
                   Foreign Interest
                 </label>
@@ -358,7 +358,7 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
                   disabled
                   value={SuggestedProfileDetails.pref_foreign_intrest}
                   // value={SuggestedProfileDetails.pref_foreign_intrest.charAt(0).toUpperCase() + SuggestedProfileDetails.pref_foreign_intrest.slice(1).toLowerCase()}
-                  className="w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                  className="w-full px-4 py-2 border  font-medium border-[#b5b2b2e6]  text-[#222020e6] rounded"
                 >
                   <option value="">Select</option>
                   <option value="Yes">Yes</option>
@@ -370,7 +370,7 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
 
 
             <div className="w-full py-1">
-              <h5 className="text-[18px] text-black font-semibold mb-2 cursor-pointer">
+              <h5 className="text-[18px] text-[#5a5959e6] font-semibold mb-2 cursor-pointer">
                 Family Status
               </h5>
               <div className="flex flex-wrap gap-x-6 gap-y-2">
@@ -386,7 +386,7 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
                     />
                     <label
                       htmlFor={`suggested-family-status-${status.family_status_id}`}
-                      className='text-[#000000e6] font-medium'
+                      className='text-[#5a5959e6] font-medium'
                     >
                       {status.family_status_name}
                     </label>
@@ -396,7 +396,7 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
             </div>
 
             <div className="w-full py-1">
-              <h5 className="text-[18px] text-black font-semibold mb-2 cursor-pointer">
+              <h5 className="text-[18px] text-[#5a5959e6] font-semibold mb-2 cursor-pointer">
                 Preferred State
               </h5>
               <div className="flex flex-wrap gap-x-6 gap-y-2">
@@ -412,7 +412,7 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
                     />
                     <label
                       htmlFor={`suggested-state-${state.State_Pref_id}`}
-                      className='text-[#000000e6] font-medium'
+                      className='text-[#5a5959e6] font-medium'
                     >
                       {state.State_name}
                     </label>
@@ -423,7 +423,7 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
 
 
             <div className="w-full">
-              <h5 className="text-[18px] text-black font-semibold mb-2">
+              <h5 className="text-[18px] text-[#5a5959e6] font-semibold mb-2">
                 Profession
               </h5>
               <div className="flex justify-between items-center">
@@ -440,7 +440,7 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
                     />
                     <label
                       htmlFor={`profession-${profession.Profes_Pref_id}`}
-                      className="pl-1 text-[#000000e6] font-medium"
+                      className="pl-1 text-[#5a5959e6] font-medium"
                     >
                       {profession.Profes_name}
                     </label>
@@ -449,7 +449,7 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
               </div>
             </div>
             <div className="flex flex-wrap gap-4">
-              <label className="text-[18px] text-black font-semibold mb-2">
+              <label className="text-[18px] text-[#5a5959e6] font-semibold mb-2">
                 Education
               </label>
               <div className="flex flex-wrap gap-4">
@@ -467,7 +467,7 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
                     />
                     <label
                       htmlFor={`education-${option.Edu_Pref_id}`}
-                      className="pl-1 text-[#000000e6] font-medium"
+                      className="pl-1 text-[#5a5959e6] font-medium"
                     >
                       {option.Edu_name}
                     </label>
@@ -477,7 +477,7 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
             </div>
 
             <div className="w-full py-1">
-              <h5 className="text-[18px] text-black font-semibold mb-2">
+              <h5 className="text-[18px] text-[#5a5959e6] font-semibold mb-2">
                 Field of Study
               </h5>
               <div className="flex flex-wrap gap-x-6 gap-y-2">
@@ -493,7 +493,7 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
                     />
                     <label
                       htmlFor={`study-${option.study_id}`}
-                      className='text-[#000000e6] font-medium'
+                      className='text-[#5a5959e6] font-medium'
                     >
                       {option.study_description}
                     </label>
@@ -504,7 +504,7 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
 
             {/* Degree Section */}
             <div className="w-full py-1">
-              <h5 className="text-[18px] text-black font-semibold mb-2">
+              <h5 className="text-[18px] text-[#5a5959e6] font-semibold mb-2">
                 Degree
               </h5>
               <Select
@@ -529,7 +529,7 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
             </div>
 
             <div>
-              <h5 className="text-[18px] text-black font-semibold mb-2">
+              <h5 className="text-[18px] text-[#5a5959e6] font-semibold mb-2">
                 Marital Status
               </h5>
               <div className="flex justify-between items-center">
@@ -544,7 +544,7 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
                       )}
                       onClick={(e) => e.preventDefault()}
                     />
-                    <label htmlFor={`maritalStatus-${status.marital_sts_id}`} className='text-[#000000e6] font-medium'>
+                    <label htmlFor={`maritalStatus-${status.marital_sts_id}`} className='text-[#5a5959e6] font-medium'>
                       {status.marital_sts_name}
                     </label>
                   </div>
@@ -555,7 +555,7 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
             <div>
               <label
                 htmlFor="AnnualIncome"
-                className="text-[18px] text-black font-semibold mb-2"
+                className="text-[18px] text-[#5a5959e6] font-semibold mb-2"
               >
                 Annual Income
               </label>
@@ -565,11 +565,11 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
                   <select
                     disabled
                     {...register('profileView.pref_anual_income')}
-                    className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded bg-gray-100"
+                    className="outline-none w-full px-4 py-2 border  font-medium  border-[#b5b2b2e6]  text-[#222020e6]  rounded bg-gray-100"
                   >
                     <option value="" disabled>Select</option>
                     {annualIncome?.map((option: any) => (
-                      <option key={option.income_id} value={option.income_id} className='text-[#000000e6] font-medium'>
+                      <option key={option.income_id} value={option.income_id} className='text-[#5a5959e6] font-medium'>
                         {option.income_description}
                       </option>
                     ))}
@@ -577,15 +577,15 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
                 </div>
 
                 <div className="w-full">
-                  <label className="text-black font-semibold">Maximum Annual Income</label>
+                  <label className="text-[#5a5959e6] font-semibold">Maximum Annual Income</label>
                   <select
                     disabled
                     {...register('profileView.pref_anual_income_max')}
-                    className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded bg-gray-100"
+                    className="outline-none w-full px-4 py-2 border  font-medium border-[#b5b2b2e6]  text-[#222020e6] rounded bg-gray-100"
                   >
                     <option value="" disabled>Select</option>
                     {annualIncome?.map((option: any) => (
-                      <option key={option.income_id} value={option.income_id} className='text-[#000000e6] font-medium'>
+                      <option key={option.income_id} value={option.income_id} className='text-[#5a5959e6] font-medium'>
                         {option.income_description}
                       </option>
                     ))}
@@ -595,7 +595,7 @@ const ViewSuggestedProfile: React.FC<pageProps> = ({
             </div>
 
             <div>
-              <div className="justify-start items-center gap-x-5 text-black">
+              <div className="justify-start items-center gap-x-5 text-[#5a5959e6]">
                 {matchStars && matchStars?.length > 0 ? (
                   matchStars
                     .sort((a, b) => b[0].match_count - a[0].match_count) // Sort by match_count

@@ -348,7 +348,7 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
           <div className="flex flex-col gap-5 pt-2">
             <div className="flex w-full flex-row gap-4">
               <div className="w-full">
-                <label className="block text-black font-semibold mb-1">
+                <label className="block text-[#5a5959e6] font-semibold mb-1">
                   Time of Birth
                 </label>
                 <div className="flex items-center space-x-2">
@@ -379,7 +379,7 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
               <div className="w-full">
                 <label
                   htmlFor="place_of_birth"
-                  className="block text-black font-semibold mb-1"
+                  className="block text-[#5a5959e6] font-semibold mb-1"
                 >
                   Place of Birth <span className="text-red-500">*</span>
                 </label>
@@ -387,7 +387,7 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
                   id="place_of_birth"
                   type="text"
                   {...register('HororScopeDetails.PlaceofBirth')}
-                  className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                  className="outline-none w-full px-4 py-2 border  font-medium border-[#b5b2b2e6]  text-[#222020e6] rounded"
                 />
                 {errors?.HororScopeDetails?.PlaceofBirth && (
                   <p className="text-red-600">
@@ -400,14 +400,14 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
               <div className="w-full">
                 <label
                   htmlFor="birthstar_name"
-                  className="block text-black font-semibold mb-1"
+                  className="block text-[#5a5959e6] font-semibold mb-1"
                 >
                   Birth Star<span className="text-red-500">*</span>
                 </label>
                 <select
                   id="birthstar_name"
                   {...register('HororScopeDetails.BirthStar')}
-                  className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                  className="outline-none w-full px-4 py-2 border  font-medium border-[#b5b2b2e6]  text-[#222020e6] rounded"
                 >
                   <option value="" className='text-[#000000e6] font-semibold'>
                     -- Select your Birth Star --
@@ -430,14 +430,14 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
               <div className="w-full">
                 <label
                   htmlFor="birth_rasi_name"
-                  className="block text-black font-semibold mb-1 "
+                  className="block text-[#5a5959e6] font-semibold mb-1 "
                 >
                   Rasi <span className="text-red-500">*</span>
                 </label>
                 <select
                   {...register('HororScopeDetails.Rasi')}
                   id="birth_rasi_name"
-                  className="outline-none w-full px-4 py-2 text-[#000000e6] font-medium border border-black rounded"
+                  className="outline-none w-full px-4 py-2  font-medium border border-[#b5b2b2e6]  text-[#222020e6] rounded"
                 >
                   <option value="" selected className='text-[#000000e6] font-medium'>
                     -- Select your Rasi --
@@ -458,14 +458,14 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
               <div className="w-full">
                 <label
                   htmlFor="lagnam"
-                  className="block text-black font-semibold mb-1"
+                  className="block text-[#5a5959e6] font-semibold mb-1"
                 >
                   Lagnam
                 </label>
                 <select
                   id="lagnam"
                   {...register('HororScopeDetails.lagnam')}
-                  className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                  className="outline-none w-full px-4 py-2 border  font-medium border-[#b5b2b2e6]  text-[#222020e6] rounded"
 
                 >
                   <option value="" className='text-[#000000e6] font-medium'>
@@ -487,7 +487,7 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
               <div className="w-full">
                 <label
                   htmlFor="chevvai_dosaham"
-                  className="block text-black font-semibold mb-1"
+                  className="block text-[#5a5959e6] font-semibold mb-1"
                 >
                   Chevvai Dhosam
                 </label>
@@ -495,7 +495,7 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
                   id="chevvai_dosaham"
                   value={chevaiDosam}
                   {...register('HororScopeDetails.ChevvaiDhosam')}
-                  className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                  className="outline-none w-full px-4 py-2 border border-[#b5b2b2e6]  text-[#222020e6] font-medium  rounded"
                   defaultValue=""
                 >
                   <option value="" className='text-[#000000e6] font-medium'>
@@ -517,14 +517,14 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
               <div className="w-full">
                 <label
                   htmlFor="ragu_dosham"
-                  className="block text-black font-semibold mb-1"
+                  className="block text-[#5a5959e6] font-semibold mb-1"
                 >
                   Sarpa Dhosham
                 </label>
                 <select
                   id="ragu_dosham"
                   {...register('HororScopeDetails.SarpaDhosham')}
-                  className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                  className="outline-none w-full px-4 py-2 border  font-medium border-[#b5b2b2e6]  text-[#222020e6] rounded"
                   defaultValue=""
                 >
                   <option value="" className='text-[#000000e6] font-medium'>
@@ -545,7 +545,7 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
               <div className="w-full">
                 <label
                   htmlFor="nalikai"
-                  className="block text-black font-semibold mb-1"
+                  className="block text-[#5a5959e6] font-semibold mb-1"
                 >
                   Naalikai
                 </label>
@@ -553,7 +553,7 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
                   {...register('HororScopeDetails.nalikai')}
                   id="nalikai"
                   type="text"
-                  className="outline-none w-full px-4 py-2 text-[#000000e6] font-medium border border-black rounded"
+                  className="outline-none w-full px-4 py-2  font-medium border border-[#b5b2b2e6]  text-[#222020e6] rounded"
                 />
                 {errors?.HororScopeDetails?.nalikai && (
                   <p className="text-red-600">
@@ -562,13 +562,13 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
                 )}
               </div>
               <div className="w-full">
-                <label htmlFor="dasa_name" className="block mb-1 text-[#000000e6] font-semibold">
+                <label htmlFor="dasa_name" className="block mb-1 text-[#5a5959e6] font-semibold">
                   Dasa Name
                 </label>
                 <select
                   value={dasaName}
                   {...register('HororScopeDetails.dasaName')}
-                  className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                  className="outline-none w-full px-4 py-2 border border-[#b5b2b2e6]  text-[#222020e6] font-medium  rounded"
                   id="dasaDropdown"
                   defaultValue=""
                 >
@@ -592,7 +592,7 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
             <div className="flex w-full flex-row gap-4">
 
               <div className="w-2/4">
-                <label htmlFor="dasaBalance" className="block text-black font-semibold mb-1">
+                <label htmlFor="dasaBalance" className="block text-[#5a5959e6] font-semibold mb-1">
                   Dasa Balance
                 </label>
                 <div className="flex space-x-2">
@@ -604,7 +604,7 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
                     <select
                       {...register('HororScopeDetails.DasaBalanceYear')}
                       id="year"
-                      className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                      className="outline-none w-full px-4 py-2 border  font-medium border-[#b5b2b2e6]  text-[#222020e6] rounded"
                     >
                       <option value="" className='text-[#000000e6] font-medium'>
                         Year
@@ -625,7 +625,7 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
                     <select
                       id="month"
                       {...register('HororScopeDetails.DasaBalanceMonth')}
-                      className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                      className="outline-none w-full px-4 py-2 border  font-medium border-[#b5b2b2e6]  text-[#222020e6] rounded"
                     >
                       <option value="" className='text-[#000000e6] font-medium'>
                         Month
@@ -644,7 +644,7 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
                     <select
                       {...register('HororScopeDetails.DasaBalanceDay')}
                       id="dasa_balance"
-                      className="outline-none w-full px-4 py-2 border border-black text-[#000000e6] font-medium rounded"
+                      className="outline-none w-full px-4 py-2 border border-[#b5b2b2e6]  text-[#222020e6] font-medium rounded"
                     >
                       <option value="" className='text-[#000000e6] font-medium'>
                         Day
@@ -660,21 +660,21 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
               </div>
 
               <div className=" mb-1 w-[50%]">
-                <label htmlFor="horoscopeHints" className="block text-black font-semibold mb-1">
+                <label htmlFor="horoscopeHints" className="block text-[#5a5959e6] font-semibold mb-1">
                   Horoscope Hints
                 </label>
                 <input
                   {...register('HororScopeDetails.horoscopeHints')}
                   id="horoscopeHints"
                   type="text"
-                  className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                  className="outline-none w-full px-4 py-2 border  font-medium border-[#b5b2b2e6]  text-[#222020e6] rounded"
                 />
               </div>
               {/* <div className=" mb-1 w-[50%]"></div> */}
               <div className=" mb-1 w-[50%]">
                 <label
                   htmlFor="didi"
-                  className="block text-black font-semibold mb-1"
+                  className="block text-[#5a5959e6] font-semibold mb-1"
                 >
                   Didi
                 </label>
@@ -682,7 +682,7 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
                   {...register('HororScopeDetails.didi')}
                   id="didi"
                   type="text"
-                  className="outline-none w-full px-4 py-2 text-[#000000e6] font-medium border border-black rounded"
+                  className="outline-none w-full px-4 py-2 font-medium border border-[#b5b2b2e6]  text-[#222020e6] rounded"
                 />
                 {errors?.HororScopeDetails?.didi && (
                   <p className="text-red-600">
@@ -694,7 +694,7 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
 
             {/* Rasi Grid and Amsam Grid components */}
             <div>
-              <h4 className="text-xl font-semibold text-black dark:text-white mb-4">
+              <h4 className="text-xl font-semibold text-[#5a5959e6] dark:text-white mb-4">
                 Rasi Grid
               </h4>
               <RasiGridnew
@@ -711,7 +711,7 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
             <br />
 
             <div>
-              <h4 className="text-xl font-semibold text-black dark:text-white mb-4">
+              <h4 className="text-xl font-semibold text-[#5a5959e6] dark:text-white mb-4">
                 Amsam Grid
               </h4>
               <AmsamGridnew

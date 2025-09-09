@@ -181,7 +181,7 @@ const AmsamGridnew: React.FC<AmsamGridProps> = ({ centerLabel, data, onChange, i
             </div>
           ))}
 
-          <div className="row-start-2 amsam-center-box col-start-2 col-end-4 row-end-4 rounded font-semibold border border-gray bg-gray flex justify-center items-center">
+          <div className="row-start-2 amsam-center-box col-start-2 col-end-4 row-end-4 text-[#5a5959e6] rounded font-semibold border border-gray bg-gray flex justify-center items-center">
             {centerLabel}
           </div>
         </div>

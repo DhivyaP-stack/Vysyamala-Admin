@@ -658,12 +658,12 @@ const EditPartnerPreference: React.FC<pageProps> = ({
           <div className="flex flex-col gap-5 pt-2">
             <div className="flex w-full flex-row gap-4">
               <div className="w-full">
-                <label className='text-black font-semibold'>
+                <label className='text-[#5a5959e6] font-semibold'>
                   Height from <span className='text-red-500 text-xl'>*</span>
                 </label>
                 <input
                   {...register('PartnerPreference.heightFrom')}
-                  className="w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                  className="w-full px-4 py-2 border  font-medium border-[#b5b2b2e6]  text-[#222020e6] rounded"
                 />
                 {errors?.PartnerPreference?.heightFrom && (
                   <p className="text-red-600">
@@ -672,12 +672,12 @@ const EditPartnerPreference: React.FC<pageProps> = ({
                 )}
               </div>
               <div className="w-full">
-                <label className='text-black font-semibold' >
+                <label className='text-[#5a5959e6] font-semibold' >
                   Height to <span className='text-red-500 text-xl'>*</span>
                 </label>
                 <input
                   {...register('PartnerPreference.toHeight')}
-                  className="w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                  className="w-full px-4 py-2 border border-[#b5b2b2e6]  text-[#222020e6] font-medium  rounded"
                 />
                 {errors?.PartnerPreference?.toHeight && (
                   <p className="text-red-600">
@@ -686,7 +686,7 @@ const EditPartnerPreference: React.FC<pageProps> = ({
                 )}
               </div>
               <div className="w-full">
-                <label className='text-black font-semibold'>
+                <label className='text-[#5a5959e6] font-semibold'>
                   Age Difference <span className='text-red-500 text-xl'>*</span>
                 </label>
                 <input
@@ -729,7 +729,7 @@ const EditPartnerPreference: React.FC<pageProps> = ({
                     }
                   }}
                   {...register('PartnerPreference.agePreference')}
-                  className="w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                  className="w-full px-4 py-2 border  font-medium border-[#b5b2b2e6]  text-[#222020e6] rounded"
                 />
                 {errors?.PartnerPreference?.agePreference && (
                   <p className="text-red-600">
@@ -741,13 +741,13 @@ const EditPartnerPreference: React.FC<pageProps> = ({
 
             <div className="flex w-full flex-row gap-4">
               <div className="w-full">
-                <label className='text-black font-semibold'>
+                <label className='text-[#5a5959e6] font-semibold'>
                   Chevvai
                   {/* <span className='text-red-500 text-xl'>*</span> */}
                 </label>
                 <select
                   {...register('PartnerPreference.ChevvaiDhosam')}
-                  className="w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                  className="w-full px-4 py-2 border  font-medium border-[#b5b2b2e6]  text-[#222020e6] rounded"
                 >
                   <option value="" className='text-[#000000e6] font-medium'>Select</option>
                   <option value="Yes" className='text-[#000000e6] font-medium'>Yes</option>
@@ -761,12 +761,12 @@ const EditPartnerPreference: React.FC<pageProps> = ({
                 )}
               </div>
               <div className="w-full">
-                <label className='text-black font-semibold'>
+                <label className='text-[#5a5959e6] font-semibold'>
                   Rahu / Ketu
                 </label>
                 <select
                   {...register('PartnerPreference.ragukethu')}
-                  className="w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                  className="w-full px-4 py-2 border  font-medium border-[#b5b2b2e6]  text-[#222020e6] rounded"
                 >
                   <option value="" className='text-[#000000e6] font-medium'>Select</option>
                   <option value="Yes" className='text-[#000000e6] font-medium'>Yes</option>
@@ -780,12 +780,12 @@ const EditPartnerPreference: React.FC<pageProps> = ({
                 )}
               </div>
               <div className="w-full">
-                <label className='text-black font-semibold'>
+                <label className='text-[#5a5959e6] font-semibold'>
                   Foreign Interest
                 </label>
                 <select
                   {...register('PartnerPreference.foreignInterest')}
-                  className="w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                  className="w-full px-4 py-2 border  font-medium border-[#b5b2b2e6]  text-[#222020e6] rounded"
                 >
                   <option value="" className='text-[#000000e6] font-medium'>Select</option>
 
@@ -802,7 +802,7 @@ const EditPartnerPreference: React.FC<pageProps> = ({
             </div>
 
             <div>
-              <h5 className="text-[18px] text-black font-semibold mb-2 cursor-pointer"
+              <h5 className="text-[18px] text-[#5a5959e6] font-semibold mb-2 cursor-pointer"
                 onClick={handleSelectAllFamilyStatus} // Optional: Add select all
               >
                 Family Status
@@ -823,7 +823,7 @@ const EditPartnerPreference: React.FC<pageProps> = ({
                     />
                     <label
                       htmlFor={`family-status-${status.family_status_id}`}
-                      className='text-[#000000e6] font-medium'
+                      className='text-[#5a5959e6] font-medium'
                     >
                       {status.family_status_name}
                     </label>
@@ -839,7 +839,7 @@ const EditPartnerPreference: React.FC<pageProps> = ({
             </div>
 
             <div>
-              <h5 className="text-[18px] text-black font-semibold mb-2 cursor-pointer"
+              <h5 className="text-[18px] text-[#5a5959e6] font-semibold mb-2 cursor-pointer"
                 onClick={handleSelectAllStates}
               >
                 Preferred State
@@ -858,7 +858,7 @@ const EditPartnerPreference: React.FC<pageProps> = ({
                     />
                     <label
                       htmlFor={`state-${state.State_Pref_id}`}
-                      className='text-[#000000e6] font-medium'
+                      className='text-[#5a5959e6] font-medium'
                     >
                       {state.State_name}
                     </label>
@@ -875,7 +875,7 @@ const EditPartnerPreference: React.FC<pageProps> = ({
 
 
             <div className="w-full">
-              <h5 className="text-[18px] text-black  font-semibold mb-2 cursor-pointer"
+              <h5 className="text-[18px] text-[#5a5959e6]  font-semibold mb-2 cursor-pointer"
                 onClick={handleSelectAllProfessions}
               >
                 Profession
@@ -901,7 +901,7 @@ const EditPartnerPreference: React.FC<pageProps> = ({
                     <label
                       htmlFor={`professionn-${profession.Profes_Pref_id}`}
 
-                      className='pl-1 text-[#000000e6] font-medium'
+                      className='pl-1 text-[#5a5959e6] font-medium'
                     >
                       {profession.Profes_name}
                     </label>
@@ -910,7 +910,7 @@ const EditPartnerPreference: React.FC<pageProps> = ({
               </div>
             </div>
             <div>
-              <label className="text-[18px] text-black font-semibold mb-2 cursor-pointer"
+              <label className="text-[18px] text-[#5a5959e6] font-semibold mb-2 cursor-pointer"
                 onClick={handleSelectAllEducation}
               >
                 Education
@@ -935,7 +935,7 @@ const EditPartnerPreference: React.FC<pageProps> = ({
                     <label
                       htmlFor={`educationn-${option.Edu_Pref_id}`}
 
-                      className='pl-1 text-[#000000e6] font-medium'
+                      className='pl-1 text-[#5a5959e6] font-medium'
                     >
                       {option.Edu_name}
                     </label>
@@ -947,7 +947,7 @@ const EditPartnerPreference: React.FC<pageProps> = ({
             {/* Field of Study Checkboxes */}
             <div className="w-full py-1">
               <h5
-                className="text-[18px] text-black font-semibold mb-2 cursor-pointer"
+                className="text-[18px] text-[#5a5959e6] font-semibold mb-2 cursor-pointer"
                 onClick={handleSelectAllFieldOfStudy}
               >
                 Field of Study
@@ -965,7 +965,7 @@ const EditPartnerPreference: React.FC<pageProps> = ({
                     />
                     <label
                       htmlFor={`fieldOfStudy-${option.study_id}`}
-                      className='text-[#000000e6] font-medium'
+                      className='text-[#5a5959e6] font-medium'
                     >
                       {option.study_description}
                     </label>
@@ -981,7 +981,7 @@ const EditPartnerPreference: React.FC<pageProps> = ({
 
             {/* Degree Multi-Select Dropdown */}
             <div className="w-full py-1">
-              <h5 className="text-[18px] text-black font-semibold mb-2">
+              <h5 className="text-[18px] text-[#5a5959e6] font-semibold mb-2">
                 Degree
               </h5>
               <div className="max-w-2xl">
@@ -1007,7 +1007,7 @@ const EditPartnerPreference: React.FC<pageProps> = ({
             </div>
 
             <div>
-              <h5 className="text-[18px] text-black font-semibold mb-2 cursor-pointer"
+              <h5 className="text-[18px] text-[#5a5959e6] font-semibold mb-2 cursor-pointer"
                 onClick={handleSelectAllEditMaritalStatus}
               >
                 Marital Status
@@ -1029,7 +1029,7 @@ const EditPartnerPreference: React.FC<pageProps> = ({
                         handleMaritalStatusChange(status.marital_sts_id)
                       }
                     />
-                    <label htmlFor={`maritalStatuss-${status.marital_sts_id}`} className='pl-1 text-[#000000e6] font-medium'>
+                    <label htmlFor={`maritalStatuss-${status.marital_sts_id}`} className='pl-1 text-[#5a5959e6] font-medium'>
                       {status.marital_sts_name}
                     </label>
                   </div>
@@ -1040,7 +1040,7 @@ const EditPartnerPreference: React.FC<pageProps> = ({
             <div>
               <label
                 htmlFor="AnnualIncome"
-                className="text-[18px] text-black font-semibold mb-2"
+                className="text-[18px] text-[#5a5959e6] font-semibold mb-2"
               >
                 Annual Income
               </label>
@@ -1051,7 +1051,7 @@ const EditPartnerPreference: React.FC<pageProps> = ({
 
                     value={AnnualminIncome}
                     {...register('PartnerPreference.annualIncome')}
-                    className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                    className="outline-none w-full px-4 py-2 border  font-medium border-[#b5b2b2e6]  text-[#222020e6] rounded"
                   >
                     {/* <option value="" disabled>
                   Select  Minimum Annual Income
@@ -1076,7 +1076,7 @@ const EditPartnerPreference: React.FC<pageProps> = ({
                     id="AnnualIncome"
                     value={AnnualmaxIncome}
                     {...register('PartnerPreference.pref_anual_income_max')}
-                    className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                    className="outline-none w-full px-4 py-2 border  font-medium border-[#b5b2b2e6]  text-[#222020e6] rounded"
                   >
                     {/* <option value="" disabled>
                   Select  Maximum Annual Income

@@ -86,12 +86,12 @@ const MatchingStars: React.FC<MatchingStarsProps> = ({
     <div>
       <div className="mb-5">
         <h5
-          className="text-[18px] text-black font-semibold mb-2 cursor-pointer"
+          className="text-[18px] text-[#5a5959e6] font-semibold mb-2 cursor-pointer"
           onClick={handleSelectAll}
         >
           {initialPoruthas}
         </h5>
-        <div className="grid grid-cols-5 grid-rows-1 text-[#000000e6] font-medium justify-between items-center gap-x-3 gap-y-2">
+        <div className="grid grid-cols-5 grid-rows-1 text-[#5a5959e6] font-medium justify-between items-center gap-x-3 gap-y-2">
           {starAndRasi.map((item, index) => (
             <div key={item.id}>
               <Checkbox
