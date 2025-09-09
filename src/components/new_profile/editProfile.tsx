@@ -293,7 +293,8 @@ const EditProfile = () => {
     };
 
     const Name = "BasicDetails"
-    await addProfile(editDataBasicDetails, Name);
+    //await addProfile(editDataBasicDetails, Name);
+    await handleProfileUpdate(editDataBasicDetails, Name);
   };
 
   const handleVisibilitySubmit = async (data: ProfileVisibilityResponse) => {
@@ -384,7 +385,8 @@ const EditProfile = () => {
       };
 
       const Name = "PartnerPreference";
-      await addProfile(editDataPartnerPreference, Name);
+      // await addProfile(editDataPartnerPreference, Name);
+      await handleProfileUpdate(editDataPartnerPreference, Name);
 
     } catch (error) {
       console.error("Error submitting partner preference:", error);
@@ -421,7 +423,8 @@ const EditProfile = () => {
       },
     };
     const Name = "suggestedProfile"
-    await addProfile(editDataSuggestedProfiles, Name);
+    // await addProfile(editDataSuggestedProfiles, Name);
+    await handleProfileUpdate(editDataSuggestedProfiles, Name);
   };
 
   const addProfile = async (editDat: any, Name: string) => {
@@ -528,7 +531,8 @@ const EditProfile = () => {
       },
     }
     const Name = " horoscope details"
-    await addProfile(editDataHoroscopeDetails, Name);
+    // await addProfile(editDataHoroscopeDetails, Name);
+    await handleProfileUpdate(editDataHoroscopeDetails, Name);
   };
 
 

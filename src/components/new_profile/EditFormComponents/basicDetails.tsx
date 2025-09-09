@@ -618,6 +618,7 @@ const BasicDetails: React.FC<formProps> = ({
             )}
 
 
+
             {selectedCountry === '1' && (
               <div className="flex w-full flex-row gap-4">
                 <div className="w-full">
