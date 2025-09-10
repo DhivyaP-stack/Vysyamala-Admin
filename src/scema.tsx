@@ -16,6 +16,16 @@ const getMinDOB = () => {
   return today.toISOString().split('T')[0];
 };
 
+const genderSchema = z
+  .string()
+  .transform((val) => val.toLowerCase()) // convert to lowercase
+  .pipe(
+    z.enum(['male', 'female'], {
+      errorMap: () => ({ message: 'Please select a gender' }),
+    })
+  );
+
+
 export const parentSchema = z.object({
   AddProfileForm: z.object({
     // EmailId: z.string().email("Email address is required"),
@@ -51,9 +61,10 @@ export const parentSchema = z.object({
 
     //Password: z.string().optional(),
     Profile_name: z.string().min(1, "Name is required"),
-    Gender: z.enum(["male", "female"], {
-      errorMap: () => ({ message: "Please select a gender" }),
-    }),
+    // Gender: z.enum(["male", "female"], {
+    //   errorMap: () => ({ message: "Please select a gender" }),
+    // }),
+    Gender: genderSchema,
     Mobile_no: z
       .string().min(1, 'Mobile Number is required'),
     Alt_Mobile_Number: z.string().optional(),

@@ -178,7 +178,7 @@
 //     const [whatsappFormat, setWhatsappFormat] = useState<string>('');
 //     const [iswhatsappProfile, setIsWhatsappProfile] = useState<boolean>(false);
 //     const navigate = useNavigate();
-    
+
 //     useEffect(() => {
 //         const fetchSearchData = async () => {
 //             // if (!profileID) return;
@@ -1145,37 +1145,37 @@
 
 
 import { useState } from 'react';
- 
 // import SearchProfileResults from './CommonSearchTableAndFilter/SearchProfileResults';
 // import SearchProfileFilters from './CommonSearchTableAndFilter/SearchProfileFilters';
 import No_Image_Available from '../images/No_Image_Available .jpg';
 import SearchProfileFilters from './CommonSearchTableAndFilter/SearchProfileFilters';
-import SearchProfileResults from './CommonSearchTableAndFilter/SearchProfileResults';
+import SearchProfileResults from './CommonSearchTableAndFilter/SearchProfileResults'; 
+
 const SearchProfile = () => {
   const [showResults, setShowResults] = useState(false);
   const [filters, setFilters] = useState<any>(null);
   const [loading, setLoading] = useState(false);
- 
+
   const handleFilterSubmit = (filterData: any) => {
     setFilters(filterData);
     setShowResults(true);
   };
- 
+
   const handleBackToFilters = () => {
     setShowResults(false);
     setFilters(null);
   };
- 
+
   return (
     <div>
       {!showResults ? (
         <SearchProfileFilters onFilterSubmit={handleFilterSubmit} loading={loading} />
       ) : (
-         <SearchProfileResults filters={filters} onBack={handleBackToFilters} No_Image_Available={No_Image_Available}/>
-       
+        <SearchProfileResults filters={filters} onBack={handleBackToFilters} No_Image_Available={No_Image_Available} />
+
       )}
     </div>
   );
 };
- 
+
 export default SearchProfile;

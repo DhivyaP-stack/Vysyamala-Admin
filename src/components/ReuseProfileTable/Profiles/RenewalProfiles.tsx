@@ -98,6 +98,7 @@ interface RenewalProfile {
     status: string;
     plan_name: string;
     Last_login_date: string;
+    degree:string;
 }
 
 
@@ -105,7 +106,8 @@ const columns: Column[] = [
     { id: 'ProfileId', label: 'Profile ID', minWidth: 120 },
     { id: 'Profile_name', label: 'Name', minWidth: 170 },
     { id: 'years', label: 'Age', minWidth: 80 },
-    { id: 'family_status', label: 'Family Status', minWidth: 80 },
+    { id: 'degree', label: 'Degree', minWidth: 260 },
+    { id: 'family_status', label: 'Family Status', minWidth: 190 },
     // { id: 'DateOfJoin', label: 'Date of Joining', minWidth: 150 },
     { id: 'DateOfJoin', label: 'Date of Registration', minWidth: 150 },
     { id: 'membership_enddate', label: 'End Date', minWidth: 180 },

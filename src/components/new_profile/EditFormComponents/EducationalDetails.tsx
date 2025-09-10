@@ -791,7 +791,7 @@ const EducationalDetails: React.FC<formProps> = ({
                     id="companyName"
                     type="text"
                     {...register("EducationDetails.company_name")}
-                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
+                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-[#b5b2b2e6] rounded"
                     placeholder="Enter company name"
                   />
                 </div>
@@ -807,7 +807,7 @@ const EducationalDetails: React.FC<formProps> = ({
                     id="designation"
                     type="text"
                     {...register("EducationDetails.designation")}
-                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
+                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-[#b5b2b2e6] rounded"
                     placeholder="Enter designation"
                   />
                 </div>
@@ -822,7 +822,7 @@ const EducationalDetails: React.FC<formProps> = ({
                   <textarea
                     id="professionDetail"
                     {...register("EducationDetails.profession_details")}
-                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
+                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-[#b5b2b2e6] rounded"
                     placeholder="Enter profession details"
                   />
                 </div>
@@ -841,7 +841,7 @@ const EducationalDetails: React.FC<formProps> = ({
                     id="BusinessName"
                     type="text"
                     {...register("EducationDetails.business_name")}
-                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
+                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-[#b5b2b2e6] rounded"
                     placeholder="Enter Business name"
                   />
                 </div>
@@ -857,7 +857,7 @@ const EducationalDetails: React.FC<formProps> = ({
                     id="BusinessAdress"
                     type="text"
                     {...register("EducationDetails.business_address")}
-                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
+                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-[#b5b2b2e6] rounded"
                     placeholder="Enter Business Adress"
                   />
                 </div>
@@ -872,7 +872,7 @@ const EducationalDetails: React.FC<formProps> = ({
                   <textarea
                     id="NatureofBusiness"
                     {...register("EducationDetails.nature_of_business")}
-                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
+                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-[#b5b2b2e6] rounded"
                     placeholder="Enter Nature of Business"
                   />
                 </div>
@@ -892,7 +892,7 @@ const EducationalDetails: React.FC<formProps> = ({
                     id="companyName"
                     type="text"
                     {...register("EducationDetails.company_name")}
-                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
+                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-[#b5b2b2e6] rounded"
                     placeholder="Enter company name"
                   />
                 </div>
@@ -908,7 +908,7 @@ const EducationalDetails: React.FC<formProps> = ({
                     id="designation"
                     type="text"
                     {...register("EducationDetails.designation")}
-                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
+                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-[#b5b2b2e6] rounded"
                     placeholder="Enter designation"
                   />
                 </div>
@@ -923,7 +923,7 @@ const EducationalDetails: React.FC<formProps> = ({
                   <textarea
                     id="professionDetail"
                     {...register("EducationDetails.profession_details")}
-                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
+                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-[#b5b2b2e6] rounded"
                     placeholder="Enter profession details"
                   />
                 </div>
@@ -938,7 +938,7 @@ const EducationalDetails: React.FC<formProps> = ({
                     id="BusinessName"
                     type="text"
                     {...register("EducationDetails.business_name")}
-                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
+                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-[#b5b2b2e6] rounded"
                     placeholder="Enter Business name"
                   />
                 </div>
@@ -954,7 +954,7 @@ const EducationalDetails: React.FC<formProps> = ({
                     id="BusinessAdress"
                     type="text"
                     {...register("EducationDetails.business_address")}
-                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
+                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-[#b5b2b2e6] rounded"
                     placeholder="Enter Business Adress"
                   />
                 </div>
@@ -969,7 +969,7 @@ const EducationalDetails: React.FC<formProps> = ({
                   <textarea
                     id="NatureofBusiness"
                     {...register("EducationDetails.nature_of_business")}
-                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
+                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-[#b5b2b2e6] rounded"
                     placeholder="Enter Nature of Business"
                   />
                 </div>
@@ -989,7 +989,7 @@ const EducationalDetails: React.FC<formProps> = ({
                     id="companyName"
                     type="text"
                     {...register("EducationDetails.company_name")}
-                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
+                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-[#b5b2b2e6] rounded"
                     placeholder="Enter company name"
                   />
                 </div>
@@ -1005,7 +1005,7 @@ const EducationalDetails: React.FC<formProps> = ({
                     id="designation"
                     type="text"
                     {...register("EducationDetails.designation")}
-                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
+                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-[#b5b2b2e6] rounded"
                     placeholder="Enter designation"
                   />
                 </div>
@@ -1020,27 +1020,27 @@ const EducationalDetails: React.FC<formProps> = ({
                   <textarea
                     id="professionDetail"
                     {...register("EducationDetails.profession_details")}
-                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-ashBorder rounded"
+                    className="outline-none w-full text-placeHolderColor px-4 py-[8.5px] border border-[#b5b2b2e6] rounded"
                     placeholder="Enter profession details"
                   />
                 </div>
               </div>
             )}
           </div>
-          {!(profession === 3 || profession === 4) && (<>    <h4 className="text-xl font-semibold text-black dark:text-white">
+          {!(profession === 3 || profession === 4) && (<>    <h4 className="text-xl font-semibold text-[#5a5959e6] dark:text-white">
             Work Location
           </h4>
 
             <div className="flex flex-row gap-4">
               <div className="w-2/4">
-                <label className="block text-black font-semibold mb-1">
+                <label className="block text-[#5a5959e6] font-semibold mb-1">
                   Country
                   {/* <span className="text-red-500">*</span> */}
                 </label>
                 <select
                   value={selectedWorkCountry}
                   {...register('EducationDetails.work_country')}
-                  className="outline-none w-full px-4 py-2 border border-black text-black font-semibold rounded"
+                  className="outline-none w-full px-4 py-2 border border-[#b5b2b2e6] text-[#222020e6] font-semibold rounded"
                   onChange={(e) => {
                     const value = e.target.value;
                     // Set the value for the country field itself
@@ -1052,9 +1052,9 @@ const EducationalDetails: React.FC<formProps> = ({
                     setValue('EducationDetails.work_city', '');
                   }}
                 >
-                  <option value="">Select your Country </option>
+                  <option value="" className='text-[#000000e6]'>Select your Country </option>
                   {WorkCountry?.map((option: Country) => (
-                    <option key={option.country_id} value={option.country_id} className='text-[#000000e6] font-medium'>
+                    <option key={option.country_id} value={option.country_id} className='text-[#222020e6] font-medium'>
                       {option.country_name}
                     </option>
                   ))}
@@ -1069,7 +1069,7 @@ const EducationalDetails: React.FC<formProps> = ({
                 <div className="w-2/4">
                   {Number(selectedWorkCountry) > 1 ? (
                     <div>
-                      <label className="block text-black font-semibold mb-1">
+                      <label className="block text-[#5a5959e6] font-semibold mb-1">
                         City
                         {/* <span className="text-red-500">*</span> */}
                       </label>
@@ -1079,7 +1079,7 @@ const EducationalDetails: React.FC<formProps> = ({
                         {...register('EducationDetails.work_city', {
                           required: 'City is required',
                         })}
-                        className="outline-none w-full px-4 py-2 border text-[#000000e6] font-semibold border-black rounded"
+                        className="outline-none w-full px-4 py-2 border  text-[#222020e6] font-semibold border-[#b5b2b2e6] rounded"
                         placeholder="Enter your city"
                       />
                       {errors?.EducationDetails?.work_city && (
@@ -1096,14 +1096,14 @@ const EducationalDetails: React.FC<formProps> = ({
                 <div className="w-2/4">
                   {selectedWorkCountry === '1' && (
                     <div className="w-full">
-                      <label className="block text-black font-semibold mb-1">
+                      <label className="block text-[#5a5959e6] font-semibold mb-1">
                         State (Based on country selection){' '}
                         {/* <span className="text-red-500">*</span> */}
                       </label>
                       <select
                         value={selectedState}
                         {...register('EducationDetails.work_state')}
-                        className="outline-none w-full px-4 text-[#000000e6] font-semibold py-2 border border-black rounded"
+                        className="outline-none w-full px-4 text-[#222020e6] font-semibold py-2 border border-[#b5b2b2e6] rounded"
                         onChange={(e) => {
                           const value = e.target.value;
                           // Set the value for the state field
@@ -1118,7 +1118,7 @@ const EducationalDetails: React.FC<formProps> = ({
                           Select State
                         </option>
                         {WorkState?.map((option: State) => (
-                          <option key={option.state_id} value={option.state_id} className='text-[#000000e6] font-medium'>
+                          <option key={option.state_id} value={option.state_id} className='text-[#222020e6] font-medium'>
                             {option.state_name}
                           </option>
                         ))}
@@ -1138,7 +1138,7 @@ const EducationalDetails: React.FC<formProps> = ({
               {selectedWorkCountry === '1' && (
                 <div className="flex w-full flex-row gap-4">
                   <div className="w-full">
-                    <label className="block text-black  mb-1 text-[#000000e6] font-semibold">
+                    <label className="block   mb-1 text-[#5a5959e6] font-semibold">
                       District
                     </label>
                     {Number(selectedState) > 7 ? (
@@ -1147,7 +1147,7 @@ const EducationalDetails: React.FC<formProps> = ({
                           type="text"
                           value={selecteddistrict || ''}
                           {...register('EducationDetails.work_district')}
-                          className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded"
+                          className="outline-none w-full px-4 py-2 border text-[#222020e6] font-medium border-[#b5b2b2e6] rounded"
                           placeholder="Enter your District"
                           onChange={(e) => {
                             setValue('EducationDetails.work_district', e.target.value);
@@ -1162,7 +1162,7 @@ const EducationalDetails: React.FC<formProps> = ({
                         value={selecteddistrict || ''}
                         {...register('EducationDetails.work_district')}
                         // ... other props
-                        className="outline-none w-full px-4 text-[#000000e6] font-semibold py-2 border border-black rounded"
+                        className="outline-none w-full px-4 text-[#222020e6] font-semibold py-2 border border-[#b5b2b2e6] rounded"
                         onChange={(e) => {
                           const value = e.target.value;
                           setValue('EducationDetails.work_district', value);
@@ -1198,7 +1198,7 @@ const EducationalDetails: React.FC<formProps> = ({
 
                   {Number(selectedState) > 7 ? (
                     <div className="w-full">
-                      <label className="block text-black font-medium mb-1">
+                      <label className="block text-[#5a5959e6] font-medium mb-1">
                         City
                       </label>
                       <input
@@ -1206,7 +1206,7 @@ const EducationalDetails: React.FC<formProps> = ({
                         {...register('EducationDetails.work_city', {
                           required: 'City is required',
                         })}
-                        className="outline-none w-full px-4 py-2 border border-black rounded"
+                        className="outline-none w-full px-4 py-2 border border-[#b5b2b2e6] rounded"
                         placeholder="Enter your city"
                       />
                       {errors?.EducationDetails?.work_city && (
@@ -1222,14 +1222,14 @@ const EducationalDetails: React.FC<formProps> = ({
                         <div className="flex items-center gap-0">
                           <label
                             htmlFor="city"
-                            className="block mb-1 text-black font-semibold"
+                            className="block mb-1 text-[#5a5959e6] font-semibold"
                           >
                             City
                             {/* <span className="text-red-500">*</span> */}
                           </label>
                           <div className="relative inline-block ml-2 group">
                             <AiOutlineInfoCircle className="text-gray-500 cursor-pointer ml-2" />
-                            <div className="absolute hidden group-hover:flex flex-col bg-white border border-ashSecondary rounded shadow-md p-2 w-48 z-10">
+                            <div className="absolute hidden group-hover:flex flex-col bg-white border border-[#b5b2b2e6] rounded shadow-md p-2 w-48 z-10">
                               <p className="text-sm text-black">
                                 Select your city from the list. If your city is
                                 not listed, select Others.
@@ -1243,7 +1243,7 @@ const EducationalDetails: React.FC<formProps> = ({
                           <div>
                             <select
                               value={selectedCity}
-                              className="outline-none w-full px-4 py-2 border border-black rounded text-[#000000e6] font-medium"
+                              className="outline-none w-full px-4 py-2 border border-[#b5b2b2e6] rounded text-[#000000e6] font-medium"
                               {...register('EducationDetails.work_city', {
                                 required: 'City is required',
                               })}
@@ -1261,7 +1261,7 @@ const EducationalDetails: React.FC<formProps> = ({
                             >
                               <option value="" className='text-[#000000e6] font-medium'>Select City</option>
                               {City?.map((option: City) => (
-                                <option key={option.city_id} value={option.city_name} className='text-[#000000e6] font-medium'>
+                                <option key={option.city_id} value={option.city_name} className='text-[#222020e6] font-medium'>
                                   {option.city_name}
                                 </option>
                               ))}
@@ -1271,7 +1271,7 @@ const EducationalDetails: React.FC<formProps> = ({
                             {showCityTextInput && (
                               <input
                                 type="text"
-                                className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-black rounded mt-2"
+                                className="outline-none w-full px-4 py-2 border text-[#000000e6] font-medium border-[#b5b2b2e6] rounded mt-2"
                                 {...register('EducationDetails.work_city', {
                                   required: 'City is required',
                                 })}
@@ -1283,7 +1283,7 @@ const EducationalDetails: React.FC<formProps> = ({
                         ) : (
                           <input
                             type="text"
-                            className="outline-none w-full px-4 py-2 border border-black text-[#000000e6] font-medium rounded"
+                            className="outline-none w-full px-4 py-2 border border-[#b5b2b2e6] text-[#000000e6] font-medium rounded"
                             {...register('EducationDetails.work_city', {
                               required: 'City is required',
                             })}
@@ -1345,12 +1345,12 @@ const EducationalDetails: React.FC<formProps> = ({
               <div className="w-2/4">
                 <div className="flex w-full flex-row gap-4">
                   <div className="w-full">
-                    <label className="block text-black font-semibold  mb-1">
+                    <label className="block text-[#5a5959e6] font-semibold  mb-1">
                       Career Plans / Notes
                     </label>
                     <textarea
                       {...register('EducationDetails.CareerPlans')}
-                      className="outline-none w-full px-4 py-2 h-10.5 border text-[#000000e6] font-medium border-black rounded"
+                      className="outline-none w-full px-4 py-2 h-10.5 border text-[#000000e6] font-medium border-[#b5b2b2e6] rounded"
                     ></textarea>
                     {errors?.EducationDetails?.CareerPlans && (
                       <p className="text-red-600">

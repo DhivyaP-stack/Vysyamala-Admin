@@ -228,9 +228,9 @@ const BasicDetails: React.FC<formProps> = ({
       setValue('BasicDetail.Mobile_no', formattedMobileNumber || '');
       // setValue('BasicDetail.Mobile_no', EditData[0].Mobile_no);
       setValue('BasicDetail.Email', EditData[0].EmailId || '');
-      const formattedMobileAltNumber = `${EditData[0].Profile_alternate_mobile}`
+      //const formattedMobileAltNumber = `${EditData[0].Profile_alternate_mobile}`
       setValue(
-        'BasicDetail.Alt_Mobile_Number', formattedMobileAltNumber || '');
+        'BasicDetail.Alt_Mobile_Number', EditData[0].Profile_alternate_mobile || '');
       //   setValue('BasicDetail.Password', EditData[0].Password);
       setValue(
         'BasicDetail.marital_status',
@@ -246,10 +246,10 @@ const BasicDetails: React.FC<formProps> = ({
       setValue('BasicDetail.status', EditData[0].status || '' || null);
       setValue('BasicDetail.Profile_height', EditData[0].Profile_height || '');
 
-      const formattedWhatsupNumber = `${EditData[0].Profile_whatsapp}`
+      //const formattedWhatsupNumber = `${EditData[0].Profile_whatsapp}`
       setValue(
         'BasicDetail.WhatsAppNumber',
-        formattedWhatsupNumber || '');
+        EditData[0].Profile_whatsapp || '');
       setValue('BasicDetail.pincode', EditData[0].Profile_pincode || '' || null);
       setAddonPackagecheck(EditData[0].Addon_package || '' || null)
 

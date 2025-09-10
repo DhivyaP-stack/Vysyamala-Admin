@@ -6,13 +6,25 @@ const getMinDOB = () => {
   return today.toISOString().split('T')[0];
 };
 
+//Gender validation
+const genderSchema = z
+  .string()
+  .transform((val) => val.toLowerCase()) // convert to lowercase
+  .pipe(
+    z.enum(['male', 'female'], {
+      errorMap: () => ({ message: 'Please select a gender' }),
+    })
+  );
+
 export const EditScheemaBasicDetails = z.object({
   BasicDetail: z.object({
     Name: z.string().min(1, 'Name is required'),
     Profile_height: z.string().optional(),
-    Gender: z.enum(['male', 'female'], {
-      errorMap: () => ({ message: 'Please select a gender' }),
-    }),
+    // Gender: z.enum(['male', 'female'], {
+    //   errorMap: () => ({ message: 'Please select a gender' }),
+    // }),
+    Gender: genderSchema,
+    //  Gender: z.string().min(1, 'Gender is required'),
     Mobile_no: z
       .string().min(1, 'Mobile Number is required'),
     // .min(10, { message: 'Must be a valid mobile number' })
@@ -48,31 +60,31 @@ export const EditScheemaBasicDetails = z.object({
     WhatsAppNumber: z.string().optional(),
   })
     .refine(
-    (data) => {
-      // If country = 1, then state is required
-      if (data.country === '1') {
-        return !!data.state && data.state.trim().length > 0;
+      (data) => {
+        // If country = 1, then state is required
+        if (data.country === '1') {
+          return !!data.state && data.state.trim().length > 0;
+        }
+        return true;
+      },
+      {
+        message: 'State is required for the selected country.',
+        path: ['state'],
       }
-      return true;
-    },
-    {
-      message: 'State is required for the selected country.',
-      path: ['state'],
-    }
-  )
-  .refine(
-    (data) => {
-      // If country = 1, then district is required
-      if (data.country === '1') {
-        return !!data.district && data.district.trim().length > 0;
+    )
+    .refine(
+      (data) => {
+        // If country = 1, then district is required
+        if (data.country === '1') {
+          return !!data.district && data.district.trim().length > 0;
+        }
+        return true;
+      },
+      {
+        message: 'District is required for the selected country.',
+        path: ['district'],
       }
-      return true;
-    },
-    {
-      message: 'District is required for the selected country.',
-      path: ['district'],
-    }
-  ),
+    ),
 })
 
 export interface BasicDetailss {

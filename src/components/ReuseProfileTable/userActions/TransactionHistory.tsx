@@ -123,27 +123,27 @@ const TransactionHistory: React.FC = () => {
   };
 
   const columns: Column[] = [
-    { id: 'ContentId', label: 'Content ID', minWidth: 100, align: 'center' },
-    { id: 'ProfileId', label: 'Profile ID', minWidth: 120, align: 'center' },
+    // { id: 'ContentId', label: 'Content ID', minWidth: 100, align: 'center' },
+    { id: 'ProfileId', label: 'Profile ID', minWidth: 120, align: 'left' },
     { id: 'Profile_name', label: 'Profile Name', minWidth: 150 },
-    { id: 'Gender', label: 'Gender', minWidth: 100, align: 'center' },
+    { id: 'Gender', label: 'Gender', minWidth: 100, align: 'left' },
     { id: 'Mobile_no', label: 'Mobile No', minWidth: 130 },
     { id: 'EmailId', label: 'Email', minWidth: 180 },
-    { id: 'Plan_id', label: 'Plan ID', minWidth: 80, align: 'center' },
+    // { id: 'Plan_id', label: 'Plan ID', minWidth: 80, align: 'center' },
     { id: 'plan_name', label: 'Plan Name', minWidth: 150 },
-    { id: 'status', label: 'Status', minWidth: 120, align: 'center' },
-    { id: 'transaction_id', label: 'Transaction ID', minWidth: 120, align: 'center' },
+    { id: 'status', label: 'Status', minWidth: 120, align: 'left' },
+    // { id: 'transaction_id', label: 'Transaction ID', minWidth: 120, align: 'center' },
     { id: 'order_id', label: 'Order ID', minWidth: 180 },
-    { 
-      id: 'created_at', 
-      label: 'Created At', 
+    {
+      id: 'created_at',
+      label: 'Created At',
       minWidth: 120,
       align: 'center',
       format: formatDate
     },
-    { id: 'amount', label: 'Amount', minWidth: 100, align: 'right' },
-    { id: 'payment_type', label: 'Payment Type', minWidth: 120, align: 'center' },
-    { id: 'profile_status', label: 'Profile Status', minWidth: 150, align: 'center' },
+    { id: 'amount', label: 'Amount', minWidth: 100, align: 'left' },
+    { id: 'payment_type', label: 'Payment Type', minWidth: 120, align: 'left' },
+    { id: 'profile_status', label: 'Profile Status', minWidth: 150, align: 'left' },
   ];
 
   const descendingComparator = (a: any, b: any, orderBy: string) => {
@@ -192,6 +192,9 @@ const TransactionHistory: React.FC = () => {
               value={fromDate}
               onChange={handleDateChange}
               InputLabelProps={{ shrink: true }}
+              inputProps={{
+                max: new Date().toISOString().split('T')[0]
+              }}
             />
             <TextField
               label="To Date"
@@ -270,7 +273,7 @@ const TransactionHistory: React.FC = () => {
                       {columns.map((column) => {
                         const value = row[column.id];
                         const formattedValue = column.format ? column.format(value) : value;
-                        
+
                         return (
                           <TableCell
                             sx={{ whiteSpace: 'nowrap' }}
