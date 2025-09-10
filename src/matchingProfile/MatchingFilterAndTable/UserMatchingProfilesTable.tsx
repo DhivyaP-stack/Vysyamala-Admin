@@ -12,42 +12,81 @@ import { GoUnverified } from 'react-icons/go';
 import { NotifyError, NotifySuccess } from '../../common/Toast/ToastMessage';
 import { userMatchingProfiles, userMatchingProfilesFilterListMatch, userMatchingProfilesPrintProfile, userMatchingProfilesSendEmail, userMatchingProfilesWhatsapp } from '../../api/apiConfig';
 
+interface ActionScore {
+    score: number;
+    actions: any[];
+}
+
+
 interface UserMatchingProfilesProps {
-    action_score: any;
     profile_id: string;
     profile_name: string;
     profile_img: string;
     profile_age: number;
-    profile_gender: string;
-    height: string;
-    weight: string;
+    plan: string;
+    family_status: string;
     degree: string;
-    profession: string;
+    anual_income: string;
     star: string;
-    location: number;
+    profession: string;
+    city: string;
+    state: string;
+    work_place: string;
+    designation: string;
+    company_name: string;
+    father_occupation: string;
+    suya_gothram: string;
+    chevvai: string;
+    raguketu: string;
     photo_protection: number;
     matching_score: number;
     wish_list: number;
     verified: number;
+    action_score: ActionScore;
+    dateofjoin: string;
 }
+// const columns = [
+//     { id: "select", label: "Select" },
+//     { id: 'profile_img', label: 'Image' },
+//     { id: 'profile_id', label: 'Profile ID' },
+//     { id: 'profile_name', label: 'Name' },
+//     { id: 'profile_age', label: 'Age' },
+//     { id: 'profile_gender', label: 'Gender' },
+//     { id: 'height', label: 'Height' },
+//     { id: 'weight', label: 'Weight' },
+//     { id: 'degree', label: 'Degree' },
+//     { id: 'profession', label: 'Profession' },
+//     { id: 'location', label: 'Location' },
+//     { id: 'star', label: 'Star' },
+//     { id: 'matching_score', label: 'Matching Score' },
+//     { id: 'action_score', label: 'Action Score' },
+//     { id: 'verified', label: 'Verified' },
+// ];
 
 const columns = [
     { id: "select", label: "Select" },
     { id: 'profile_img', label: 'Image' },
     { id: 'profile_id', label: 'Profile ID' },
+    { id: 'work_place', label: 'Work Place' },
     { id: 'profile_name', label: 'Name' },
     { id: 'profile_age', label: 'Age' },
-    { id: 'profile_gender', label: 'Gender' },
-    { id: 'height', label: 'Height' },
-    { id: 'weight', label: 'Weight' },
+    { id: 'star', label: 'Star' },
     { id: 'degree', label: 'Degree' },
     { id: 'profession', label: 'Profession' },
-    { id: 'location', label: 'Location' },
-    { id: 'star', label: 'Star' },
-    { id: 'matching_score', label: 'Matching Score' },
+    { id: 'company_name', label: 'Company Name /Buisness Name' },
+    { id: 'designation', label: 'Designation /Nature of Buisness' },
+    { id: 'anual_income', label: 'Annual Income' },
+    { id: 'state', label: 'State' },
+    { id: 'city', label: 'City' },
+    { id: 'family_status', label: 'Family Status' },
+    { id: 'father_occupation', label: 'Father Business' },
+    { id: 'suya_gothram', label: 'Suya Gothram' },
+    { id: 'chevvai', label: 'Admin Chevvai' },
+    { id: 'raguketu', label: 'Admin Ragu/Kethu' },
+    { id: 'dateofjoin', label: 'Registration Date' },
     { id: 'action_score', label: 'Action Score' },
-    { id: 'verified', label: 'Verified' },
 ];
+
 
 interface UserMatchingProfilesTableProps {
     profileID: string | null;
@@ -119,7 +158,7 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
                         String(profileID),
                         currentPage + 1,
                         itemsPerPage,
-                        "", "", "", "", 0, 0, 0, 0, "", 0, 0, 0, "", 0, 0, "", "", "", "", "", "", "", "","", profileType
+                        "", "", "", "", 0, 0, 0, 0, "", 0, 0, 0, "", 0, 0, "", "", "", "", "", "", "", "", "", profileType
                     );
                 }
 
@@ -473,24 +512,31 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
                                             >
                                                 {row.profile_id}
                                             </TableCell>
+                                            <TableCell>{row.work_place}</TableCell>
                                             <TableCell>{row.profile_name}</TableCell>
                                             <TableCell>{row.profile_age}</TableCell>
-                                            <TableCell>{row.profile_gender}</TableCell>
-                                            <TableCell>{row.height}</TableCell>
-                                            <TableCell>{row.weight || 'N/A'}</TableCell>
+                                            <TableCell>{row.star}</TableCell>
                                             <TableCell>{row.degree}</TableCell>
                                             <TableCell>{row.profession}</TableCell>
-                                            <TableCell>{row.location}</TableCell>
-                                            <TableCell>{row.star}</TableCell>
-                                            <TableCell>{row.matching_score}</TableCell>
+                                            <TableCell>{row.company_name}</TableCell>
+                                            <TableCell>{row.designation}</TableCell>
+                                            <TableCell>{row.anual_income}</TableCell>
+                                            <TableCell>{row.state}</TableCell>
+                                            <TableCell>{row.city}</TableCell>
+                                            <TableCell>{row.family_status}</TableCell>
+                                            <TableCell>{row.father_occupation}</TableCell>
+                                            <TableCell>{row.suya_gothram}</TableCell>
+                                            <TableCell>{row.chevvai}</TableCell>
+                                            <TableCell>{row.raguketu}</TableCell>
+                                            <TableCell>{row.dateofjoin ? new Date(row.dateofjoin).toLocaleDateString() : "-"}</TableCell>
                                             <TableCell>{row.action_score?.score ?? "-"}</TableCell>
-                                            <TableCell>
+                                            {/* <TableCell>
                                                 {row.verified === 0 ? (
                                                     <MdVerified className="text-green-600" />
                                                 ) : (
                                                     <GoUnverified className="text-red-600" />
                                                 )}
-                                            </TableCell>
+                                            </TableCell> */}
                                         </TableRow>
                                     ))
                                 ) : (

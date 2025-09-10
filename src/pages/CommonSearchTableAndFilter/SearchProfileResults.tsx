@@ -113,7 +113,10 @@ const SearchProfileResults = ({ filters, onBack, No_Image_Available }: SearchPro
           String(filters.chevvaiDhosam),
           String(filters.profileName),
           String(filters.fatherAlive),
-          String(filters.motherAlive)
+          String(filters.motherAlive),
+          String(filters.mobileNo),    // Add mobile_no
+          String(filters.dob),         // Add profile_dob
+          String(filters.selectedProfileStatus) // Add status
         );
 
         setMatchingData(MatchingprofileFilter.profiles || []);
