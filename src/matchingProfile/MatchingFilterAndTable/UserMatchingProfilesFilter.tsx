@@ -94,7 +94,8 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
     const [highestEducation, setHighestEducation] = useState<HighestEducation[]>([]);
     const [state, setState] = useState<State[]>([]);
     const [cities, setCities] = useState<City[]>([]);
-    const [selectedState, setSelectedState] = useState<string>('');
+    // const [selectedState, setSelectedState] = useState<string>('');
+    const [selectedStates, setSelectedStates] = useState<String[]>([]);
     const [complexion, setComplexion] = useState<Complexion[]>([]);
     const [membership, setMembership] = useState<Membership[]>([]);
     const [familyStatus, setFamilyStatus] = useState<FamilyStatus[]>([]);
@@ -124,6 +125,8 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
     const [selectedFieldsOfStudy, setSelectedFieldsOfStudy] = useState<String[]>([]);
     const [degrees, setDegrees] = useState<Degree[]>([]);
     const [selectedDegrees, setSelectedDegrees] = useState<String[]>([]);
+    const [fromDateOfJoin, setFromDateOfJoin] = useState<string>('');
+    const [toDateOfJoin, setToDateOfJoin] = useState<string>('');
 
     // Add this query to fetch profile details
     const { data: profileDetails } = useQuery({
@@ -267,6 +270,14 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
         );
     };
 
+    const handleStateChange = (stateId: String) => {
+        setSelectedStates(prev =>
+            prev.includes(stateId)
+                ? prev.filter(id => id !== stateId)
+                : [...prev, stateId]
+        );
+    };
+
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
@@ -290,7 +301,7 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
             minAnnualIncome,
             maxAnnualIncome,
             foreignInterest,
-            selectedState,
+            selectedState: selectedStates.join(","), // Updated this line
             selectedCity,
             selectedMembership: String(selectedMembership),
             hasphotos,
@@ -301,7 +312,9 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
             chevvaiDhosam,
             destRasiIds: prefPoruthamStarRasi,
             ageDifference,
-            prefPoruthamStarRasi
+            prefPoruthamStarRasi,
+            fromDateOfJoin,
+            toDateOfJoin,
         };
 
         onFilterSubmit(filters);
@@ -346,7 +359,10 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
                 }
 
                 // Set state preference
-                setSelectedState(partner_pref_details.pref_state || '');
+                //setSelectedState(partner_pref_details.pref_state || '');
+                if (partner_pref_details.pref_state) {
+                    setSelectedStates(partner_pref_details.pref_state.split(','));
+                }
 
                 // Set dosham preferences
                 setChevvaiDhosam(partner_pref_details.pref_chevvai || '');
@@ -654,6 +670,32 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
                             }}
                         />
                     </div>
+                    <div className="flex gap-6 py-4">
+                        {/* From Date */}
+                        <div>
+                            <h2 className="text-lg text-black text-left font-semibold mb-2">From Date</h2>
+                            <input
+                                type="date"
+                                value={fromDateOfJoin}
+                                onChange={(e) => setFromDateOfJoin(e.target.value)}
+                                max={new Date().toISOString().split("T")[0]} // ⛔ disables future dates
+                                className="border border-black rounded px-3 py-2 w-72 outline-none"
+                            />
+                        </div>
+
+                        {/* To Date */}
+                        <div>
+                            <h2 className="text-lg text-left text-black font-semibold mb-2">To Date</h2>
+                            <input
+                                type="date"
+                                value={toDateOfJoin}
+                                onChange={(e) => setToDateOfJoin(e.target.value)}
+                                max={new Date().toISOString().split("T")[0]} // ⛔ disables future dates F
+                                className="border border-black rounded px-3 py-2 w-72 outline-none"
+                            />
+                        </div>
+                    </div>
+
 
                     {/* Profession */}
                     <div className="py-4 col-span-full">
@@ -825,9 +867,9 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
                     </div>
 
                     {/* State & City */}
-                    <div className="py-4 col-span-full">
+                    {/* <div className="py-4 col-span-full">
                         <div className="w-fit text-start">
-                            <h2 className="text-lg text-black font-semibold mb-2">State and City</h2>
+                            <h2 className="text-lg text-black font-semibold mb-2">state and city</h2>
                         </div>
                         <div className="flex items-center space-x-5">
                             <div>
@@ -862,6 +904,29 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
                                     ))}
                                 </select>
                             </div>
+                        </div>
+                    </div> */}
+                    {/* Preferred State - Replace the dropdown with this */}
+                    <div className="py-4 col-span-full">
+                        <div className="w-fit text-start">
+                            <h2 className="text-lg text-black font-semibold mb-2">Preferred State</h2>
+                        </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
+                            {state.map((stateOption) => (
+                                <div key={stateOption.State_Pref_id} className="flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        id={`state-${stateOption.State_Pref_id}`}
+                                        value={stateOption.State_Pref_id.toString()}
+                                        className="mr-2"
+                                        checked={selectedStates.includes(stateOption.State_Pref_id.toString())}
+                                        onChange={() => handleStateChange(stateOption.State_Pref_id.toString())}
+                                    />
+                                    <label htmlFor={`state-${stateOption.State_Pref_id}`} className="text-sm">
+                                        {stateOption.State_name}
+                                    </label>
+                                </div>
+                            ))}
                         </div>
                     </div>
 

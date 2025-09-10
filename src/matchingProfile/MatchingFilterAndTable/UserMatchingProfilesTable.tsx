@@ -149,6 +149,8 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
                         filters.selectedFamilyStatus,
                         filters.sentInWhatsapp,
                         filters.prefPoruthamStarRasi,
+                        filters.fromDateOfJoin,
+                        filters.toDateOfJoin,
                         profileType // Pass the profileType here
                     );
                 } else {
@@ -158,7 +160,7 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
                         String(profileID),
                         currentPage + 1,
                         itemsPerPage,
-                        "", "", "", "", 0, 0, 0, 0, "", 0, 0, 0, "", 0, 0, "", "", "", "", "", "", "", "", "", profileType
+                        "", "", "", "", 0, 0, 0, 0, "", 0, 0, 0, "", 0, 0, "", "", "", "", "", "", "", "", "","","", profileType
                     );
                 }
 
