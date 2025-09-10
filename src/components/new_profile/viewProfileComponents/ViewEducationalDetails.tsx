@@ -12,11 +12,10 @@ import {
   fetchGetHighestEducation,
   fetchProfessionalPrefe,
   fetchStateStatus,
-  fetchUgDegree,
   GetCity,
   GetDistrict,
 } from '../../../action';
-import { District, GetDegree } from '../EditFormComponents/EducationalDetails';
+import { District } from '../EditFormComponents/EducationalDetails';
 import Select from 'react-select';
 interface pageProps {
   profile: any;
@@ -527,7 +526,7 @@ const ViewEducationalDetails: React.FC<pageProps> = ({ profile }) => {
                       disabled
                       className="outline-none w-full px-4 py-2 border text-black font-medium border-black rounded"
                     >
-                      <option value="" disabled>
+                      <option value="">
                         Select your state
                       </option>
                       {WorkState?.map((option: any) => (
@@ -568,7 +567,7 @@ const ViewEducationalDetails: React.FC<pageProps> = ({ profile }) => {
                       // {...register('EducationDetails.disttemp')}
                       className="outline-none w-full px-4 py-2 text-black font-medium border border-black rounded"
                     >
-                      <option value="" disabled>
+                      <option value="">
                         Select your District
                       </option >
                       {WorkDistrict?.map((option: District) => (

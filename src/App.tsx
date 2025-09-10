@@ -110,6 +110,8 @@ import RenewalProfiles from './components/ReuseProfileTable/Profiles/RenewalProf
 import UserMatchingProfiles from './matchingProfile/UserMatchingProfiles';
 import LoginProfiles from './components/ReuseProfileTable/userActions/LoginProfiles';
 import TransactionHistory from './components/ReuseProfileTable/userActions/TransactionHistory';
+import { ProfilesPage } from './matchingProfile/MatchingFilterAndTable/ProfilesPage';
+import { MatchingProfilesResultsPage } from './matchingProfile/MatchingFilterAndTable/MatchingProfilesResultsPage';
 
 
 function App() {
@@ -1079,6 +1081,15 @@ function App() {
                       <SearchProfile />
                     </>
                   }
+                />
+
+                <Route
+                  path="/Profiles"
+                  element={<ProfilesPage profileType={'matching'} No_Image_Available={undefined} Name={''} /* pass necessary props here */ />}
+                />
+                <Route
+                  path="/MatchingProfileResults"
+                  element={<MatchingProfilesResultsPage />}
                 />
               </Routes>
             </DefaultLayout>

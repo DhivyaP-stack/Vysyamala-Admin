@@ -2,13 +2,11 @@ import { useState, useEffect } from 'react';
 import {
     Box, Button, Checkbox, CircularProgress, IconButton, Paper, Table, TableBody,
     TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField,
-    Typography
+    Typography, Tooltip
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-
 import { MdVerified } from 'react-icons/md';
 import { GoUnverified } from 'react-icons/go';
-
 import { NotifyError, NotifySuccess } from '../../common/Toast/ToastMessage';
 import { userMatchingProfiles, userMatchingProfilesFilterListMatch, userMatchingProfilesPrintProfile, userMatchingProfilesSendEmail, userMatchingProfilesWhatsapp } from '../../api/apiConfig';
 
@@ -45,23 +43,6 @@ interface UserMatchingProfilesProps {
     action_score: ActionScore;
     dateofjoin: string;
 }
-// const columns = [
-//     { id: "select", label: "Select" },
-//     { id: 'profile_img', label: 'Image' },
-//     { id: 'profile_id', label: 'Profile ID' },
-//     { id: 'profile_name', label: 'Name' },
-//     { id: 'profile_age', label: 'Age' },
-//     { id: 'profile_gender', label: 'Gender' },
-//     { id: 'height', label: 'Height' },
-//     { id: 'weight', label: 'Weight' },
-//     { id: 'degree', label: 'Degree' },
-//     { id: 'profession', label: 'Profession' },
-//     { id: 'location', label: 'Location' },
-//     { id: 'star', label: 'Star' },
-//     { id: 'matching_score', label: 'Matching Score' },
-//     { id: 'action_score', label: 'Action Score' },
-//     { id: 'verified', label: 'Verified' },
-// ];
 
 const columns = [
     { id: "select", label: "Select" },
@@ -82,7 +63,7 @@ const columns = [
     { id: 'father_occupation', label: 'Father Business' },
     { id: 'suya_gothram', label: 'Suya Gothram' },
     { id: 'chevvai', label: 'Admin Chevvai' },
-    { id: 'raguketu', label: 'Admin Ragu/Kethu' },
+    { id: 'raguketu', label: 'Admin Raghu/Kethu' },
     { id: 'dateofjoin', label: 'Registration Date' },
     { id: 'action_score', label: 'Action Score' },
 ];
@@ -112,6 +93,28 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
     const [iswhatsappProfile, setIsWhatsappProfile] = useState<boolean>(false);
     const [goToPageInput, setGoToPageInput] = useState<string>('');
     const roleId = sessionStorage.getItem('role_id');
+
+    // Tooltip function
+    const formatActionsForTooltip = (actions: any[]) => {
+        if (!actions || actions.length === 0) {
+            return "No actions recorded";
+        }
+
+        return (
+            <div>
+                {actions.map((action, index) => {
+                    const date = new Date(action.datetime);
+                    const formattedDate = date.toLocaleDateString();
+
+                    return (
+                        <div key={index}>
+                            <strong>{action.action}</strong> – {formattedDate}
+                        </div>
+                    );
+                })}
+            </div>
+        );
+    };
 
     useEffect(() => {
         const fetchMatchingData = async () => {
@@ -160,7 +163,7 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
                         String(profileID),
                         currentPage + 1,
                         itemsPerPage,
-                        "", "", "", "", 0, 0, 0, 0, "", 0, 0, 0, "", 0, 0, "", "", "", "", "", "", "", "", "","","", profileType
+                        "", "", "", "", 0, 0, 0, 0, "", 0, 0, 0, "", 0, 0, "", "", "", "", "", "", "", "", "", "", "", profileType
                     );
                 }
 
@@ -321,13 +324,13 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
 
     return (
         <div className="container mx-auto p-4">
-            <Button
+            {/* <Button
                 variant="contained"
                 onClick={onBack}
                 sx={{ mb: 2 }}
             >
                 Back to Filters
-            </Button>
+            </Button> */}
 
             <div className="flex items-center justify-end space-x-10">
                 {/* Print Profile */}
@@ -531,7 +534,20 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
                                             <TableCell>{row.chevvai}</TableCell>
                                             <TableCell>{row.raguketu}</TableCell>
                                             <TableCell>{row.dateofjoin ? new Date(row.dateofjoin).toLocaleDateString() : "-"}</TableCell>
-                                            <TableCell>{row.action_score?.score ?? "-"}</TableCell>
+                                            {/* <TableCell>{row.action_score?.score ?? "-"}</TableCell> */}
+                                            <TableCell>
+                                                <Tooltip
+                                                    title={
+                                                        <div style={{ whiteSpace: 'pre-line' }}>
+                                                            {formatActionsForTooltip(row.action_score?.actions || [])}
+                                                        </div>
+                                                    }
+                                                    arrow
+                                                    placement="top"
+                                                >
+                                                    <span>{row.action_score?.score ?? "-"}</span>
+                                                </Tooltip>
+                                            </TableCell>
                                             {/* <TableCell>
                                                 {row.verified === 0 ? (
                                                     <MdVerified className="text-green-600" />
