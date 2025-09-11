@@ -255,7 +255,7 @@ const FamilyDetails: React.FC<formProps> = ({
               </div>
               <div className="w-full">
                 <label className="block mb-1 font-bold text-[#5a5959e6]">
-                  Father Occupation <span className="text-red-500">*</span>
+                  Father Occupation
                 </label>
                 <Input
                   required
@@ -414,10 +414,6 @@ const FamilyDetails: React.FC<formProps> = ({
                   </div>
                 </div>
               )}
-
-
-
-
             </div>
 
 

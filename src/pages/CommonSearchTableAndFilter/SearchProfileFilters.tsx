@@ -14,6 +14,7 @@ import {
 } from '../../api/apiConfig';
 import { getBirthStars } from '../../services/api';
 import { getEditProfileViewStatus } from '../../action';
+import { Button, CircularProgress } from '@mui/material';
 
 // Interfaces (same as before)
 interface AnnualIncome {
@@ -306,13 +307,34 @@ const SearchProfileFilters = ({ onFilterSubmit, loading }: SearchProfileFiltersP
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <div>
-        <h1 className="text-2xl font-bold mb-6 text-black">Search Profile</h1>
-      </div>
+    <form id="filter-form" onSubmit={handleSubmit}>
+      <div className="container mx-auto p-4">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold mb-6 text-black">Search Profile</h1>
+          {/* <button
+            type="submit"
+            disabled={loading}
+            className="bg-blue-500 text-white rounded-sm px-3 py-2 focus-within:outline-none disabled:bg-gray-400"
+          >
+            {loading ? 'Searching...' : 'Filter Matching Records'}
+          </button> */}
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            disabled={loading}
+            form="filter-form" // Add this to associate with the form
+            sx={{
+              minWidth: '200px',
+              height: '40px'
+            }}
+          >
+            {loading ? <CircularProgress size={24} /> : 'Filter Matching Records'}
+          </Button>
+        </div>
 
-      {/* Filter Form */}
-      <form onSubmit={handleSubmit}>
+        {/* Filter Form */}
+        {/* <form onSubmit={handleSubmit}> */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-4">
           {/* Profile ID */}
           <div className="flex flex-col">
@@ -811,7 +833,7 @@ const SearchProfileFilters = ({ onFilterSubmit, loading }: SearchProfileFiltersP
           </select>
         </div>
 
-        <div className="mt-4">
+        {/* <div className="mt-4">
           <button
             type="submit"
             disabled={loading}
@@ -819,9 +841,10 @@ const SearchProfileFilters = ({ onFilterSubmit, loading }: SearchProfileFiltersP
           >
             {loading ? 'Searching...' : 'Filter Matching Records'}
           </button>
-        </div>
-      </form>
-    </div>
+        </div> */}
+
+      </div >
+    </form >
   );
 };
 

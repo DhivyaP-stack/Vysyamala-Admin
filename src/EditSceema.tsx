@@ -7,7 +7,7 @@ export const EditScheema = z.object({
     fathername: z.string().min(1, 'Father Name is required'),
     father_alive: z.string().optional(),
     mother_alive: z.string().optional(),
-    fatherOccupation: z.string().min(1, 'Father Occupation is required'),
+    fatherOccupation: z.string().optional(),
     motherOccupation: z.string().optional(),
     AboutMyself: z.string().optional(),
     motherName: z.string().optional(),

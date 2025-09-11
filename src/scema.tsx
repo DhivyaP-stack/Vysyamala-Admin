@@ -16,15 +16,12 @@ const getMinDOB = () => {
   return today.toISOString().split('T')[0];
 };
 
-const genderSchema = z
-  .string()
-  .transform((val) => val.toLowerCase()) // convert to lowercase
-  .pipe(
-    z.enum(['male', 'female'], {
-      errorMap: () => ({ message: 'Please select a gender' }),
-    })
-  );
-
+const genderSchema = z.preprocess(
+  (val) => (typeof val === "string" ? val.toLowerCase() : val),
+  z.enum(["male", "female"], {
+    errorMap: () => ({ message: "Please select a gender" }),
+  })
+);
 
 export const parentSchema = z.object({
   AddProfileForm: z.object({
@@ -98,7 +95,7 @@ export const parentSchema = z.object({
 
   FamilyDetailsForm: z.object({
     fathername: z.string().min(1, "Father Name is required"),
-    fatherOccupation: z.string().min(1, "Father Occupation is required"),
+    fatherOccupation: z.string().optional(),
     motherOccupation: z.string().optional(),
     aboutMyself: z.string().optional(),
     motherName: z.string().optional(),

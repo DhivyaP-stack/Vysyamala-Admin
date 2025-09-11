@@ -127,6 +127,10 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
     const [selectedDegrees, setSelectedDegrees] = useState<String[]>([]);
     const [fromDateOfJoin, setFromDateOfJoin] = useState<string>('');
     const [toDateOfJoin, setToDateOfJoin] = useState<string>('');
+    const date = new Date("2025-02-26T18:36:47");
+
+    console.log("local system",date.toLocaleDateString());       // depends on system
+    console.log("en-GB format",date.toLocaleDateString("en-GB")) // always DD/MM/YYYY
 
     // Add this query to fetch profile details
     const { data: profileDetails } = useQuery({
@@ -452,21 +456,35 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
     }, [matchStars, selectedStarIds]);
 
     return (
-        <div className="container mx-auto p-4">
-            <div>
-                <Typography
-                    sx={{
-                        marginBottom: '20px',
-                        color: 'black',
-                        fontSize: '1.5rem',
-                        fontWeight: 'bold',
-                    }}
-                >
-                    {Name} Profile Lists For Profile ID: {profileID}
-                </Typography>
-            </div>
+        <form id="filter-form" onSubmit={handleSubmit}>
+            <div className="container mx-auto p-4">
+                <div className="flex justify-between items-center mb-6">
+                    <Typography
+                        sx={{
+                            marginBottom: '20px',
+                            color: 'black',
+                            fontSize: '1.5rem',
+                            fontWeight: 'bold',
+                        }}
+                    >
+                        {Name} Profile Lists For Profile ID: {profileID}
+                    </Typography>
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        disabled={loading}
+                        form="filter-form" // Add this to associate with the form
+                        sx={{
+                            minWidth: '200px',
+                            height: '40px'
+                        }}
+                    >
+                        {loading ? <CircularProgress size={24} /> : 'Filter Matching Records'}
+                    </Button>
+                </div>
 
-            <form onSubmit={handleSubmit}>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                     {/* Age Difference */}
                     <div className="flex flex-col">
@@ -528,9 +546,9 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
                             onChange={(e) => setSarpaDhosham(e.target.value)}
                         >
                             <option value="" disabled>-- Select Sarpa Dhosham --</option>
-                            <option value="Unknown">Unknown</option>
                             <option value="Yes">Yes</option>
                             <option value="No">No</option>
+                            <option value="Both">Both</option>
                         </select>
                     </div>
 
@@ -1008,7 +1026,7 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
                     </div>
                 </div>
 
-                <div className="mt-4">
+                {/* <div className="mt-4">
                     <Button
                         type="submit"
                         variant="contained"
@@ -1017,8 +1035,9 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
                     >
                         {loading ? <CircularProgress size={24} /> : 'Filter Matching Records'}
                     </Button>
-                </div>
-            </form>
-        </div>
+                </div> */}
+
+            </div >
+        </form>
     );
 };

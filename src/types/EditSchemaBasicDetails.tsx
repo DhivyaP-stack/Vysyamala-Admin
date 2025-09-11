@@ -6,15 +6,13 @@ const getMinDOB = () => {
   return today.toISOString().split('T')[0];
 };
 
-//Gender validation
-const genderSchema = z
-  .string()
-  .transform((val) => val.toLowerCase()) // convert to lowercase
-  .pipe(
-    z.enum(['male', 'female'], {
-      errorMap: () => ({ message: 'Please select a gender' }),
-    })
-  );
+const genderSchema = z.preprocess(
+  (val) => (typeof val === "string" ? val.toLowerCase() : val),
+  z.enum(["male", "female"], {
+    errorMap: () => ({ message: "Please select a gender" }),
+  })
+);
+
 
 export const EditScheemaBasicDetails = z.object({
   BasicDetail: z.object({

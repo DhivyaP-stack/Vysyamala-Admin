@@ -207,32 +207,6 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
         });
     };
 
-    // const handleSendEmail = async () => {
-    //     if (selectedProfiles.length === 0) {
-    //         NotifyError("Please select at least one profile to send email");
-    //         return;
-    //     }
-    //     if (!selectedFormat) {
-    //         NotifyError("Please select an email format");
-    //         return;
-    //     }
-    //     try {
-    //         setIsSendingEmail(true);
-    //         const response = await MatchingEmailProfile(
-    //             printFormat,
-    //             selectedProfiles.join(","),  // ✅ comma separated
-    //             String(profileID),
-    //         );
-
-    //         console.log("Email sent successfully:", response);
-    //         NotifySuccess("Email sent successfully!");
-    //     } catch (error: any) {
-    //         console.error("Failed to send email:", error);
-    //         NotifyError(error.message || "Failed to send email");
-    //     } finally {
-    //         setIsSendingEmail(false);
-    //     }
-    // };
 
     const handlePrintProfile = async () => {
         if (selectedProfiles.length === 0) {
@@ -259,7 +233,7 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
 
             if (newWindow) {
                 newWindow.focus();
-                 console.log("Opening profile in new tab...");
+                console.log("Opening profile in new tab...");
             } else {
                 NotifyError("Popup blocked! Please allow popups for this site.");
             }
@@ -297,7 +271,7 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
 
             if (newWindow) {
                 newWindow.focus();
-                 console.log("Opening profile in new tab...");
+                console.log("Opening profile in new tab...");
             } else {
                 NotifyError("Popup blocked! Please allow popups for this site.");
             }
@@ -357,6 +331,11 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
             setGoToPageInput('');
         }
     };
+
+    // if (loading) {
+    //     return <div className="flex items-center justify-center h-screen w-full"> <CircularProgress /></div>;
+    // }
+
 
     return (
         <div className="container mx-auto p-4">
@@ -535,7 +514,13 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
                             </TableHead>
 
                             <TableBody>
-                                {matchingData && matchingData.length > 0 ? (
+                                {loading ? (
+                                    <TableRow>
+                                        <TableCell colSpan={columns.length} sx={{ textAlign: "center", py: 3 }}>
+                                            <CircularProgress />
+                                        </TableCell>
+                                    </TableRow>
+                                ) : matchingData && matchingData.length > 0 ? (
                                     matchingData.map((row) => (
                                         <TableRow
                                             key={row.profile_id}
@@ -590,7 +575,10 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
                                             <TableCell>{row.suya_gothram}</TableCell>
                                             <TableCell>{row.chevvai}</TableCell>
                                             <TableCell>{row.raguketu}</TableCell>
-                                            <TableCell>{row.dateofjoin ? new Date(row.dateofjoin).toLocaleDateString() : "-"}</TableCell>
+                                            {/* <TableCell>{row.dateofjoin ? new Date(row.dateofjoin).toLocaleDateString() : "-"}</TableCell> */}
+                                            <TableCell>  {row.dateofjoin
+                                                ? new Date(row.dateofjoin).toLocaleDateString("en-GB")
+                                                : "-"}</TableCell>
                                             {/* <TableCell>{row.action_score?.score ?? "-"}</TableCell> */}
                                             <TableCell>
                                                 <Tooltip

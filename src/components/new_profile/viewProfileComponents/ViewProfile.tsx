@@ -574,7 +574,7 @@ const ViewProfile: React.FC<pageProps> = ({
 
                   <div className="flex flex-wrap items-center gap-2 mb-2">
                     <span className="font-semibold text-[#5a5959e6]">Profile Status:</span>
-                    <span className="text-[#5a5959e6]">{profileView.Package_name}</span>
+                    <span className="text-[#5a5959e6]">{profileView?.profile_status || "N/A"}</span>
                   </div>
 
                   <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">

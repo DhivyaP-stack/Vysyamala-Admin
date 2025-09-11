@@ -285,7 +285,7 @@ const AddProfileForm: React.FC<AddProfileForm> = ({
             </div>
 
             {/* Gender Selector */}
-            <div className="w-2/4 max-md:w-full py-1 max-md:w-full">
+            <div className="w-2/4  py-1 max-md:w-full">
               <label className="block text-black font-medium mb-1">
                 Select Gender <span className="text-red-500">*</span>
               </label>
