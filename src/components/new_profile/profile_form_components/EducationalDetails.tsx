@@ -902,249 +902,253 @@ const EducationalDetails: React.FC<pageprop> = ({
               </div>
             )}
           </div>
-          <h4 className="text-xl font-semibold text-black dark:text-white">
-            Work Location
-          </h4>
-          <div className="flex w-full flex-row gap-4 max-md:flex-col">
-            <div className="w-full">
-              <label className="block text-black font-medium mb-1">
-                Country
-              </label>
-              <select
-                {...register('EducationDetails.workCountry')}
-                className="outline-none w-full px-4 py-2 border border-black rounded"
-              >
-                <option value=""> Select your Country </option>
-                {WorkCountry?.map((option) => (
-                  <option key={option.country_id} value={option.country_id}>
-                    {option.country_name}
-                  </option>
-                ))}
-              </select>
-              {errors?.EducationDetails?.workCountry && (
-                <p className="text-red-600">
-                  {errors.EducationDetails.workCountry.message}
-                </p>
-              )}
-            </div>
-            {selectedWorkCountry == '1' ? (
-              <div className="w-full">
-                <label className="block text-black font-medium mb-1">
-                  State (Based on country selection){' '}
-                </label>
-                <select
-                  className="outline-none w-full px-4 py-2 border border-black rounded"
-                  {...register('EducationDetails.work_state')}
-                >
-                  <option value="" >
-                    Select your state
-                  </option>
-                  {WorkState?.map((option: State) => (
-                    <option key={option.state_id} value={option.state_id}>
-                      {option.state_name}
-                    </option>
-                  ))}
-                </select>
-                {sessionStorage.getItem('stateError') && (
-                  <p className="text-red-600">
-                    {sessionStorage.getItem('stateError')}
-                  </p>
-                )}
-                {errors?.EducationDetails?.work_state && (
-                  <p className="text-red-600">
-                    {errors.EducationDetails.work_state.message}
-                  </p>
-                )}
-              </div>
-            ) : (
+          {!(profession === 3 || profession === 4 || profession === 5) && (
+            <>
+              <h4 className="text-xl font-semibold text-black dark:text-white">
+                Work Location
+              </h4>
               <div className="flex w-full flex-row gap-4 max-md:flex-col">
-                <Input
-                  label={'work city'}
-                  placeholder="Work place"
-                  {...register('EducationDetails.work_place')}
-                />
-              </div>
-            )}
-          </div>
-
-          <div className="flex w-full flex-row gap-4 max-md:flex-col">
-            {selectedState && (
-              <div className="w-2/4">
-                <label className="block text-black font-medium mb-1">
-                  District
-                </label>
-
-                {Number(selectedState) > 7 ? (
-                  // Render text field when selectedState > 7
-                  <input
-                    type="text"
-                    className="outline-none w-full px-4 py-2 border border-black rounded"
-                    placeholder="Enter your District"
-                    {...register('EducationDetails.work_district')}
-                  />
-                ) : (
-                  // Render dropdown when selectedState <= 7
+                <div className="w-full">
+                  <label className="block text-black font-medium mb-1">
+                    Country
+                  </label>
                   <select
+                    {...register('EducationDetails.workCountry')}
                     className="outline-none w-full px-4 py-2 border border-black rounded"
-                    {...register('EducationDetails.work_district')}
                   >
-                    <option value="" disabled>
-                      Select your District
-                    </option>
-                    {WorkDistrict?.map((option: District) => (
-                      <option
-                        key={option.disctict_id}
-                        value={option.disctict_id}
-                      >
-                        {option.disctict_name}
+                    <option value=""> Select your Country </option>
+                    {WorkCountry?.map((option) => (
+                      <option key={option.country_id} value={option.country_id}>
+                        {option.country_name}
                       </option>
                     ))}
                   </select>
-                )}
-
-                {sessionStorage.getItem('districtError') && (
-                  <p className="text-red-600">
-                    {sessionStorage.getItem('districtError')}
-                  </p>
-                )}
-                {errors?.EducationDetails?.work_district && (
-                  <p className="text-red-600">
-                    {errors.EducationDetails.work_district.message}
-                  </p>
+                  {errors?.EducationDetails?.workCountry && (
+                    <p className="text-red-600">
+                      {errors.EducationDetails.workCountry.message}
+                    </p>
+                  )}
+                </div>
+                {selectedWorkCountry == '1' ? (
+                  <div className="w-full">
+                    <label className="block text-black font-medium mb-1">
+                      State (Based on country selection){' '}
+                    </label>
+                    <select
+                      className="outline-none w-full px-4 py-2 border border-black rounded"
+                      {...register('EducationDetails.work_state')}
+                    >
+                      <option value="" >
+                        Select your state
+                      </option>
+                      {WorkState?.map((option: State) => (
+                        <option key={option.state_id} value={option.state_id}>
+                          {option.state_name}
+                        </option>
+                      ))}
+                    </select>
+                    {sessionStorage.getItem('stateError') && (
+                      <p className="text-red-600">
+                        {sessionStorage.getItem('stateError')}
+                      </p>
+                    )}
+                    {errors?.EducationDetails?.work_state && (
+                      <p className="text-red-600">
+                        {errors.EducationDetails.work_state.message}
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  <div className="flex w-full flex-row gap-4 max-md:flex-col">
+                    <Input
+                      label={'work city'}
+                      placeholder="Work place"
+                      {...register('EducationDetails.work_place')}
+                    />
+                  </div>
                 )}
               </div>
-            )}
-            {selecteddistrict && (
-              <div className="w-2/4">
-                <label className="block text-black font-medium mb-1">
-                  Work City
-                  <div className="relative inline-block ml-2 group">
-                    <AiOutlineInfoCircle className="text-gray-500 cursor-pointer ml-2" />
 
-                    <div className="absolute hidden group-hover:flex flex-col bg-white border border-ashSecondary rounded shadow-md p-2 w-48 z-10">
-                      <p className="text-sm text-black">
-                        Select your city from the list. If your city is not
-                        listed, select Others.
-                      </p>
-                    </div>
-                  </div>
-                </label>
-                <>
-                  {Number(selectedState) > 7 ? (
-                    // Render text field when selectedState > 7
-                    <input
-                      type="text"
-                      className="outline-none w-full px-4 py-2 border border-black rounded"
-                      placeholder="Enter your City"
-                      {...register('EducationDetails.work_city')}
-                    />
-                  ) : (
-                    // Render dropdown when selectedState <= 7
-                    <>
-                      {!isOtherCity ? (
-                        <select
-                          className="outline-none w-full px-4 py-2 border border-black rounded"
-                          {...register('EducationDetails.work_city')}
-                          onChange={(e) => {
-                            const value = e.target.value;
-                            if (value === 'others') {
-                              setIsOtherCity(true); // Switch to text field
-                            }
-                          }}
-                        >
-                          <option value="">
-                            Select your City
+              <div className="flex w-full flex-row gap-4 max-md:flex-col">
+                {selectedState && (
+                  <div className="w-2/4">
+                    <label className="block text-black font-medium mb-1">
+                      District
+                    </label>
+
+                    {Number(selectedState) > 7 ? (
+                      // Render text field when selectedState > 7
+                      <input
+                        type="text"
+                        className="outline-none w-full px-4 py-2 border border-black rounded"
+                        placeholder="Enter your District"
+                        {...register('EducationDetails.work_district')}
+                      />
+                    ) : (
+                      // Render dropdown when selectedState <= 7
+                      <select
+                        className="outline-none w-full px-4 py-2 border border-black rounded"
+                        {...register('EducationDetails.work_district')}
+                      >
+                        <option value="" disabled>
+                          Select your District
+                        </option>
+                        {WorkDistrict?.map((option: District) => (
+                          <option
+                            key={option.disctict_id}
+                            value={option.disctict_id}
+                          >
+                            {option.disctict_name}
                           </option>
-                          {City?.map((option: City) => (
-                            <option key={option.city_id} value={option.city_name}>
-                              {option.city_name}
-                            </option>
-                          ))}
-                          <option value="others">Others</option>
-                        </select>
-                      ) : (
+                        ))}
+                      </select>
+                    )}
+
+                    {sessionStorage.getItem('districtError') && (
+                      <p className="text-red-600">
+                        {sessionStorage.getItem('districtError')}
+                      </p>
+                    )}
+                    {errors?.EducationDetails?.work_district && (
+                      <p className="text-red-600">
+                        {errors.EducationDetails.work_district.message}
+                      </p>
+                    )}
+                  </div>
+                )}
+                {selecteddistrict && (
+                  <div className="w-2/4">
+                    <label className="block text-black font-medium mb-1">
+                      Work City
+                      <div className="relative inline-block ml-2 group">
+                        <AiOutlineInfoCircle className="text-gray-500 cursor-pointer ml-2" />
+
+                        <div className="absolute hidden group-hover:flex flex-col bg-white border border-ashSecondary rounded shadow-md p-2 w-48 z-10">
+                          <p className="text-sm text-black">
+                            Select your city from the list. If your city is not
+                            listed, select Others.
+                          </p>
+                        </div>
+                      </div>
+                    </label>
+                    <>
+                      {Number(selectedState) > 7 ? (
+                        // Render text field when selectedState > 7
                         <input
                           type="text"
                           className="outline-none w-full px-4 py-2 border border-black rounded"
                           placeholder="Enter your City"
                           {...register('EducationDetails.work_city')}
                         />
+                      ) : (
+                        // Render dropdown when selectedState <= 7
+                        <>
+                          {!isOtherCity ? (
+                            <select
+                              className="outline-none w-full px-4 py-2 border border-black rounded"
+                              {...register('EducationDetails.work_city')}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                if (value === 'others') {
+                                  setIsOtherCity(true); // Switch to text field
+                                }
+                              }}
+                            >
+                              <option value="">
+                                Select your City
+                              </option>
+                              {City?.map((option: City) => (
+                                <option key={option.city_id} value={option.city_name}>
+                                  {option.city_name}
+                                </option>
+                              ))}
+                              <option value="others">Others</option>
+                            </select>
+                          ) : (
+                            <input
+                              type="text"
+                              className="outline-none w-full px-4 py-2 border border-black rounded"
+                              placeholder="Enter your City"
+                              {...register('EducationDetails.work_city')}
+                            />
+                          )}
+                        </>
+                      )}
+
+                      {sessionStorage.getItem('cityError') && (
+                        <p className="text-red-600">
+                          {sessionStorage.getItem('cityError')}
+                        </p>
+                      )}
+                      {errors?.EducationDetails?.work_city && (
+                        <p className="text-red-600">
+                          {errors.EducationDetails.work_city.message}
+                        </p>
                       )}
                     </>
-                  )}
-
-                  {sessionStorage.getItem('cityError') && (
-                    <p className="text-red-600">
-                      {sessionStorage.getItem('cityError')}
-                    </p>
-                  )}
-                  {errors?.EducationDetails?.work_city && (
-                    <p className="text-red-600">
-                      {errors.EducationDetails.work_city.message}
-                    </p>
-                  )}
-                </>
-              </div>
-            )}
-          </div>
-
-          <div className="flex w-full flex-row gap-4 max-md:flex-col">
-            <div className="w-2/4">
-              {' '}
-              <Input
-                required
-                onKeyDown={(e) => {
-                  const allowedKeys = [
-                    '0',
-                    '1',
-                    '2',
-                    '3',
-                    '4',
-                    '5',
-                    '6',
-                    '7',
-                    '8',
-                    '9',
-                    '+',
-                    'Backspace',
-                    'Tab',
-                    'ArrowLeft',
-                    'ArrowRight',
-                    'Delete',
-                  ];
-
-                  // If the key pressed is not allowed, prevent it
-                  if (!allowedKeys.includes(e.key)) {
-                    e.preventDefault();
-                  }
-                }}
-                label={'Post code (Based on Country Selection)'}
-                {...register('EducationDetails.pincode')}
-              />
-              {errors?.EducationDetails?.pincode && (
-                <p className="text-red-600">
-                  {errors.EducationDetails.pincode.message}
-                </p>
-              )}
-            </div>
-            <div className="w-2/4">
-              <div className="w-full">
-                <label className="block text-black font-medium mb-1">
-                  Career Plans / Notes
-                </label>
-                <textarea
-                  className="outline-none w-full px-4 py-2 border h-10.5 border-black rounded"
-                  {...register('EducationDetails.CareerPlans')}
-                ></textarea>
-                {errors?.EducationDetails?.CareerPlans && (
-                  <p className="text-red-600">
-                    {errors.EducationDetails.CareerPlans.message}
-                  </p>
+                  </div>
                 )}
               </div>
-            </div>
-          </div>
+
+              <div className="flex w-full flex-row gap-4 max-md:flex-col">
+                <div className="w-2/4">
+                  {' '}
+                  <Input
+                    required
+                    onKeyDown={(e) => {
+                      const allowedKeys = [
+                        '0',
+                        '1',
+                        '2',
+                        '3',
+                        '4',
+                        '5',
+                        '6',
+                        '7',
+                        '8',
+                        '9',
+                        '+',
+                        'Backspace',
+                        'Tab',
+                        'ArrowLeft',
+                        'ArrowRight',
+                        'Delete',
+                      ];
+
+                      // If the key pressed is not allowed, prevent it
+                      if (!allowedKeys.includes(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
+                    label={'Post code (Based on Country Selection)'}
+                    {...register('EducationDetails.pincode')}
+                  />
+                  {errors?.EducationDetails?.pincode && (
+                    <p className="text-red-600">
+                      {errors.EducationDetails.pincode.message}
+                    </p>
+                  )}
+                </div>
+                <div className="w-2/4">
+                  <div className="w-full">
+                    <label className="block text-black font-medium mb-1">
+                      Career Plans / Notes
+                    </label>
+                    <textarea
+                      className="outline-none w-full px-4 py-2 border h-10.5 border-black rounded"
+                      {...register('EducationDetails.CareerPlans')}
+                    ></textarea>
+                    {errors?.EducationDetails?.CareerPlans && (
+                      <p className="text-red-600">
+                        {errors.EducationDetails.CareerPlans.message}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </>)}
         </div>
+
       )}
     </div>
   );
