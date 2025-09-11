@@ -207,32 +207,32 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
         });
     };
 
-    const handleSendEmail = async () => {
-        if (selectedProfiles.length === 0) {
-            NotifyError("Please select at least one profile to send email");
-            return;
-        }
-        if (!selectedFormat) {
-            NotifyError("Please select an email format");
-            return;
-        }
-        try {
-            setIsSendingEmail(true);
-            const response = await MatchingEmailProfile(
-                printFormat,
-                selectedProfiles.join(","),  // ✅ comma separated
-                String(profileID),
-            );
+    // const handleSendEmail = async () => {
+    //     if (selectedProfiles.length === 0) {
+    //         NotifyError("Please select at least one profile to send email");
+    //         return;
+    //     }
+    //     if (!selectedFormat) {
+    //         NotifyError("Please select an email format");
+    //         return;
+    //     }
+    //     try {
+    //         setIsSendingEmail(true);
+    //         const response = await MatchingEmailProfile(
+    //             printFormat,
+    //             selectedProfiles.join(","),  // ✅ comma separated
+    //             String(profileID),
+    //         );
 
-            console.log("Email sent successfully:", response);
-            NotifySuccess("Email sent successfully!");
-        } catch (error: any) {
-            console.error("Failed to send email:", error);
-            NotifyError(error.message || "Failed to send email");
-        } finally {
-            setIsSendingEmail(false);
-        }
-    };
+    //         console.log("Email sent successfully:", response);
+    //         NotifySuccess("Email sent successfully!");
+    //     } catch (error: any) {
+    //         console.error("Failed to send email:", error);
+    //         NotifyError(error.message || "Failed to send email");
+    //     } finally {
+    //         setIsSendingEmail(false);
+    //     }
+    // };
 
     const handlePrintProfile = async () => {
         if (selectedProfiles.length === 0) {
@@ -240,75 +240,113 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
             return;
         }
         if (!printFormat) {
-            NotifyError("Please select an Print format");
+            NotifyError("Please select a Print format");
             return;
         }
         try {
             setIsPrintProfile(true);
-            const response = await MatchingPrintProfile(
-                printFormat,
-                selectedProfiles.join(","),  // ✅ comma separated
-                String(profileID),
-            );
 
-            if (response instanceof Blob) {
-                const url = window.URL.createObjectURL(response);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `profile_${profileID}_print.pdf`;
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
-                NotifySuccess("Profile download started successfully!");
+            // Construct the API URL with parameters
+            const apiUrl = `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/admin-match-pdf-with-format/`; // Your API endpoint
+            const params = new URLSearchParams({
+                pdf_format: printFormat,
+                profile_ids: selectedProfiles.join(","),
+                profile_to: String(profileID)
+            });
+
+            // Open the API URL in a new tab
+            const newWindow = window.open(`${apiUrl}?${params.toString()}`, '_blank');
+
+            if (newWindow) {
+                newWindow.focus();
+                 console.log("Opening profile in new tab...");
             } else {
-                console.warn("Unexpected response format:", response);
-                NotifySuccess("Profile Printed successfully!");
+                NotifyError("Popup blocked! Please allow popups for this site.");
             }
         } catch (error: any) {
-            console.error("Failed to Print Profile:", error);
-            NotifyError(error.message || "Failed to Print Profile");
+            console.error("Failed to open print profile:", error);
+            NotifyError(error.message || "Failed to open print profile");
         } finally {
             setIsPrintProfile(false);
         }
     };
+
 
     const handleProfileWhatsapp = async () => {
         if (selectedProfiles.length === 0) {
             NotifyError("Please select at least one profile to print profile");
             return;
         }
-        if (!whatsappFormat) {
-            NotifyError("Please select an Whatsapp format");
+        if (!printFormat) {
+            NotifyError("Please select a Print format");
             return;
         }
         try {
-            setIsWhatsappProfile(true);
-            const response = await MatchingWhatsappProfile(
-                printFormat,
-                selectedProfiles.join(","),  // ✅ comma separated
-                String(profileID),
-            );
+            setIsPrintProfile(true);
 
+            // Construct the API URL with parameters
+            const apiUrl = `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/admin-match-pdf-with-format/`; // Your API endpoint
+            const params = new URLSearchParams({
+                pdf_format: printFormat,
+                profile_ids: selectedProfiles.join(","),
+                profile_to: String(profileID)
+            });
 
-            if (response instanceof Blob) {
-                const url = window.URL.createObjectURL(response);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `profile_${profileID}_print.pdf`;
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
-                NotifySuccess("Profile Viewed successfully!");
+            // Open the API URL in a new tab
+            const newWindow = window.open(`${apiUrl}?${params.toString()}`, '_blank');
+
+            if (newWindow) {
+                newWindow.focus();
+                 console.log("Opening profile in new tab...");
+            } else {
+                NotifyError("Popup blocked! Please allow popups for this site.");
             }
         } catch (error: any) {
-            console.error("Failed to Viewed Profile:", error);
-            NotifyError(error.message || "Failed to View Profile");
+            console.error("Failed to open print profile:", error);
+            NotifyError(error.message || "Failed to open print profile");
         } finally {
-            setIsWhatsappProfile(false);
+            setIsPrintProfile(false);
         }
     };
+
+
+    const handleSendEmail = async () => {
+        if (selectedProfiles.length === 0) {
+            NotifyError("Please select at least one profile to print profile");
+            return;
+        }
+        if (!printFormat) {
+            NotifyError("Please select a Print format");
+            return;
+        }
+        try {
+            setIsPrintProfile(true);
+
+            // Construct the API URL with parameters
+            const apiUrl = `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/admin-match-pdf-with-format/`; // Your API endpoint
+            const params = new URLSearchParams({
+                pdf_format: printFormat,
+                profile_ids: selectedProfiles.join(","),
+                profile_to: String(profileID)
+            });
+
+            // Open the API URL in a new tab
+            const newWindow = window.open(`${apiUrl}?${params.toString()}`, '_blank');
+
+            if (newWindow) {
+                newWindow.focus();
+                console.log("Opening profile in new tab...");
+            } else {
+                NotifyError("Popup blocked! Please allow popups for this site.");
+            }
+        } catch (error: any) {
+            console.error("Failed to open print profile:", error);
+            NotifyError(error.message || "Failed to open print profile");
+        } finally {
+            setIsPrintProfile(false);
+        }
+    };
+
 
     const handleGoToPage = () => {
         const pageNumber = parseInt(goToPageInput, 10);
