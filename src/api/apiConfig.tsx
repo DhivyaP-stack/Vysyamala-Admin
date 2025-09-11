@@ -506,6 +506,37 @@ export const userMatchingProfilesPrintProfile = async (Format: string, ProfileID
     }
 };
 
+export const MatchingPrintProfile = async (
+    Format: string,
+    ProfileIDs: string,   // comma-separated profile IDs
+    ToProfileID: string,
+    // ProfileOwner: string  // optional if still required
+) => {
+    try {
+        const queryParams = new URLSearchParams({
+            profile_ids: ProfileIDs,     // e.g. "VF31248,VF53626"
+            pdf_format: Format,          // e.g. "match_full_profile"
+            profile_to: ToProfileID,     // e.g. "VM56320"
+            // If your API still needs owner, you can add:
+            // profile_owner: ProfileOwner
+        });
+
+        const response = await apiAxios.get(
+            `/api/admin-match-pdf-with-format/?${queryParams.toString()}`,
+            { responseType: 'blob' } // Ensure file download works
+        );
+
+        if (response.status !== 200) {
+            throw new Error("Failed to Matching Profile Print");
+        }
+
+        return response.data; // This will be a Blob (PDF file)
+    } catch (error: any) {
+        console.error("Error Matching Profile Print", error.message || error);
+        throw new Error("Unable to Matching Profile Print. Please try again later.");
+    }
+};
+
 // User Matching Profiles Page -> Matching Records Print Profile
 export const userMatchingProfilesWhatsapp = async (Format: string, ProfileID: string, ToProfileID: string, ActionType: string, ProfileOwner: string) => {
     try {
@@ -528,6 +559,69 @@ export const userMatchingProfilesWhatsapp = async (Format: string, ProfileID: st
             throw new Error("Failed to Matching Profile Print");
         }
         return response.data; // Adjust based on the actual response structure
+    } catch (error: any) {
+        console.error("Error Matching Profile Print", error.message || error);
+        throw new Error("Unable to Matching Profile Print. Please try again later.");
+    }
+};
+
+
+export const MatchingWhatsappProfile = async (
+    Format: string,
+    ProfileIDs: string,   // comma-separated profile IDs
+    ToProfileID: string,
+    // ProfileOwner: string  // optional if still required
+) => {
+    try {
+        const queryParams = new URLSearchParams({
+            profile_ids: ProfileIDs,     // e.g. "VF31248,VF53626"
+            pdf_format: Format,          // e.g. "match_full_profile"
+            profile_to: ToProfileID,     // e.g. "VM56320"
+            // If your API still needs owner, you can add:
+            // profile_owner: ProfileOwner
+        });
+
+        const response = await apiAxios.get(
+            `/api/admin-match-pdf-with-format/?${queryParams.toString()}`,
+            { responseType: 'blob' } // Ensure file download works
+        );
+
+        if (response.status !== 200) {
+            throw new Error("Failed to Matching Profile Print");
+        }
+
+        return response.data; // This will be a Blob (PDF file)
+    } catch (error: any) {
+        console.error("Error Matching Profile Print", error.message || error);
+        throw new Error("Unable to Matching Profile Print. Please try again later.");
+    }
+};
+
+export const MatchingEmailProfile = async (
+    Format: string,
+    ProfileIDs: string,   // comma-separated profile IDs
+    ToProfileID: string,
+    // ProfileOwner: string  // optional if still required
+) => {
+    try {
+        const queryParams = new URLSearchParams({
+            profile_ids: ProfileIDs,     // e.g. "VF31248,VF53626"
+            pdf_format: Format,          // e.g. "match_full_profile"
+            profile_to: ToProfileID,     // e.g. "VM56320"
+            // If your API still needs owner, you can add:
+            // profile_owner: ProfileOwner
+        });
+
+        const response = await apiAxios.get(
+            `/api/admin-match-pdf-with-format/?${queryParams.toString()}`,
+            { responseType: 'blob' } // Ensure file download works
+        );
+
+        if (response.status !== 200) {
+            throw new Error("Failed to Matching Profile Print");
+        }
+
+        return response.data; // This will be a Blob (PDF file)
     } catch (error: any) {
         console.error("Error Matching Profile Print", error.message || error);
         throw new Error("Unable to Matching Profile Print. Please try again later.");

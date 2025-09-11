@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { MdVerified } from 'react-icons/md';
 import { GoUnverified } from 'react-icons/go';
 import { NotifyError, NotifySuccess } from '../../common/Toast/ToastMessage';
-import { userMatchingProfiles, userMatchingProfilesFilterListMatch, userMatchingProfilesPrintProfile, userMatchingProfilesSendEmail, userMatchingProfilesWhatsapp } from '../../api/apiConfig';
+import { MatchingEmailProfile, MatchingPrintProfile, MatchingWhatsappProfile, userMatchingProfiles, userMatchingProfilesFilterListMatch, userMatchingProfilesPrintProfile, userMatchingProfilesSendEmail, userMatchingProfilesWhatsapp } from '../../api/apiConfig';
 
 interface ActionScore {
     score: number;
@@ -218,12 +218,12 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
         }
         try {
             setIsSendingEmail(true);
-            const response = await userMatchingProfilesSendEmail(
-                selectedFormat,
-                String(selectedProfiles),
+            const response = await MatchingEmailProfile(
+                printFormat,
+                selectedProfiles.join(","),  // ✅ comma separated
                 String(profileID),
-                String(roleId),
             );
+
             console.log("Email sent successfully:", response);
             NotifySuccess("Email sent successfully!");
         } catch (error: any) {
@@ -245,11 +245,10 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
         }
         try {
             setIsPrintProfile(true);
-            const response = await userMatchingProfilesPrintProfile(
+            const response = await MatchingPrintProfile(
                 printFormat,
-                String(selectedProfiles),
+                selectedProfiles.join(","),  // ✅ comma separated
                 String(profileID),
-                String(roleId),
             );
 
             if (response instanceof Blob) {
@@ -285,13 +284,12 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
         }
         try {
             setIsWhatsappProfile(true);
-            const response = await userMatchingProfilesWhatsapp(
-                whatsappFormat,
-                String(selectedProfiles),
+            const response = await MatchingWhatsappProfile(
+                printFormat,
+                selectedProfiles.join(","),  // ✅ comma separated
                 String(profileID),
-                "whatsapp",
-                String(roleId),
             );
+
 
             if (response instanceof Blob) {
                 const url = window.URL.createObjectURL(response);
@@ -349,11 +347,18 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
                                     disabled={isPrintProfile}
                                     className="text-sm border-[1px] border-black rounded-md px-2 py-0.5 focus-within:outline-none"
                                 >
-                                    <option value="p1">Choose Format</option>
-                                    <option value="fullprofile">Full Profile</option>
+                                    <option value="">Choose Format</option>
+                                    {/* <option value="fullprofile">Full Profile</option>
                                     <option value="withoutaddress">Without Address</option>
                                     <option value="shortprofile">Short Profile</option>
-                                    <option value="p4">Intimation</option>
+                                    <option value="p4">Intimation</option> */}
+                                    <option value="match_full_profile">Full Profile</option>
+                                    <option value="match_full_profile_black">Full profile black</option>
+                                    <option value="match_compatability_color">Color</option>
+                                    <option value="match_compatability_black">Black</option>
+                                    <option value="match_compatability_without_horo">Without Horoscope</option>
+                                    <option value="match_compatability_without_horo_black">Without Horoscope Black</option>
+                                    {/* <option value="match_profile_action">Action</option> */}
                                 </select>
                             </div>
                             <div>
@@ -385,11 +390,18 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
                                     disabled={iswhatsappProfile}
                                     className="text-sm border-[1px] border-black rounded-md px-2 py-1 focus-within:outline-none"
                                 >
-                                    <option value="w1">Choose Format</option>
-                                    <option value="fullprofile">Full Profile</option>
+                                    <option value="">Choose Format</option>
+                                    {/* <option value="fullprofile">Full Profile</option>
                                     <option value="withoutaddress">Without Address</option>
                                     <option value="shortprofile">Short Profile</option>
-                                    <option value="w5">Intimation</option>
+                                    <option value="w5">Intimation</option> */}
+                                    <option value="match_full_profile">Full Profile</option>
+                                    <option value="match_full_profile_black">Full profile black</option>
+                                    <option value="match_compatability_color">Color</option>
+                                    <option value="match_compatability_black">Black</option>
+                                    <option value="match_compatability_without_horo">Without Horoscope</option>
+                                    <option value="match_compatability_without_horo_black">Without Horoscope Black</option>
+                                    {/* <option value="match_profile_action">Action</option> */}
                                 </select>
                             </div>
                             <div>
@@ -421,11 +433,18 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
                                     disabled={isSendingEmail}
                                     className="text-sm border-[1px] border-black rounded-md px-2 py-1 focus-within:outline-none"
                                 >
-                                    <option value="w1">Choose Format</option>
-                                    <option value="fullprofile">Full Profile</option>
+                                    <option value="">Choose Format</option>
+                                    {/* <option value="fullprofile">Full Profile</option>
                                     <option value="withoutaddress">Without Address</option>
                                     <option value="shortprofile">Short Profile</option>
-                                    <option value="w5">Intimation</option>
+                                    <option value="w5">Intimation</option> */}
+                                    <option value="match_full_profile">Full Profile</option>
+                                    <option value="match_full_profile_black">Full profile black</option>
+                                    <option value="match_compatability_color">Color</option>
+                                    <option value="match_compatability_black">Black</option>
+                                    <option value="match_compatability_without_horo">Without Horoscope</option>
+                                    <option value="match_compatability_without_horo_black">Without Horoscope Black</option>
+                                    {/* <option value="match_profile_action">Action</option> */}
                                 </select>
                             </div>
                             <div>
