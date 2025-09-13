@@ -570,21 +570,21 @@ const EditViewProfile: React.FC<pageProps> = ({
                           Invoice Generation
                         </button>
                       </div>
+                      
 
                     </div>
+                    <div className='mb-4 ml-4'>
+                          <button
+                            type="button"
+                            onClick={() => setOpen(true)}
+                            className={`bg-blue-700 w-45 text-white px-5 py-1 text-md h-auto rounded whitespace-nowrap text-center`}
+                          >
+                            Payment Info
+                          </button>
+                          <PaymentPopup open={open} onClose={() => setOpen(false)} profileId={profileId}  showAddButton={true}/>
+                        </div>
                     <div className="flex max-xl:flex-wrap">
-                      
                       <div>
-                          <div>
-                        <button
-                           type="button"
-        onClick={() => setOpen(true)}
-                          className={`bg-blue-700 text-white px-5 py-1 text-md h-auto rounded whitespace-nowrap text-center`}
-                        >
-                          Payment Info
-                        </button>
-                        <PaymentPopup open={open} onClose={() => setOpen(false)}  profileId={profileId} />
-                      </div>
                         <div>
                           <p className="text-[#5a5959e6] font-semibold ">
                             Payment Info:

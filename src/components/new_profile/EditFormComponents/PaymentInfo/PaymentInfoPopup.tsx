@@ -6,6 +6,7 @@ interface PaymentPopupProps {
   open: boolean;
   onClose: () => void;
   profileId: string;
+  showAddButton?: boolean; // Add this prop
 }
 
 interface Transaction {
@@ -39,7 +40,7 @@ interface PaymentDetail {
 
 }
 
-const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId }) => {
+const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, showAddButton = true }) => {
   const [activeTab, setActiveTab] = useState<"payment" | "transaction">("payment");
   const [isEditing, setIsEditing] = useState<number | null>(null);
   const [isAdding, setIsAdding] = useState(false);
@@ -329,17 +330,20 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId })
               <div className="space-y-4">
                 <div className="flex justify-between">
                   <h3 className="text-lg font-medium text-gray-800">Payment Details</h3>
-                  <button
-                    type="button"
-                    onClick={handleAddNew}
-                    className="mt-4 flex items-center border p-2 rounded bg-blue-700 text-white font-medium"
-                  >
-                    <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
-                    Add New Payment
-                  </button>
+                  {showAddButton && (
+                    <button
+                      type="button"
+                      onClick={handleAddNew}
+                      className="mt-4 flex items-center border p-2 rounded bg-blue-700 text-white font-medium"
+                    >
+                      <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                      </svg>
+                      Add New Payment
+                    </button>
+                  )}
                 </div>
+
 
                 {loading ? (
                   <div className="text-center py-4">Loading payment details...</div>

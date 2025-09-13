@@ -24,6 +24,7 @@ import { AdminDetailsPopup } from './ProfileViwePopup/AdminDetailsPopup';
 import { DataHistoryPopup } from './ProfileViwePopup/DataHistoryPopup';
 import { MyProfileShare } from '../WhatsUpShare/MyProfileShare';
 import { notify } from '../../TostNotification';
+import PaymentPopup from '../EditFormComponents/PaymentInfo/PaymentInfoPopup';
 
 interface pageProps {
   profile: any;
@@ -81,6 +82,7 @@ const ViewProfile: React.FC<pageProps> = ({
   const [OpenAdminDetails, setOpenAdminDetails] = useState<boolean>(false)
   const [openDataHistory, setOpenDataHistory] = useState<boolean>(false)
   const [pass, setPass] = useState<any>({});
+  const [open, setOpen] = useState(false);
 
   // const [profileCountt,setProfileCountt]=useState()
   //   import moment from "moment";
@@ -562,6 +564,17 @@ const ViewProfile: React.FC<pageProps> = ({
               </div>
 
               {/* Profile Info Sections */}
+              <div className='mt-4'>
+                <Button
+                  variant="contained"
+                  size="small"
+                  onClick={() => setOpen(true)}
+                  className="bg-blue-700 whitespace-nowrap w-45">
+                  Payment Info
+                </Button>
+                <PaymentPopup open={open} onClose={() => setOpen(false)} profileId={profileId ?? ""}  showAddButton={false} />
+              </div>
+
               <div className="mt-4 flex flex-col lg:flex-row gap-4">
                 {/* Left Section */}
                 <div className="flex-1">
