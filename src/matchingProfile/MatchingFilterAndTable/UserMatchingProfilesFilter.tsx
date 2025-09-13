@@ -127,10 +127,10 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
     const [selectedDegrees, setSelectedDegrees] = useState<String[]>([]);
     const [fromDateOfJoin, setFromDateOfJoin] = useState<string>('');
     const [toDateOfJoin, setToDateOfJoin] = useState<string>('');
-    const date = new Date("2025-02-26T18:36:47");
+    // const date = new Date("2025-02-26T18:36:47");
 
-    console.log("local system",date.toLocaleDateString());       // depends on system
-    console.log("en-GB format",date.toLocaleDateString("en-GB")) // always DD/MM/YYYY
+    // console.log("local system",date.toLocaleDateString());       // depends on system
+    // console.log("en-GB format",date.toLocaleDateString("en-GB")) // always DD/MM/YYYY
 
     // Add this query to fetch profile details
     const { data: profileDetails } = useQuery({
@@ -691,7 +691,7 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
                     <div className="flex gap-6 py-4">
                         {/* From Date */}
                         <div>
-                            <h2 className="text-lg text-black text-left font-semibold mb-2">From Date</h2>
+                            <h2 className="text-lg text-black text-left font-semibold mb-2">Registration From Date</h2>
                             <input
                                 type="date"
                                 value={fromDateOfJoin}
@@ -703,7 +703,7 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
 
                         {/* To Date */}
                         <div>
-                            <h2 className="text-lg text-left text-black font-semibold mb-2">To Date</h2>
+                            <h2 className="text-lg text-left text-black font-semibold mb-2">Registration To Date</h2>
                             <input
                                 type="date"
                                 value={toDateOfJoin}
@@ -713,7 +713,6 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
                             />
                         </div>
                     </div>
-
 
                     {/* Profession */}
                     <div className="py-4 col-span-full">

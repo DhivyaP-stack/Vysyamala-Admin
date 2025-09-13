@@ -512,6 +512,7 @@ const EditViewProfile: React.FC<pageProps> = ({
                       <div>
                         <button
                           type="button"
+                          onClick={() => navigate(`/UserMatchingProfiles?profileId=${profileId}`)}
                           className="bg-blue-700 text-white px-8 py-1 text-md h-auto rounded whitespace-nowrap"
                         >
                           Matching Profiles

@@ -112,6 +112,7 @@ import LoginProfiles from './components/ReuseProfileTable/userActions/LoginProfi
 import TransactionHistory from './components/ReuseProfileTable/userActions/TransactionHistory';
 import { ProfilesPage } from './matchingProfile/MatchingFilterAndTable/ProfilesPage';
 import { MatchingProfilesResultsPage } from './matchingProfile/MatchingFilterAndTable/MatchingProfilesResultsPage';
+import { NewMatchingTable } from './matchingProfile/MatchingFilterAndTable/NewMatchingTable';
 
 
 function App() {
@@ -1090,6 +1091,10 @@ function App() {
                 <Route
                   path="/MatchingProfileResults"
                   element={<MatchingProfilesResultsPage />}
+                />
+                 <Route
+                  path="/NewMatchingProfileResults"
+                  element={<NewMatchingTable />}
                 />
               </Routes>
             </DefaultLayout>

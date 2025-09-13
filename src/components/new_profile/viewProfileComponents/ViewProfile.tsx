@@ -519,6 +519,8 @@ const ViewProfile: React.FC<pageProps> = ({
                   variant="contained"
                   size="small"
                   className="bg-blue-700 whitespace-nowrap"
+                  // onClick={() => window.location.href = `/UserMatchingProfiles?profileId=${profileId}`}
+                  onClick={() => navigate(`/UserMatchingProfiles?profileId=${profileId}`)}
                 >
                   Matching Profiles
                 </Button>
