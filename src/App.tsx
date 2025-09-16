@@ -1,11 +1,9 @@
 import { SetStateAction, useEffect, useState } from 'react';
 import { Route, Routes, useLocation, Navigate } from 'react-router-dom';
 import Loader from './common/Loader';
-
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import DataTable from './components/new_profile/DataTable';
 import DefaultLayout from './layout/DefaultLayout';
-
 import CountryTable from './components/CountryTable';
 import StateTable from './components/StateTable';
 import DistrictTable from './components/DistrictTable';

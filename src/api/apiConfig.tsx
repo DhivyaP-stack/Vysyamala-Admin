@@ -322,9 +322,11 @@ export const userMatchingProfilesFilterListMatch = async (
     selectedFamilyStatus: string,
     sentInWhatsapp: string,
     prefPoruthamStarRasi: string,
-    fromDateOfJoin:string,
-    toDateOfJoin:string,
+    fromDateOfJoin: string,
+    toDateOfJoin: string,
     profileType: 'matching' | 'suggested' = 'matching',
+    actionType: string = 'all', // New parameter for action type
+    status: string = 'all' // New parameter for status
 ) => {
     try {
         // Determine the endpoint based on profileType
@@ -362,6 +364,8 @@ export const userMatchingProfilesFilterListMatch = async (
             pref_porutham_star_rasi: prefPoruthamStarRasi,
             from_dateofjoin: fromDateOfJoin,
             to_dateofjoin: toDateOfJoin,
+            action_type: actionType, // Add action_type parameter
+            status: status // Add status parameter
         });
 
         console.log(`User ${profileType} records filter fetched successfully`, response);
