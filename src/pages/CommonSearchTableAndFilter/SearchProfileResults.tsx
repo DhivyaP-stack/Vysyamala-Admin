@@ -116,6 +116,9 @@ const SearchProfileResults = ({ filters, onBack, No_Image_Available }: SearchPro
           String(filters.motherAlive),
           String(filters.mobileNo),    // Add mobile_no
           String(filters.dob),         // Add profile_dob
+          filters.dobDay, // day component
+          filters.dobMonth, // month component
+          filters.dobYear, // year component
           String(filters.selectedProfileStatus) // Add status
         );
 

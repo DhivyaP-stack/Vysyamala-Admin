@@ -221,6 +221,9 @@ const SearchProfileFilters = ({ onFilterSubmit, loading }: SearchProfileFiltersP
       selectedFamilyStatus,
       mobileNo,
       dob,
+      dobDay,
+      dobMonth,
+      dobYear,
       selectedProfileStatus,
     };
 

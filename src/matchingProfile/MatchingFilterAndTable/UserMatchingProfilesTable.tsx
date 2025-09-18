@@ -903,7 +903,7 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                 let data;
                 // Set a large number for items per page to get all data
                 const largePageSize = 10000;
-                
+
                 if (filters) {
                     // Use filtered data with profileType
                     data = await userMatchingProfilesFilterListMatch(
@@ -1359,7 +1359,11 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                     </button> */}
                 </div>
             </div>
-
+            <div className="flex justify-between items-center mt-4 px-4 py-2 bg-gray-50 ">
+                <div className="text-sm text-gray-600">
+                    Showing {totalItems} records
+                </div>
+            </div>
             <div className="py-4">
                 <Paper className="w-full">
                     <TableContainer sx={{ border: '1px solid #E0E0E0', maxHeight: '70vh' }} component={Paper}>
@@ -1506,12 +1510,6 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                         </Table>
                     </TableContainer>
                 </Paper>
-            </div>
-
-            <div className="flex justify-between items-center mt-4 px-4 py-2 bg-gray-50 rounded-lg border border-gray-200">
-                <div className="text-sm text-gray-600">
-                    Showing {matchingData.length} of {totalItems} records
-                </div>
             </div>
         </div>
     );
