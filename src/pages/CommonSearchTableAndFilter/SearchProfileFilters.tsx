@@ -115,7 +115,7 @@ const SearchProfileFilters = ({ onFilterSubmit, loading }: SearchProfileFiltersP
   const [selectedFamilyStatus, setSelectedFamilyStatus] = useState<String[]>([]);
   const [profileStatuses, setProfileStatuses] = useState<ProfileStatus[]>([]);
   const [mobileNo, setMobileNo] = useState<string>('');
-  const [dob, setDob] = useState<string>('');
+  // const [dob, setDob] = useState<string>('');
   const [dobDay, setDobDay] = useState<string>('');
   const [dobMonth, setDobMonth] = useState<string>('');
   const [dobYear, setDobYear] = useState<string>('');
@@ -220,7 +220,6 @@ const SearchProfileFilters = ({ onFilterSubmit, loading }: SearchProfileFiltersP
       selectedMaritalStatus,
       selectedFamilyStatus,
       mobileNo,
-      dob,
       dobDay,
       dobMonth,
       dobYear,

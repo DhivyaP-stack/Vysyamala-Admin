@@ -1267,7 +1267,7 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                         <select
                             value={emailFormat}
                             onChange={(e) => setEmailFormat(e.target.value)}
-                            className="border border-gray-300 rounded px-3 py-1 w-70 text-black text-sm focus:outline-none">
+                            className="border border-gray-300 rounded px-3 py-1 w-40 text-black text-sm focus:outline-none">
                             <option value="">Select an Email Format</option>
                             <option value="match_full_profile">Full Profile</option>
                             <option value="match_full_profile_black">Full profile black</option>
@@ -1333,7 +1333,7 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
 
                 {/* Search */}
                 <div className="flex items-end gap-2 ml-auto w-100 ">
-                    <div className="relative w-100">
+                    <div className="relative w-100 mt-5">
                         <input
                             type="text"
                             placeholder="Search name / id / profession"
@@ -1365,151 +1365,149 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                 </div>
             </div>
             <div className="py-4">
-                <Paper className="w-full">
-                    <TableContainer sx={{ border: '1px solid #E0E0E0', maxHeight: '70vh' }} component={Paper}>
-                        <Table sx={{ minWidth: 650 }} aria-label="simple table" stickyHeader>
-                            <TableHead style={{ background: '#FFF8B3', padding: '17px' }}>
+                <TableContainer component={Paper}>
+                    <Table sx={{ minWidth: 650 }} aria-label="simple table" stickyHeader>
+                        <TableHead style={{ background: '#FFF8B3', padding: '17px' }}>
+                            <TableRow>
+                                {columns.map((column) => (
+                                    <TableCell
+                                        key={column.id}
+                                        sx={{
+                                            borderBottom: "1px solid #E0E0E0",
+                                            color: "#ee3448",
+                                            fontWeight: "bold",
+                                            fontSize: "1rem",
+                                            whiteSpace: "nowrap",
+                                            backgroundColor: "#FFF8B3", // Keep sticky header background
+                                        }}
+                                    >
+                                        {column.id === "select" ? (
+                                            <Checkbox
+                                                color="primary"
+                                                checked={matchingData.length > 0 && selectedProfiles.length === matchingData.length}
+                                                indeterminate={
+                                                    selectedProfiles.length > 0 &&
+                                                    selectedProfiles.length < matchingData.length
+                                                }
+                                                onChange={handleSelectAll}
+                                            />
+                                        ) : (
+                                            column.label
+                                        )}
+                                    </TableCell>
+                                ))}
+                            </TableRow>
+                        </TableHead>
+
+                        <TableBody>
+                            {loading ? (
                                 <TableRow>
-                                    {columns.map((column) => (
+                                    <TableCell colSpan={columns.length} sx={{ textAlign: "center", py: 3 }}>
+                                        <CircularProgress />
+                                    </TableCell>
+                                </TableRow>
+                            ) : matchingData && matchingData.length > 0 ? (
+                                matchingData.map((row) => (
+                                    <TableRow
+                                        key={row.profile_id}
+                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                    >
+                                        <TableCell>
+                                            <Checkbox
+                                                color="primary"
+                                                checked={selectedProfiles.includes(row.profile_id)}
+                                                onChange={() => handleCheckboxChange(row.profile_id)}
+                                            />
+                                        </TableCell>
+
+                                        <TableCell>
+                                            <img
+                                                className="rounded-full"
+                                                src={row.profile_img || BASE64_PLACEHOLDER}
+                                                alt="Profile"
+                                                width={50}
+                                                height={50}
+                                                onError={(e) => {
+                                                    e.currentTarget.src = BASE64_PLACEHOLDER;
+                                                }}
+                                            />
+                                        </TableCell>
                                         <TableCell
-                                            key={column.id}
+                                            onClick={() =>
+                                                navigate(
+                                                    `/viewProfile?profileId=${row.profile_id}`,
+                                                )
+                                            }
                                             sx={{
-                                                borderBottom: "1px solid #E0E0E0",
-                                                color: "#ee3448",
-                                                fontWeight: "bold",
-                                                fontSize: "1rem",
-                                                whiteSpace: "nowrap",
-                                                backgroundColor: "#FFF8B3",
+                                                color: 'blue',
+                                                cursor: 'pointer',
+                                                textDecoration: 'none',
+                                                '&:hover': { textDecoration: 'underline' }
                                             }}
                                         >
-                                            {column.id === "select" ? (
-                                                <Checkbox
-                                                    color="primary"
-                                                    checked={selectedProfiles.length === matchingData.length}
-                                                    indeterminate={
-                                                        selectedProfiles.length > 0 &&
-                                                        selectedProfiles.length < matchingData.length
-                                                    }
-                                                    onChange={handleSelectAll}
-                                                />
-                                            ) : (
-                                                column.label
-                                            )}
+                                            {row.profile_id}
                                         </TableCell>
-                                    ))}
-                                </TableRow>
-                            </TableHead>
+                                        <TableCell>{row.work_place}</TableCell>
+                                        <TableCell>{row.plan}</TableCell>
+                                        <TableCell>{row.profile_name}</TableCell>
+                                        <TableCell>{row.profile_age}</TableCell>
+                                        <TableCell>{row.star}</TableCell>
+                                        <TableCell>{row.degree}</TableCell>
+                                        <TableCell>{row.profession}</TableCell>
+                                        <TableCell>{row.company_name}</TableCell>
+                                        <TableCell>{row.designation}</TableCell>
+                                        <TableCell>{row.anual_income}</TableCell>
+                                        <TableCell>{row.state}</TableCell>
+                                        <TableCell>{row.city}</TableCell>
+                                        <TableCell>{row.family_status}</TableCell>
+                                        <TableCell>{row.father_occupation}</TableCell>
+                                        <TableCell>{row.suya_gothram}</TableCell>
+                                        <TableCell>{row.chevvai}</TableCell>
+                                        <TableCell>{row.raguketu}</TableCell>
 
-                            <TableBody>
-                                {loading ? (
-                                    <TableRow>
-                                        <TableCell colSpan={columns.length} sx={{ textAlign: "center", py: 3 }}>
-                                            <CircularProgress />
-                                        </TableCell>
-                                    </TableRow>
-                                ) : matchingData && matchingData.length > 0 ? (
-                                    matchingData.map((row) => (
-                                        <TableRow
-                                            key={row.profile_id}
-                                            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                        >
-                                            <TableCell>
-                                                <Checkbox
-                                                    color="primary"
-                                                    checked={selectedProfiles.includes(row.profile_id)}
-                                                    onChange={() => handleCheckboxChange(row.profile_id)}
-                                                />
-                                            </TableCell>
-
-                                            <TableCell>
-                                                <img
-                                                    className="rounded-full"
-                                                    src={row.profile_img || BASE64_PLACEHOLDER}
-                                                    alt="Profile"
-                                                    width={50}
-                                                    height={50}
-                                                    onError={(e) => {
-                                                        e.currentTarget.src = BASE64_PLACEHOLDER;
-                                                    }}
-                                                />
-                                            </TableCell>
-                                            <TableCell
-                                                onClick={() =>
-                                                    navigate(
-                                                        `/viewProfile?profileId=${row.profile_id}`,
-                                                    )
+                                        <TableCell>  {row.dateofjoin
+                                            ? new Date(row.dateofjoin).toLocaleDateString("en-GB")
+                                            : "-"}</TableCell>
+                                        <TableCell>N/A</TableCell>
+                                        <TableCell>{row.matching_score}</TableCell>
+                                        <TableCell>
+                                            <Tooltip
+                                                title={
+                                                    <div style={{ whiteSpace: 'pre-line' }}>
+                                                        {formatActionsForTooltip(row.action_score?.actions || [])}
+                                                    </div>
                                                 }
-                                                sx={{
-                                                    color: 'blue',
-                                                    cursor: 'pointer',
-                                                    textDecoration: 'none',
-                                                    '&:hover': { textDecoration: 'underline' }
-                                                }}
+                                                arrow
+                                                placement="top"
                                             >
-                                                {row.profile_id}
-                                            </TableCell>
-                                            <TableCell>{row.work_place}</TableCell>
-                                            <TableCell>{row.plan}</TableCell>
-                                            <TableCell>{row.profile_name}</TableCell>
-                                            <TableCell>{row.profile_age}</TableCell>
-                                            <TableCell>{row.star}</TableCell>
-                                            <TableCell>{row.degree}</TableCell>
-                                            <TableCell>{row.profession}</TableCell>
-                                            <TableCell>{row.company_name}</TableCell>
-                                            <TableCell>{row.designation}</TableCell>
-                                            <TableCell>{row.anual_income}</TableCell>
-                                            <TableCell>{row.state}</TableCell>
-                                            <TableCell>{row.city}</TableCell>
-                                            <TableCell>{row.family_status}</TableCell>
-                                            <TableCell>{row.father_occupation}</TableCell>
-                                            <TableCell>{row.suya_gothram}</TableCell>
-                                            <TableCell>{row.chevvai}</TableCell>
-                                            <TableCell>{row.raguketu}</TableCell>
-
-                                            <TableCell>  {row.dateofjoin
-                                                ? new Date(row.dateofjoin).toLocaleDateString("en-GB")
-                                                : "-"}</TableCell>
-                                            <TableCell>N/A</TableCell>
-                                            <TableCell>{row.matching_score}</TableCell>
-                                            <TableCell>
-                                                <Tooltip
-                                                    title={
-                                                        <div style={{ whiteSpace: 'pre-line' }}>
-                                                            {formatActionsForTooltip(row.action_score?.actions || [])}
-                                                        </div>
-                                                    }
-                                                    arrow
-                                                    placement="top"
-                                                >
-                                                    <span>{row.action_score?.score ?? "-"}</span>
-                                                </Tooltip>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Tooltip
-                                                    title={
-                                                        <div style={{ whiteSpace: 'pre-line' }}>
-                                                            {formatActionsForTooltip(row.action_log?.actions || [])}
-                                                        </div>
-                                                    }
-                                                    arrow
-                                                    placement="top"
-                                                >
-                                                    <span>{row.action_log?.score ?? "-"}</span>
-                                                </Tooltip>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))
-                                ) : (
-                                    <TableRow>
-                                        <TableCell colSpan={columns.length} sx={{ textAlign: 'center' }}>
-                                            No Matching Records found.
+                                                <span>{row.action_score?.score ?? "-"}</span>
+                                            </Tooltip>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Tooltip
+                                                title={
+                                                    <div style={{ whiteSpace: 'pre-line' }}>
+                                                        {formatActionsForTooltip(row.action_log?.actions || [])}
+                                                    </div>
+                                                }
+                                                arrow
+                                                placement="top"
+                                            >
+                                                <span>{row.action_log?.score ?? "-"}</span>
+                                            </Tooltip>
                                         </TableCell>
                                     </TableRow>
-                                )}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </Paper>
+                                ))
+                            ) : (
+                                <TableRow>
+                                    <TableCell colSpan={columns.length} sx={{ textAlign: 'center' }}>
+                                        No Matching Records found.
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
             </div>
         </div>
     );
