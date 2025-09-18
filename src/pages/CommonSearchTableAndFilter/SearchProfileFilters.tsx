@@ -116,6 +116,9 @@ const SearchProfileFilters = ({ onFilterSubmit, loading }: SearchProfileFiltersP
   const [profileStatuses, setProfileStatuses] = useState<ProfileStatus[]>([]);
   const [mobileNo, setMobileNo] = useState<string>('');
   const [dob, setDob] = useState<string>('');
+  const [dobDay, setDobDay] = useState<string>('');
+  const [dobMonth, setDobMonth] = useState<string>('');
+  const [dobYear, setDobYear] = useState<string>('');
   const [selectedProfileStatus, setSelectedProfileStatus] = useState<string>('');
 
   useEffect(() => {
@@ -155,46 +158,26 @@ const SearchProfileFilters = ({ onFilterSubmit, loading }: SearchProfileFiltersP
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    // Validate age inputs
-    // if (!ageFrom || ageFrom.trim() === '') {
-    //   NotifyError("Age from cannot be empty");
-    //   return;
-    // }
+    // Validate age inputs only if they are provided
+    const ageFromNum = ageFrom ? Number(ageFrom) : null;
+    const ageToNum = ageTo ? Number(ageTo) : null;
 
-    // if (!ageTo || ageTo.trim() === '') {
-    //   NotifyError("Age to cannot be empty");
-    //   return;
-    // }
-
-    const ageFromNum = Number(ageFrom);
-    const ageToNum = Number(ageTo);
-
-    if (isNaN(ageFromNum)) {
+    if (ageFrom && isNaN(Number(ageFrom))) {
       NotifyError("Age from must be a valid number");
       return;
     }
 
-    if (isNaN(ageToNum)) {
+    if (ageTo && isNaN(Number(ageTo))) {
       NotifyError("Age to must be a valid number");
       return;
     }
 
-    if (ageFromNum > ageToNum) {
+    if (ageFromNum !== null && ageToNum !== null && ageFromNum > ageToNum) {
       NotifyError("Age from cannot be greater than age to");
       return;
     }
 
-    // if (ageFromNum < 18 ) {
-    //   NotifyError("Age From must be not less than 18 ");
-    //   return;
-    // }
-
-    //   if ( ageToNum > 100) {
-    //   NotifyError("Age to must be not greater than 100");
-    //   return;
-    // }
-
-    // Validate height inputs
+    // Validate height inputs only if they are provided
     if (heightFrom && isNaN(Number(heightFrom))) {
       NotifyError("Height from must be a valid number");
       return;
@@ -750,12 +733,59 @@ const SearchProfileFilters = ({ onFilterSubmit, loading }: SearchProfileFiltersP
             <label className="text-[18px] text-black font-semibold mb-2">
               Date of Birth
             </label>
-            <input
-              type="date"
-              className="w-72 outline-none px-4 py-2.5 border border-black rounded"
-              value={dob}
-              onChange={(e) => setDob(e.target.value)}
-            />
+            <div className="flex space-x-2">
+              {/* Day Dropdown */}
+              <select
+                className="w-24 outline-none px-2 py-2.5 border border-black rounded"
+                value={dobDay}
+                onChange={(e) => setDobDay(e.target.value)}
+              >
+                <option value="">Day</option>
+                {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
+                  <option key={day} value={day}>
+                    {day}
+                  </option>
+                ))}
+              </select>
+
+              {/* Month Dropdown */}
+              <select
+                className="w-32 outline-none px-2 py-2.5 border border-black rounded"
+                value={dobMonth}
+                onChange={(e) => setDobMonth(e.target.value)}
+              >
+                <option value="">Month</option>
+                <option value="1">January</option>
+                <option value="2">February</option>
+                <option value="3">March</option>
+                <option value="4">April</option>
+                <option value="5">May</option>
+                <option value="6">June</option>
+                <option value="7">July</option>
+                <option value="8">August</option>
+                <option value="9">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+              </select>
+
+              {/* Year Dropdown (18-30 years back) */}
+              <select
+                className="w-24 outline-none px-2 py-2.5 border border-black rounded"
+                value={dobYear}
+                onChange={(e) => setDobYear(e.target.value)}
+              >
+                <option value="">Year</option>
+                {Array.from(
+                  { length: 30 },
+                  (_, i) => new Date().getFullYear() - 18 - i
+                ).map((year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           {/* Chevvai Dhosam */}

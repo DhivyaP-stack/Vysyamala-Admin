@@ -326,7 +326,8 @@ export const userMatchingProfilesFilterListMatch = async (
     toDateOfJoin: string,
     profileType: 'matching' | 'suggested' = 'matching',
     actionType: string = 'all', // New parameter for action type
-    status: string = 'all' // New parameter for status
+    status: string = 'all', // New parameter for status
+    search: string = ""
 ) => {
     try {
         // Determine the endpoint based on profileType
@@ -365,7 +366,8 @@ export const userMatchingProfilesFilterListMatch = async (
             from_dateofjoin: fromDateOfJoin,
             to_dateofjoin: toDateOfJoin,
             action_type: actionType, // Add action_type parameter
-            status: status // Add status parameter
+            status: status, // Add status parameter
+            search: search
         });
 
         console.log(`User ${profileType} records filter fetched successfully`, response);

@@ -732,26 +732,37 @@
 //     );
 // };
 
-
 import { useState, useEffect } from 'react';
 import {
     Box, Button, Checkbox, CircularProgress, IconButton, Paper, Table, TableBody,
-    TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField,
+    TableCell, TableContainer, TableHead, TableRow, TextField,
     Typography, Tooltip
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { MdVerified } from 'react-icons/md';
 import { GoUnverified } from 'react-icons/go';
 import { NotifyError, NotifySuccess } from '../../common/Toast/ToastMessage';
-import { MatchingEmailProfile, MatchingPrintProfile, MatchingWhatsappProfile, userMatchingProfiles, userMatchingProfilesFilterListMatch, userMatchingProfilesPrintProfile, userMatchingProfilesSendEmail, userMatchingProfilesWhatsapp } from '../../api/apiConfig';
+import {
+    MatchingEmailProfile,
+    MatchingPrintProfile,
+    MatchingWhatsappProfile,
+    userMatchingProfiles,
+    userMatchingProfilesFilterListMatch,
+    userMatchingProfilesPrintProfile,
+    userMatchingProfilesSendEmail,
+    userMatchingProfilesWhatsapp
+} from '../../api/apiConfig';
+
+// Base64 encoded placeholder image to avoid 404 errors
+const BASE64_PLACEHOLDER = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0yNSA0QzI4LjMxNDggNCAzMSA2LjY4NTI0IDMxIDkuOTk5OTlDMzEgMTMuMzE0NyAyOC4zMTQ4IDE1Ljk5OTkgMjUgMTUuOTk5OUMyMS42ODUyIDE1Ljk5OTkgMTkgMTMuMzE0NyAxOSA5Ljk5OTk5QzE5IDYuNjg1MjQgMjEuNjg1MiA0IDI1IDRaIiBmaWxsPSIjOTk5OTk5Ii8+CjxwYXRoIGQ9Ik0yNSAxOEMzMC41MjIgMTggMzUgMTkuNzggMzUgMjJWMzZIMTVWMjJDMTUgMTkuNzggMTkuNDc4IDE4IDI1IDE4WiIgZmlsbD0iIzk5OTk5OSIvPgo8L3N2Zz4K";
 
 interface ActionScore {
     score: number;
     actions: any[];
 }
 
-
 interface UserMatchingProfilesProps {
+    action_log: any;
     profile_id: string;
     profile_name: string;
     profile_img: string;
@@ -774,99 +785,88 @@ interface UserMatchingProfilesProps {
     photo_protection: number;
     matching_score: number;
     wish_list: number;
+    search: string;
     verified: number;
     action_score: ActionScore;
     dateofjoin: string;
 }
+
 const getColumns = (profileType: 'matching' | 'suggested') => {
-const baseColumns  = [
-    { id: "select", label: "Select" },
-    { id: 'profile_img', label: 'Image' },
-    { id: 'profile_id', label: 'Profile ID' },
-    { id: 'work_place', label: 'Work Place' },
-    { id: 'plan', label: 'Mode' },
-    { id: 'profile_name', label: 'Name' },
-    { id: 'profile_age', label: 'Age' },
-    { id: 'star', label: 'Star' },
-    { id: 'degree', label: 'Degree' },
-    { id: 'profession', label: 'Profession' },
-    { id: 'company_name', label: 'Company / Buisness' },
-    { id: 'designation', label: 'Designation / Nature' },
-    { id: 'anual_income', label: 'Annual Income' },
-    { id: 'state', label: 'State' },
-    { id: 'city', label: 'City' },
-    { id: 'family_status', label: 'Family Status' },
-    { id: 'father_occupation', label: 'Father Business' },
-    { id: 'suya_gothram', label: 'Suya Gothram' },
-    { id: 'chevvai', label: 'Admin Chevvai' },
-    { id: 'raguketu', label: 'Admin Raghu/Kethu' },
-    { id: 'dateofjoin', label: 'Reg Date' },
-    { id: "status", label: "Status" },
-    { id: "matching_score", label: "Score" },
-    { id: 'action_score', label: 'Action' },
-];
-if (profileType === 'matching') {
-    return [
-      ...baseColumns,
-      { id: "matching_score", label: "Matching Score" },
-      { id: 'action_score', label: 'Action' }
+    const baseColumns = [
+        { id: "select", label: "Select" },
+        { id: 'profile_img', label: 'Image' },
+        { id: 'profile_id', label: 'Profile ID' },
+        { id: 'work_place', label: 'Work Place' },
+        { id: 'plan', label: 'Mode' },
+        { id: 'profile_name', label: 'Name' },
+        { id: 'profile_age', label: 'Age' },
+        { id: 'star', label: 'Star' },
+        { id: 'degree', label: 'Degree' },
+        { id: 'profession', label: 'Profession' },
+        { id: 'company_name', label: 'Company / Buisness' },
+        { id: 'designation', label: 'Designation / Nature' },
+        { id: 'anual_income', label: 'Annual Income' },
+        { id: 'state', label: 'State' },
+        { id: 'city', label: 'City' },
+        { id: 'family_status', label: 'Family Status' },
+        { id: 'father_occupation', label: 'Father Business' },
+        { id: 'suya_gothram', label: 'Suya Gothram' },
+        { id: 'chevvai', label: 'Admin Chevvai' },
+        { id: 'raguketu', label: 'Admin Raghu/Kethu' },
+        { id: 'dateofjoin', label: 'Reg Date' },
+        { id: "status", label: "Status" },
+        { id: "matching_score", label: "Matching Score" },
+        { id: 'action_score', label: 'Action Score' },
+        { id: 'action_log', label: 'Action Log' },
     ];
-  } else {
-    return [
-      ...baseColumns,
-      { id: "matching_score", label: "Suggested Score" },
-      { id: 'action_score', label: 'Action' }
-    ];
-  }
+    if (profileType === 'matching') {
+        return [
+            ...baseColumns,
+        ];
+    } else {
+        return [
+            ...baseColumns,
+            { id: "matching_score", label: "Suggested Score" },
+            { id: 'action_score', label: 'Action' }
+        ];
+    }
 };
 
 interface UserMatchingProfilesTableProps {
     profileID: string | null;
     filters: any;
     onBack: () => void;
-    No_Image_Available: any;
     profileType: 'matching' | 'suggested';
 }
 
-export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image_Available, profileType }: UserMatchingProfilesTableProps) => {
+export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileType }: UserMatchingProfilesTableProps) => {
     const navigate = useNavigate();
     const [matchingData, setMatchingData] = useState<UserMatchingProfilesProps[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [totalItems, setTotalItems] = useState(0);
-    const [currentPage, setCurrentPage] = useState<number>(0);
-    const [itemsPerPage, setItemsPerPage] = useState(10);
-    // const [selectedProfiles, setSelectedProfiles] = useState<string[]>([]);
+    const [selectedProfiles, setSelectedProfiles] = useState<string[]>([]);
     const [selectedFormat, setSelectedFormat] = useState<string>("");
     const [isSendingEmail, setIsSendingEmail] = useState<boolean>(false);
     const [printFormat, setPrintFormat] = useState<string>("");
     const [isPrintProfile, setIsPrintProfile] = useState<boolean>(false);
     const [whatsappFormat, setWhatsappFormat] = useState<string>("");
+    const [emailFormat, setEmailFormat] = useState<string>("");
     const [iswhatsappProfile, setIsWhatsappProfile] = useState<boolean>(false);
-    const [goToPageInput, setGoToPageInput] = useState<string>('');
     const roleId = sessionStorage.getItem('role_id');
-    const [selectedProfiles, setSelectedProfiles] = useState<string[]>([]);
     const [search, setSearch] = useState("");
-    //const [active, setActive] = useState("All");
     const [selectedActionType, setSelectedActionType] = useState<string>('all');
     const [activeStatus, setActiveStatus] = useState<string>("All");
+    const [selectedSendAction, setSelectedSendAction] = useState<string>('print');
 
     const statusButtons = ["All", "Sent", "Unsent"];
     const clearSearch = () => setSearch("");
 
-    // const handleCheckboxChange = (profileId: string) => {
-    //     setSelectedProfiles((prev) =>
-    //         prev.includes(profileId)
-    //             ? prev.filter((id) => id !== profileId)
-    //             : [...prev, profileId]
-    //     );
-    // };
-
-      // Get dynamic columns based on profileType
+    // Get dynamic columns based on profileType
     const columns = getColumns(profileType);
 
     // Update the header title based on profileType
-    const headerTitle = profileType === 'matching' 
-        ? "Vysyamala Matching Profiles" 
+    const headerTitle = profileType === 'matching'
+        ? "Vysyamala Matching Profiles"
         : "Vysyamala Suggested Profiles";
 
     // Tooltip function
@@ -892,21 +892,28 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
     };
 
     useEffect(() => {
+        setSelectedProfiles([]);
+    }, [activeStatus, selectedActionType, search]);
+
+    useEffect(() => {
         const fetchMatchingData = async () => {
             if (!profileID) return;
             setLoading(true);
             try {
                 let data;
+                // Set a large number for items per page to get all data
+                const largePageSize = 10000;
+                
                 if (filters) {
                     // Use filtered data with profileType
                     data = await userMatchingProfilesFilterListMatch(
                         String(profileID),
-                        currentPage + 1,
-                        itemsPerPage,
+                        1, // Always get first page
+                        largePageSize, // Large page size to get all data
                         filters.selectedComplexions,
                         filters.selectedEducation,
-                        filters.selectedFieldsOfStudy, // Add this
-                        filters.selectedDegrees, // Add this
+                        filters.selectedFieldsOfStudy,
+                        filters.selectedDegrees,
                         filters.heightFrom,
                         filters.heightTo,
                         filters.minAnnualIncome,
@@ -931,18 +938,19 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
                         filters.toDateOfJoin,
                         profileType,
                         selectedActionType,
-                        activeStatus.toLowerCase() === 'all' ? 'all' : activeStatus.toLowerCase()
+                        activeStatus.toLowerCase() === 'all' ? 'all' : activeStatus.toLowerCase(),
+                        search.trim()
                     );
                 } else {
-                    // You might need to create separate functions for default data
-                    // For now, using the same function with empty filters
+                    // API call without filters
                     data = await userMatchingProfilesFilterListMatch(
                         String(profileID),
-                        currentPage + 1,
-                        itemsPerPage,
+                        1, // Always get first page
+                        largePageSize, // Large page size to get all data
                         "", "", "", "", 0, 0, 0, 0, "", 0, 0, 0, "", 0, 0, "", "", "", "", "", "", "", "", "", "", "", profileType,
-                        selectedActionType, // Add action_type parameter
-                        activeStatus.toLowerCase() === 'all' ? 'all' : activeStatus.toLowerCase()
+                        selectedActionType,
+                        activeStatus.toLowerCase() === 'all' ? 'all' : activeStatus.toLowerCase(),
+                        search.trim()
                     );
                 }
 
@@ -956,27 +964,21 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
         };
 
         fetchMatchingData();
-    }, [profileID, currentPage, itemsPerPage, filters, profileType, selectedActionType, activeStatus]);
+    }, [profileID, filters, profileType, selectedActionType, activeStatus, search]);
 
     // Handle status button change
     const handleStatusChange = (status: string) => {
         setActiveStatus(status);
-        setCurrentPage(0); // Reset to first page when filter changes
     };
 
-    // Handle action type change
+    // Handle filter action type change
     const handleActionTypeChange = (actionType: string) => {
         setSelectedActionType(actionType);
-        setCurrentPage(0); // Reset to first page when filter changes
     };
 
-    const handleChangePage = (_event: unknown, newPage: number) => {
-        setCurrentPage(newPage);
-    };
-
-    const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setItemsPerPage(parseInt(event.target.value, 10));
-        setCurrentPage(0);
+    // Handle send action type change
+    const handleSendActionChange = (actionType: string) => {
+        setSelectedSendAction(actionType);
     };
 
     const handleCheckboxChange = (profileId: string) => {
@@ -998,7 +1000,6 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
         });
     };
 
-
     const handlePrintProfile = async () => {
         if (selectedProfiles.length === 0) {
             NotifyError("Please select at least one profile to print profile");
@@ -1010,17 +1011,15 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
         }
         try {
             setIsPrintProfile(true);
+            const apiUrl = `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/admin-match-pdf-with-format/?action_type=print`;
 
-            // Construct the API URL with parameters
-            const apiUrl = `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/admin-match-pdf-with-format/`; // Your API endpoint
             const params = new URLSearchParams({
                 pdf_format: printFormat,
                 profile_ids: selectedProfiles.join(","),
                 profile_to: String(profileID)
             });
 
-            // Open the API URL in a new tab
-            const newWindow = window.open(`${apiUrl}?${params.toString()}`, '_blank');
+            const newWindow = window.open(`${apiUrl}&${params.toString()}`, '_blank');
 
             if (newWindow) {
                 newWindow.focus();
@@ -1035,109 +1034,109 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
             setIsPrintProfile(false);
         }
     };
-
 
     const handleProfileWhatsapp = async () => {
         if (selectedProfiles.length === 0) {
-            NotifyError("Please select at least one profile to print profile");
+            NotifyError("Please select at least one profile to send via WhatsApp");
             return;
         }
-        if (!printFormat) {
-            NotifyError("Please select a Print format");
+        if (!whatsappFormat) {
+            NotifyError("Please select a WhatsApp format");
             return;
         }
         try {
-            setIsPrintProfile(true);
+            setIsWhatsappProfile(true);
+            const apiUrl = `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/admin-match-pdf-with-format/?action_type=whatsapp`;
 
-            // Construct the API URL with parameters
-            const apiUrl = `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/admin-match-pdf-with-format/`; // Your API endpoint
             const params = new URLSearchParams({
-                pdf_format: printFormat,
+                pdf_format: whatsappFormat,
                 profile_ids: selectedProfiles.join(","),
                 profile_to: String(profileID)
             });
 
-            // Open the API URL in a new tab
-            const newWindow = window.open(`${apiUrl}?${params.toString()}`, '_blank');
+            const newWindow = window.open(`${apiUrl}&${params.toString()}`, '_blank');
 
             if (newWindow) {
                 newWindow.focus();
-                console.log("Opening profile in new tab...");
+                NotifySuccess("Profiles sent via WhatsApp successfully");
             } else {
                 NotifyError("Popup blocked! Please allow popups for this site.");
             }
         } catch (error: any) {
-            console.error("Failed to open print profile:", error);
-            NotifyError(error.message || "Failed to open print profile");
+            console.error("Failed to send via WhatsApp:", error);
+            NotifyError(error.message || "Failed to send via WhatsApp");
         } finally {
-            setIsPrintProfile(false);
+            setIsWhatsappProfile(false);
         }
     };
-
 
     const handleSendEmail = async () => {
         if (selectedProfiles.length === 0) {
-            NotifyError("Please select at least one profile to print profile");
+            NotifyError("Please select at least one profile to send via email");
             return;
         }
-        if (!printFormat) {
-            NotifyError("Please select a Print format");
+        if (!emailFormat) {
+            NotifyError("Please select an email format");
             return;
         }
-        try {
-            setIsPrintProfile(true);
 
-            // Construct the API URL with parameters
-            const apiUrl = `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/admin-match-pdf-with-format/`; // Your API endpoint
-            const params = new URLSearchParams({
-                pdf_format: printFormat,
+        try {
+            setIsSendingEmail(true);
+
+            const apiUrl = `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/admin-match-pdf-with-format/`;
+
+            const query = new URLSearchParams({
+                action_type: "email",
+                pdf_format: emailFormat,
                 profile_ids: selectedProfiles.join(","),
-                profile_to: String(profileID)
+                profile_to: String(profileID),
             });
 
-            // Open the API URL in a new tab
-            const newWindow = window.open(`${apiUrl}?${params.toString()}`, '_blank');
+            const response = await fetch(`${apiUrl}?${query.toString()}`, {
+                method: "GET",
+            });
 
-            if (newWindow) {
-                newWindow.focus();
-                console.log("Opening profile in new tab...");
-            } else {
-                NotifyError("Popup blocked! Please allow popups for this site.");
+            if (!response.ok) {
+                throw new Error("Failed to send emails");
             }
+
+            NotifySuccess("Emails sent successfully");
         } catch (error: any) {
-            console.error("Failed to open print profile:", error);
-            NotifyError(error.message || "Failed to open print profile");
+            console.error("Failed to send emails:", error);
+            NotifyError(error.message || "Failed to send emails");
         } finally {
-            setIsPrintProfile(false);
+            setIsSendingEmail(false);
         }
     };
 
-
-    const handleGoToPage = () => {
-        const pageNumber = parseInt(goToPageInput, 10);
-        if (!isNaN(pageNumber)) {
-            const lastPage = Math.ceil(totalItems / itemsPerPage) - 1;
-            const newPage = Math.max(0, Math.min(pageNumber - 1, lastPage));
-            setCurrentPage(newPage);
-            setGoToPageInput('');
+    const handleSendSelected = () => {
+        switch (selectedSendAction) {
+            case 'print':
+                handlePrintProfile();
+                break;
+            case 'whatsapp':
+                handleProfileWhatsapp();
+                break;
+            case 'email':
+                handleSendEmail();
+                break;
+            default:
+                NotifyError("Please select an action");
         }
     };
 
-    // if (loading) {
-    //     return <div className="flex items-center justify-center h-screen w-full"> <CircularProgress /></div>;
-    // }
+    const handleSearch = () => {
+        // The useEffect will automatically trigger due to the search state change
+    };
 
+    const handleKeyPress = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter') {
+            handleSearch();
+        }
+    };
 
     return (
         <div className="container mx-auto p-4">
-            {/* <Button
-                variant="contained"
-                onClick={onBack}
-                sx={{ mb: 2 }}
-            >
-                Back to Filters
-            </Button> */}
-
             <div className="mb-4 flex justify-between items-center">
                 <div>
                     <h2 className="text-xl text-left font-bold text-red-600">{headerTitle}</h2>
@@ -1161,94 +1160,187 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
                     </div>
                 </div>
 
-                {/* Top-right field */}
                 <div className="flex items-center gap-2">
-                    {/* <div className="bg-[#FFF9DB] px-2 py-1 text-black rounded-lg text-sm">
-                        Preview UI • Enriched
-                    </div> */}
                     <span className="text-sm">Profiles: {selectedProfiles.length} selected</span>
                 </div>
             </div>
+
+            {activeStatus !== 'All' && (
+                <div className="mb-4 bg-gray-50 rounded-lg">
+                    <div className="flex items-center gap-4">
+                        <span className="font-bold text-title-sm text-black">
+                            {activeStatus === 'Unsent' ? 'Unsent filter:' : 'Sent filter:'}
+                        </span>
+                        <div className="flex gap-4">
+                            <label className="flex items-center">
+                                <input
+                                    type="radio"
+                                    name="filterAction"
+                                    value="all"
+                                    className="mr-1"
+                                    checked={selectedActionType === 'all'}
+                                    onChange={() => handleActionTypeChange('all')}
+                                />
+                                All
+                            </label>
+                            <label className="flex items-center">
+                                <input
+                                    type="radio"
+                                    name="filterAction"
+                                    value="print"
+                                    className="mr-1"
+                                    checked={selectedActionType === 'print'}
+                                    onChange={() => handleActionTypeChange('print')}
+                                />
+                                Print
+                            </label>
+                            <label className="flex items-center">
+                                <input
+                                    type="radio"
+                                    name="filterAction"
+                                    value="whatsapp"
+                                    className="mr-1"
+                                    checked={selectedActionType === 'whatsapp'}
+                                    onChange={() => handleActionTypeChange('whatsapp')}
+                                />
+                                WhatsApp
+                            </label>
+                            <label className="flex items-center">
+                                <input
+                                    type="radio"
+                                    name="filterAction"
+                                    value="email"
+                                    className="mr-1"
+                                    checked={selectedActionType === 'email'}
+                                    onChange={() => handleActionTypeChange('email')}
+                                />
+                                Email
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className="flex flex-wrap items-center gap-4 mb-4">
                 {/* Format */}
-                <div>
-                    <label className="block font-bold text-black">Format</label>
-                    <select
-                        value={printFormat}
-                        onChange={(e) => setPrintFormat(e.target.value)}
-                        className="border border-gray-300 rounded px-3 py-1 w-100 text-black text-sm focus:outline-none">
-                        {/* <option value="">Select Format</option>
-                        <option>HTML with address</option>
-                        <option>HTML without address</option>
-                        <option>HTML without address + Compatibility</option>
-                        <option>HTML with address + Compatibility</option>
-                        <option>
-                            HTML with address + Compatibility + self attached horoscope (original)
-                        </option>
-                        <option>
-                            HTML with address + Compatibility + self attached horoscope (admin)
-                        </option> */}
-                        <option value="match_full_profile">Full Profile</option>
-//                                     <option value="match_full_profile_black">Full profile black</option>
-//                                     <option value="match_compatability_color">Color</option>
-//                                     <option value="match_compatability_black">Black</option>
-//                                     <option value="match_compatability_without_horo">Without Horoscope</option>
-//                                     <option value="match_compatability_without_horo_black">Without Horoscope Black</option>
-                    </select>
-                </div>
+                {selectedSendAction === 'print' && (
+                    <div>
+                        <label className="block font-bold text-black">Print Format</label>
+                        <select
+                            value={printFormat}
+                            onChange={(e) => setPrintFormat(e.target.value)}
+                            className="border border-gray-300 rounded px-3 py-1 w-70 text-black text-sm focus:outline-none">
+                            <option value="">Select a Print Format</option>
+                            <option value="match_full_profile">Full Profile</option>
+                            <option value="match_full_profile_black">Full profile black</option>
+                            <option value="match_compatability_color">Color</option>
+                            <option value="match_compatability_black">Black</option>
+                            <option value="match_compatability_without_horo">Without Horoscope</option>
+                            <option value="match_compatability_without_horo_black">Without Horoscope Black</option>
+                        </select>
+                    </div>
+                )}
+
+                {/* WhatsApp Format (only shown when WhatsApp is selected) */}
+                {selectedSendAction === 'whatsapp' && (
+                    <div>
+                        <label className="block font-bold text-black">WhatsApp Format</label>
+                        <select
+                            value={whatsappFormat}
+                            onChange={(e) => setWhatsappFormat(e.target.value)}
+                            className="border border-gray-300 rounded px-3 py-1 w-70 text-black text-sm focus:outline-none">
+                            <option value="">Select a WhatsApp Format</option>
+                            <option value="match_full_profile">Full Profile</option>
+                            <option value="match_full_profile_black">Full profile black</option>
+                            <option value="match_compatability_color">Color</option>
+                            <option value="match_compatability_black">Black</option>
+                            <option value="match_compatability_without_horo">Without Horoscope</option>
+                            <option value="match_compatability_without_horo_black">Without Horoscope Black</option>
+                        </select>
+                    </div>
+                )}
+
+                {/* Email Format (only shown when Email is selected) */}
+                {selectedSendAction === 'email' && (
+                    <div>
+                        <label className="block font-bold text-black">Email Format</label>
+                        <select
+                            value={emailFormat}
+                            onChange={(e) => setEmailFormat(e.target.value)}
+                            className="border border-gray-300 rounded px-3 py-1 w-70 text-black text-sm focus:outline-none">
+                            <option value="">Select an Email Format</option>
+                            <option value="match_full_profile">Full Profile</option>
+                            <option value="match_full_profile_black">Full profile black</option>
+                            <option value="match_compatability_color">Color</option>
+                            <option value="match_compatability_black">Black</option>
+                            <option value="match_compatability_without_horo">Without Horoscope</option>
+                            <option value="match_compatability_without_horo_black">Without Horoscope Black</option>
+                        </select>
+                    </div>
+                )}
 
                 {/* Actions */}
                 <div className="flex flex-col items-start flex-1">
-                    <label className="block font-semibold text-black mb-1 ">Actions</label>
+                    <label className="block font-semibold text-black mb-1">Actions</label>
                     <div className="flex gap-4">
                         <label className="flex items-center">
                             <input
                                 type="radio"
-                                name="action"
+                                name="sendAction"
                                 value="print"
                                 className="mr-1"
-                                checked={selectedActionType === 'print'}
-                                onChange={() => handleActionTypeChange('print')}
+                                checked={selectedSendAction === 'print'}
+                                onChange={() => handleSendActionChange('print')}
                             />
                             Print
                         </label>
                         <label className="flex items-center">
                             <input
                                 type="radio"
-                                name="action"
+                                name="sendAction"
                                 value="whatsapp"
                                 className="mr-1"
-                                checked={selectedActionType === 'whatsapp'}
-                                onChange={() => handleActionTypeChange('whatsapp')}
+                                checked={selectedSendAction === 'whatsapp'}
+                                onChange={() => handleSendActionChange('whatsapp')}
                             />
                             WhatsApp
                         </label>
                         <label className="flex items-center">
                             <input
                                 type="radio"
-                                name="action"
+                                name="sendAction"
                                 value="email"
                                 className="mr-1"
-                                checked={selectedActionType === 'email'}
-                                onChange={() => handleActionTypeChange('email')}
+                                checked={selectedSendAction === 'email'}
+                                onChange={() => handleSendActionChange('email')}
                             />
                             Email
                         </label>
+
                         <button
-                            onClick={handlePrintProfile}
-                            className="px-3 py-0.2 text-white  border  bg-[#1976D2] whitespace-nowrap rounded">Send Selected</button>
+                            onClick={handleSendSelected}
+                            className="px-3 py-0.5 text-white border bg-[#1976D2] whitespace-nowrap rounded"
+                            disabled={isPrintProfile || iswhatsappProfile || isSendingEmail}
+                        >
+                            {isPrintProfile || iswhatsappProfile || isSendingEmail ? (
+                                <CircularProgress size={16} />
+                            ) : (
+                                "Send Selected"
+                            )}
+                        </button>
                     </div>
                 </div>
 
                 {/* Search */}
-                <div className="flex items-center gap-2 ml-auto ">
-                    <div className="relative">
+                <div className="flex items-end gap-2 ml-auto w-100 ">
+                    <div className="relative w-100">
                         <input
                             type="text"
                             placeholder="Search name / id / profession"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="border border-gray-300 rounded px-3 py-1 pr-8 focus:outline-none"
+                            onKeyPress={handleKeyPress}
+                            className="border border-gray-300 w-100 rounded px-3 py-1 pr-8 focus:outline-none"
                         />
                         {search && (
                             <button
@@ -1259,16 +1351,20 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
                             </button>
                         )}
                     </div>
-                    <button className="px-3 py-0.2 text-white border   bg-[#1976D2] whitespace-nowrap rounded">Search</button>
-
+                    {/* <button
+                        onClick={handleSearch}
+                        className="px-3 py-0.5 text-white border bg-[#1976D2] whitespace-nowrap rounded"
+                    >
+                        Search
+                    </button> */}
                 </div>
             </div>
 
             <div className="py-4">
                 <Paper className="w-full">
-                    <TableContainer sx={{ border: '1px solid #E0E0E0' }} component={Paper}>
-                        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                            <TableHead style={{ background: '#FFF9C9', padding: '17px' }}>
+                    <TableContainer sx={{ border: '1px solid #E0E0E0', maxHeight: '70vh' }} component={Paper}>
+                        <Table sx={{ minWidth: 650 }} aria-label="simple table" stickyHeader>
+                            <TableHead style={{ background: '#FFF8B3', padding: '17px' }}>
                                 <TableRow>
                                     {columns.map((column) => (
                                         <TableCell
@@ -1279,6 +1375,7 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
                                                 fontWeight: "bold",
                                                 fontSize: "1rem",
                                                 whiteSpace: "nowrap",
+                                                backgroundColor: "#FFF8B3",
                                             }}
                                         >
                                             {column.id === "select" ? (
@@ -1323,11 +1420,13 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
                                             <TableCell>
                                                 <img
                                                     className="rounded-full"
-                                                    src={row.profile_img || No_Image_Available}
+                                                    src={row.profile_img || BASE64_PLACEHOLDER}
                                                     alt="Profile"
                                                     width={50}
                                                     height={50}
-                                                    onError={(e) => (e.currentTarget.src = No_Image_Available)}
+                                                    onError={(e) => {
+                                                        e.currentTarget.src = BASE64_PLACEHOLDER;
+                                                    }}
                                                 />
                                             </TableCell>
                                             <TableCell
@@ -1363,11 +1462,9 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
                                             <TableCell>{row.chevvai}</TableCell>
                                             <TableCell>{row.raguketu}</TableCell>
 
-                                            {/* <TableCell>{row.dateofjoin ? new Date(row.dateofjoin).toLocaleDateString() : "-"}</TableCell> */}
                                             <TableCell>  {row.dateofjoin
                                                 ? new Date(row.dateofjoin).toLocaleDateString("en-GB")
                                                 : "-"}</TableCell>
-                                            {/* <TableCell>{row.action_score?.score ?? "-"}</TableCell> */}
                                             <TableCell>N/A</TableCell>
                                             <TableCell>{row.matching_score}</TableCell>
                                             <TableCell>
@@ -1383,13 +1480,19 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
                                                     <span>{row.action_score?.score ?? "-"}</span>
                                                 </Tooltip>
                                             </TableCell>
-                                            {/* <TableCell>
-                                                {row.verified === 0 ? (
-                                                    <MdVerified className="text-green-600" />
-                                                ) : (
-                                                    <GoUnverified className="text-red-600" />
-                                                )}
-                                            </TableCell> */}
+                                            <TableCell>
+                                                <Tooltip
+                                                    title={
+                                                        <div style={{ whiteSpace: 'pre-line' }}>
+                                                            {formatActionsForTooltip(row.action_log?.actions || [])}
+                                                        </div>
+                                                    }
+                                                    arrow
+                                                    placement="top"
+                                                >
+                                                    <span>{row.action_log?.score ?? "-"}</span>
+                                                </Tooltip>
+                                            </TableCell>
                                         </TableRow>
                                     ))
                                 ) : (
@@ -1405,119 +1508,11 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, No_Image
                 </Paper>
             </div>
 
-            {Math.ceil(totalItems / itemsPerPage) > 0 && (
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 px-4 py-3 bg-gray-50 rounded-lg border border-gray-200">
-                    <div className="text-sm text-gray-600">
-                        Showing {currentPage * itemsPerPage + 1} to {Math.min((currentPage + 1) * itemsPerPage, totalItems)} of {totalItems} records
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                        <div className="flex items-center gap-2">
-                            <Typography variant="body2">Go to page:</Typography>
-                            <TextField
-                                size="small"
-                                type="number"
-                                value={goToPageInput}
-                                onChange={(e) => setGoToPageInput(e.target.value)}
-                                inputProps={{
-                                    min: 1,
-                                    max: Math.ceil(totalItems / itemsPerPage),
-                                }}
-                                style={{ width: '80px' }}
-                                onKeyPress={(e) => e.key === 'Enter' && handleGoToPage()}
-                            />
-                            <Button
-                                variant="contained"
-                                size="small"
-                                onClick={handleGoToPage}
-                                disabled={!goToPageInput}
-                            >
-                                Go
-                            </Button>
-                        </div>
-
-                        <IconButton
-                            onClick={() => setCurrentPage(0)}
-                            disabled={currentPage === 0}
-                            aria-label="first page"
-                        >
-                            {"<<"}
-                        </IconButton>
-
-                        <IconButton
-                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 0))}
-                            disabled={currentPage === 0}
-                            aria-label="previous page"
-                        >
-                            {"<"}
-                        </IconButton>
-
-                        {(() => {
-                            const totalPages = Math.ceil(totalItems / itemsPerPage);
-                            const maxVisiblePages = 5;
-                            let startPage, endPage;
-
-                            if (totalPages <= maxVisiblePages) {
-                                startPage = 0;
-                                endPage = totalPages - 1;
-                            } else {
-                                const maxPagesBeforeCurrent = Math.floor(maxVisiblePages / 2);
-                                const maxPagesAfterCurrent = Math.ceil(maxVisiblePages / 2) - 1;
-
-                                if (currentPage < maxPagesBeforeCurrent) {
-                                    startPage = 0;
-                                    endPage = maxVisiblePages - 1;
-                                } else if (currentPage + maxPagesAfterCurrent >= totalPages) {
-                                    startPage = totalPages - maxVisiblePages;
-                                    endPage = totalPages - 1;
-                                } else {
-                                    startPage = currentPage - maxPagesBeforeCurrent;
-                                    endPage = currentPage + maxPagesAfterCurrent;
-                                }
-                            }
-
-                            const pages = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
-
-                            return (
-                                <div className="flex">
-                                    {pages.map((page) => (
-                                        <Button
-                                            key={page}
-                                            variant={currentPage === page ? "contained" : "text"}
-                                            onClick={() => setCurrentPage(page)}
-                                            style={{
-                                                minWidth: '32px',
-                                                height: '32px',
-                                                margin: '0 2px',
-                                                backgroundColor: currentPage === page ? '#1976d2' : 'transparent',
-                                                color: currentPage === page ? '#fff' : '#000',
-                                            }}
-                                        >
-                                            {page + 1}
-                                        </Button>
-                                    ))}
-                                </div>
-                            );
-                        })()}
-
-                        <IconButton
-                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(totalItems / itemsPerPage) - 1))}
-                            disabled={currentPage >= Math.ceil(totalItems / itemsPerPage) - 1}
-                            aria-label="next page"
-                        >
-                            {">"}
-                        </IconButton>
-
-                        <IconButton
-                            onClick={() => setCurrentPage(Math.ceil(totalItems / itemsPerPage) - 1)}
-                            disabled={currentPage >= Math.ceil(totalItems / itemsPerPage) - 1}
-                            aria-label="last page"
-                        >
-                            {">>"}
-                        </IconButton>
-                    </div>
+            <div className="flex justify-between items-center mt-4 px-4 py-2 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="text-sm text-gray-600">
+                    Showing {matchingData.length} of {totalItems} records
                 </div>
-            )}
+            </div>
         </div>
     );
 };

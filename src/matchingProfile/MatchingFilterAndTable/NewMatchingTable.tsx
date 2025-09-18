@@ -698,7 +698,7 @@ export const NewMatchingTable = ({ profileID, filters, onBack, No_Image_Availabl
                 <div>
                     <h2 className="text-xl text-left font-bold text-red-600">Vysyamala Matching Profiles</h2>
                     <p className="text-sm text-gray-600">
-                        Select profiles → choose format → choose actions → Send
+                        Select profiles → choose format → choose actions → Sendsssss
                     </p>
 
                     <div className="flex gap-2 mt-3">
