@@ -994,7 +994,7 @@ export const uploadProofFiles = async (
         formData.append('idproof_file', idProofFile);
     }
     if (divorceFile) {
-        formData.append('divorce_file', divorceFile);
+        formData.append('divorcepf_file', divorceFile);
     }
 
     if (horoscopeAdminFile) {
