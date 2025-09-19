@@ -180,7 +180,7 @@ export const UploadApprovalProfileImg = () => {
             setLoading(false);
         }
     };
-    //Image Approval
+    
     //Image Approval
     const handleImageApprovalChange = (imageId: number) => {
         if (!photoProofDetails) return;

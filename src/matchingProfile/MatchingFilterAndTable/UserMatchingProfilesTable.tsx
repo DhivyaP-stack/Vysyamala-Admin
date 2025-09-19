@@ -752,6 +752,7 @@ import {
     userMatchingProfilesSendEmail,
     userMatchingProfilesWhatsapp
 } from '../../api/apiConfig';
+import React from 'react';
 
 // Base64 encoded placeholder image to avoid 404 errors
 const BASE64_PLACEHOLDER = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0yNSA0QzI4LjMxNDggNCAzMSA2LjY4NTI0IDMxIDkuOTk5OTlDMzEgMTMuMzE0NyAyOC4zMTQ4IDE1Ljk5OTkgMjUgMTUuOTk5OUMyMS42ODUyIDE1Ljk5OTkgMTkgMTMuMzE0NyAxOSA5Ljk5OTk5QzE5IDYuNjg1MjQgMjEuNjg1MiA0IDI1IDRaIiBmaWxsPSIjOTk5OTk5Ii8+CjxwYXRoIGQ9Ik0yNSAxOEMzMC41MjIgMTggMzUgMTkuNzggMzUgMjJWMzZIMTVWMjJDMTUgMTkuNzggMTkuNDc4IDE4IDI1IDE4WiIgZmlsbD0iIzk5OTk5OSIvPgo8L3N2Zz4K";
@@ -1483,19 +1484,21 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                                                 <span>{row.action_score?.score ?? "-"}</span>
                                             </Tooltip>
                                         </TableCell>
-                                        <TableCell>
-                                            <Tooltip
-                                                title={
-                                                    <div style={{ whiteSpace: 'pre-line' }}>
-                                                        {formatActionsForTooltip(row.action_log?.actions || [])}
-                                                    </div>
-                                                }
-                                                arrow
-                                                placement="top"
-                                            >
-                                                <span>{row.action_log?.score ?? "-"}</span>
-                                            </Tooltip>
+                                        {/* <TableCell>
+                                            {row.action_log}
+                                        </TableCell> */}
+                                        <TableCell sx={{ minWidth: 200, maxWidth: 300, whiteSpace: "normal" }}>
+                                            {row.action_log
+                                                ?.split(",")
+                                                .map((item: string, index: number, arr: string[]) => (
+                                                    <React.Fragment key={index}>
+                                                        {item.trim()}
+                                                        {index < arr.length - 1 && ","} {/* keep comma except last */}
+                                                        <br />
+                                                    </React.Fragment>
+                                                ))}
                                         </TableCell>
+
                                     </TableRow>
                                 ))
                             ) : (
