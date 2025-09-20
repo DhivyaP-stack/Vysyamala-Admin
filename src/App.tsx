@@ -111,6 +111,8 @@ import TransactionHistory from './components/ReuseProfileTable/userActions/Trans
 import { ProfilesPage } from './matchingProfile/MatchingFilterAndTable/ProfilesPage';
 import { MatchingProfilesResultsPage } from './matchingProfile/MatchingFilterAndTable/MatchingProfilesResultsPage';
 import { NewMatchingTable } from './matchingProfile/MatchingFilterAndTable/NewMatchingTable';
+import { UserProfileVisibilityFilter } from './matchingProfile/ProfileVisibilityFilterAndTable/ProfileVisibilityFilter';
+import { ProfileVisibilityTable } from './matchingProfile/ProfileVisibilityFilterAndTable/ProfileVisibilitytable';
 
 
 function App() {
@@ -1090,9 +1092,15 @@ function App() {
                   path="/MatchingProfileResults"
                   element={<MatchingProfilesResultsPage />}
                 />
+
                  <Route
-                  path="/NewMatchingProfileResults"
-                  element={<NewMatchingTable />}
+                  path="/UserProfileVisibilityFilter"
+                  element={<UserProfileVisibilityFilter/>}
+                />
+
+                 <Route
+                  path="/ProfileVisibilityTable"
+                  element={<ProfileVisibilityTable/>}
                 />
               </Routes>
             </DefaultLayout>

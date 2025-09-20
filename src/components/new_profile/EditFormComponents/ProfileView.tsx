@@ -237,19 +237,14 @@ const ProfileView: React.FC<pageProps> = ({ isViewDetais, setViewDetail, EditDat
     }
   }
 
-
   useEffect(() => {
     fetchAddOnPackages()
   }, [])
-
-
 
   const toggleSection1 = () => {
     setViewDetail(!isViewDetais);
     console.log(isViewDetais, "isViewDetais")
   };
-
-
 
   const { data: Status } = useQuery({
     queryKey: ['Status'],
@@ -266,15 +261,10 @@ const ProfileView: React.FC<pageProps> = ({ isViewDetais, setViewDetail, EditDat
     { Value: "False", label: "No" }
   ]
 
-
-
-
   return (
     <div>
       <div>
         <div className="bg-white p-5 mb-10 rounded shadow-md">
-
-
           <h4
             onClick={toggleSection1}
             className="text-red-600 flex items-center justify-between text-xl cursor-pointer font-semibold dark:text-white"
@@ -391,33 +381,7 @@ const ProfileView: React.FC<pageProps> = ({ isViewDetais, setViewDetail, EditDat
                     <label>No</label>
                   </div>
                 </div>
-                {/*             
-<div className="flex mt-3  gap-2">
-  <h2 className="flex  text-black font-semibold">Email Alerts:</h2>
-  <div className="grid grid-cols-2 gap-2">
-    {emailAlerts.map(alert => (
-      <label key={alert.id} className="flex items-center space-x-2">
-        <input
-          type="checkbox"
-          value={alert.id}
-          {...register('profileView.Notifcation_enabled')}
-          checked={checkEmailAlert.split(",").includes(`${alert.id}`)}
-         onChange={()=>handleEmailAlert(alert.id)}
-          className="form-checkbox"
-        />
-        <span className="text-black">{alert.alert_name}</span>
-      </label>
-    ))}
-      {errors?.profileView?.Notifcation_enabled && (
-                  <p className="text-red-600">
-                    {errors.profileView.Notifcation_enabled.message}
-                  </p>
-                )}
-  </div>
-</div> */}
-
-
-
+          
                 <div className="flex mt-3 gap-2">
                   <h2 className="flex text-black font-semibold">Email Alerts:</h2>
                   <div className="grid grid-cols-2 gap-2">

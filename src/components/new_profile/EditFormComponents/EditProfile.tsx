@@ -443,7 +443,7 @@ const EditViewProfile: React.FC<pageProps> = ({
                     </div>
                     <div className="w-full border-t-2 border-blue-600 mt-2"></div>
                     <div className="w-full border-t-2 border-blue-600 mt-1"></div>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 xl:grid-cols-12 lg:grid-cols-10 gap-4 overflow-auto ">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 xl:grid-cols-12 lg:grid-cols-10 gap-3 overflow-auto ">
                       <div className="flex flex-col items-center text-center border-l-2 border-orange-500 p-2 cursor-pointer" onClick={() => navigate(`/UserMatchingProfiles?profileId=${profileId}`)}>
                         <span className="text-orange-500 text-lg font-semibold">{profileView7.matchingprofile_count}</span>
                         <span className="text-blue-500">Matching Profile</span>
@@ -451,6 +451,10 @@ const EditViewProfile: React.FC<pageProps> = ({
                       <div className="flex flex-col items-center text-center border-l-2 border-orange-500 cursor-pointer" onClick={() => navigate(`/suggestedProfiles?profileId=${profileId}`)} >
                         <span className="text-orange-500 text-lg font-semibold">{profileView7.suggestedprofile_count}</span>
                         <span className="text-blue-500">Suggested Profile</span>
+                      </div>
+                      <div className="flex flex-col items-center text-center border-l-2 border-orange-500 cursor-pointer" onClick={() => navigate(`/UserProfileVisibilityFilter?profileId=${profileId}`)} >
+                        <span className="text-orange-500 text-lg font-semibold">0</span>
+                        <span className="text-blue-500">Profile Visibility</span>
                       </div>
                       <div className="flex flex-col items-center text-center border-l-2 border-orange-500 p-2 cursor-pointer " onClick={() => navigate(`/ViewedProfilesById?profileId=${profileId}`)} >
                         <span className="text-orange-500 text-lg font-semibold">{profileView7.viewedprofile_count}</span>
@@ -570,19 +574,19 @@ const EditViewProfile: React.FC<pageProps> = ({
                           Invoice Generation
                         </button>
                       </div>
-                      
+
 
                     </div>
                     <div className='mb-4 ml-4'>
-                          <button
-                            type="button"
-                            onClick={() => setOpen(true)}
-                            className={`bg-blue-700 w-45 text-white px-5 py-1 text-md h-auto rounded whitespace-nowrap text-center`}
-                          >
-                            Payment Info
-                          </button>
-                          <PaymentPopup open={open} onClose={() => setOpen(false)} profileId={profileId}  showAddButton={true}/>
-                        </div>
+                      <button
+                        type="button"
+                        onClick={() => setOpen(true)}
+                        className={`bg-blue-700 w-45 text-white px-5 py-1 text-md h-auto rounded whitespace-nowrap text-center`}
+                      >
+                        Payment Info
+                      </button>
+                      <PaymentPopup open={open} onClose={() => setOpen(false)} profileId={profileId} showAddButton={true} />
+                    </div>
                     <div className="flex max-xl:flex-wrap">
                       <div>
                         <div>

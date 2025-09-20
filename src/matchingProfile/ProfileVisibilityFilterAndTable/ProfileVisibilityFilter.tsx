@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Button, CircularProgress, Typography } from '@mui/material';
 import { userAnnualIncome, userCity, userComplexion, userEducation, userFamilyStatus, userMaritalStatus, userProfession, userState, userMembership, userFieldOfStudy, userDegrees, getProfileDetails } from '../../api/apiConfig';
-//import MatchingStars from '../components/PartnerPreference/MatchingStars';
 import { useQuery } from '@tanstack/react-query';
 import { fetchEditProfileDetails, fetchMatchPreferences } from '../../action';
 import MatchingStars from '../../components/PartnerPreference/MatchingStars';
 import Select from 'react-select';
+import { useSearchParams } from 'react-router-dom';
 // Type definitions (same as before)
 interface AnnualIncome {
     income_id: number;
@@ -70,13 +70,6 @@ export interface SelectedStarIdItem {
     label: string;
 }
 
-interface UserMatchingProfilesFilterProps {
-    profileID: string | null;
-    onFilterSubmit: (filters: any) => void;
-    loading: boolean;
-    profileType: 'matching' | 'suggested';
-    Name: string
-}
 interface FieldOfStudy {
     study_id: number;
     study_description: string;
@@ -87,7 +80,9 @@ interface Degree {
     degeree_description: string;
 }
 
-export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading, Name }: UserMatchingProfilesFilterProps) => {
+export const UserProfileVisibilityFilter = () => {
+    const [searchParams] = useSearchParams();
+    const profileID = searchParams.get('profileId');
     const [annualIncome, setAnnualIncome] = useState<AnnualIncome[]>([]);
     const [profession, setProfession] = useState<Profession[]>([]);
     const [maritalStatus, setMaritalStatus] = useState<MaritalStatus[]>([]);
@@ -127,10 +122,9 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
     const [selectedDegrees, setSelectedDegrees] = useState<String[]>([]);
     const [fromDateOfJoin, setFromDateOfJoin] = useState<string>('');
     const [toDateOfJoin, setToDateOfJoin] = useState<string>('');
-    // const date = new Date("2025-02-26T18:36:47");
-
-    // console.log("local system",date.toLocaleDateString());       // depends on system
-    // console.log("en-GB format",date.toLocaleDateString("en-GB")) // always DD/MM/YYYY
+    const [loading, setLoading] = useState(false);
+    const [profileVisibility, setProfileVisibility] = useState<any>(null);
+    const [loadingVisibility, setLoadingVisibility] = useState(false);
 
     // Add this query to fetch profile details
     const { data: profileDetails } = useQuery({
@@ -169,7 +163,6 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
                 console.error("Failed to fetch filter data:", error);
             }
         };
-
         fetchFilterData();
     }, []);
 
@@ -269,125 +262,6 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
         );
     };
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-
-        // Extract dest_rasi_id from selectedStarIds
-        // const prefPoruthamStar = selectedStarIds.map((item) => item.star);
-        const prefPoruthamStarRasi = selectedStarIds.map((item) =>
-            `${item.star}-${item.rasi}`
-        ).join(",");
-
-        const filters = {
-            selectedComplexions: String(selectedComplexions),
-            selectedEducation: String(selectedEducation),
-            selectedFieldsOfStudy: String(selectedFieldsOfStudy), // Add this
-            // selectedDegrees: String(selectedDegrees), // Add this
-            selectedDegrees: selectedDegrees.join(","),
-            selectedProfessions: String(selectedProfessions),
-            selectedMaritalStatus: String(selectedMaritalStatus),
-            selectedFamilyStatus: String(selectedFamilyStatus),
-            heightFrom,
-            heightTo,
-            minAnnualIncome,
-            maxAnnualIncome,
-            foreignInterest,
-            selectedState: selectedStates.join(","), // Updated this line
-            selectedCity,
-            selectedMembership: String(selectedMembership),
-            hasphotos,
-            fatherLive,
-            motherLive,
-            sentInWhatsapp,
-            sarpaDhosham,
-            chevvaiDhosam,
-            destRasiIds: prefPoruthamStarRasi,
-            ageDifference,
-            prefPoruthamStarRasi,
-            fromDateOfJoin,
-            toDateOfJoin,
-        };
-
-        onFilterSubmit(filters);
-    };
-
-    useEffect(() => {
-        // Set filter values from profile details when they are available
-        if (profileDetails) {
-            const { partner_pref_details } = profileDetails;
-
-            // Set values from partner preferences
-            if (partner_pref_details) {
-                setAgeDifference(partner_pref_details.pref_age_differences || '');
-                setHeightFrom(partner_pref_details.pref_height_from || '');
-                setHeightTo(partner_pref_details.pref_height_to || '');
-                setForeignInterest(partner_pref_details.pref_foreign_intrest || '');
-
-                // Set checkbox arrays from comma-separated strings
-                if (partner_pref_details.pref_education) {
-                    setSelectedEducation(partner_pref_details.pref_education.split(','));
-                }
-                if (partner_pref_details.pref_profession) {
-                    setSelectedProfessions(partner_pref_details.pref_profession.split(','));
-                }
-                if (partner_pref_details.pref_marital_status) {
-                    setSelectedMaritalStatus(partner_pref_details.pref_marital_status.split(','));
-                }
-                if (partner_pref_details.pref_family_status) {
-                    setSelectedFamilyStatus(partner_pref_details.pref_family_status.split(','));
-                }
-                if (partner_pref_details.pref_fieldof_study) {
-                    setSelectedFieldsOfStudy(partner_pref_details.pref_fieldof_study.split(','));
-                }
-                if (partner_pref_details.degree) {
-                    setSelectedDegrees(partner_pref_details.degree.split(','));
-                }
-                if (partner_pref_details.pref_anual_income) {
-                    setMinAnnualIncome(partner_pref_details.pref_anual_income || '');
-                }
-                if (partner_pref_details.pref_anual_income_max) {
-                    setMaxAnnualIncome(partner_pref_details.pref_anual_income_max || '');
-                }
-
-                // Set state preference
-                //setSelectedState(partner_pref_details.pref_state || '');
-                if (partner_pref_details.pref_state) {
-                    setSelectedStates(partner_pref_details.pref_state.split(','));
-                }
-
-                // Set dosham preferences
-                setChevvaiDhosam(partner_pref_details.pref_chevvai || '');
-            }
-        }
-    }, [profileDetails]);
-
-    useEffect(() => {
-        if (profileDetails && matchStars && matchStars.length > 0) {
-            const { partner_pref_details } = profileDetails;
-
-            if (partner_pref_details && partner_pref_details.pref_porutham_star_rasi) {
-                const savedPairs = new Set(partner_pref_details.pref_porutham_star_rasi.split(','));
-                const initialSelectedStars: SelectedStarIdItem[] = [];
-
-                matchStars.flat().forEach(starOption => {
-                    const currentPair = `${starOption.dest_star_id}-${starOption.dest_rasi_id}`;
-
-                    if (savedPairs.has(currentPair)) {
-                        initialSelectedStars.push({
-                            id: starOption.id.toString(),
-                            star: starOption.dest_star_id.toString(),
-                            rasi: starOption.dest_rasi_id.toString(),
-                            label: `${starOption.matching_starname} (${starOption.matching_rasiname})`
-                        });
-                    }
-                });
-
-                setSelectedStarIds(initialSelectedStars);
-            }
-        }
-    }, [profileDetails, matchStars]);
-
-
     // Then update the star details when matchStars data arrives
     useEffect(() => {
         if (matchStars && matchStars.length > 0 && selectedStarIds.length > 0) {
@@ -417,6 +291,171 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
         }
     }, [matchStars, selectedStarIds]);
 
+    // Handle form submission
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+
+        // Construct query parameters
+        const params = new URLSearchParams();
+
+        // Add all filter parameters
+        if (selectedEducation.length > 0) {
+            params.append('selectedEducation', selectedEducation.join(','));
+        }
+        if (selectedFieldsOfStudy.length > 0) {
+            params.append('selectedFieldsOfStudy', selectedFieldsOfStudy.join(','));
+        }
+        if (selectedProfessions.length > 0) {
+            params.append('selectedProfessions', selectedProfessions.join(','));
+        }
+        if (selectedMaritalStatus.length > 0) {
+            params.append('selectedMaritalStatus', selectedMaritalStatus.join(','));
+        }
+        if (selectedFamilyStatus.length > 0) {
+            params.append('selectedFamilyStatus', selectedFamilyStatus.join(','));
+        }
+        if (selectedStates.length > 0) {
+            params.append('selectedState', selectedStates.join(','));
+        }
+        if (selectedComplexions.length > 0) {
+            params.append('selectedComplexions', selectedComplexions.join(','));
+        }
+        if (selectedMembership.length > 0) {
+            params.append('selectedMembership', selectedMembership.join(','));
+        }
+        if (selectedDegrees.length > 0) {
+            params.append('selectedDegrees', selectedDegrees.join(','));
+        }
+        if (selectedStarIds.length > 0) {
+            const starRasiIds = selectedStarIds.map(star => `${star.star}-${star.rasi}`);
+            params.append('prefPoruthamStarRasi', starRasiIds.join(','));
+        }
+
+        // Add other single value parameters
+        if (heightFrom) params.append('heightFrom', heightFrom);
+        if (heightTo) params.append('heightTo', heightTo);
+        if (minAnnualIncome) params.append('minAnnualIncome', minAnnualIncome);
+        if (maxAnnualIncome) params.append('maxAnnualIncome', maxAnnualIncome);
+        if (foreignInterest) params.append('foreignInterest', foreignInterest);
+        if (hasphotos) params.append('hasphotos', hasphotos);
+        if (fatherLive) params.append('fatherLive', fatherLive);
+        if (motherLive) params.append('motherLive', motherLive);
+        if (sentInWhatsapp) params.append('sentInWhatsapp', sentInWhatsapp);
+        if (sarpaDhosham) params.append('sarpaDhosham', sarpaDhosham);
+        if (chevvaiDhosam) params.append('chevvaiDhosam', chevvaiDhosam);
+        if (ageDifference) params.append('ageDifference', ageDifference);
+        if (fromDateOfJoin) params.append('fromDateOfJoin', fromDateOfJoin);
+        if (toDateOfJoin) params.append('toDateOfJoin', toDateOfJoin);
+
+        // Add profile ID and type
+        params.append('profileId', profileID || '');
+        params.append('profileType', 'visibility');
+
+        // Construct the URL
+        const resultsUrl = `/ProfileVisibilityTable?${params.toString()}`;
+
+        // Open in new tab
+        window.open(resultsUrl, '_blank');
+
+        setLoading(false);
+    };
+
+    const fetchProfileVisibility = async () => {
+        if (!profileID) return;
+
+        setLoadingVisibility(true);
+        try {
+            const response = await fetch(
+                'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_profile_visibility/',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ profile_id: profileID }),
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch profile visibility');
+            }
+
+            const data = await response.json();
+            setProfileVisibility(data.data[0]); // Assuming we want the first item
+        } catch (error) {
+            console.error('Error fetching profile visibility:', error);
+        } finally {
+            setLoadingVisibility(false);
+        }
+    };
+
+    // Call the API when component mounts or profileID changes
+    useEffect(() => {
+        fetchProfileVisibility();
+    }, [profileID]);
+
+    // Set values from API response when profileVisibility changes
+    useEffect(() => {
+        if (profileVisibility) {
+            // Set age difference if available
+            if (profileVisibility.visibility_age_from && profileVisibility.visibility_age_to) {
+                // You might need to calculate the difference or set individual values
+                const ageDiff = parseInt(profileVisibility.visibility_age_to) - parseInt(profileVisibility.visibility_age_from);
+                setAgeDifference(ageDiff.toString());
+            }
+
+            // Set height range
+            setHeightFrom(profileVisibility.visibility_height_from || '');
+            setHeightTo(profileVisibility.visibility_height_to || '');
+
+            // Set professions (comma-separated string to array)
+            if (profileVisibility.visibility_profession) {
+                const professionIds = profileVisibility.visibility_profession.split(',');
+                setSelectedProfessions(professionIds);
+            }
+
+            // Set education (comma-separated string to array)
+            if (profileVisibility.visibility_education) {
+                const educationIds = profileVisibility.visibility_education.split(',');
+                setSelectedEducation(educationIds);
+            }
+
+            // Set annual income range
+            setMinAnnualIncome(profileVisibility.visibility_anual_income || '');
+            setMaxAnnualIncome(profileVisibility.visibility_anual_income_max || '');
+
+            // Set chevvai dhosham
+            setChevvaiDhosam(profileVisibility.visibility_chevvai || '');
+
+            // Set sarpa dhosham (assuming visibility_ragukethu refers to sarpa dhosham)
+            setSarpaDhosham(profileVisibility.visibility_ragukethu || '');
+
+            // Set foreign interest
+            setForeignInterest(profileVisibility.visibility_foreign_interest || '');
+
+            // Set degrees
+            if (profileVisibility.degree) {
+                const degreeIds = profileVisibility.degree.split(',');
+                setSelectedDegrees(degreeIds);
+            }
+
+            // Set field of study
+            if (profileVisibility.visibility_field_of_study) {
+                const fieldOfStudyIds = profileVisibility.visibility_field_of_study.split(',');
+                setSelectedFieldsOfStudy(fieldOfStudyIds);
+            }
+
+            // Set family status
+            if (profileVisibility.visibility_family_status) {
+                const familyStatusIds = profileVisibility.visibility_family_status.split(',');
+                setSelectedFamilyStatus(familyStatusIds);
+            }
+
+            // Add more fields as needed based on your API response
+        }
+    }, [profileVisibility]);
+
     return (
         <form id="filter-form" onSubmit={handleSubmit}>
             <div className="container mx-auto p-4">
@@ -429,20 +468,21 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
                             fontWeight: 'bold',
                         }}
                     >
-                        {Name} Profile Lists For Profile ID: {profileID}
+                        Profile Visibility Lists For Profile ID: {profileID}
                     </Typography>
                     <Button
                         type="submit"
                         variant="contained"
                         color="primary"
-                        disabled={loading}
+                        // disabled={loading}
                         form="filter-form" // Add this to associate with the form
                         sx={{
                             minWidth: '200px',
                             height: '40px'
                         }}
                     >
-                        {loading ? <CircularProgress size={24} /> : 'Filter Matching Records'}
+                        {loading ? <CircularProgress size={24} /> : ' Filter Visibility Records'}
+
                     </Button>
                 </div>
 
