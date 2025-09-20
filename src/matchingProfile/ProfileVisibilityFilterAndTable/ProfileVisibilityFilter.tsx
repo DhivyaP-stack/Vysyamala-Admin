@@ -85,33 +85,15 @@ export const UserProfileVisibilityFilter = () => {
     const profileID = searchParams.get('profileId');
     const [annualIncome, setAnnualIncome] = useState<AnnualIncome[]>([]);
     const [profession, setProfession] = useState<Profession[]>([]);
-    const [maritalStatus, setMaritalStatus] = useState<MaritalStatus[]>([]);
     const [highestEducation, setHighestEducation] = useState<HighestEducation[]>([]);
-    const [state, setState] = useState<State[]>([]);
-    const [cities, setCities] = useState<City[]>([]);
-    // const [selectedState, setSelectedState] = useState<string>('');
-    const [selectedStates, setSelectedStates] = useState<String[]>([]);
-    const [complexion, setComplexion] = useState<Complexion[]>([]);
-    const [membership, setMembership] = useState<Membership[]>([]);
-    const [familyStatus, setFamilyStatus] = useState<FamilyStatus[]>([]);
     const [selectedStarIds, setSelectedStarIds] = useState<SelectedStarIdItem[]>([]);
-    const [selectedComplexions, setSelectedComplexions] = useState<String[]>([]);
     const [selectedEducation, setSelectedEducation] = useState<String[]>([]);
     const [selectedProfessions, setSelectedProfessions] = useState<String[]>([]);
-    const [selectedMaritalStatus, setSelectedMaritalStatus] = useState<String[]>([]);
-    const [selectedFamilyStatus, setSelectedFamilyStatus] = useState<String[]>([]);
     const [heightFrom, setHeightFrom] = useState<string>('');
     const [heightTo, setHeightTo] = useState<string>('');
     const [minAnnualIncome, setMinAnnualIncome] = useState<string>('');
     const [maxAnnualIncome, setMaxAnnualIncome] = useState<string>('');
     const [foreignInterest, setForeignInterest] = useState<string>('');
-    const [selectedCity, setSelectedCity] = useState<string>('')
-    const [selectedMembership, setSelectedMenbership] = useState<String[]>([]);
-    const [hasphotos, setHasPhotos] = useState<string>('');
-    const [fatherLive, setFatherLive] = useState<string>('');
-    const [motherLive, setMotherLive] = useState<string>('');
-    const [sentInWhatsapp, setSentInWhatsapp] = useState<string>('');
-    const [sarpaDhosham, setSarpaDhosham] = useState<string>('');
     const [ageDifference, setAgeDifference] = useState<string>('')
     const [chevvaiDhosam, setChevvaiDhosam] = useState<string>('');
     const [edit3, setEdit3] = useState<HoroscopeDetails>()
@@ -120,8 +102,6 @@ export const UserProfileVisibilityFilter = () => {
     const [selectedFieldsOfStudy, setSelectedFieldsOfStudy] = useState<String[]>([]);
     const [degrees, setDegrees] = useState<Degree[]>([]);
     const [selectedDegrees, setSelectedDegrees] = useState<String[]>([]);
-    const [fromDateOfJoin, setFromDateOfJoin] = useState<string>('');
-    const [toDateOfJoin, setToDateOfJoin] = useState<string>('');
     const [loading, setLoading] = useState(false);
     const [profileVisibility, setProfileVisibility] = useState<any>(null);
     const [loadingVisibility, setLoadingVisibility] = useState(false);
@@ -138,7 +118,6 @@ export const UserProfileVisibilityFilter = () => {
             try {
                 const annualIncomeData = await userAnnualIncome();
                 const professionData = await userProfession();
-                const maritalStatusData = await userMaritalStatus();
                 const educationData = await userEducation();
                 const stateData = await userState();
                 const cityData = await userCity();
@@ -150,13 +129,8 @@ export const UserProfileVisibilityFilter = () => {
 
                 setAnnualIncome(Object.values(annualIncomeData));
                 setProfession(Object.values(professionData));
-                setMaritalStatus(Object.values(maritalStatusData));
+               
                 setHighestEducation(Object.values(educationData));
-                setState(Object.values(stateData));
-                setCities(Object.values(cityData));
-                setComplexion(Object.values(complexionData));
-                setMembership(membershipData.data);
-                setFamilyStatus(Object.values(familyStatusData));
                 setFieldOfStudyOptions(Object.values(fieldOfStudyData)); // Add this
                 setDegrees(Object.values(degreesData)); // Add this
             } catch (error: any) {
@@ -192,19 +166,6 @@ export const UserProfileVisibilityFilter = () => {
     });
 
 
-
-    const handleCheckboxMatchingStars = (updatedIds: SelectedStarIdItem[]) => {
-        setSelectedStarIds(updatedIds);
-    };
-
-    const handleComplexionChange = (complexionId: String) => {
-        setSelectedComplexions(prev =>
-            prev.includes(complexionId)
-                ? prev.filter(id => id !== complexionId)
-                : [...prev, complexionId]
-        );
-    };
-
     const handleEducationChange = (EducationID: String) => {
         setSelectedEducation(prev =>
             prev.includes(EducationID)
@@ -221,44 +182,12 @@ export const UserProfileVisibilityFilter = () => {
         );
     };
 
-    const handleMaritalStatusChange = (MaritalStatusID: String) => {
-        setSelectedMaritalStatus(prev =>
-            prev.includes(MaritalStatusID)
-                ? prev.filter(id => id !== MaritalStatusID)
-                : [...prev, MaritalStatusID]
-        );
-    };
-
-    const handleFamilyStatusChange = (FamilyStatusID: String) => {
-        setSelectedFamilyStatus(prev =>
-            prev.includes(FamilyStatusID)
-                ? prev.filter(id => id !== FamilyStatusID)
-                : [...prev, FamilyStatusID]
-        );
-    };
-
-    const handleMembershipChange = (MembershipID: String) => {
-        setSelectedMenbership(prev =>
-            prev.includes(MembershipID)
-                ? prev.filter(id => id !== MembershipID)
-                : [...prev, MembershipID]
-        );
-    };
-
     // Field of Study handler
     const handleFieldOfStudyChange = (studyId: String) => {
         setSelectedFieldsOfStudy(prev =>
             prev.includes(studyId)
                 ? prev.filter(id => id !== studyId)
                 : [...prev, studyId]
-        );
-    };
-
-    const handleStateChange = (stateId: String) => {
-        setSelectedStates(prev =>
-            prev.includes(stateId)
-                ? prev.filter(id => id !== stateId)
-                : [...prev, stateId]
         );
     };
 
@@ -309,44 +238,19 @@ export const UserProfileVisibilityFilter = () => {
         if (selectedProfessions.length > 0) {
             params.append('selectedProfessions', selectedProfessions.join(','));
         }
-        if (selectedMaritalStatus.length > 0) {
-            params.append('selectedMaritalStatus', selectedMaritalStatus.join(','));
-        }
-        if (selectedFamilyStatus.length > 0) {
-            params.append('selectedFamilyStatus', selectedFamilyStatus.join(','));
-        }
-        if (selectedStates.length > 0) {
-            params.append('selectedState', selectedStates.join(','));
-        }
-        if (selectedComplexions.length > 0) {
-            params.append('selectedComplexions', selectedComplexions.join(','));
-        }
-        if (selectedMembership.length > 0) {
-            params.append('selectedMembership', selectedMembership.join(','));
-        }
         if (selectedDegrees.length > 0) {
             params.append('selectedDegrees', selectedDegrees.join(','));
         }
-        if (selectedStarIds.length > 0) {
-            const starRasiIds = selectedStarIds.map(star => `${star.star}-${star.rasi}`);
-            params.append('prefPoruthamStarRasi', starRasiIds.join(','));
-        }
-
+      
         // Add other single value parameters
         if (heightFrom) params.append('heightFrom', heightFrom);
         if (heightTo) params.append('heightTo', heightTo);
         if (minAnnualIncome) params.append('minAnnualIncome', minAnnualIncome);
         if (maxAnnualIncome) params.append('maxAnnualIncome', maxAnnualIncome);
         if (foreignInterest) params.append('foreignInterest', foreignInterest);
-        if (hasphotos) params.append('hasphotos', hasphotos);
-        if (fatherLive) params.append('fatherLive', fatherLive);
-        if (motherLive) params.append('motherLive', motherLive);
-        if (sentInWhatsapp) params.append('sentInWhatsapp', sentInWhatsapp);
-        if (sarpaDhosham) params.append('sarpaDhosham', sarpaDhosham);
         if (chevvaiDhosam) params.append('chevvaiDhosam', chevvaiDhosam);
         if (ageDifference) params.append('ageDifference', ageDifference);
-        if (fromDateOfJoin) params.append('fromDateOfJoin', fromDateOfJoin);
-        if (toDateOfJoin) params.append('toDateOfJoin', toDateOfJoin);
+       
 
         // Add profile ID and type
         params.append('profileId', profileID || '');
@@ -428,9 +332,6 @@ export const UserProfileVisibilityFilter = () => {
             // Set chevvai dhosham
             setChevvaiDhosam(profileVisibility.visibility_chevvai || '');
 
-            // Set sarpa dhosham (assuming visibility_ragukethu refers to sarpa dhosham)
-            setSarpaDhosham(profileVisibility.visibility_ragukethu || '');
-
             // Set foreign interest
             setForeignInterest(profileVisibility.visibility_foreign_interest || '');
 
@@ -445,14 +346,6 @@ export const UserProfileVisibilityFilter = () => {
                 const fieldOfStudyIds = profileVisibility.visibility_field_of_study.split(',');
                 setSelectedFieldsOfStudy(fieldOfStudyIds);
             }
-
-            // Set family status
-            if (profileVisibility.visibility_family_status) {
-                const familyStatusIds = profileVisibility.visibility_family_status.split(',');
-                setSelectedFamilyStatus(familyStatusIds);
-            }
-
-            // Add more fields as needed based on your API response
         }
     }, [profileVisibility]);
 
@@ -537,23 +430,6 @@ export const UserProfileVisibilityFilter = () => {
                         </div>
                     </div>
 
-                    {/* Sarpa Dhosham */}
-                    <div className="flex flex-col">
-                        <label className="text-[18px] text-black font-semibold mb-2">
-                            Sarpa Dhosham
-                        </label>
-                        <select
-                            className="w-full outline-none px-4 py-2.5 border border-black rounded"
-                            value={sarpaDhosham}
-                            onChange={(e) => setSarpaDhosham(e.target.value)}
-                        >
-                            <option value="" disabled>-- Select Sarpa Dhosham --</option>
-                            <option value="Yes">Yes</option>
-                            <option value="No">No</option>
-                            <option value="Both">Both</option>
-                        </select>
-                    </div>
-
                     {/* Chevvai Dhosam */}
                     <div className="flex flex-col">
                         <label className="text-[18px] text-black font-semibold mb-2">
@@ -572,42 +448,8 @@ export const UserProfileVisibilityFilter = () => {
                         </select>
                     </div>
 
-                    {/* Matching stars */}
-                    <div className="py-4 col-span-full">
-                        <div className="w-fit text-start">
-                            <h2 className="text-lg text-black font-semibold mb-2">Matching Stars</h2>
-                        </div>
-                        <div className="justify-start items-center gap-x-5 text-black">
-                            {matchStars && matchStars?.length > 0 ? (
-                                matchStars
-                                    .sort((a, b) => b[0].match_count - a[0].match_count)
-                                    .map((matchCountArray, index) => {
-                                        const starAndRasi = matchCountArray.map((star) => ({
-                                            id: star.id.toString(),
-                                            matching_starId: star.dest_star_id.toString(),
-                                            matching_starname: star.matching_starname,
-                                            matching_rasiId: star.dest_rasi_id.toString(),
-                                            matching_rasiname: star.matching_rasiname,
-                                        }));
-
-                                        const matchCountValue = matchCountArray[0].match_count;
-
-                                        return (
-                                            <MatchingStars
-                                                key={index}
-                                                initialPoruthas={`No of porutham ${matchCountValue}`}
-                                                starAndRasi={starAndRasi}
-                                                selectedStarIds={selectedStarIds}
-                                                onCheckboxChange={handleCheckboxMatchingStars}
-                                                unique={''}
-                                            />
-                                        );
-                                    })
-                            ) : (
-                                <p>No match stars available</p>
-                            )}
-                        </div>
-                    </div>
+                  
+                    
 
                     {/* Highest Education */}
                     <div className="py-4 col-span-full">
@@ -690,31 +532,7 @@ export const UserProfileVisibilityFilter = () => {
                             }}
                         />
                     </div>
-                    <div className="flex gap-6 py-4">
-                        {/* From Date */}
-                        <div>
-                            <h2 className="text-lg text-black text-left font-semibold mb-2">Registration From Date</h2>
-                            <input
-                                type="date"
-                                value={fromDateOfJoin}
-                                onChange={(e) => setFromDateOfJoin(e.target.value)}
-                                max={new Date().toISOString().split("T")[0]} // ⛔ disables future dates
-                                className="border border-black rounded px-3 py-2 w-72 outline-none"
-                            />
-                        </div>
-
-                        {/* To Date */}
-                        <div>
-                            <h2 className="text-lg text-left text-black font-semibold mb-2">Registration To Date</h2>
-                            <input
-                                type="date"
-                                value={toDateOfJoin}
-                                onChange={(e) => setToDateOfJoin(e.target.value)}
-                                max={new Date().toISOString().split("T")[0]} // ⛔ disables future dates F
-                                className="border border-black rounded px-3 py-2 w-72 outline-none"
-                            />
-                        </div>
-                    </div>
+                    
 
                     {/* Profession */}
                     <div className="py-4 col-span-full">
@@ -734,110 +552,6 @@ export const UserProfileVisibilityFilter = () => {
                                     />
                                     <label htmlFor={`profession-${prof.Profes_Pref_id}`} className="text-sm">
                                         {prof.Profes_name}
-                                    </label>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Father Live */}
-                    <div className="py-4">
-                        <div className="w-fit text-start">
-                            <h2 className="text-lg text-black font-semibold mb-2">Father Live</h2>
-                        </div>
-                        <select
-                            className="w-full outline-none px-4 py-2.5 border border-black rounded"
-                            value={fatherLive}
-                            onChange={(e) => setFatherLive(e.target.value)}
-                        >
-                            <option value="">Select Option</option>
-                            <option value="yes">Yes</option>
-                            <option value="no">No</option>
-                        </select>
-                    </div>
-
-                    {/* Mother Live */}
-                    <div className="py-4">
-                        <div className="w-fit text-start">
-                            <h2 className="text-lg text-black font-semibold mb-2">Mother Live</h2>
-                        </div>
-                        <select
-                            className="w-full outline-none px-4 py-2.5 border border-black rounded"
-                            value={motherLive}
-                            onChange={(e) => setMotherLive(e.target.value)}
-                        >
-                            <option value="">Select Option</option>
-                            <option value="yes">Yes</option>
-                            <option value="no">No</option>
-                        </select>
-                    </div>
-
-                    {/* Marital Status */}
-                    <div className="py-4 col-span-full">
-                        <div className="w-fit text-start">
-                            <h2 className="text-lg text-black font-semibold mb-2">Marital Status</h2>
-                        </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                            {maritalStatus.map((marital) => (
-                                <div key={marital.marital_sts_id} className="flex items-center">
-                                    <input
-                                        type="checkbox"
-                                        id={`maritalStatus-${marital.marital_sts_id}`}
-                                        value={marital.marital_sts_id.toString()}
-                                        className="mr-2"
-                                        checked={selectedMaritalStatus.includes(marital.marital_sts_id.toString())}
-                                        onChange={() => handleMaritalStatusChange(marital.marital_sts_id.toString())}
-                                    />
-                                    <label htmlFor={`maritalStatus-${marital.marital_sts_id}`} className="text-sm">
-                                        {marital.marital_sts_name}
-                                    </label>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Complexion */}
-                    <div className="py-4 col-span-full">
-                        <div className="w-fit text-start">
-                            <h2 className="text-lg text-black font-semibold mb-2">Complexion</h2>
-                        </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                            {complexion.map((complex) => (
-                                <div key={complex.complexion_id} className="flex items-center">
-                                    <input
-                                        type="checkbox"
-                                        id={`complexion-${complex.complexion_id}`}
-                                        value={complex.complexion_id.toString()}
-                                        className="mr-2"
-                                        checked={selectedComplexions.includes(complex.complexion_id.toString())}
-                                        onChange={() => handleComplexionChange(complex.complexion_id.toString())}
-                                    />
-                                    <label htmlFor={`complexion-${complex.complexion_id}`} className="text-sm">
-                                        {complex.complexion_description}
-                                    </label>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Family Status */}
-                    <div className="py-4 col-span-full">
-                        <div className="w-fit text-start">
-                            <h2 className="text-lg text-black font-semibold mb-2">Family Status</h2>
-                        </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                            {familyStatus.map((fStatus) => (
-                                <div key={fStatus.family_status_id} className="flex items-center">
-                                    <input
-                                        type="checkbox"
-                                        id={`familyStatus-${fStatus.family_status_id}`}
-                                        value={fStatus.family_status_id.toString()}
-                                        className="mr-2"
-                                        checked={selectedFamilyStatus.includes(fStatus.family_status_id.toString())}
-                                        onChange={() => handleFamilyStatusChange(fStatus.family_status_id.toString())}
-                                    />
-                                    <label htmlFor={`familyStatus-${fStatus.family_status_id}`} className="text-sm">
-                                        {fStatus.family_status_name}
                                     </label>
                                 </div>
                             ))}
@@ -885,94 +599,6 @@ export const UserProfileVisibilityFilter = () => {
                         </div>
                     </div>
 
-                    {/* State & City */}
-                    {/* <div className="py-4 col-span-full">
-                        <div className="w-fit text-start">
-                            <h2 className="text-lg text-black font-semibold mb-2">state and city</h2>
-                        </div>
-                        <div className="flex items-center space-x-5">
-                            <div>
-                                <select
-                                    name="selectedState"
-                                    id="selectedState"
-                                    className="w-72 outline-none px-4 py-2.5 border border-black rounded"
-                                    value={selectedState || ""}
-                                    onChange={(e) => setSelectedState(e.target.value)}
-                                >
-                                    <option value="">Select State</option>
-                                    {state.map((option) => (
-                                        <option key={option.State_Pref_id} value={option.State_Pref_id}>
-                                            {option.State_name}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div>
-                                <select
-                                    name="selectedCity"
-                                    id="selectedCity"
-                                    value={selectedCity || ""}
-                                    onChange={(e) => setSelectedCity(e.target.value)}
-                                    className="w-72 outline-none px-4 py-2.5 border border-black rounded"
-                                >
-                                    <option value="">Select City</option>
-                                    {cities.map((option) => (
-                                        <option key={option.id} value={option.id}>
-                                            {option.district}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                        </div>
-                    </div> */}
-                    {/* Preferred State - Replace the dropdown with this */}
-                    <div className="py-4 col-span-full">
-                        <div className="w-fit text-start">
-                            <h2 className="text-lg text-black font-semibold mb-2">Preferred State</h2>
-                        </div>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
-                            {state.map((stateOption) => (
-                                <div key={stateOption.State_Pref_id} className="flex items-center">
-                                    <input
-                                        type="checkbox"
-                                        id={`state-${stateOption.State_Pref_id}`}
-                                        value={stateOption.State_Pref_id.toString()}
-                                        className="mr-2"
-                                        checked={selectedStates.includes(stateOption.State_Pref_id.toString())}
-                                        onChange={() => handleStateChange(stateOption.State_Pref_id.toString())}
-                                    />
-                                    <label htmlFor={`state-${stateOption.State_Pref_id}`} className="text-sm">
-                                        {stateOption.State_name}
-                                    </label>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Membership */}
-                    <div className="py-4 col-span-full">
-                        <div className="w-fit text-start">
-                            <h2 className="text-lg text-black font-semibold mb-2">Membership</h2>
-                        </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                            {membership.map((plan) => (
-                                <div key={plan.id} className="flex items-center">
-                                    <input
-                                        type="checkbox"
-                                        id={`plan-${plan.id}`}
-                                        value={plan.id.toString()}
-                                        className="mr-2"
-                                        checked={selectedMembership.includes(plan.id.toString())}
-                                        onChange={() => handleMembershipChange(plan.id.toString())}
-                                    />
-                                    <label htmlFor={`plan-${plan.id}`} className="text-sm">
-                                        {plan.plan_name}
-                                    </label>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
                     {/* Foreign Interest */}
                     <div className="py-4">
                         <div className="w-fit text-start">
@@ -990,41 +616,7 @@ export const UserProfileVisibilityFilter = () => {
                             <option value="Yes">Yes</option>
                             <option value="No">No</option>
                         </select>
-                    </div>
-
-                    {/* Sent in Whatsapp */}
-                    <div className="py-4">
-                        <div className="w-fit text-start">
-                            <h2 className="text-lg text-black font-semibold mb-2">Sent in Whatsapp</h2>
-                        </div>
-                        <select
-                            className="w-full outline-none px-4 py-2.5 border border-black rounded"
-                            value={sentInWhatsapp}
-                            onChange={(e) => setSentInWhatsapp(e.target.value)}
-                        >
-                            <option value="">Select Option</option>
-                            <option value="yes">Yes</option>
-                            <option value="no">No</option>
-                        </select>
-                    </div>
-
-                    {/* Has Photo */}
-                    <div className="py-4">
-                        <div className="w-fit text-start">
-                            <h2 className="text-lg text-black font-semibold mb-2">Has Photo</h2>
-                        </div>
-                        <select
-                            name="hasphotos"
-                            id="hasphotos"
-                            value={hasphotos}
-                            onChange={(e) => setHasPhotos(e.target.value)}
-                            className="w-full outline-none px-4 py-2.5 border border-black rounded"
-                        >
-                            <option value="">Select Option</option>
-                            <option value="yes">Yes</option>
-                            <option value="no">No</option>
-                        </select>
-                    </div>
+                    </div> 
                 </div>
 
                 {/* <div className="mt-4">
