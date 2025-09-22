@@ -112,7 +112,7 @@ import { ProfilesPage } from './matchingProfile/MatchingFilterAndTable/ProfilesP
 import { MatchingProfilesResultsPage } from './matchingProfile/MatchingFilterAndTable/MatchingProfilesResultsPage';
 import { NewMatchingTable } from './matchingProfile/MatchingFilterAndTable/NewMatchingTable';
 import { UserProfileVisibilityFilter } from './matchingProfile/ProfileVisibilityFilterAndTable/ProfileVisibilityFilter';
-import { ProfileVisibilityTable } from './matchingProfile/ProfileVisibilityFilterAndTable/ProfileVisibilitytable';
+import { ProfileVisibilityTable } from './matchingProfile/ProfileVisibilityFilterAndTable/ProfileVisibilityTable';
 
 
 function App() {

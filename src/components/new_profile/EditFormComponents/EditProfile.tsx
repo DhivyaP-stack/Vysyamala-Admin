@@ -453,8 +453,8 @@ const EditViewProfile: React.FC<pageProps> = ({
                         <span className="text-blue-500">Suggested Profile</span>
                       </div>
                       <div className="flex flex-col items-center text-center border-l-2 border-orange-500 cursor-pointer" onClick={() => navigate(`/UserProfileVisibilityFilter?profileId=${profileId}`)} >
-                        <span className="text-orange-500 text-lg font-semibold">0</span>
-                        <span className="text-blue-500">Profile Visibility</span>
+                        {/* <span className="text-orange-500 text-lg font-semibold">0</span> */}
+                        <span className="text-blue-500 mt-9">Profile Visibility</span>
                       </div>
                       <div className="flex flex-col items-center text-center border-l-2 border-orange-500 p-2 cursor-pointer " onClick={() => navigate(`/ViewedProfilesById?profileId=${profileId}`)} >
                         <span className="text-orange-500 text-lg font-semibold">{profileView7.viewedprofile_count}</span>

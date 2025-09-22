@@ -483,7 +483,12 @@ const ViewProfile: React.FC<pageProps> = ({
                   {[
                     { count: profileView7.matchingprofile_count, label: "Matching Profile", onClick: `/UserMatchingProfiles?profileId=${profileId}` },
                     { count: profileView7.suggestedprofile_count, label: "Suggested Profile", onClick: `/suggestedProfiles?profileId=${profileId}` },
-                    { count: "0",label: "Profile Visibility", onClick: `/UserProfileVisibilityFilter?profileId=${profileId}` },
+                    // { count: "0",label: "Profile Visibility", onClick: `/UserProfileVisibilityFilter?profileId=${profileId}` },
+                    {
+                      label: (
+                        <span className="block mt-9">Profile Visibility</span> // 👈 mt-2 pushes it down slightly
+                      ), onClick: `/UserProfileVisibilityFilter?profileId=${profileId}`
+                    },
                     { count: profileView7.viewedprofile_count, label: "Viewed Profile", onClick: `/ViewedProfilesById?profileId=${profileId}` },
                     { count: profileView7.visitorprofile_count, label: "Visitor Profile", onClick: `/VisitorProfilesById?profileId=${profileId}` },
                     { count: profileView7.ctocsend_count, label: "C to C Sent", onClick: `/CToCSentProfiles?profileId=${profileId}` },

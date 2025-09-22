@@ -8,8 +8,13 @@ import {
     TableContainer,
     TableHead,
     TableRow,
+    CircularProgress,
+    Typography,
+    Button,
+    Box,
 } from "@mui/material";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 
 interface ActionScore {
     score: number;
@@ -39,10 +44,11 @@ interface UserMatchingProfilesProps {
     status?: string;
     work_place?: string;
     mode?: string;
+    matching_score: string;
 }
 
 const columns = [
-    // { id: "select", label: "Select" },
+    { id: "select", label: "Select" },
     { id: "profile_img", label: "Image" },
     { id: "profile_id", label: "Profile ID" },
     { id: "work_place", label: "Work Place" },
@@ -63,71 +69,112 @@ const columns = [
     { id: "chevvai", label: "Admin Chevvai" },
     { id: "raguketu", label: "Admin Raghu/Kethu" },
     { id: "dateofjoin", label: "Reg Date" },
-    { id: "status", label: "Status" },
-    { id: "score", label: "Score" },
-    { id: "action_score", label: "Action" },
-];
-
-// Example static data
-const staticProfiles: UserMatchingProfilesProps[] = [
-    {
-        profile_id: "P1001",
-        profile_name: "Arun Kumar",
-        profile_img: "https://via.placeholder.com/50",
-        profile_age: 28,
-        degree: "B.Tech",
-        profession: "Software Engineer",
-        company_name: "Infosys",
-        designation: "Developer",
-        anual_income: "8 LPA",
-        state: "Tamil Nadu",
-        city: "Chennai",
-        family_status: "Middle Class",
-        father_occupation: "Business",
-        star: "Ashwini",
-        suya_gothram: "Kashyapa",
-        chevvai: "No",
-        raguketu: "Yes",
-        dateofjoin: "2024-05-12",
-        action_score: {
-            score: 85,
-            actions: [{ action: "Profile Viewed", datetime: "2024-06-01T12:30:00" }],
-        },
-        status: "Active",
-        work_place: "IT Park",
-        mode: "Online",
-    },
-    {
-        profile_id: "P1002",
-        profile_name: "Priya Sharma",
-        profile_img: "https://via.placeholder.com/50",
-        profile_age: 25,
-        degree: "MBA",
-        profession: "HR Manager",
-        company_name: "Wipro",
-        designation: "Manager",
-        anual_income: "12 LPA",
-        state: "Karnataka",
-        city: "Bangalore",
-        family_status: "Upper Middle Class",
-        father_occupation: "Retired",
-        star: "Rohini",
-        suya_gothram: "Bharadvaja",
-        chevvai: "Yes",
-        raguketu: "No",
-        dateofjoin: "2024-07-20",
-        action_score: {
-            score: 92,
-            actions: [{ action: "Sent Email", datetime: "2024-08-05T09:15:00" }],
-        },
-        status: "Inactive",
-        work_place: "Corporate Office",
-        mode: "Offline",
-    },
+    // { id: "status", label: "Status" },
+    { id: "matching_score", label: "Matching Score" },
+    // { id: "action_score", label: "Action" },
 ];
 
 export const ProfileVisibilityTable = () => {
+    const [searchParams] = useSearchParams();
     const [selectedProfiles, setSelectedProfiles] = useState<string[]>([]);
+    const [profiles, setProfiles] = useState<UserMatchingProfilesProps[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    // Get filter parameters from URL
+    const profileID = searchParams.get('profileId');
+    const selectedEducation = searchParams.get('selectedEducation')?.split(',') || [];
+    const selectedFieldsOfStudy = searchParams.get('selectedFieldsOfStudy')?.split(',') || [];
+    const selectedProfessions = searchParams.get('selectedProfessions')?.split(',') || [];
+    const selectedDegrees = searchParams.get('selectedDegrees')?.split(',') || [];
+    const heightFrom = searchParams.get('heightFrom') || '';
+    const heightTo = searchParams.get('heightTo') || '';
+    const minAnnualIncome = searchParams.get('minAnnualIncome') || '';
+    const maxAnnualIncome = searchParams.get('maxAnnualIncome') || '';
+    const foreignInterest = searchParams.get('foreignInterest') || '';
+    const chevvaiDhosam = searchParams.get('chevvaiDhosam') || '';
+    const ageFrom = searchParams.get('ageFrom') || '';
+    const ageTo = searchParams.get('ageTo') || '';
+    const ragukethu = searchParams.get('ragukethu') || '';
+    const selectedFamilyStatus = searchParams.get('selectedFamilyStatus')?.split(',') || [];
+
+
+    useEffect(() => {
+        const fetchVisibilityProfiles = async () => {
+            if (!profileID) {
+                setError("Profile ID is required");
+                setLoading(false);
+                return;
+            }
+
+            try {
+                setLoading(true);
+                setError(null);
+
+                // Construct the request body
+                const requestBody = {
+                    profile_id: profileID,
+                    per_page: 50,
+                    order_by: "profile_id",
+                    search_profession: selectedProfessions.join(','),
+                    age_from: ageFrom,
+                    age_to: ageTo,
+                    education: selectedEducation.join(','),
+                    foreign_intrest: foreignInterest,
+                    profession: selectedProfessions.join(','),
+                    height_from: heightFrom,
+                    height_to: heightTo,
+                    min_anual_income: minAnnualIncome,
+                    max_anual_income: maxAnnualIncome,
+                    ragu: ragukethu,
+                    chev: chevvaiDhosam,
+                    family_status: selectedFamilyStatus.join(','),
+                    field_of_study: selectedFieldsOfStudy.join(','),
+                    degree: selectedDegrees.join(','),
+                    marital_status: ""
+                };
+
+                console.log("Request Body:", requestBody);
+
+                const response = await fetch(
+                    'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/Get_visibility_list_match/',
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(requestBody),
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log("API Response:", data);
+
+                // Check different possible response structures
+                if (data.success && data.data) {
+                    setProfiles(data.data);
+                } else if (data.profiles) {
+                    setProfiles(data.profiles);
+                } else if (Array.isArray(data)) {
+                    setProfiles(data);
+                } else {
+                    console.warn("Unexpected API response structure:", data);
+                    setProfiles([]);
+                }
+            } catch (err: any) {
+                setError(err.message || "Failed to fetch profile visibility data");
+                console.error("Error fetching visibility profiles:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchVisibilityProfiles();
+    }, [searchParams, profileID]);
 
     const handleCheckboxChange = (profileId: string) => {
         setSelectedProfiles((prev) =>
@@ -137,104 +184,141 @@ export const ProfileVisibilityTable = () => {
         );
     };
 
+    const handleSelectAll = () => {
+        if (selectedProfiles.length === profiles.length && profiles.length > 0) {
+            setSelectedProfiles([]);
+        } else {
+            setSelectedProfiles(profiles.map((row) => row.profile_id));
+        }
+    };
+
+    if (loading) {
+        return (
+            <Box className="container mx-auto p-4 flex justify-center items-center h-64">
+                <CircularProgress />
+                <Typography className="ml-4">Loading profile visibility data...</Typography>
+            </Box>
+        );
+    }
+
+    if (error) {
+        return (
+            <Box className="container mx-auto p-4">
+                <Typography color="error" className="text-center">
+                    Error: {error}
+                </Typography>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    className="mt-4"
+                    onClick={() => window.location.reload()}
+                >
+                    Try Again
+                </Button>
+            </Box>
+        );
+    }
+
     return (
+        <Box className="container mx-auto p-4">
+            <Box className="mb-4 flex justify-between items-center">
+                <Box>
+                    <Typography variant="h5" className="text-left font-bold text-red-600">
+                        Vysyamala Profile Visibility
+                    </Typography>
+                    <Typography variant="body2" className="text-gray-600">
+                        Profile ID: {profileID} | Results: {profiles.length}
+                    </Typography>
+                </Box>
+            </Box>
 
-        <div className="container mx-auto p-4">
-            <div className="mb-4 flex justify-between items-center">
-                <div>
-                    <h2 className="text-xl text-left font-bold text-red-600">Vysyamala Profile Visibility</h2>
-                </div>
-            </div>
-
-            <Paper className="w-full">
-                <TableContainer component={Paper}>
-                    <Table sx={{ minWidth: 650 }}>
-                        <TableHead style={{ background: "#FFF9C9" }}>
-                            <TableRow>
-                                <TableCell>
-                                    <Checkbox
-                                        checked={selectedProfiles.length === staticProfiles.length && staticProfiles.length > 0}
-                                        indeterminate={
-                                            selectedProfiles.length > 0 &&
-                                            selectedProfiles.length < staticProfiles.length
-                                        }
-                                        onChange={(e) => {
-                                            if (e.target.checked) {
-                                                // Select all
-                                                setSelectedProfiles(staticProfiles.map((row) => row.profile_id));
-                                            } else {
-                                                // Deselect all
-                                                setSelectedProfiles([]);
-                                            }
-                                        }}
-                                    />
-                                </TableCell>
-                                {columns.map((column) => (
-                                    <TableCell
-                                        key={column.id}
-                                        sx={{
-                                            fontWeight: "bold",
-                                            color: "#ee3448",
-                                            fontSize: "0.95rem",
-                                            whiteSpace: "nowrap",
-                                        }}
-                                    >
-                                        {column.label}
-                                    </TableCell>
-                                ))}
-                            </TableRow>
-                        </TableHead>
-
-                        <TableBody>
-                            {staticProfiles.map((row) => (
-                                <TableRow key={row.profile_id}>
-                                    {/* Select */}
-                                    <TableCell>
+            {profiles.length === 0 ? (
+                <Paper className="p-8 text-center">
+                    <Typography variant="h6" color="textSecondary">
+                        No profiles found matching your visibility criteria
+                    </Typography>
+                </Paper>
+            ) : (
+                <Paper className="w-full overflow-auto">
+                    <TableContainer>
+                        <Table sx={{ minWidth: 650 }} size="small">
+                            <TableHead style={{ background: "#FFF9C9" }}>
+                                <TableRow>
+                                    <TableCell padding="checkbox">
                                         <Checkbox
-                                            checked={selectedProfiles.includes(row.profile_id)}
-                                            onChange={() => handleCheckboxChange(row.profile_id)}
+                                            checked={selectedProfiles.length === profiles.length && profiles.length > 0}
+                                            indeterminate={
+                                                selectedProfiles.length > 0 &&
+                                                selectedProfiles.length < profiles.length
+                                            }
+                                            onChange={handleSelectAll}
                                         />
                                     </TableCell>
-
-                                    {/* Image */}
-                                    <TableCell>
-                                        <Avatar src={row.profile_img} alt={row.profile_name} />
-                                    </TableCell>
-
-                                    <TableCell>{row.profile_id}</TableCell>
-                                    <TableCell>{row.work_place}</TableCell>
-                                    <TableCell>{row.mode}</TableCell>
-                                    <TableCell>{row.profile_name}</TableCell>
-                                    <TableCell>{row.profile_age}</TableCell>
-                                    <TableCell>{row.star}</TableCell>
-                                    <TableCell>{row.degree}</TableCell>
-                                    <TableCell>{row.profession}</TableCell>
-                                    <TableCell>{row.company_name}</TableCell>
-                                    <TableCell>{row.designation}</TableCell>
-                                    <TableCell>{row.anual_income}</TableCell>
-                                    <TableCell>{row.state}</TableCell>
-                                    <TableCell>{row.city}</TableCell>
-                                    <TableCell>{row.family_status}</TableCell>
-                                    <TableCell>{row.father_occupation}</TableCell>
-                                    <TableCell>{row.suya_gothram}</TableCell>
-                                    <TableCell>{row.chevvai}</TableCell>
-                                    <TableCell>{row.raguketu}</TableCell>
-                                    <TableCell>
-                                        {new Date(row.dateofjoin).toLocaleDateString("en-GB")}
-                                    </TableCell>
-                                    <TableCell>{row.status}</TableCell>
-                                    <TableCell>{row.action_score.score}</TableCell>
-                                    <TableCell>
-                                        <span style={{ cursor: "pointer", color: "#007bff" }}>
-                                            Profile Viewed
-                                        </span>
-                                    </TableCell>
+                                    {columns.slice(1).map((column) => (
+                                        <TableCell
+                                            key={column.id}
+                                            sx={{
+                                                fontWeight: "bold",
+                                                color: "#ee3448",
+                                                fontSize: "0.95rem",
+                                                whiteSpace: "nowrap",
+                                            }}
+                                        >
+                                            {column.label}
+                                        </TableCell>
+                                    ))}
                                 </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-            </Paper>
-        </div>
+                            </TableHead>
+
+                            <TableBody>
+                                {profiles.map((row) => (
+                                    <TableRow key={row.profile_id}>
+                                        {/* Select */}
+                                        <TableCell padding="checkbox">
+                                            <Checkbox
+                                                checked={selectedProfiles.includes(row.profile_id)}
+                                                onChange={() => handleCheckboxChange(row.profile_id)}
+                                            />
+                                        </TableCell>
+
+                                        {/* Image */}
+                                        <TableCell>
+                                            <Avatar src={row.profile_img} alt={row.profile_name} />
+                                        </TableCell>
+
+                                        <TableCell>{row.profile_id}</TableCell>
+                                        <TableCell>{row.work_place || "N/A"}</TableCell>
+                                        <TableCell>{row.mode || "N/A"}</TableCell>
+                                        <TableCell>{row.profile_name}</TableCell>
+                                        <TableCell>{row.profile_age}</TableCell>
+                                        <TableCell>{row.star}</TableCell>
+                                        <TableCell>{row.degree}</TableCell>
+                                        <TableCell>{row.profession}</TableCell>
+                                        <TableCell>{row.company_name || "N/A"}</TableCell>
+                                        <TableCell>{row.designation || "N/A"}</TableCell>
+                                        <TableCell>{row.anual_income}</TableCell>
+                                        <TableCell>{row.state}</TableCell>
+                                        <TableCell>{row.city}</TableCell>
+                                        <TableCell>{row.family_status || "N/A"}</TableCell>
+                                        <TableCell>{row.father_occupation || "N/A"}</TableCell>
+                                        <TableCell>{row.suya_gothram}</TableCell>
+                                        <TableCell>{row.chevvai}</TableCell>
+                                        <TableCell>{row.raguketu}</TableCell>
+                                        <TableCell>
+                                            {new Date(row.dateofjoin).toLocaleDateString("en-GB")}
+                                        </TableCell>
+                                        {/* <TableCell>{row.status || "N/A"}</TableCell>
+                                        <TableCell>{row.action_score?.score || "N/A"}</TableCell> */}
+                                        <TableCell>
+                                            {row.matching_score}
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </Paper>
+            )}
+        </Box>
     );
 };

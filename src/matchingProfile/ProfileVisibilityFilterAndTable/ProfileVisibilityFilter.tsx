@@ -96,6 +96,7 @@ export const UserProfileVisibilityFilter = () => {
     const [foreignInterest, setForeignInterest] = useState<string>('');
     const [ageDifference, setAgeDifference] = useState<string>('')
     const [chevvaiDhosam, setChevvaiDhosam] = useState<string>('');
+    const [ragukethu, setRagukethu] = useState<string>('');
     const [edit3, setEdit3] = useState<HoroscopeDetails>()
     const [edit0, setEdit0] = useState<gender>();
     const [fieldOfStudyOptions, setFieldOfStudyOptions] = useState<FieldOfStudy[]>([]);
@@ -105,6 +106,10 @@ export const UserProfileVisibilityFilter = () => {
     const [loading, setLoading] = useState(false);
     const [profileVisibility, setProfileVisibility] = useState<any>(null);
     const [loadingVisibility, setLoadingVisibility] = useState(false);
+    const [ageFrom, setAgeFrom] = useState<string>('');
+    const [ageTo, setAgeTo] = useState<string>('');
+    const [familyStatus, setFamilyStatus] = useState<FamilyStatus[]>([]);
+    const [selectedFamilyStatus, setSelectedFamilyStatus] = useState<String[]>([]);
 
     // Add this query to fetch profile details
     const { data: profileDetails } = useQuery({
@@ -129,7 +134,7 @@ export const UserProfileVisibilityFilter = () => {
 
                 setAnnualIncome(Object.values(annualIncomeData));
                 setProfession(Object.values(professionData));
-               
+                setFamilyStatus(Object.values(familyStatusData));
                 setHighestEducation(Object.values(educationData));
                 setFieldOfStudyOptions(Object.values(fieldOfStudyData)); // Add this
                 setDegrees(Object.values(degreesData)); // Add this
@@ -241,7 +246,11 @@ export const UserProfileVisibilityFilter = () => {
         if (selectedDegrees.length > 0) {
             params.append('selectedDegrees', selectedDegrees.join(','));
         }
-      
+
+        if (selectedFamilyStatus.length > 0) {
+            params.append('selectedFamilyStatus', selectedFamilyStatus.join(','));
+        }
+
         // Add other single value parameters
         if (heightFrom) params.append('heightFrom', heightFrom);
         if (heightTo) params.append('heightTo', heightTo);
@@ -250,7 +259,10 @@ export const UserProfileVisibilityFilter = () => {
         if (foreignInterest) params.append('foreignInterest', foreignInterest);
         if (chevvaiDhosam) params.append('chevvaiDhosam', chevvaiDhosam);
         if (ageDifference) params.append('ageDifference', ageDifference);
-       
+        if (ageFrom) params.append('ageFrom', ageFrom);
+        if (ageTo) params.append('ageTo', ageTo);
+        if (ragukethu) params.append('ragukethu', ragukethu);
+
 
         // Add profile ID and type
         params.append('profileId', profileID || '');
@@ -299,6 +311,13 @@ export const UserProfileVisibilityFilter = () => {
         fetchProfileVisibility();
     }, [profileID]);
 
+    const handleFamilyStatusChange = (FamilyStatusID: String) => {
+        setSelectedFamilyStatus(prev =>
+            prev.includes(FamilyStatusID)
+                ? prev.filter(id => id !== FamilyStatusID)
+                : [...prev, FamilyStatusID]
+        );
+    };
     // Set values from API response when profileVisibility changes
     useEffect(() => {
         if (profileVisibility) {
@@ -346,6 +365,19 @@ export const UserProfileVisibilityFilter = () => {
                 const fieldOfStudyIds = profileVisibility.visibility_field_of_study.split(',');
                 setSelectedFieldsOfStudy(fieldOfStudyIds);
             }
+
+            if (profileVisibility.visibility_family_status) {
+                const familystatusIds = profileVisibility.visibility_family_status.split(',');
+                setSelectedFamilyStatus(familystatusIds);
+            }
+
+            if (profileVisibility.visibility_age_from) {
+                setAgeFrom(profileVisibility.visibility_age_from);
+            }
+            if (profileVisibility.visibility_age_to) {
+                setAgeTo(profileVisibility.visibility_age_to);
+            }
+
         }
     }, [profileVisibility]);
 
@@ -382,7 +414,7 @@ export const UserProfileVisibilityFilter = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                     {/* Age Difference */}
-                    <div className="flex flex-col">
+                    {/* <div className="flex flex-col">
                         <label className="text-[18px] text-black font-semibold mb-2">
                             Age Difference
                         </label>
@@ -391,7 +423,7 @@ export const UserProfileVisibilityFilter = () => {
                             defaultValue="5"
                             onChange={(e) => setAgeDifference(e.target.value)}
                         >
-                            <option value="" disabled>-- Select Age difference--</option>
+                            <option value="">-- Select Age difference--</option>
                             <option value="1">1</option>
                             <option value="2">2</option>
                             <option value="3">3</option>
@@ -403,7 +435,36 @@ export const UserProfileVisibilityFilter = () => {
                             <option value="9">9</option>
                             <option value="10">10</option>
                         </select>
+                    </div> */}
+                    {/* Age From and To */}
+                    <div className="flex items-center space-x-5">
+                        <div className="flex flex-col">
+                            <label className="text-[18px] text-black font-semibold mb-2">
+                                Age From
+                            </label>
+                            <input
+                                type="number"
+                                value={ageFrom}
+                                onChange={(e) => setAgeFrom(e.target.value)}
+                                className="w-full px-4 py-2 border border-black rounded"
+                                placeholder="From"
+                            />
+                        </div>
+
+                        <div className="flex flex-col">
+                            <label className="text-[18px] text-black font-semibold mb-2">
+                                Age To
+                            </label>
+                            <input
+                                type="number"
+                                value={ageTo}
+                                onChange={(e) => setAgeTo(e.target.value)}
+                                className="w-full px-4 py-2 border border-black rounded"
+                                placeholder="To"
+                            />
+                        </div>
                     </div>
+
 
                     {/* Height from and to */}
                     <div className="flex items-center space-x-5">
@@ -440,7 +501,7 @@ export const UserProfileVisibilityFilter = () => {
                             value={chevvaiDhosam}
                             onChange={(e) => setChevvaiDhosam(e.target.value)}
                         >
-                            <option value="" disabled>-- Select Chevvai Dhosam --</option>
+                            <option value="">-- Select Chevvai Dhosam --</option>
                             {/* <option value="Unknown">Unknown</option> */}
                             <option value="Yes">Yes</option>
                             <option value="No">No</option>
@@ -448,8 +509,22 @@ export const UserProfileVisibilityFilter = () => {
                         </select>
                     </div>
 
-                  
-                    
+                    <div className="flex flex-col">
+                        <label className="text-[18px] text-black font-semibold mb-2">
+                            Ragu/Kethu
+                        </label>
+                        <select
+                            className="w-full outline-none px-4 py-2.5 border border-black rounded"
+                            value={ragukethu}
+                            onChange={(e) => setRagukethu(e.target.value)}
+                        >
+                            <option value="">-- Select Ragu/Kethu--</option>
+                            {/* <option value="Unknown">Unknown</option> */}
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                            <option value="Both">Both</option>
+                        </select>
+                    </div>
 
                     {/* Highest Education */}
                     <div className="py-4 col-span-full">
@@ -532,7 +607,7 @@ export const UserProfileVisibilityFilter = () => {
                             }}
                         />
                     </div>
-                    
+
 
                     {/* Profession */}
                     <div className="py-4 col-span-full">
@@ -599,6 +674,30 @@ export const UserProfileVisibilityFilter = () => {
                         </div>
                     </div>
 
+                    <div className="py-4 col-span-full">
+                        <div className="w-fit text-start">
+                            <h2 className="text-lg text-black font-semibold mb-2">Family Status</h2>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                            {familyStatus.map((fStatus) => (
+                                <div key={fStatus.family_status_id} className="flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        id={`familyStatus-${fStatus.family_status_id}`}
+                                        value={fStatus.family_status_id.toString()}
+                                        className="mr-2"
+                                        checked={selectedFamilyStatus.includes(fStatus.family_status_id.toString())}
+                                        onChange={() => handleFamilyStatusChange(fStatus.family_status_id.toString())}
+                                    />
+                                    <label htmlFor={`familyStatus-${fStatus.family_status_id}`} className="text-sm">
+                                        {fStatus.family_status_name}
+                                    </label>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+
                     {/* Foreign Interest */}
                     <div className="py-4">
                         <div className="w-fit text-start">
@@ -616,7 +715,7 @@ export const UserProfileVisibilityFilter = () => {
                             <option value="Yes">Yes</option>
                             <option value="No">No</option>
                         </select>
-                    </div> 
+                    </div>
                 </div>
 
                 {/* <div className="mt-4">
