@@ -631,7 +631,7 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                     Showing {totalItems} records
                 </div>
             </div>
-            <div className="py-4">
+            <div className="py-4" >
                 <TableContainer component={Paper}>
                     <Table sx={{ minWidth: 650 }} aria-label="simple table" stickyHeader>
                         <TableHead style={{ background: '#FFF8B3', padding: '17px' }}>

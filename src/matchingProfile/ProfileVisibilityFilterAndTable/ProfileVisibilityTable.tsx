@@ -14,7 +14,7 @@ import {
     Box,
 } from "@mui/material";
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 interface ActionScore {
     score: number;
@@ -75,6 +75,7 @@ const columns = [
 ];
 
 export const ProfileVisibilityTable = () => {
+    const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const [selectedProfiles, setSelectedProfiles] = useState<string[]>([]);
     const [profiles, setProfiles] = useState<UserMatchingProfilesProps[]>([]);
@@ -223,9 +224,9 @@ export const ProfileVisibilityTable = () => {
         <Box className="container mx-auto p-4">
             <Box className="mb-4 flex justify-between items-center">
                 <Box>
-                    <Typography variant="h5" className="text-left font-bold text-red-600">
+                    <h2 className="text-left text-xl font-bold text-red-600">
                         Vysyamala Profile Visibility
-                    </Typography>
+                    </h2>
                     <Typography variant="body2" className="text-gray-600">
                         Profile ID: {profileID} | Results: {profiles.length}
                     </Typography>
@@ -244,7 +245,7 @@ export const ProfileVisibilityTable = () => {
                         <Table sx={{ minWidth: 650 }} size="small">
                             <TableHead style={{ background: "#FFF9C9" }}>
                                 <TableRow>
-                                    <TableCell padding="checkbox">
+                                    {/* <TableCell padding="checkbox">
                                         <Checkbox
                                             checked={selectedProfiles.length === profiles.length && profiles.length > 0}
                                             indeterminate={
@@ -253,15 +254,20 @@ export const ProfileVisibilityTable = () => {
                                             }
                                             onChange={handleSelectAll}
                                         />
-                                    </TableCell>
+                                    </TableCell> */}
                                     {columns.slice(1).map((column) => (
                                         <TableCell
                                             key={column.id}
                                             sx={{
-                                                fontWeight: "bold",
+                                                borderBottom: "1px solid #E0E0E0",
                                                 color: "#ee3448",
-                                                fontSize: "0.95rem",
+                                                fontWeight: "bold",
+                                                fontSize: "1rem",
                                                 whiteSpace: "nowrap",
+                                                backgroundColor: "#FFF8B3",
+                                                position: column.id === "profile_id" ? "sticky" : "static",
+                                                left: column.id === "profile_id" ? 0 : "auto", // 👈 always stick at left
+                                                zIndex: column.id === "profile_id" ? 2 : 1,
                                             }}
                                         >
                                             {column.label}
@@ -274,19 +280,32 @@ export const ProfileVisibilityTable = () => {
                                 {profiles.map((row) => (
                                     <TableRow key={row.profile_id}>
                                         {/* Select */}
-                                        <TableCell padding="checkbox">
+                                        {/* <TableCell padding="checkbox">
                                             <Checkbox
                                                 checked={selectedProfiles.includes(row.profile_id)}
                                                 onChange={() => handleCheckboxChange(row.profile_id)}
                                             />
-                                        </TableCell>
+                                        </TableCell> */}
 
                                         {/* Image */}
                                         <TableCell>
                                             <Avatar src={row.profile_img} alt={row.profile_name} />
                                         </TableCell>
 
-                                        <TableCell>{row.profile_id}</TableCell>
+                                        <TableCell onClick={() =>
+                                            navigate(
+                                                `/viewProfile?profileId=${row.profile_id}`,
+                                            )
+                                        }
+                                            sx={{
+                                                position: "sticky",
+                                                left: 0, // 👈 always stick at far left
+                                                background: "#fff",
+                                                color: "blue",
+                                                cursor: "pointer",
+                                                textDecoration: "none",
+                                                "&:hover": { textDecoration: "underline" },
+                                            }}>{row.profile_id}</TableCell>
                                         <TableCell>{row.work_place || "N/A"}</TableCell>
                                         <TableCell>{row.mode || "N/A"}</TableCell>
                                         <TableCell>{row.profile_name}</TableCell>
