@@ -166,7 +166,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                       <NavLink
                         to="#"
                         className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out ${(pathname === '/forms' ||
-                            pathname.includes('forms')) &&
+                          pathname.includes('forms')) &&
                           'bg-graydark dark:bg-meta-4'
                           }`}
                         onClick={(e) => {
@@ -377,7 +377,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                       <NavLink
                         to="#"
                         className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out ${(pathname === '/forms' ||
-                            pathname.includes('forms')) &&
+                          pathname.includes('forms')) &&
                           'bg-graydark dark:bg-meta-4'
                           }`}
                         onClick={(e) => {
@@ -458,6 +458,18 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             >
                               <GoDot />
                               Transaction History
+                            </NavLink> 
+                          </li>
+                          <li>
+                            <NavLink
+                              to="TransactionHistoryNew"
+                              className={({ isActive }) =>
+                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                                (isActive && '!text-PrimaryRed')
+                              }
+                            >
+                              <GoDot />
+                              Transaction History New
                             </NavLink>
                           </li>
                           <li>
@@ -518,7 +530,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                       <NavLink
                         to="#"
                         className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out ${(pathname === '/master-location' ||
-                            pathname.includes('master-location')) &&
+                          pathname.includes('master-location')) &&
                           'bg-graydark dark:bg-meta-4'
                           }`}
                         onClick={(e) => {
@@ -898,7 +910,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                       <NavLink
                         to="#"
                         className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out ${(pathname === '/horoscope-master' ||
-                            pathname.includes('horoscope-master')) &&
+                          pathname.includes('horoscope-master')) &&
                           'bg-graydark dark:bg-meta-4'
                           }`}
                         onClick={(e) => {
@@ -1286,8 +1298,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     <NavLink
                       to="#"
                       className={`group relative flex items-center gap-2.5 success rounded-sm px-4 py-2 text-black font-medium text-PrimaryRed hover:text-PrimaryRed duration-300 ease-in-out ${pathname === '/' || pathname.includes('dashboard')
-                          ? 'bg-gray-100'
-                          : ''
+                        ? 'bg-gray-100'
+                        : ''
                         }`}
                       onClick={(e) => {
                         e.preventDefault();
@@ -1350,8 +1362,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     <NavLink
                       to="#"
                       className={`group relative flex items-center gap-2.5 success rounded-sm px-4 py-2 text-black font-medium text-PrimaryRed hover:text-PrimaryRed duration-300 ease-in-out ${pathname === '/' || pathname.includes('dashboard')
-                          ? 'bg-gray-100'
-                          : ''
+                        ? 'bg-gray-100'
+                        : ''
                         }`}
                       onClick={(e) => {
                         e.preventDefault();

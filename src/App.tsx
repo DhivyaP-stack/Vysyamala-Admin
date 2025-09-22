@@ -113,6 +113,7 @@ import { MatchingProfilesResultsPage } from './matchingProfile/MatchingFilterAnd
 import { NewMatchingTable } from './matchingProfile/MatchingFilterAndTable/NewMatchingTable';
 import { UserProfileVisibilityFilter } from './matchingProfile/ProfileVisibilityFilterAndTable/ProfileVisibilityFilter';
 import { ProfileVisibilityTable } from './matchingProfile/ProfileVisibilityFilterAndTable/ProfileVisibilityTable';
+import TransactionHistoryNew from './components/ReuseProfileTable/userActions/TransactionHistoryNew';
 
 
 function App() {
@@ -1026,6 +1027,15 @@ function App() {
                     <>
                       <PageTitle title="TransactionHistory" />
                       <TransactionHistory />
+                    </>
+                  }
+                />
+                <Route
+                  path="/TransactionHistoryNew"
+                  element={
+                    <>
+                      <PageTitle title="TransactionHistoryNew" />
+                      <TransactionHistoryNew />
                     </>
                   }
                 />
