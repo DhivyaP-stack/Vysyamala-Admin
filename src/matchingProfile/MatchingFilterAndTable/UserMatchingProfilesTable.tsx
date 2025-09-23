@@ -2647,7 +2647,7 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                             disabled={isPrintProfile || iswhatsappProfile || isSendingEmail}
                         >
                             {isPrintProfile || iswhatsappProfile || isSendingEmail ? (
-                                <CircularProgress size={16} />
+                                <CircularProgress size={16} sx={{ color: "white" }} />
                             ) : (
                                 "Send Selected"
                             )}

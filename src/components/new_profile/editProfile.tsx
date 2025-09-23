@@ -197,7 +197,6 @@ const EditProfile = () => {
   const [fieldOfStudySuggested, setFieldOfStudySuggested] = useState('');
   const [prefDegreeSuggested, setPreDegreeSuggested] = useState<string[]>([]);
 
-
   const handleProfileUpdate = async (editData: any, Name: string) => {
     try {
       setIsSubmitting(true);
@@ -666,7 +665,8 @@ const EditProfile = () => {
           </button>
           <button
             className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded shadow-md transition-colors"
-            onClick={() => navigate(-1)}
+            // onClick={() => navigate(-1)}
+            onClick={() => navigate(`/viewProfile?profileId=${profileId}`)}
           >
             To View this form
           </button>
