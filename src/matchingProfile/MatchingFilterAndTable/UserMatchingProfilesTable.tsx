@@ -2006,6 +2006,7 @@ interface UserMatchingProfilesProps {
     verified: number;
     action_score: ActionScore;
     dateofjoin: string;
+    profile_status: string;
 }
 
 const getColumns = (profileType: 'matching' | 'suggested') => {
@@ -2031,7 +2032,7 @@ const getColumns = (profileType: 'matching' | 'suggested') => {
         { id: 'chevvai', label: 'Admin Chevvai' },
         { id: 'raguketu', label: 'Admin Raghu/Kethu' },
         { id: 'dateofjoin', label: 'Reg Date' },
-        { id: "status", label: "Status" },
+        { id: "profile_status", label: "Status" },
         { id: "matching_score", label: "Matching Score" },
         { id: 'action_score', label: 'Action Score' },
         { id: 'action_log', label: 'Action Log' },
@@ -2283,13 +2284,25 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
     };
 
     const handleSelectAll = () => {
-        setSelectedProfiles((prevSelected) => {
-            if (prevSelected.length === matchingData.length) {
-                return [];
-            } else {
-                return matchingData.map((profile) => profile.profile_id);
-            }
-        });
+        // Get the IDs of all profiles that are eligible to be selected
+        const selectableProfileIds = matchingData
+            .filter(profile => String(profile.profile_status) === '1')
+            .map(profile => profile.profile_id);
+
+        // Get the IDs of the currently selected profiles that are also selectable
+        const currentlySelectedSelectable = selectedProfiles.filter(id => selectableProfileIds.includes(id));
+
+        if (currentlySelectedSelectable.length === selectableProfileIds.length) {
+            // If all selectable profiles are already selected, deselect them
+            setSelectedProfiles(prevSelected =>
+                prevSelected.filter(id => !selectableProfileIds.includes(id))
+            );
+        } else {
+            // Otherwise, add all selectable profiles to the current selection
+            setSelectedProfiles(prevSelected => [
+                ...new Set([...prevSelected, ...selectableProfileIds]),
+            ]);
+        }
     };
 
     const handlePrintProfile = async () => {
@@ -2426,6 +2439,25 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
             handleSearch();
         }
     };
+
+    const getProfileStatusText = (statusCode: string | number): string => {
+        const statusMap: { [key: string]: string } = {
+            "0": "Newly Registered",
+            "1": "Approved",
+            "2": "Pending",
+            "3": "Hidden Profiles",
+            "4": "Deleted Profile"
+        };
+
+        // Convert to string to handle both number and string inputs
+        return statusMap[String(statusCode)] || "Unknown Status";
+    };
+
+    const selectableProfiles = matchingData.filter(p => String(p.profile_status) === '1');
+    const numSelectable = selectableProfiles.length;
+    const numSelected = selectedProfiles.filter(id =>
+        selectableProfiles.some(p => p.profile_id === id)
+    ).length;
 
     return (
         <div className="container mx-auto p-4">
@@ -2654,7 +2686,7 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
 
             {/* highlight-start */}
             <div className="py-4" style={{ width: tableWidth, overflowX: 'auto', margin: '0 auto' }}>
-            {/* highlight-end */}
+                {/* highlight-end */}
                 <TableContainer component={Paper} sx={{ width: '100%', overflowX: 'auto' }}>
                     <Table sx={{ minWidth: windowWidth >= 2000 ? '2000px' : '100%' }} aria-label="responsive table" stickyHeader>
                         <TableHead
@@ -2683,7 +2715,7 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                                                 column.id === "select"
                                                     ? 0
                                                     : column.id === "profile_id"
-                                                        ? SELECT_COLUMN_WIDTH 
+                                                        ? SELECT_COLUMN_WIDTH
                                                         : "auto",
                                             zIndex: column.id === "select" || column.id === "profile_id" ? 2 : 1,
                                             width:
@@ -2703,16 +2735,23 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                                         }}
                                     >
                                         {column.id === "select" ? (
-                                            <Checkbox
-                                                color="primary"
-                                                checked={matchingData.length > 0 && selectedProfiles.length === matchingData.length}
-                                                indeterminate={
-                                                    selectedProfiles.length > 0 &&
-                                                    selectedProfiles.length < matchingData.length
-                                                }
-                                                onChange={handleSelectAll}
-                                                size={windowWidth >= 2000 ? "small" : "medium"}
-                                            />
+                                            <Box
+                                                sx={{
+                                                    display: "inline-flex",
+                                                    cursor: numSelectable === 0 ? "not-allowed" : "pointer",
+                                                }}
+                                            >
+                                                <Checkbox
+                                                    color="primary"
+                                                    // highlight-start
+                                                    checked={numSelectable > 0 && numSelected === numSelectable}
+                                                    indeterminate={numSelected > 0 && numSelected < numSelectable}
+                                                    disabled={numSelectable === 0}
+                                                    onChange={handleSelectAll}
+                                                    // highlight-end
+                                                    size={windowWidth >= 2000 ? "small" : "medium"}
+                                                />
+                                            </Box>
                                         ) : (
                                             <div style={{
                                                 overflow: 'hidden',
@@ -2751,12 +2790,23 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                                                 maxWidth: windowWidth >= 2000 ? cellWidth : 'none',
                                                 padding: windowWidth >= 2000 ? '4px' : '8px',
                                             }}>
-                                            <Checkbox
-                                                color="primary"
-                                                checked={selectedProfiles.includes(row.profile_id)}
-                                                onChange={() => handleCheckboxChange(row.profile_id)}
-                                                size={windowWidth >= 2000 ? "small" : "medium"}
-                                            />
+                                            <Box
+                                                sx={{
+                                                    display: "inline-flex",
+                                                    cursor: String(row.profile_status) !== "1" ? "not-allowed" : "pointer",
+                                                }}
+                                            >
+                                                <Checkbox
+                                                    color="primary"
+                                                    checked={selectedProfiles.includes(row.profile_id)}
+                                                    onChange={() => handleCheckboxChange(row.profile_id)}
+                                                    disabled={String(row.profile_status) !== "1"}
+                                                    size={windowWidth >= 2000 ? "small" : "medium"}
+                                                    sx={{
+                                                        pointerEvents: String(row.profile_status) !== "1" ? "none" : "auto",
+                                                    }}
+                                                />
+                                            </Box>
                                         </TableCell>
 
 
@@ -3002,7 +3052,7 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                                             padding: windowWidth >= 2000 ? '4px' : '8px',
                                             fontSize: windowWidth >= 2000 ? '12px' : '14px'
                                         }}>
-                                            N/A
+                                            {getProfileStatusText(row.profile_status)}
                                         </TableCell>
 
                                         <TableCell sx={{
