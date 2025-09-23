@@ -460,7 +460,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                               Transaction History
                             </NavLink> 
                           </li>
-                          <li>
+                          {/* <li>
                             <NavLink
                               to="TransactionHistoryNew"
                               className={({ isActive }) =>
@@ -471,7 +471,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                               <GoDot />
                               Transaction History New
                             </NavLink>
-                          </li>
+                          </li> */}
                           <li>
                             <NavLink
                               to="PhotoRequestProfiles"
