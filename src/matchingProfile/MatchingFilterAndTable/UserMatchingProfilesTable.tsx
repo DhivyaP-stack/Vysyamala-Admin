@@ -916,12 +916,12 @@ const useZoomLevel = () => {
     useEffect(() => {
         const handleResize = () => {
             const windowWidth = window.innerWidth;
-            
+
             // Calculate approximate zoom level based on screen width
             let zoomLevel = 1;
             let tableWidth = '100%';
             let cellWidth = 'auto';
-            
+
             if (windowWidth >= 3000) {
                 // Very zoomed out - make table very wide with narrow columns
                 zoomLevel = 0.5;
@@ -958,7 +958,7 @@ const useZoomLevel = () => {
                 tableWidth = '100%';
                 cellWidth = '150px';
             }
-            
+
             setZoomInfo({
                 windowWidth,
                 zoomLevel,
@@ -969,7 +969,7 @@ const useZoomLevel = () => {
 
         window.addEventListener('resize', handleResize);
         handleResize(); // Initial call
-        
+
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
@@ -1002,6 +1002,8 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
     const [selectedActionType, setSelectedActionType] = useState<string>('all');
     const [activeStatus, setActiveStatus] = useState<string>("All");
     const [selectedSendAction, setSelectedSendAction] = useState<string>('print');
+    const SELECT_COLUMN_WIDTH = 70;
+    const PROFILE_ID_COLUMN_WIDTH = 150;
 
     const statusButtons = ["All", "Sent", "Unsent"];
     const clearSearch = () => setSearch("");
@@ -1532,18 +1534,34 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                                             fontSize: windowWidth >= 2000 ? "0.875rem" : "1rem",
                                             whiteSpace: "nowrap",
                                             backgroundColor: "#FFF8B3",
+                                            // highlight-start
+                                            // Make the first two columns sticky
                                             position:
                                                 column.id === "select" || column.id === "profile_id"
                                                     ? "sticky"
                                                     : "static",
+                                            // Calculate the 'left' offset based on column widths
                                             left:
                                                 column.id === "select"
                                                     ? 0
                                                     : column.id === "profile_id"
-                                                        ? 70
+                                                        ? SELECT_COLUMN_WIDTH // Use the width of the first column
                                                         : "auto",
                                             zIndex: column.id === "select" || column.id === "profile_id" ? 2 : 1,
-                                            minWidth: cellWidth,
+                                            // Apply the defined widths to the sticky columns
+                                            width:
+                                                column.id === "select"
+                                                    ? SELECT_COLUMN_WIDTH
+                                                    : column.id === "profile_id"
+                                                        ? PROFILE_ID_COLUMN_WIDTH
+                                                        : "auto",
+                                            minWidth:
+                                                column.id === "select"
+                                                    ? SELECT_COLUMN_WIDTH
+                                                    : column.id === "profile_id"
+                                                        ? PROFILE_ID_COLUMN_WIDTH
+                                                        : cellWidth,
+                                            // highlight-end
                                             maxWidth: windowWidth >= 2000 ? cellWidth : 'none',
                                             padding: windowWidth >= 2000 ? '8px 4px' : '16px',
                                         }}
@@ -1560,8 +1578,8 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                                                 size={windowWidth >= 2000 ? "small" : "medium"}
                                             />
                                         ) : (
-                                            <div style={{ 
-                                                overflow: 'hidden', 
+                                            <div style={{
+                                                overflow: 'hidden',
                                                 textOverflow: 'ellipsis',
                                                 fontSize: windowWidth >= 2000 ? '12px' : '14px'
                                             }}>
@@ -1586,14 +1604,17 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                                         key={row.profile_id}
                                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                     >
-                                        <TableCell
+                                        <TableCell // Sticky 'Select' Cell
                                             sx={{
                                                 position: "sticky",
                                                 left: 0,
                                                 background: "#fff",
                                                 zIndex: 1,
-                                                //borderRight: "1px solid #E0E0E0",
-                                                minWidth: cellWidth,
+                                                // highlight-start
+                                                // Apply the same fixed width as the header
+                                                width: SELECT_COLUMN_WIDTH,
+                                                minWidth: SELECT_COLUMN_WIDTH,
+                                                // highlight-end
                                                 maxWidth: windowWidth >= 2000 ? cellWidth : 'none',
                                                 padding: windowWidth >= 2000 ? '4px' : '8px',
                                             }}>
@@ -1605,8 +1626,9 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                                             />
                                         </TableCell>
 
-                                        <TableCell sx={{ 
-                                            minWidth: cellWidth, 
+
+                                        <TableCell sx={{
+                                            minWidth: cellWidth,
                                             maxWidth: windowWidth >= 2000 ? cellWidth : 'none',
                                             padding: windowWidth >= 2000 ? '4px' : '8px',
                                         }}>
@@ -1622,22 +1644,23 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                                             />
                                         </TableCell>
 
-                                        <TableCell
-                                            onClick={() =>
-                                                navigate(
-                                                    `/viewProfile?profileId=${row.profile_id}`,
-                                                )
-                                            }
+                                       
+                                        <TableCell // Sticky 'Profile ID' Cell
+                                            onClick={() => navigate(`/viewProfile?profileId=${row.profile_id}`)}
                                             sx={{
                                                 position: "sticky",
-                                                left: 70,
+                                                // highlight-start
+                                                // The 'left' offset is now the width of the first column
+                                                left: SELECT_COLUMN_WIDTH,
+                                                // Apply the same fixed width as the header for full visibility
+                                                width: PROFILE_ID_COLUMN_WIDTH,
+                                                minWidth: PROFILE_ID_COLUMN_WIDTH,
+                                                // highlight-end
                                                 background: "#fff",
                                                 color: 'blue',
                                                 cursor: 'pointer',
                                                 textDecoration: 'none',
-                                                //borderRight: "1px solid #E0E0E0",
                                                 '&:hover': { textDecoration: 'underline' },
-                                                minWidth: cellWidth,
                                                 maxWidth: windowWidth >= 2000 ? cellWidth : 'none',
                                                 padding: windowWidth >= 2000 ? '4px' : '8px',
                                                 fontSize: windowWidth >= 2000 ? '12px' : '14px',
@@ -1648,8 +1671,8 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                                             {row.profile_id}
                                         </TableCell>
 
-                                        <TableCell sx={{ 
-                                            minWidth: cellWidth, 
+                                        <TableCell sx={{
+                                            minWidth: cellWidth,
                                             maxWidth: windowWidth >= 2000 ? cellWidth : 'none',
                                             padding: windowWidth >= 2000 ? '4px' : '8px',
                                             fontSize: windowWidth >= 2000 ? '12px' : '14px',
@@ -1659,8 +1682,8 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                                             <div title={row.work_place}>{row.work_place}</div>
                                         </TableCell>
 
-                                        <TableCell sx={{ 
-                                            minWidth: cellWidth, 
+                                        <TableCell sx={{
+                                            minWidth: cellWidth,
                                             maxWidth: windowWidth >= 2000 ? cellWidth : 'none',
                                             padding: windowWidth >= 2000 ? '4px' : '8px',
                                             fontSize: windowWidth >= 2000 ? '12px' : '14px',
@@ -1670,8 +1693,8 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                                             <div title={row.plan}>{row.plan}</div>
                                         </TableCell>
 
-                                        <TableCell sx={{ 
-                                            minWidth: cellWidth, 
+                                        <TableCell sx={{
+                                            minWidth: cellWidth,
                                             maxWidth: windowWidth >= 2000 ? cellWidth : 'none',
                                             padding: windowWidth >= 2000 ? '4px' : '8px',
                                             fontSize: windowWidth >= 2000 ? '12px' : '14px',
@@ -1681,8 +1704,8 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                                             <div title={row.profile_name}>{row.profile_name}</div>
                                         </TableCell>
 
-                                        <TableCell sx={{ 
-                                            minWidth: cellWidth, 
+                                        <TableCell sx={{
+                                            minWidth: cellWidth,
                                             maxWidth: windowWidth >= 2000 ? cellWidth : 'none',
                                             padding: windowWidth >= 2000 ? '4px' : '8px',
                                             fontSize: windowWidth >= 2000 ? '12px' : '14px'
@@ -1690,8 +1713,8 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                                             {row.profile_age}
                                         </TableCell>
 
-                                        <TableCell sx={{ 
-                                            minWidth: cellWidth, 
+                                        <TableCell sx={{
+                                            minWidth: cellWidth,
                                             maxWidth: windowWidth >= 2000 ? cellWidth : 'none',
                                             padding: windowWidth >= 2000 ? '4px' : '8px',
                                             fontSize: windowWidth >= 2000 ? '12px' : '14px',
@@ -1701,8 +1724,8 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                                             <div title={row.star}>{row.star}</div>
                                         </TableCell>
 
-                                        <TableCell sx={{ 
-                                            minWidth: cellWidth, 
+                                        <TableCell sx={{
+                                            minWidth: cellWidth,
                                             maxWidth: windowWidth >= 2000 ? cellWidth : 'none',
                                             padding: windowWidth >= 2000 ? '4px' : '8px',
                                             fontSize: windowWidth >= 2000 ? '12px' : '14px',
@@ -1712,8 +1735,8 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                                             <div title={row.degree}>{row.degree}</div>
                                         </TableCell>
 
-                                        <TableCell sx={{ 
-                                            minWidth: cellWidth, 
+                                        <TableCell sx={{
+                                            minWidth: cellWidth,
                                             maxWidth: windowWidth >= 2000 ? cellWidth : 'none',
                                             padding: windowWidth >= 2000 ? '4px' : '8px',
                                             fontSize: windowWidth >= 2000 ? '12px' : '14px',
@@ -1723,8 +1746,8 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                                             <div title={row.profession}>{row.profession}</div>
                                         </TableCell>
 
-                                        <TableCell sx={{ 
-                                            minWidth: cellWidth, 
+                                        <TableCell sx={{
+                                            minWidth: cellWidth,
                                             maxWidth: windowWidth >= 2000 ? cellWidth : 'none',
                                             padding: windowWidth >= 2000 ? '4px' : '8px',
                                             fontSize: windowWidth >= 2000 ? '12px' : '14px',
@@ -1734,8 +1757,8 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                                             <div title={row.company_name}>{row.company_name}</div>
                                         </TableCell>
 
-                                        <TableCell sx={{ 
-                                            minWidth: cellWidth, 
+                                        <TableCell sx={{
+                                            minWidth: cellWidth,
                                             maxWidth: windowWidth >= 2000 ? cellWidth : 'none',
                                             padding: windowWidth >= 2000 ? '4px' : '8px',
                                             fontSize: windowWidth >= 2000 ? '12px' : '14px',
@@ -1745,8 +1768,8 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                                             <div title={row.designation}>{row.designation}</div>
                                         </TableCell>
 
-                                        <TableCell sx={{ 
-                                            minWidth: cellWidth, 
+                                        <TableCell sx={{
+                                            minWidth: cellWidth,
                                             maxWidth: windowWidth >= 2000 ? cellWidth : 'none',
                                             padding: windowWidth >= 2000 ? '4px' : '8px',
                                             fontSize: windowWidth >= 2000 ? '12px' : '14px',
@@ -1756,8 +1779,8 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                                             <div title={row.anual_income}>{row.anual_income}</div>
                                         </TableCell>
 
-                                        <TableCell sx={{ 
-                                            minWidth: cellWidth, 
+                                        <TableCell sx={{
+                                            minWidth: cellWidth,
                                             maxWidth: windowWidth >= 2000 ? cellWidth : 'none',
                                             padding: windowWidth >= 2000 ? '4px' : '8px',
                                             fontSize: windowWidth >= 2000 ? '12px' : '14px',
@@ -1767,8 +1790,8 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                                             <div title={row.state}>{row.state}</div>
                                         </TableCell>
 
-                                        <TableCell sx={{ 
-                                            minWidth: cellWidth, 
+                                        <TableCell sx={{
+                                            minWidth: cellWidth,
                                             maxWidth: windowWidth >= 2000 ? cellWidth : 'none',
                                             padding: windowWidth >= 2000 ? '4px' : '8px',
                                             fontSize: windowWidth >= 2000 ? '12px' : '14px',
@@ -1778,8 +1801,8 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                                             <div title={row.city}>{row.city}</div>
                                         </TableCell>
 
-                                        <TableCell sx={{ 
-                                            minWidth: cellWidth, 
+                                        <TableCell sx={{
+                                            minWidth: cellWidth,
                                             maxWidth: windowWidth >= 2000 ? cellWidth : 'none',
                                             padding: windowWidth >= 2000 ? '4px' : '8px',
                                             fontSize: windowWidth >= 2000 ? '12px' : '14px',
@@ -1789,8 +1812,8 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                                             <div title={row.family_status}>{row.family_status}</div>
                                         </TableCell>
 
-                                        <TableCell sx={{ 
-                                            minWidth: cellWidth, 
+                                        <TableCell sx={{
+                                            minWidth: cellWidth,
                                             maxWidth: windowWidth >= 2000 ? cellWidth : 'none',
                                             padding: windowWidth >= 2000 ? '4px' : '8px',
                                             fontSize: windowWidth >= 2000 ? '12px' : '14px',
@@ -1800,8 +1823,8 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                                             <div title={row.father_occupation}>{row.father_occupation}</div>
                                         </TableCell>
 
-                                        <TableCell sx={{ 
-                                            minWidth: cellWidth, 
+                                        <TableCell sx={{
+                                            minWidth: cellWidth,
                                             maxWidth: windowWidth >= 2000 ? cellWidth : 'none',
                                             padding: windowWidth >= 2000 ? '4px' : '8px',
                                             fontSize: windowWidth >= 2000 ? '12px' : '14px',
@@ -1811,8 +1834,8 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                                             <div title={row.suya_gothram}>{row.suya_gothram}</div>
                                         </TableCell>
 
-                                        <TableCell sx={{ 
-                                            minWidth: cellWidth, 
+                                        <TableCell sx={{
+                                            minWidth: cellWidth,
                                             maxWidth: windowWidth >= 2000 ? cellWidth : 'none',
                                             padding: windowWidth >= 2000 ? '4px' : '8px',
                                             fontSize: windowWidth >= 2000 ? '12px' : '14px',
@@ -1822,8 +1845,8 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                                             <div title={row.chevvai}>{row.chevvai}</div>
                                         </TableCell>
 
-                                        <TableCell sx={{ 
-                                            minWidth: cellWidth, 
+                                        <TableCell sx={{
+                                            minWidth: cellWidth,
                                             maxWidth: windowWidth >= 2000 ? cellWidth : 'none',
                                             padding: windowWidth >= 2000 ? '4px' : '8px',
                                             fontSize: windowWidth >= 2000 ? '12px' : '14px',
@@ -1833,8 +1856,8 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                                             <div title={row.raguketu}>{row.raguketu}</div>
                                         </TableCell>
 
-                                        <TableCell sx={{ 
-                                            minWidth: cellWidth, 
+                                        <TableCell sx={{
+                                            minWidth: cellWidth,
                                             maxWidth: windowWidth >= 2000 ? cellWidth : 'none',
                                             padding: windowWidth >= 2000 ? '4px' : '8px',
                                             fontSize: windowWidth >= 2000 ? '12px' : '14px'
@@ -1844,8 +1867,8 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                                                 : "-"}
                                         </TableCell>
 
-                                        <TableCell sx={{ 
-                                            minWidth: cellWidth, 
+                                        <TableCell sx={{
+                                            minWidth: cellWidth,
                                             maxWidth: windowWidth >= 2000 ? cellWidth : 'none',
                                             padding: windowWidth >= 2000 ? '4px' : '8px',
                                             fontSize: windowWidth >= 2000 ? '12px' : '14px'
@@ -1853,8 +1876,8 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                                             N/A
                                         </TableCell>
 
-                                        <TableCell sx={{ 
-                                            minWidth: cellWidth, 
+                                        <TableCell sx={{
+                                            minWidth: cellWidth,
                                             maxWidth: windowWidth >= 2000 ? cellWidth : 'none',
                                             padding: windowWidth >= 2000 ? '4px' : '8px',
                                             fontSize: windowWidth >= 2000 ? '12px' : '14px'
@@ -1862,8 +1885,8 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                                             {row.matching_score}
                                         </TableCell>
 
-                                        <TableCell sx={{ 
-                                            minWidth: cellWidth, 
+                                        <TableCell sx={{
+                                            minWidth: cellWidth,
                                             maxWidth: windowWidth >= 2000 ? cellWidth : 'none',
                                             padding: windowWidth >= 2000 ? '4px' : '8px',
                                             fontSize: windowWidth >= 2000 ? '12px' : '14px'
@@ -1881,8 +1904,8 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                                             </Tooltip>
                                         </TableCell>
 
-                                        <TableCell sx={{ 
-                                            minWidth: windowWidth >= 2000 ? '120px' : '200px', 
+                                        <TableCell sx={{
+                                            minWidth: windowWidth >= 2000 ? '120px' : '200px',
                                             maxWidth: windowWidth >= 2000 ? '120px' : '300px',
                                             padding: windowWidth >= 2000 ? '4px' : '8px',
                                             fontSize: windowWidth >= 2000 ? '12px' : '14px',
