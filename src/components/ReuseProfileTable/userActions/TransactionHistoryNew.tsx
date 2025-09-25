@@ -76,7 +76,7 @@ const TransactionHistoryNew: React.FC = () => {
         previous: null,
         results: [],
     });
-    
+
     const [search, setSearch] = useState<string>('');
     // 1. ADD DEBOUNCED SEARCH STATE
     const [debouncedSearch, setDebouncedSearch] = useState<string>('');
@@ -85,6 +85,9 @@ const TransactionHistoryNew: React.FC = () => {
     const [toDate, setToDate] = useState<string>('');
     const [filterType, setFilterType] = useState<'today' | 'last_week' | 'new_approved' | 'delete_others' | 'all'>('all');
     const [loading, setLoading] = useState<boolean>(true);
+    const [isDownloading, setIsDownloading] = useState<boolean>(false); // <-- ADD THIS LINE
+
+    // ... rest of the code
 
     // 2. ADD A useEffect TO DEBOUNCE THE SEARCH INPUT
     useEffect(() => {
@@ -109,7 +112,7 @@ const TransactionHistoryNew: React.FC = () => {
         if (fromDate) params.from_date = fromDate;
         if (toDate) params.to_date = toDate;
         if (filterType && filterType !== 'all') params.filter_type = filterType;
-        
+
         // 3. USE THE DEBOUNCED SEARCH TERM FOR THE API CALL
         if (debouncedSearch) params.search = debouncedSearch;
 
@@ -145,7 +148,7 @@ const TransactionHistoryNew: React.FC = () => {
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearch(event.target.value);
     };
-    
+
     // The manual search button can still be used for an immediate search
     const handleSearch = () => {
         setDebouncedSearch(search); // Immediately apply the search term
@@ -161,7 +164,7 @@ const TransactionHistoryNew: React.FC = () => {
         }
         setPage(0);
     };
-    
+
     const handleChangePage = (_event: unknown, newPage: number) => {
         setPage(newPage);
     };
@@ -213,6 +216,45 @@ const TransactionHistoryNew: React.FC = () => {
         }
 
         setPage(0);
+    };
+
+    const handleDownloadExcel = async () => {
+        setIsDownloading(true); // Start loading indicator
+
+        // 1. Build the query parameters from the current state
+        const params: any = {};
+        if (fromDate) params.from_date = fromDate;
+        if (toDate) params.to_date = toDate;
+        if (filterType && filterType !== 'all') params.filter_type = filterType;
+        if (debouncedSearch) params.search = debouncedSearch;
+
+        try {
+            const url = `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/transaction-export/`;
+
+            // 2. Make the API call, expecting a 'blob' (file) in response
+            const response = await axios.get(url, {
+                params,
+                responseType: 'blob', // Important: This tells axios to handle the response as a file
+            });
+
+            // 3. Create a temporary link to trigger the download
+            const downloadUrl = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.setAttribute('download', 'transaction-history.csv'); // Set the filename for the download
+            document.body.appendChild(link);
+            link.click();
+
+            // 4. Clean up the temporary link
+            link.remove();
+            window.URL.revokeObjectURL(downloadUrl);
+
+        } catch (error) {
+            console.error('Error downloading the file:', error);
+            // You can add user feedback here, like a toast notification
+        } finally {
+            setIsDownloading(false); // Stop loading indicator
+        }
     };
 
     return (
@@ -287,18 +329,20 @@ const TransactionHistoryNew: React.FC = () => {
 
 
                         {/* Right side: Button aligned to right */}
+                        {/* Right side: Button aligned to right */}
                         <Box sx={{ display: 'flex', gap: '1rem' }}>
-
                             <Button
                                 variant="contained"
                                 color="success"
+                                onClick={handleDownloadExcel} // <-- ADD THIS
+                                disabled={isDownloading}      // <-- ADD THIS
                                 sx={{
                                     height: '40px',
                                     minWidth: '200px',
                                     textTransform: 'none',
                                 }}
                             >
-                                Download Excel
+                                {isDownloading ? 'Downloading...' : 'Download Excel'}
                             </Button>
                         </Box>
                     </Box>
@@ -309,48 +353,48 @@ const TransactionHistoryNew: React.FC = () => {
             <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
                 <Button
                     variant={filterType === 'last_week' ? "contained" : "outlined"}
- sx={{
+                    sx={{
                         backgroundColor: '#1976d2', // MUI primary blue
                         color: 'white',
                         textTransform: 'none',
                         '&:hover': { backgroundColor: '#1565c0' } // darker hover
-                    }}                    color="primary"
+                    }} color="primary"
                     onClick={() => applyQuickFilter('last_week')}
                 >
                     Last Week
                 </Button>
                 <Button
                     variant={filterType === 'today' ? "contained" : "outlined"}
- sx={{
+                    sx={{
                         backgroundColor: '#1976d2', // MUI primary blue
                         color: 'white',
                         textTransform: 'none',
                         '&:hover': { backgroundColor: '#1565c0' } // darker hover
-                    }}                    color="primary"
+                    }} color="primary"
                     onClick={() => applyQuickFilter('today')}
                 >
                     Today
                 </Button>
                 <Button
                     variant={filterType === 'new_approved' ? "contained" : "outlined"}
- sx={{
+                    sx={{
                         backgroundColor: '#1976d2', // MUI primary blue
                         color: 'white',
                         textTransform: 'none',
                         '&:hover': { backgroundColor: '#1565c0' } // darker hover
-                    }}                    color="primary"
+                    }} color="primary"
                     onClick={() => applyQuickFilter('new_approved')}
                 >
                     New / Approved
                 </Button>
                 <Button
                     variant={filterType === 'delete_others' ? "contained" : "outlined"}
- sx={{
+                    sx={{
                         backgroundColor: '#1976d2', // MUI primary blue
                         color: 'white',
                         textTransform: 'none',
                         '&:hover': { backgroundColor: '#1565c0' } // darker hover
-                    }}                    color="primary"
+                    }} color="primary"
                     onClick={() => applyQuickFilter('delete_others')}
                 >
                     Delete / Others
@@ -358,12 +402,12 @@ const TransactionHistoryNew: React.FC = () => {
 
                 <Button
                     variant={filterType === 'all' ? "contained" : "outlined"}
- sx={{
+                    sx={{
                         backgroundColor: '#1976d2', // MUI primary blue
                         color: 'white',
                         textTransform: 'none',
                         '&:hover': { backgroundColor: '#1565c0' } // darker hover
-                    }}                    color="primary"
+                    }} color="primary"
                     onClick={() => applyQuickFilter('all')}
                 >
                     All
