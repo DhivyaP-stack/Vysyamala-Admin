@@ -20,6 +20,7 @@ import {
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
+// Interfaces (no changes)
 interface Column {
     id: string;
     label: string;
@@ -41,7 +42,6 @@ interface FilterParams {
     filter_type?: 'today' | 'last_week' | 'new_approved' | 'delete_others' | 'all';
     search?: string;
     page: number;
-  
 }
 
 const getTransactionHistory = async (params: FilterParams) => {
@@ -53,11 +53,8 @@ const getTransactionHistory = async (params: FilterParams) => {
     if (params.to_date) queryParams.to_date = params.to_date;
     if (params.filter_type && params.filter_type !== 'all') queryParams.filter_type = params.filter_type;
     if (params.search) queryParams.search = params.search;
-   
 
     const url = `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/transaction-history/`;
-    // Using a POST request as it seems the API might expect it for complex filtering
-    // If GET is required, change back to axios.get
     const response = await axios.get(url, { params: queryParams });
     return response.data;
 };
@@ -79,25 +76,42 @@ const TransactionHistoryNew: React.FC = () => {
         previous: null,
         results: [],
     });
+    
     const [search, setSearch] = useState<string>('');
+    // 1. ADD DEBOUNCED SEARCH STATE
+    const [debouncedSearch, setDebouncedSearch] = useState<string>('');
+
     const [fromDate, setFromDate] = useState<string>('');
     const [toDate, setToDate] = useState<string>('');
     const [filterType, setFilterType] = useState<'today' | 'last_week' | 'new_approved' | 'delete_others' | 'all'>('all');
     const [loading, setLoading] = useState<boolean>(true);
 
-    // Build filter parameters
+    // 2. ADD A useEffect TO DEBOUNCE THE SEARCH INPUT
+    useEffect(() => {
+        // Set a timer for 2 seconds (2000ms)
+        const timerId = setTimeout(() => {
+            setDebouncedSearch(search);
+            setPage(0); // Reset to first page when search term changes
+        }, 1000);
+
+        // This is the cleanup function. It runs if the user types again
+        // before the 2 seconds are up, canceling the previous timer.
+        return () => {
+            clearTimeout(timerId);
+        };
+    }, [search]); // This effect runs only when the 'search' state changes
+
     const buildFilterParams = (): FilterParams => {
         const params: FilterParams = {
-            page: page + 1, // API uses 1-based indexing
+            page: page + 1,
         };
 
         if (fromDate) params.from_date = fromDate;
         if (toDate) params.to_date = toDate;
         if (filterType && filterType !== 'all') params.filter_type = filterType;
-        if (search) params.search = search; // Pass search term to the API
-
-        // Add ordering if sorted
-       
+        
+        // 3. USE THE DEBOUNCED SEARCH TERM FOR THE API CALL
+        if (debouncedSearch) params.search = debouncedSearch;
 
         return params;
     };
@@ -115,9 +129,11 @@ const TransactionHistoryNew: React.FC = () => {
         }
     };
 
+    // 4. UPDATE THE MAIN useEffect's DEPENDENCY ARRAY
+    // It now listens to 'debouncedSearch' instead of a manual trigger.
     useEffect(() => {
         fetchData();
-    }, [page, rowsPerPage, order, orderBy, filterType, fromDate, toDate]);
+    }, [page, rowsPerPage, order, orderBy, filterType, fromDate, toDate, debouncedSearch]);
 
 
     const handleRequestSort = (property: string) => {
@@ -129,12 +145,12 @@ const TransactionHistoryNew: React.FC = () => {
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearch(event.target.value);
     };
-
+    
+    // The manual search button can still be used for an immediate search
     const handleSearch = () => {
-        setPage(0); // Reset to the first page for a new search
-        fetchData(); // Manually trigger fetch with the new search term
+        setDebouncedSearch(search); // Immediately apply the search term
+        setPage(0);
     };
-
 
     const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
@@ -145,14 +161,7 @@ const TransactionHistoryNew: React.FC = () => {
         }
         setPage(0);
     };
-
-    const handleFilterTypeChange = (type: 'today' | 'last_week' | 'new_approved' | 'delete_others' | 'all') => {
-        setFilterType(type);
-        setPage(0);
-    };
-
-
-
+    
     const handleChangePage = (_event: unknown, newPage: number) => {
         setPage(newPage);
     };
@@ -178,20 +187,17 @@ const TransactionHistoryNew: React.FC = () => {
         { id: 'Mobile_no', label: 'Mobile No', minWidth: 140 },
     ];
 
-    // Get current date for "Today" filter
     const getTodayDate = () => {
         const today = new Date();
         return today.toISOString().split('T')[0];
     };
 
-    // Get last week date for "Last Week" filter
     const getLastWeekDate = () => {
         const lastWeek = new Date();
         lastWeek.setDate(lastWeek.getDate() - 7);
         return lastWeek.toISOString().split('T')[0];
     };
 
-    // Apply quick filters
     const applyQuickFilter = (type: 'today' | 'last_week' | 'new_approved' | 'delete_others' | 'all') => {
         setFilterType(type);
 
@@ -277,13 +283,6 @@ const TransactionHistoryNew: React.FC = () => {
                                     }}
                                 />
                             </FormControl>
-                            <Button
-                                variant="contained"
-                                onClick={handleSearch}
-                                sx={{ height: '40px' }}
-                            >
-                                Search
-                            </Button>
                         </Box>
 
 
@@ -342,7 +341,7 @@ const TransactionHistoryNew: React.FC = () => {
                     }}                    color="primary"
                     onClick={() => applyQuickFilter('new_approved')}
                 >
-                    New/Approved
+                    New / Approved
                 </Button>
                 <Button
                     variant={filterType === 'delete_others' ? "contained" : "outlined"}
@@ -354,7 +353,7 @@ const TransactionHistoryNew: React.FC = () => {
                     }}                    color="primary"
                     onClick={() => applyQuickFilter('delete_others')}
                 >
-                    Delete/Others
+                    Delete / Others
                 </Button>
 
                 <Button
