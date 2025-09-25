@@ -35,16 +35,28 @@ interface TransactionHistoryData {
     results: any[];
 }
 
-const getTransactionHistory = async (fromDate: string, toDate: string, page: number) => {
-    const params: any = {
-        page: page.toString(),
+interface FilterParams {
+    from_date?: string;
+    to_date?: string;
+    filter_type?: 'today' | 'last_week' | 'new_approved' | 'delete_others' | 'all';
+    search?: string;
+    page: number;
+    ordering?: string;
+}
+
+const getTransactionHistory = async (params: FilterParams) => {
+    const queryParams: any = {
+        page: params.page.toString(),
     };
 
-    if (fromDate) params.from_date = fromDate;
-    if (toDate) params.to_date = toDate;
+    if (params.from_date) queryParams.from_date = params.from_date;
+    if (params.to_date) queryParams.to_date = params.to_date;
+    if (params.filter_type && params.filter_type !== 'all') queryParams.filter_type = params.filter_type;
+    if (params.search) queryParams.search = params.search;
+    if (params.ordering) queryParams.ordering = params.ordering;
 
     const url = `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/transaction-history/`;
-    const response = await axios.get(url, { params });
+    const response = await axios.get(url, { params: queryParams });
     return response.data;
 };
 
@@ -68,17 +80,37 @@ const TransactionHistoryNew: React.FC = () => {
     const [search, setSearch] = useState<string>('');
     const [fromDate, setFromDate] = useState<string>('');
     const [toDate, setToDate] = useState<string>('');
+    const [filterType, setFilterType] = useState<'today' | 'last_week' | 'new_approved' | 'delete_others' | 'all'>('all');
     const [loading, setLoading] = useState<boolean>(true);
+
+    // Build filter parameters
+    const buildFilterParams = (): FilterParams => {
+        const params: FilterParams = {
+            page: page + 1, // API uses 1-based indexing
+        };
+
+        if (fromDate) params.from_date = fromDate;
+        if (toDate) params.to_date = toDate;
+        if (filterType && filterType !== 'all') params.filter_type = filterType;
+        if (search) params.search = search;
+
+        // Add ordering if sorted
+        if (orderBy) {
+            params.ordering = order === 'desc' ? `-${orderBy}` : orderBy;
+        }
+
+        return params;
+    };
 
     useEffect(() => {
         fetchData();
-    }, [fromDate, toDate, page, rowsPerPage]);
+    }, [fromDate, toDate, filterType, page, rowsPerPage, order, orderBy]);
 
     const fetchData = async () => {
         setLoading(true);
         try {
-            const apiPage = page + 1;
-            const response = await getTransactionHistory(fromDate, toDate, apiPage);
+            const filterParams = buildFilterParams();
+            const response = await getTransactionHistory(filterParams);
             setData(response);
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -95,7 +127,6 @@ const TransactionHistoryNew: React.FC = () => {
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearch(event.target.value);
-        setPage(0);
     };
 
     const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -105,76 +136,85 @@ const TransactionHistoryNew: React.FC = () => {
         } else if (name === 'toDate') {
             setToDate(value);
         }
+        setPage(0);
     };
 
-    const handleSubmit = () => {
+    const handleFilterTypeChange = (type: 'today' | 'last_week' | 'new_approved' | 'delete_others' | 'all') => {
+        setFilterType(type);
         setPage(0);
-        fetchData();
     };
+
+
 
     const handleChangePage = (_event: unknown, newPage: number) => {
         setPage(newPage);
     };
 
-    const handleChangeRowsPerPage = (
-        event: React.ChangeEvent<HTMLInputElement>,
-    ) => {
+    const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
         const newRowsPerPage = +event.target.value;
         setRowsPerPage(newRowsPerPage);
         setPage(0);
     };
+
+    // Apply search filter locally if API doesn't support search parameter
+    const filteredResults = data.results.filter((row) =>
+        search ? Object.values(row).some((value) =>
+            String(value).toLowerCase().includes(search.toLowerCase())
+        ) : true
+    );
 
     const columns: Column[] = [
         { id: 'created_at', label: 'Paid Info Date', minWidth: 180, align: 'center', format: formatDate },
         { id: 'payment_type', label: 'Payment Mode', minWidth: 150 },
         { id: 'status', label: 'T. Status', minWidth: 120 },
         { id: 'order_id', label: 'Order ID', minWidth: 180 },
-        { id: 'activation_status', label: 'A. Status', minWidth: 150 },
+        { id: 'admin_status', label: 'A. Status', minWidth: 150 },
         { id: 'ProfileId', label: 'Profile ID', minWidth: 120 },
         { id: 'Profile_name', label: 'Name', minWidth: 150 },
-        { id: 'City', label: 'City', minWidth: 120 },
-        { id: 'State', label: 'State', minWidth: 120 },
+        { id: 'Profile_city', label: 'City', minWidth: 120 },
+        { id: 'Profile_state', label: 'State', minWidth: 120 },
         { id: 'plan_name', label: 'Mode', minWidth: 120 },
         { id: 'profile_status', label: 'P. Status', minWidth: 120 },
         { id: 'Mobile_no', label: 'Mobile No', minWidth: 140 },
     ];
 
-    const descendingComparator = (a: any, b: any, orderBy: string) => {
-        if (b[orderBy] < a[orderBy]) return -1;
-        if (b[orderBy] > a[orderBy]) return 1;
-        return 0;
+    // Get current date for "Today" filter
+    const getTodayDate = () => {
+        const today = new Date();
+        return today.toISOString().split('T')[0];
     };
 
-    const getComparator = (order: 'asc' | 'desc', orderBy: string) => {
-        return order === 'desc'
-            ? (a: any, b: any) => descendingComparator(a, b, orderBy)
-            : (a: any, b: any) => -descendingComparator(a, b, orderBy);
+    // Get last week date for "Last Week" filter
+    const getLastWeekDate = () => {
+        const lastWeek = new Date();
+        lastWeek.setDate(lastWeek.getDate() - 7);
+        return lastWeek.toISOString().split('T')[0];
     };
 
-    const stableSort = (array: any[], comparator: (a: any, b: any) => number) => {
-        const stabilizedThis = array.map(
-            (el, index) => [el, index] as [any, number],
-        );
-        stabilizedThis.sort((a, b) => {
-            const order = comparator(a[0], b[0]);
-            if (order !== 0) return order;
-            return a[1] - b[1];
-        });
-        return stabilizedThis.map((el) => el[0]);
-    };
+    // Apply quick filters
+    const applyQuickFilter = (type: 'today' | 'last_week' | 'new_approved' | 'delete_others' | 'all') => {
+        setFilterType(type);
 
-    const filteredResults = stableSort(
-        data.results.filter((row) =>
-            Object.values(row).some((value) =>
-                String(value).toLowerCase().includes(search.toLowerCase()),
-            ),
-        ),
-        getComparator(order, orderBy),
-    );
+        if (type === 'today') {
+            setFromDate(getTodayDate());
+            setToDate(getTodayDate());
+        } else if (type === 'last_week') {
+            setFromDate(getLastWeekDate());
+            setToDate(getTodayDate());
+        } else {
+            setFromDate('');
+            setToDate('');
+        }
+
+        setPage(0);
+    };
 
     return (
         <>
-            <h1 className="text-2xl font-bold mb-4 text-black">Transaction History <span className="text-lg font-normal">({data.count})</span></h1>
+            <h1 className="text-2xl font-bold mb-4 text-black">
+                Transaction History <span className="text-lg font-normal">({data.count})</span>
+            </h1>
+
             <div className="w-full py-2 flex justify-between">
                 <Box
                     component={Paper}
@@ -184,7 +224,7 @@ const TransactionHistoryNew: React.FC = () => {
                         borderRadius: '8px',
                         backgroundColor: '#fff',
                         marginBottom: '16px',
-                        width: '100%', // full width
+                        width: '100%',
                     }}
                 >
                     <Box
@@ -205,6 +245,7 @@ const TransactionHistoryNew: React.FC = () => {
                                     value={fromDate}
                                     onChange={handleDateChange}
                                     size="small"
+                                    InputLabelProps={{ shrink: true }}
                                 />
                             </FormControl>
 
@@ -216,6 +257,7 @@ const TransactionHistoryNew: React.FC = () => {
                                     value={toDate}
                                     onChange={handleDateChange}
                                     size="small"
+                                    InputLabelProps={{ shrink: true }}
                                 />
                             </FormControl>
 
@@ -230,11 +272,11 @@ const TransactionHistoryNew: React.FC = () => {
                                     fullWidth
                                 />
                             </FormControl>
-
                         </Box>
 
                         {/* Right side: Button aligned to right */}
                         <Box sx={{ display: 'flex', gap: '1rem' }}>
+
                             <Button
                                 variant="contained"
                                 color="success"
@@ -250,16 +292,87 @@ const TransactionHistoryNew: React.FC = () => {
                         </Box>
                     </Box>
                 </Box>
-
-
             </div>
+
+            {/* Quick Filter Buttons */}
             <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
-                <Button variant="contained" sx={{ textTransform: 'none' }} color="primary">Last Week</Button>
-                <Button variant="contained" sx={{ textTransform: 'none' }} color="primary">Today</Button>
-                <Button variant="contained" sx={{ textTransform: 'none' }} color="primary">New/Approved</Button>
-                <Button variant="contained" sx={{ textTransform: 'none' }} color="primary">Delete/Others</Button>
-                <Button variant="contained" sx={{ textTransform: 'none' }} color="primary" >All</Button>
-                <Button variant="contained" sx={{ backgroundColor: '#e0e0e0', color: 'black', textTransform: 'none', '&:hover': { backgroundColor: '#d5d5d5' } }} >Profiles ({data.count}) </Button>
+                <Button
+                    variant={filterType === 'last_week' ? "contained" : "outlined"}
+                    sx={{
+                        backgroundColor: '#1976d2', // MUI primary blue
+                        color: 'white',
+                        textTransform: 'none',
+                        '&:hover': { backgroundColor: '#1565c0' } // darker hover
+                    }}
+                    color="primary"
+                    onClick={() => applyQuickFilter('last_week')}
+                >
+                    Last Week
+                </Button>
+                <Button
+                    variant={filterType === 'today' ? "contained" : "outlined"}
+                    sx={{
+                        backgroundColor: '#1976d2', // MUI primary blue
+                        color: 'white',
+                        textTransform: 'none',
+                        '&:hover': { backgroundColor: '#1565c0' } // darker hover
+                    }}
+                    color="primary"
+                    onClick={() => applyQuickFilter('today')}
+                >
+                    Today
+                </Button>
+                <Button
+                    variant={filterType === 'new_approved' ? "contained" : "outlined"}
+                    sx={{
+                        backgroundColor: '#1976d2', // MUI primary blue
+                        color: 'white',
+                        textTransform: 'none',
+                        '&:hover': { backgroundColor: '#1565c0' } // darker hover
+                    }}
+                    color="primary"
+                    onClick={() => applyQuickFilter('new_approved')}
+                >
+                    New/Approved
+                </Button>
+                <Button
+                    variant={filterType === 'delete_others' ? "contained" : "outlined"}
+                    sx={{
+                        backgroundColor: '#1976d2', // MUI primary blue
+                        color: 'white',
+                        textTransform: 'none',
+                        '&:hover': { backgroundColor: '#1565c0' } // darker hover
+                    }}
+                    color="primary"
+                    onClick={() => applyQuickFilter('delete_others')}
+                >
+                    Delete/Others
+                </Button>
+
+                <Button
+                    variant={filterType === 'all' ? "contained" : "outlined"}
+                    sx={{
+                        backgroundColor: '#1976d2', // MUI primary blue
+                        color: 'white',
+                        textTransform: 'none',
+                        '&:hover': { backgroundColor: '#1565c0' } // darker hover
+                    }}
+                    color="primary"
+                    onClick={() => applyQuickFilter('all')}
+                >
+                    All
+                </Button>
+                <Button
+                    variant="contained"
+                    sx={{
+                        backgroundColor: '#e0e0e0',
+                        color: 'black',
+                        textTransform: 'none',
+                        '&:hover': { backgroundColor: '#d5d5d5' }
+                    }}
+                >
+                    Profiles ({data.count})
+                </Button>
             </div>
 
             <Paper className="w-full">
@@ -299,52 +412,56 @@ const TransactionHistoryNew: React.FC = () => {
                                         <CircularProgress />
                                     </TableCell>
                                 </TableRow>
+                            ) : filteredResults.length === 0 ? (
+                                <TableRow>
+                                    <TableCell colSpan={columns.length} align="center">
+                                        <Typography variant="body1" color="textSecondary">
+                                            No records found
+                                        </Typography>
+                                    </TableCell>
+                                </TableRow>
                             ) : (
-                                filteredResults
-                                    .slice(0, rowsPerPage)
-                                    .map((row, index) => (
-                                        <TableRow
-                                            sx={{ whiteSpace: 'nowrap' }}
-                                            hover
-                                            role="checkbox"
-                                            tabIndex={-1}
-                                            key={index}
-                                        >
-                                            {columns.map((column) => {
-                                                const value = row[column.id];
-                                                const formattedValue = column.format ? column.format(value) : value;
+                                filteredResults.map((row, index) => (
+                                    <TableRow
+                                        sx={{ whiteSpace: 'nowrap' }}
+                                        hover
+                                        role="checkbox"
+                                        tabIndex={-1}
+                                        key={index}
+                                    >
+                                        {columns.map((column) => {
+                                            const value = row[column.id];
+                                            const formattedValue = column.format ? column.format(value) : value;
 
-                                                return (
-                                                    <TableCell
-                                                        sx={{ whiteSpace: 'nowrap' }}
-                                                        key={column.id}
-                                                        align={column.align}
-                                                    >
-                                                        {column.id === 'ProfileId' ? (
-                                                            <Typography
-                                                                onClick={() =>
-                                                                    navigate(
-                                                                        `/viewProfile?profileId=${row.ProfileId}`,
-                                                                    )
-                                                                }
-                                                                variant="body2"
-                                                                sx={{
-                                                                    color: 'blue',
-                                                                    cursor: 'pointer',
-                                                                    textDecoration: 'none',
-                                                                    '&:hover': { textDecoration: 'underline' },
-                                                                }}
-                                                            >
-                                                                {formattedValue}
-                                                            </Typography>
-                                                        ) : (
-                                                            formattedValue
-                                                        )}
-                                                    </TableCell>
-                                                );
-                                            })}
-                                        </TableRow>
-                                    ))
+                                            return (
+                                                <TableCell
+                                                    sx={{ whiteSpace: 'nowrap' }}
+                                                    key={column.id}
+                                                    align={column.align}
+                                                >
+                                                    {column.id === 'ProfileId' ? (
+                                                        <Typography
+                                                            onClick={() =>
+                                                                navigate(`/viewProfile?profileId=${row.ProfileId}`)
+                                                            }
+                                                            variant="body2"
+                                                            sx={{
+                                                                color: 'blue',
+                                                                cursor: 'pointer',
+                                                                textDecoration: 'none',
+                                                                '&:hover': { textDecoration: 'underline' },
+                                                            }}
+                                                        >
+                                                            {formattedValue}
+                                                        </Typography>
+                                                    ) : (
+                                                        formattedValue
+                                                    )}
+                                                </TableCell>
+                                            );
+                                        })}
+                                    </TableRow>
+                                ))
                             )}
                         </TableBody>
                     </Table>
