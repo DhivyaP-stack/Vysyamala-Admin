@@ -41,7 +41,7 @@ interface FilterParams {
     filter_type?: 'today' | 'last_week' | 'new_approved' | 'delete_others' | 'all';
     search?: string;
     page: number;
-    ordering?: string;
+  
 }
 
 const getTransactionHistory = async (params: FilterParams) => {
@@ -53,9 +53,11 @@ const getTransactionHistory = async (params: FilterParams) => {
     if (params.to_date) queryParams.to_date = params.to_date;
     if (params.filter_type && params.filter_type !== 'all') queryParams.filter_type = params.filter_type;
     if (params.search) queryParams.search = params.search;
-    if (params.ordering) queryParams.ordering = params.ordering;
+   
 
     const url = `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/transaction-history/`;
+    // Using a POST request as it seems the API might expect it for complex filtering
+    // If GET is required, change back to axios.get
     const response = await axios.get(url, { params: queryParams });
     return response.data;
 };
@@ -92,19 +94,13 @@ const TransactionHistoryNew: React.FC = () => {
         if (fromDate) params.from_date = fromDate;
         if (toDate) params.to_date = toDate;
         if (filterType && filterType !== 'all') params.filter_type = filterType;
-        if (search) params.search = search;
+        if (search) params.search = search; // Pass search term to the API
 
         // Add ordering if sorted
-        if (orderBy) {
-            params.ordering = order === 'desc' ? `-${orderBy}` : orderBy;
-        }
+       
 
         return params;
     };
-
-    useEffect(() => {
-        fetchData();
-    }, [fromDate, toDate, filterType, page, rowsPerPage, order, orderBy]);
 
     const fetchData = async () => {
         setLoading(true);
@@ -119,6 +115,11 @@ const TransactionHistoryNew: React.FC = () => {
         }
     };
 
+    useEffect(() => {
+        fetchData();
+    }, [page, rowsPerPage, order, orderBy, filterType, fromDate, toDate]);
+
+
     const handleRequestSort = (property: string) => {
         const isAsc = orderBy === property && order === 'asc';
         setOrder(isAsc ? 'desc' : 'asc');
@@ -128,6 +129,12 @@ const TransactionHistoryNew: React.FC = () => {
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearch(event.target.value);
     };
+
+    const handleSearch = () => {
+        setPage(0); // Reset to the first page for a new search
+        fetchData(); // Manually trigger fetch with the new search term
+    };
+
 
     const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
@@ -155,13 +162,6 @@ const TransactionHistoryNew: React.FC = () => {
         setRowsPerPage(newRowsPerPage);
         setPage(0);
     };
-
-    // Apply search filter locally if API doesn't support search parameter
-    const filteredResults = data.results.filter((row) =>
-        search ? Object.values(row).some((value) =>
-            String(value).toLowerCase().includes(search.toLowerCase())
-        ) : true
-    );
 
     const columns: Column[] = [
         { id: 'created_at', label: 'Paid Info Date', minWidth: 180, align: 'center', format: formatDate },
@@ -236,7 +236,7 @@ const TransactionHistoryNew: React.FC = () => {
                         }}
                     >
                         {/* Left side: From/To Date + Search */}
-                        <Box sx={{ display: 'flex', gap: '1.5rem', flex: 1 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: '1.5rem', flex: 1 }}>
                             <FormControl sx={{ width: '200px' }}>
                                 <FormLabel sx={{ fontWeight: 'bold' }}>From Date</FormLabel>
                                 <TextField
@@ -270,9 +270,22 @@ const TransactionHistoryNew: React.FC = () => {
                                     onChange={handleSearchChange}
                                     size="small"
                                     fullWidth
+                                    onKeyPress={(event) => {
+                                        if (event.key === 'Enter') {
+                                            handleSearch();
+                                        }
+                                    }}
                                 />
                             </FormControl>
+                            <Button
+                                variant="contained"
+                                onClick={handleSearch}
+                                sx={{ height: '40px' }}
+                            >
+                                Search
+                            </Button>
                         </Box>
+
 
                         {/* Right side: Button aligned to right */}
                         <Box sx={{ display: 'flex', gap: '1rem' }}>
@@ -284,7 +297,6 @@ const TransactionHistoryNew: React.FC = () => {
                                     height: '40px',
                                     minWidth: '200px',
                                     textTransform: 'none',
-                                    marginTop: '22px',
                                 }}
                             >
                                 Download Excel
@@ -298,52 +310,48 @@ const TransactionHistoryNew: React.FC = () => {
             <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
                 <Button
                     variant={filterType === 'last_week' ? "contained" : "outlined"}
-                    sx={{
+ sx={{
                         backgroundColor: '#1976d2', // MUI primary blue
                         color: 'white',
                         textTransform: 'none',
                         '&:hover': { backgroundColor: '#1565c0' } // darker hover
-                    }}
-                    color="primary"
+                    }}                    color="primary"
                     onClick={() => applyQuickFilter('last_week')}
                 >
                     Last Week
                 </Button>
                 <Button
                     variant={filterType === 'today' ? "contained" : "outlined"}
-                    sx={{
+ sx={{
                         backgroundColor: '#1976d2', // MUI primary blue
                         color: 'white',
                         textTransform: 'none',
                         '&:hover': { backgroundColor: '#1565c0' } // darker hover
-                    }}
-                    color="primary"
+                    }}                    color="primary"
                     onClick={() => applyQuickFilter('today')}
                 >
                     Today
                 </Button>
                 <Button
                     variant={filterType === 'new_approved' ? "contained" : "outlined"}
-                    sx={{
+ sx={{
                         backgroundColor: '#1976d2', // MUI primary blue
                         color: 'white',
                         textTransform: 'none',
                         '&:hover': { backgroundColor: '#1565c0' } // darker hover
-                    }}
-                    color="primary"
+                    }}                    color="primary"
                     onClick={() => applyQuickFilter('new_approved')}
                 >
                     New/Approved
                 </Button>
                 <Button
                     variant={filterType === 'delete_others' ? "contained" : "outlined"}
-                    sx={{
+ sx={{
                         backgroundColor: '#1976d2', // MUI primary blue
                         color: 'white',
                         textTransform: 'none',
                         '&:hover': { backgroundColor: '#1565c0' } // darker hover
-                    }}
-                    color="primary"
+                    }}                    color="primary"
                     onClick={() => applyQuickFilter('delete_others')}
                 >
                     Delete/Others
@@ -351,13 +359,12 @@ const TransactionHistoryNew: React.FC = () => {
 
                 <Button
                     variant={filterType === 'all' ? "contained" : "outlined"}
-                    sx={{
+ sx={{
                         backgroundColor: '#1976d2', // MUI primary blue
                         color: 'white',
                         textTransform: 'none',
                         '&:hover': { backgroundColor: '#1565c0' } // darker hover
-                    }}
-                    color="primary"
+                    }}                    color="primary"
                     onClick={() => applyQuickFilter('all')}
                 >
                     All
@@ -412,7 +419,7 @@ const TransactionHistoryNew: React.FC = () => {
                                         <CircularProgress />
                                     </TableCell>
                                 </TableRow>
-                            ) : filteredResults.length === 0 ? (
+                            ) : data.results.length === 0 ? (
                                 <TableRow>
                                     <TableCell colSpan={columns.length} align="center">
                                         <Typography variant="body1" color="textSecondary">
@@ -421,7 +428,7 @@ const TransactionHistoryNew: React.FC = () => {
                                     </TableCell>
                                 </TableRow>
                             ) : (
-                                filteredResults.map((row, index) => (
+                                data.results.map((row, index) => (
                                     <TableRow
                                         sx={{ whiteSpace: 'nowrap' }}
                                         hover
