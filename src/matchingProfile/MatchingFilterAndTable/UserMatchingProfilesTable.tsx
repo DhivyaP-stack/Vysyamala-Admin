@@ -2226,7 +2226,7 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                         filters.selectedMaritalStatus,
                         filters.selectedFamilyStatus,
                         filters.sentInWhatsapp,
-                        filters.prefPoruthamStarRasi,
+                      //  filters.prefPoruthamStarRasi,
                         filters.fromDateOfJoin,
                         filters.toDateOfJoin,
                         profileType,
@@ -2240,7 +2240,7 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                         String(profileID),
                         1, // Always get first page
                         largePageSize, // Large page size to get all data
-                        "", "", "", "", 0, 0, 0, 0, "", 0, 0, 0, "", 0, 0, "", "", "", "", "", "", "", "", "", "", "", profileType,
+                        "", "", "", "", 0, 0, 0, 0, "", 0, 0, 0, "", 0, 0, "", "", "", "", "", "", "", "", "", "",  profileType,
                         selectedActionType,
                         activeStatus.toLowerCase() === 'all' ? 'all' : activeStatus.toLowerCase(),
                         search.trim()

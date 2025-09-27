@@ -321,7 +321,7 @@ export const userMatchingProfilesFilterListMatch = async (
     selectedMaritalStatus: string,
     selectedFamilyStatus: string,
     sentInWhatsapp: string,
-    prefPoruthamStarRasi: string,
+    //prefPoruthamStarRasi: string,
     fromDateOfJoin: string,
     toDateOfJoin: string,
     profileType: 'matching' | 'suggested' = 'matching',
@@ -362,7 +362,7 @@ export const userMatchingProfilesFilterListMatch = async (
             whatsapp_field: sentInWhatsapp,
             pref_fieldof_study: selectedFieldsOfStudy, // Add this
             degree: selectedDegrees, // Add this
-            pref_porutham_star_rasi: prefPoruthamStarRasi,
+            //pref_porutham_star_rasi: prefPoruthamStarRasi,
             from_dateofjoin: fromDateOfJoin,
             to_dateofjoin: toDateOfJoin,
             action_type: actionType, // Add action_type parameter

@@ -303,7 +303,7 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
             chevvaiDhosam,
             destRasiIds: prefPoruthamStarRasi,
             ageDifference,
-            prefPoruthamStarRasi,
+            //prefPoruthamStarRasi,
             fromDateOfJoin,
             toDateOfJoin,
         };
