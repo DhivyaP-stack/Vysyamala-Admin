@@ -563,6 +563,7 @@ const EditViewProfile: React.FC<pageProps> = ({
                         <DataHistoryPopup
                           open={openDataHistory}
                           onClose={() => setOpenDataHistory(false)}
+                          profileId={profileId || ''}
                         />
                       </div>
 

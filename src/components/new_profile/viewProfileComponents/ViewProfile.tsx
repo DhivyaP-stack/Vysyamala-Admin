@@ -80,9 +80,10 @@ const ViewProfile: React.FC<pageProps> = ({
   const [image, setImage] = useState<string | null>(null);
   const [openCallManagement, setOpenCallManagement] = useState<boolean>(false)
   const [OpenAdminDetails, setOpenAdminDetails] = useState<boolean>(false)
-  const [openDataHistory, setOpenDataHistory] = useState<boolean>(false)
+  // const [openDataHistory, setOpenDataHistory] = useState<boolean>(false)
   const [pass, setPass] = useState<any>({});
   const [open, setOpen] = useState(false);
+  const [openDataHistory, setOpenDataHistory] = useState(false);
 
   // const [profileCountt,setProfileCountt]=useState()
   //   import moment from "moment";
@@ -312,6 +313,7 @@ const ViewProfile: React.FC<pageProps> = ({
     setIsPdfOptionsVisible((prevState) => !prevState)
     setIsShareVisible(false)
   }
+
 
   return (
     <div className="bg-white p-8 mb-10 rounded shadow-md">
@@ -556,6 +558,7 @@ const ViewProfile: React.FC<pageProps> = ({
                   size="small"
                   className="bg-blue-700 whitespace-nowrap"
                   onClick={() => setOpenDataHistory(true)}
+                  // onClick={() => handleOpenDataHistory(profile.id)}
                 >
                   Data History
                 </Button>
@@ -727,10 +730,16 @@ const ViewProfile: React.FC<pageProps> = ({
         open={OpenAdminDetails}
         onClose={() => setOpenAdminDetails(false)}
       />
+      {/* <DataHistoryPopup
+        open={openDataHistory}
+        onClose={() => setOpenDataHistory(false)}
+      /> */}
       <DataHistoryPopup
         open={openDataHistory}
         onClose={() => setOpenDataHistory(false)}
+        profileId={profileId || ''}
       />
+
     </div>
   );
 };

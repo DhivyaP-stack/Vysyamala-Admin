@@ -197,6 +197,7 @@ const EditProfile = () => {
   const [fieldOfStudySuggested, setFieldOfStudySuggested] = useState('');
   const [prefDegreeSuggested, setPreDegreeSuggested] = useState<string[]>([]);
 
+
   const handleProfileUpdate = async (editData: any, Name: string) => {
     try {
       setIsSubmitting(true);
@@ -494,19 +495,19 @@ const EditProfile = () => {
     // --- START: New logic for dasa_balance ---
     const parts = [];
 
-    if (dasaYear && dasaYear !== '0') {
+    if (dasaYear) {
       const yearNum = parseInt(dasaYear, 10);
-      parts.push(`${yearNum} ${yearNum === 1 ? 'Year' : 'Years'}`);
+      parts.push(`${yearNum} ${yearNum === 1 ? 'Years' : 'Years'}`);
     }
 
-    if (dasaMonth && dasaMonth !== '0') {
+    if (dasaMonth) {
       const monthNum = parseInt(dasaMonth, 10);
-      parts.push(`${monthNum} ${monthNum === 1 ? 'Month' : 'Months'}`);
+      parts.push(`${monthNum} ${monthNum === 1 ? 'Months' : 'Months'}`);
     }
 
-    if (dasaDay && dasaDay !== '0') {
+    if (dasaDay ) {
       const dayNum = parseInt(dasaDay, 10);
-      parts.push(`${dayNum} ${dayNum === 1 ? 'Day' : 'Days'}`);
+      parts.push(`${dayNum} ${dayNum === 1 ? 'Days' : 'Days'}`);
     }
 
     const dasaBalance = parts.join(', ');
@@ -576,10 +577,11 @@ const EditProfile = () => {
       if (data.profileView.mobile_otp_verify === null || "") {
         notify("error");
       } else {
-
+        const ownerID = localStorage.getItem('role_id')
 
         const editDataProfileView = {
           profile_common_details: {
+            owner_id: ownerID,
             Addon_package: data.profileView.Addon_package,
             Notifcation_enabled: data.profileView.Notifcation_enabled,
             status: data.profileView.status,

@@ -16,6 +16,7 @@ import {
     FormControl,
     FormLabel,
     Box,
+    IconButton,
 } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -78,42 +79,46 @@ const TransactionHistoryNew: React.FC = () => {
     });
 
     const [search, setSearch] = useState<string>('');
-    // 1. ADD DEBOUNCED SEARCH STATE
     const [debouncedSearch, setDebouncedSearch] = useState<string>('');
-
-    const [fromDate, setFromDate] = useState<string>('');
-    const [toDate, setToDate] = useState<string>('');
+    // 1. ADD TEMPORARY DATE STATES FOR INPUT FIELDS
+    const [tempFromDate, setTempFromDate] = useState<string>('');
+    const [tempToDate, setTempToDate] = useState<string>('');
+    // 2. ADD ACTUAL FILTER STATES THAT WILL BE USED IN API CALLS
+    const [appliedFromDate, setAppliedFromDate] = useState<string>('');
+    const [appliedToDate, setAppliedToDate] = useState<string>('');
     const [filterType, setFilterType] = useState<'today' | 'last_week' | 'new_approved' | 'delete_others' | 'all'>('all');
     const [loading, setLoading] = useState<boolean>(true);
-    const [isDownloading, setIsDownloading] = useState<boolean>(false); // <-- ADD THIS LINE
+    const [isDownloading, setIsDownloading] = useState<boolean>(false);
+    const [goToPageInput, setGoToPageInput] = useState<string>('');
 
-    // ... rest of the code
 
-    // 2. ADD A useEffect TO DEBOUNCE THE SEARCH INPUT
+
+    // Only keep the dependencies that should trigger automatic API calls
     useEffect(() => {
-        // Set a timer for 2 seconds (2000ms)
+        fetchData();
+    }, [page, rowsPerPage, order, orderBy, filterType, appliedFromDate, appliedToDate, debouncedSearch]);
+
+    // Debounced search effect (unchanged)
+    useEffect(() => {
         const timerId = setTimeout(() => {
             setDebouncedSearch(search);
-            setPage(0); // Reset to first page when search term changes
+            setPage(0);
         }, 1000);
 
-        // This is the cleanup function. It runs if the user types again
-        // before the 2 seconds are up, canceling the previous timer.
         return () => {
             clearTimeout(timerId);
         };
-    }, [search]); // This effect runs only when the 'search' state changes
+    }, [search]);
 
     const buildFilterParams = (): FilterParams => {
         const params: FilterParams = {
             page: page + 1,
         };
 
-        if (fromDate) params.from_date = fromDate;
-        if (toDate) params.to_date = toDate;
+        // 4. USE APPLIED DATES INSTEAD OF TEMP DATES
+        if (appliedFromDate) params.from_date = appliedFromDate;
+        if (appliedToDate) params.to_date = appliedToDate;
         if (filterType && filterType !== 'all') params.filter_type = filterType;
-
-        // 3. USE THE DEBOUNCED SEARCH TERM FOR THE API CALL
         if (debouncedSearch) params.search = debouncedSearch;
 
         return params;
@@ -132,13 +137,6 @@ const TransactionHistoryNew: React.FC = () => {
         }
     };
 
-    // 4. UPDATE THE MAIN useEffect's DEPENDENCY ARRAY
-    // It now listens to 'debouncedSearch' instead of a manual trigger.
-    useEffect(() => {
-        fetchData();
-    }, [page, rowsPerPage, order, orderBy, filterType, fromDate, toDate, debouncedSearch]);
-
-
     const handleRequestSort = (property: string) => {
         const isAsc = orderBy === property && order === 'asc';
         setOrder(isAsc ? 'desc' : 'asc');
@@ -149,19 +147,38 @@ const TransactionHistoryNew: React.FC = () => {
         setSearch(event.target.value);
     };
 
-    // The manual search button can still be used for an immediate search
     const handleSearch = () => {
-        setDebouncedSearch(search); // Immediately apply the search term
+        setDebouncedSearch(search);
         setPage(0);
     };
 
+    // 5. UPDATE TEMPORARY DATE STATES (WON'T TRIGGER API CALL)
     const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
         if (name === 'fromDate') {
-            setFromDate(value);
+            setTempFromDate(value);
         } else if (name === 'toDate') {
-            setToDate(value);
+            setTempToDate(value);
         }
+    };
+
+    // 6. ADD SUBMIT BUTTON HANDLER
+    const handleSubmit = () => {
+        // Apply the temporary dates to the actual filter states
+        setAppliedFromDate(tempFromDate);
+        setAppliedToDate(tempToDate);
+        setPage(0); // Reset to first page
+    };
+
+    // 7. ADD CLEAR BUTTON HANDLER
+    const handleClear = () => {
+        setTempFromDate('');
+        setTempToDate('');
+        setAppliedFromDate('');
+        setAppliedToDate('');
+        setSearch('');
+        setDebouncedSearch('');
+        setFilterType('all');
         setPage(0);
     };
 
@@ -169,11 +186,6 @@ const TransactionHistoryNew: React.FC = () => {
         setPage(newPage);
     };
 
-    const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const newRowsPerPage = +event.target.value;
-        setRowsPerPage(newRowsPerPage);
-        setPage(0);
-    };
 
     const columns: Column[] = [
         { id: 'created_at', label: 'Paid Info Date', minWidth: 180, align: 'center', format: formatDate },
@@ -205,56 +217,186 @@ const TransactionHistoryNew: React.FC = () => {
         setFilterType(type);
 
         if (type === 'today') {
-            setFromDate(getTodayDate());
-            setToDate(getTodayDate());
+            setTempFromDate(getTodayDate());
+            setTempToDate(getTodayDate());
+            setAppliedFromDate(getTodayDate());
+            setAppliedToDate(getTodayDate());
         } else if (type === 'last_week') {
-            setFromDate(getLastWeekDate());
-            setToDate(getTodayDate());
+            setTempFromDate(getLastWeekDate());
+            setTempToDate(getTodayDate());
+            setAppliedFromDate(getLastWeekDate());
+            setAppliedToDate(getTodayDate());
         } else {
-            setFromDate('');
-            setToDate('');
+            setTempFromDate('');
+            setTempToDate('');
+            setAppliedFromDate('');
+            setAppliedToDate('');
         }
 
         setPage(0);
     };
 
     const handleDownloadExcel = async () => {
-        setIsDownloading(true); // Start loading indicator
+        setIsDownloading(true);
 
-        // 1. Build the query parameters from the current state
         const params: any = {};
-        if (fromDate) params.from_date = fromDate;
-        if (toDate) params.to_date = toDate;
+        if (appliedFromDate) params.from_date = appliedFromDate;
+        if (appliedToDate) params.to_date = appliedToDate;
         if (filterType && filterType !== 'all') params.filter_type = filterType;
         if (debouncedSearch) params.search = debouncedSearch;
 
         try {
             const url = `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/transaction-export/`;
-
-            // 2. Make the API call, expecting a 'blob' (file) in response
             const response = await axios.get(url, {
                 params,
-                responseType: 'blob', // Important: This tells axios to handle the response as a file
+                responseType: 'blob',
             });
 
-            // 3. Create a temporary link to trigger the download
             const downloadUrl = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = downloadUrl;
-            link.setAttribute('download', 'transaction-history.csv'); // Set the filename for the download
+            link.setAttribute('download', 'transaction-history.csv');
             document.body.appendChild(link);
             link.click();
-
-            // 4. Clean up the temporary link
             link.remove();
             window.URL.revokeObjectURL(downloadUrl);
 
         } catch (error) {
             console.error('Error downloading the file:', error);
-            // You can add user feedback here, like a toast notification
         } finally {
-            setIsDownloading(false); // Stop loading indicator
+            setIsDownloading(false);
         }
+    };
+
+
+    const handleGoToPage = () => {
+        const pageNumber = parseInt(goToPageInput, 10);
+        if (!isNaN(pageNumber)) {
+            const lastPage = Math.ceil(data.count / rowsPerPage) - 1;
+            const newPage = Math.max(0, Math.min(pageNumber - 1, lastPage));
+            setPage(newPage);
+            setGoToPageInput('');
+        }
+    };
+
+    const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const newRowsPerPage = +event.target.value;
+        setRowsPerPage(newRowsPerPage);
+        setPage(0);
+    };
+
+    // Custom pagination component
+    const renderCustomPagination = () => {
+        const totalPages = Math.ceil(data.count / rowsPerPage);
+        const maxVisiblePages = 5;
+        let startPage, endPage;
+
+        if (totalPages <= maxVisiblePages) {
+            startPage = 0;
+            endPage = totalPages - 1;
+        } else {
+            const maxPagesBeforeCurrent = Math.floor(maxVisiblePages / 2);
+            const maxPagesAfterCurrent = Math.ceil(maxVisiblePages / 2) - 1;
+
+            if (page < maxPagesBeforeCurrent) {
+                startPage = 0;
+                endPage = maxVisiblePages - 1;
+            } else if (page + maxPagesAfterCurrent >= totalPages) {
+                startPage = totalPages - maxVisiblePages;
+                endPage = totalPages - 1;
+            } else {
+                startPage = page - maxPagesBeforeCurrent;
+                endPage = page + maxPagesAfterCurrent;
+            }
+        }
+
+        const pages = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
+
+
+        return (
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 px-4 py-3 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="text-sm text-gray-600">
+                    Showing {page * rowsPerPage + 1} to {Math.min((page + 1) * rowsPerPage, data.count)} of {data.count} records
+                </div>
+
+                <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2">
+                        <Typography variant="body2">Go to page:</Typography>
+                        <TextField
+                            size="small"
+                            type="number"
+                            value={goToPageInput}
+                            onChange={(e) => setGoToPageInput(e.target.value)}
+                            inputProps={{
+                                min: 1,
+                                max: Math.ceil(data.count / rowsPerPage),
+                            }}
+                            style={{ width: '80px' }}
+                            onKeyPress={(e) => e.key === 'Enter' && handleGoToPage()}
+                        />
+                        <Button
+                            variant="contained"
+                            size="small"
+                            onClick={handleGoToPage}
+                            disabled={!goToPageInput}
+                        >
+                            Go
+                        </Button>
+                    </div>
+
+                    <IconButton
+                        onClick={() => setPage(0)}
+                        disabled={page === 0}
+                        aria-label="first page"
+                    >
+                        {"<<"}
+                    </IconButton>
+
+                    <IconButton
+                        onClick={() => setPage(prev => Math.max(prev - 1, 0))}
+                        disabled={page === 0}
+                        aria-label="previous page"
+                    >
+                        {"<"}
+                    </IconButton>
+
+                    <div className="flex">
+                        {pages.map((pageNum) => (
+                            <Button
+                                key={pageNum}
+                                variant={page === pageNum ? "contained" : "text"}
+                                onClick={() => setPage(pageNum)}
+                                style={{
+                                    minWidth: '32px',
+                                    height: '32px',
+                                    margin: '0 2px',
+                                    backgroundColor: page === pageNum ? '#1976d2' : 'transparent',
+                                    color: page === pageNum ? '#fff' : '#000',
+                                }}
+                            >
+                                {pageNum + 1}
+                            </Button>
+                        ))}
+                    </div>
+
+                    <IconButton
+                        onClick={() => setPage(prev => Math.min(prev + 1, Math.ceil(data.count / rowsPerPage) - 1))}
+                        disabled={page >= Math.ceil(data.count / rowsPerPage) - 1}
+                        aria-label="next page"
+                    >
+                        {">"}
+                    </IconButton>
+
+                    <IconButton
+                        onClick={() => setPage(Math.ceil(data.count / rowsPerPage) - 1)}
+                        disabled={page >= Math.ceil(data.count / rowsPerPage) - 1}
+                        aria-label="last page"
+                    >
+                        {">>"}
+                    </IconButton>
+                </div>
+            </div>
+        );
     };
 
     return (
@@ -283,17 +425,20 @@ const TransactionHistoryNew: React.FC = () => {
                             gap: '1.5rem',
                         }}
                     >
-                        {/* Left side: From/To Date + Search */}
+                        {/* Left side: From/To Date + Search + Buttons */}
                         <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: '1.5rem', flex: 1 }}>
                             <FormControl sx={{ width: '200px' }}>
                                 <FormLabel sx={{ fontWeight: 'bold' }}>From Date</FormLabel>
                                 <TextField
                                     type="date"
                                     name="fromDate"
-                                    value={fromDate}
+                                    value={tempFromDate} // Use tempFromDate
                                     onChange={handleDateChange}
                                     size="small"
                                     InputLabelProps={{ shrink: true }}
+                                    inputProps={{
+                                        max: new Date().toISOString().split('T')[0]
+                                    }}
                                 />
                             </FormControl>
 
@@ -302,12 +447,29 @@ const TransactionHistoryNew: React.FC = () => {
                                 <TextField
                                     type="date"
                                     name="toDate"
-                                    value={toDate}
+                                    value={tempToDate} // Use tempToDate
                                     onChange={handleDateChange}
                                     size="small"
                                     InputLabelProps={{ shrink: true }}
+                                    inputProps={{
+                                        max: new Date().toISOString().split('T')[0]
+                                    }}
                                 />
                             </FormControl>
+                            <Box sx={{ display: 'flex', gap: '1rem' }}>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={handleSubmit}
+                                    sx={{
+                                        height: '40px',
+                                        minWidth: '100px',
+                                        textTransform: 'none',
+                                    }}
+                                >
+                                    Submit
+                                </Button>
+                            </Box>
 
                             <FormControl sx={{ width: '400px' }}>
                                 <FormLabel sx={{ fontWeight: 'bold' }}>Search</FormLabel>
@@ -325,17 +487,18 @@ const TransactionHistoryNew: React.FC = () => {
                                     }}
                                 />
                             </FormControl>
+
+                            {/* 8. ADD SUBMIT AND CLEAR BUTTONS */}
+
                         </Box>
 
-
-                        {/* Right side: Button aligned to right */}
-                        {/* Right side: Button aligned to right */}
+                        {/* Right side: Download button */}
                         <Box sx={{ display: 'flex', gap: '1rem' }}>
                             <Button
                                 variant="contained"
                                 color="success"
-                                onClick={handleDownloadExcel} // <-- ADD THIS
-                                disabled={isDownloading}      // <-- ADD THIS
+                                onClick={handleDownloadExcel}
+                                disabled={isDownloading}
                                 sx={{
                                     height: '40px',
                                     minWidth: '200px',
@@ -354,11 +517,12 @@ const TransactionHistoryNew: React.FC = () => {
                 <Button
                     variant={filterType === 'last_week' ? "contained" : "outlined"}
                     sx={{
-                        backgroundColor: '#1976d2', // MUI primary blue
+                        backgroundColor: '#1976d2',
                         color: 'white',
                         textTransform: 'none',
-                        '&:hover': { backgroundColor: '#1565c0' } // darker hover
-                    }} color="primary"
+                        '&:hover': { backgroundColor: '#1565c0' }
+                    }}
+                    color="primary"
                     onClick={() => applyQuickFilter('last_week')}
                 >
                     Last Week
@@ -366,11 +530,12 @@ const TransactionHistoryNew: React.FC = () => {
                 <Button
                     variant={filterType === 'today' ? "contained" : "outlined"}
                     sx={{
-                        backgroundColor: '#1976d2', // MUI primary blue
+                        backgroundColor: '#1976d2',
                         color: 'white',
                         textTransform: 'none',
-                        '&:hover': { backgroundColor: '#1565c0' } // darker hover
-                    }} color="primary"
+                        '&:hover': { backgroundColor: '#1565c0' }
+                    }}
+                    color="primary"
                     onClick={() => applyQuickFilter('today')}
                 >
                     Today
@@ -378,11 +543,12 @@ const TransactionHistoryNew: React.FC = () => {
                 <Button
                     variant={filterType === 'new_approved' ? "contained" : "outlined"}
                     sx={{
-                        backgroundColor: '#1976d2', // MUI primary blue
+                        backgroundColor: '#1976d2',
                         color: 'white',
                         textTransform: 'none',
-                        '&:hover': { backgroundColor: '#1565c0' } // darker hover
-                    }} color="primary"
+                        '&:hover': { backgroundColor: '#1565c0' }
+                    }}
+                    color="primary"
                     onClick={() => applyQuickFilter('new_approved')}
                 >
                     New / Approved
@@ -390,11 +556,12 @@ const TransactionHistoryNew: React.FC = () => {
                 <Button
                     variant={filterType === 'delete_others' ? "contained" : "outlined"}
                     sx={{
-                        backgroundColor: '#1976d2', // MUI primary blue
+                        backgroundColor: '#1976d2',
                         color: 'white',
                         textTransform: 'none',
-                        '&:hover': { backgroundColor: '#1565c0' } // darker hover
-                    }} color="primary"
+                        '&:hover': { backgroundColor: '#1565c0' }
+                    }}
+                    color="primary"
                     onClick={() => applyQuickFilter('delete_others')}
                 >
                     Delete / Others
@@ -403,11 +570,12 @@ const TransactionHistoryNew: React.FC = () => {
                 <Button
                     variant={filterType === 'all' ? "contained" : "outlined"}
                     sx={{
-                        backgroundColor: '#1976d2', // MUI primary blue
+                        backgroundColor: '#1976d2',
                         color: 'white',
                         textTransform: 'none',
-                        '&:hover': { backgroundColor: '#1565c0' } // darker hover
-                    }} color="primary"
+                        '&:hover': { backgroundColor: '#1565c0' }
+                    }}
+                    color="primary"
                     onClick={() => applyQuickFilter('all')}
                 >
                     All
@@ -517,7 +685,7 @@ const TransactionHistoryNew: React.FC = () => {
                     </Table>
                 </TableContainer>
 
-                <TablePagination
+                {/* <TablePagination
                     rowsPerPageOptions={[10, 25, 100]}
                     component="div"
                     count={data.count}
@@ -525,7 +693,8 @@ const TransactionHistoryNew: React.FC = () => {
                     page={page}
                     onPageChange={handleChangePage}
                     onRowsPerPageChange={handleChangeRowsPerPage}
-                />
+                /> */}
+                 {Math.ceil(data.count / rowsPerPage) > 0 && renderCustomPagination()}
             </Paper>
         </>
     );

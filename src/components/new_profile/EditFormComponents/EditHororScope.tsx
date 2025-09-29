@@ -320,6 +320,38 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
     }
   }, [EditData, setValue]);
 
+  // START: ADD THIS LOGIC
+  // 1. Watch the three Dasa Balance fields
+  const dasaYear = watch('HororScopeDetails.DasaBalanceYear');
+  const dasaMonth = watch('HororScopeDetails.DasaBalanceMonth');
+  const dasaDay = watch('HororScopeDetails.DasaBalanceDay');
+
+  // 2. Use an effect to manage the logic
+  useEffect(() => {
+    // Check if any field has a meaningful value (not '' or '0')
+    const isAnyFieldSet =
+      (dasaYear && dasaYear !== '0') ||
+      (dasaMonth && dasaMonth !== '0') ||
+      (dasaDay && dasaDay !== '0');
+
+    // Prevent this logic from running on initial load before values are set
+    if (dasaYear === undefined || dasaMonth === undefined || dasaDay === undefined) {
+      return;
+    }
+
+    if (isAnyFieldSet) {
+      // If at least one field is set, ensure others default to '0' instead of ''
+      if (dasaYear === '') setValue('HororScopeDetails.DasaBalanceYear', '0', { shouldValidate: true });
+      if (dasaMonth === '') setValue('HororScopeDetails.DasaBalanceMonth', '0', { shouldValidate: true });
+      if (dasaDay === '') setValue('HororScopeDetails.DasaBalanceDay', '0', { shouldValidate: true });
+    } else {
+      // If all fields have been cleared by the user, reset any '0' values back to ''
+      if (dasaYear === '0') setValue('HororScopeDetails.DasaBalanceYear', '', { shouldValidate: true });
+      if (dasaMonth === '0') setValue('HororScopeDetails.DasaBalanceMonth', '', { shouldValidate: true });
+      if (dasaDay === '0') setValue('HororScopeDetails.DasaBalanceDay', '', { shouldValidate: true });
+    }
+  }, [dasaYear, dasaMonth, dasaDay, setValue]);
+
   return (
     <div>
       <div className="bg-white p-5 mb-10 rounded shadow-md">
@@ -609,6 +641,7 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
                       <option value="" className='text-[#000000e6] font-medium'>
                         Year
                       </option>
+                      <option value="0">0</option>
                       {Array.from({ length: 30 }, (_, i) => i + 1).map(
                         (year) => (
                           <option key={year} value={year}>
@@ -630,6 +663,7 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
                       <option value="" className='text-[#000000e6] font-medium'>
                         Month
                       </option>
+                      <option value="0">0</option>
                       {[...Array(12)].map((_, i) => (
                         <option key={i + 1} value={i + 1}>
                           {i + 1}
@@ -649,6 +683,7 @@ const EditHororScopeDetails: React.FC<formProps> = ({ isHoroscopeDetailsOpen, se
                       <option value="" className='text-[#000000e6] font-medium'>
                         Day
                       </option>
+                      <option value="0">0</option>
                       {[...Array(31)].map((_, i) => (
                         <option key={i + 1} value={i + 1}>
                           {i + 1}

@@ -163,7 +163,49 @@ const HororScopeDetails: React.FC<hororScopeProp> = ({
   }, [selectedBirthStarId, rasiContent, amsamContent]);
   // console.log(rasiContent, 'rasiContent');
   // console.log(amsamContent, 'amsamContent');
-  
+
+  // Watch the three Dasa Balance fields
+  const dasaYear = watch('HororScopeDetails.dhasaBalanceYear');
+  const dasaMonth = watch('HororScopeDetails.dhasaBalanceMonth');
+  const dasaDay = watch('HororScopeDetails.dhasaBalanceDay');
+
+  // Use an effect to manage the logic
+  useEffect(() => {
+    // Check if any field has a meaningful value (not '' or '0')
+    const isAnyFieldSet =
+      (dasaYear && dasaYear !== '0') ||
+      (dasaMonth && dasaMonth !== '0') ||
+      (dasaDay && dasaDay !== '0');
+
+    // Prevent this logic from running on initial load before values are set
+    if (dasaYear === undefined || dasaMonth === undefined || dasaDay === undefined) {
+      return;
+    }
+
+    if (isAnyFieldSet) {
+      // If at least one field is set, ensure others default to '0' instead of ''
+      if (dasaYear === '' || dasaYear === undefined) {
+        setValue('HororScopeDetails.dhasaBalanceYear', '0', { shouldValidate: true });
+      }
+      if (dasaMonth === '' || dasaMonth === undefined) {
+        setValue('HororScopeDetails.dhasaBalanceMonth', '0', { shouldValidate: true });
+      }
+      if (dasaDay === '' || dasaDay === undefined) {
+        setValue('HororScopeDetails.dhasaBalanceDay', '0', { shouldValidate: true });
+      }
+    } else {
+      // If all fields have been cleared by the user, reset any '0' values back to ''
+      if (dasaYear === '0') {
+        setValue('HororScopeDetails.dhasaBalanceYear', '', { shouldValidate: true });
+      }
+      if (dasaMonth === '0') {
+        setValue('HororScopeDetails.dhasaBalanceMonth', '', { shouldValidate: true });
+      }
+      if (dasaDay === '0') {
+        setValue('HororScopeDetails.dhasaBalanceDay', '', { shouldValidate: true });
+      }
+    }
+  }, [dasaYear, dasaMonth, dasaDay, setValue]);
 
   return (
     <div>
@@ -171,7 +213,7 @@ const HororScopeDetails: React.FC<hororScopeProp> = ({
         <h4
           className="text-red-600 flex row items-center justify-between text-xl font-semibold  dark:text-white cursor-pointer  after-red-line::after"
           onClick={toggleSection4}
-        > 
+        >
           Horoscope Details
           <svg
             className={`fill-current transform ${isHoroscopeDetailsOpen ? 'rotate-180' : ''
@@ -207,7 +249,7 @@ const HororScopeDetails: React.FC<hororScopeProp> = ({
                     {Array.from({ length: 60 }, (_, i) => (<option key={i} value={i.toString().padStart(2, '0')}>{i.toString().padStart(2, '0')}</option>))}
                   </select>
                   <select value={period} onChange={(e) => setPeriod(e.target.value)} className="px-3 py-2 border rounded border-gray-500">
-                    
+
                     <option value="AM">AM</option><option value="PM">PM</option>
                   </select>
                 </div>
@@ -459,6 +501,9 @@ const HororScopeDetails: React.FC<hororScopeProp> = ({
                       <option value="" >
                         Year
                       </option>
+                      <option value="0" >
+                        0
+                      </option>
                       {Array.from({ length: 30 }, (_, i) => i + 1).map((year) => (
                         <option key={year} value={year}>
                           {year}
@@ -478,6 +523,9 @@ const HororScopeDetails: React.FC<hororScopeProp> = ({
                       <option value="" >
                         Month
                       </option>
+                      <option value="0" >
+                        0
+                      </option>
                       {[...Array(12)].map((_, i) => (
                         <option key={i + 1} value={i + 1}>
                           {i + 1}
@@ -496,6 +544,9 @@ const HororScopeDetails: React.FC<hororScopeProp> = ({
                     >
                       <option value="" >
                         Day
+                      </option>
+                      <option value="0" >
+                        0
                       </option>
                       {[...Array(31)].map((_, i) => (
                         <option key={i + 1} value={i + 1}>

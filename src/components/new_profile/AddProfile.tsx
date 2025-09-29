@@ -269,7 +269,12 @@ const AddProfile = () => {
     const today = new Date();
     const DateOfJoinToday = today.toISOString().split('T')[0];
     //console.log("today",DateOfJoinToday)
+    const ownerID = localStorage.getItem('role_id');
     const add_profile = {
+      // owner_id: {
+      //   owner_id:ownerID
+      // },
+      owner_id: ownerID,
       login_details: {
         Mobile_no: data.AddProfileForm.Mobile_no,
         EmailId: data.AddProfileForm.EmailId,
@@ -467,11 +472,14 @@ const AddProfile = () => {
           Profile_idproof,
           Profile_divorceproof,
           horoscope_file,
+          owner_id,
         } = add_profile;
 
         // Create a FormData object
         const formData = new FormData();
-
+        if (owner_id) {
+          formData.append('owner_id', owner_id);
+        }
         // Append nested JSON objects as strings
         formData.append('login_details', JSON.stringify(login_details));
         formData.append('family_details', JSON.stringify(family_details));
