@@ -700,10 +700,26 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
                         </div>
                     </div>
 
+                    {/* Mother Live */}
+                    <div className="py-4">
+                        <div className="w-fit text-start">
+                            <h2 className="text-lg text-black font-semibold mb-2">Father live</h2>
+                        </div>
+                        <select
+                            className="w-full outline-none px-4 py-2.5 border border-black rounded"
+                            value={motherLive}
+                            onChange={(e) => setMotherLive(e.target.value)}
+                        >
+                            <option value="">Select Option</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
+                    </div>
+
                     {/* Father Live */}
                     <div className="py-4">
                         <div className="w-fit text-start">
-                            <h2 className="text-lg text-black font-semibold mb-2">Father Live</h2>
+                            <h2 className="text-lg text-black font-semibold mb-2">Mother Live</h2>
                         </div>
                         <select
                             className="w-full outline-none px-4 py-2.5 border border-black rounded"
@@ -716,21 +732,7 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
                         </select>
                     </div>
 
-                    {/* Mother Live */}
-                    <div className="py-4">
-                        <div className="w-fit text-start">
-                            <h2 className="text-lg text-black font-semibold mb-2">Mother Live</h2>
-                        </div>
-                        <select
-                            className="w-full outline-none px-4 py-2.5 border border-black rounded"
-                            value={motherLive}
-                            onChange={(e) => setMotherLive(e.target.value)}
-                        >
-                            <option value="">Select Option</option>
-                            <option value="yes">Yes</option>
-                            <option value="no">No</option>
-                        </select>
-                    </div>
+                    
 
                     {/* Marital Status */}
                     <div className="py-4 col-span-full">
