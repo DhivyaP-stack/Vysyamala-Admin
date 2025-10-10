@@ -173,8 +173,6 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
         fetchFilterData();
     }, []);
 
-
-
     const { data: EditData } = useQuery({
         queryKey: [profileID, 'editData'],
         queryFn: () => fetchEditProfileDetails(profileID),
@@ -197,8 +195,6 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
         queryFn: () => fetchMatchPreferences(rasiId, starId, genderValue),
         enabled: !!rasiId && !!genderValue && !!starId,
     });
-
-
 
     const handleCheckboxMatchingStars = (updatedIds: SelectedStarIdItem[]) => {
         setSelectedStarIds(updatedIds);
@@ -357,6 +353,7 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
 
                 // Set dosham preferences
                 setChevvaiDhosam(partner_pref_details.pref_chevvai || '');
+                setSarpaDhosham(partner_pref_details.pref_ragukethu || '');
             }
         }
     }, [profileDetails]);
@@ -732,7 +729,7 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
                         </select>
                     </div>
 
-                    
+
 
                     {/* Marital Status */}
                     <div className="py-4 col-span-full">
