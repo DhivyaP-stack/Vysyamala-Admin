@@ -102,8 +102,8 @@ const EditViewProfile: React.FC<pageProps> = ({
     if (EditData?.[6]) {
       const data = EditData[6];
       setValue('profileView.status', data.status ?? 0);
-      setValue('profileView.primary_status', data.primary_status ?? '');
-      setValue('profileView.secondary_status', data.secondary_status ?? '');
+      setValue('profileView.primary_status', data.secondary_status ?? '');
+      setValue('profileView.secondary_status', data.plan_status ?? '');
       setValue('profileView.plan_status', data.plan_status ?? '');
       setValue('profileView.Profile_name', data.Profile_name ?? '');
       setValue('profileView.ProfileId', data.ProfileId ?? '');
@@ -628,7 +628,7 @@ const EditViewProfile: React.FC<pageProps> = ({
                               value={watch('profileView.primary_status') || ''}
                               className="px-2 py-1 border  rounded  border-[#b5b2b2e6]  text-[#222020e6] "
                             >
-                              <option value="" className=' text-[#000000e6] '>Select Primary Status</option>
+                              <option value="" className=' text-[#000000e6] '>Select Secondary Status</option>
                               {Primary?.map((option) => (
                                 <option key={option.id} value={option.id} className=' text-[#000000e6] '>
                                   {option.sub_status_name}
@@ -647,7 +647,7 @@ const EditViewProfile: React.FC<pageProps> = ({
                                   value={watch('profileView.secondary_status') || ''}
                                   className="px-2 py-1 border rounded  border-[#b5b2b2e6]  text-[#222020e6] "
                                 >
-                                  <option value="">Select Secondary Status</option>
+                                  <option value="">Select Plan Status</option>
                                   {secondary?.map((option) => (
                                     <option key={option.id} value={option.id} className=' text-[#000000e6] '>
                                       {option.plan_name}

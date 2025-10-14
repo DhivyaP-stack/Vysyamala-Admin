@@ -285,6 +285,40 @@ const TransactionHistoryNew: React.FC = () => {
         setPage(0);
     };
 
+
+    // Add this function inside your component
+    const getStatusColor = (status: string) => {
+        if (!status) return 'inherit';
+
+        const statusLower = status.toLowerCase();
+
+        switch (statusLower) {
+            case 'paid':
+                return '#2e7d32'; // Green for success
+            case 'failed':
+                return '#d32f2f'; // Red for failure
+            case 'initialized':
+                return '#ed6c02'; // Orange for pending/initialized
+            default:
+                return 'inherit'; // Default color
+        }
+    };
+
+    const getPStatusColor = (profile_status: string) => {
+        if (!profile_status) return 'inherit';
+
+        const statusLower = profile_status.toLowerCase();
+
+        switch (statusLower) {
+            case 'approved':
+                return '#2e7d32'; // Green for success
+            case 'pending':
+                return '#ed6c02'; // Orange for pending/initialized
+            default:
+                return 'inherit'; // Default color
+        }
+    };
+
     // Custom pagination component
     const renderCustomPagination = () => {
         const totalPages = Math.ceil(data.count / rowsPerPage);
@@ -653,7 +687,18 @@ const TransactionHistoryNew: React.FC = () => {
 
                                             return (
                                                 <TableCell
-                                                    sx={{ whiteSpace: 'nowrap' }}
+                                                    sx={{
+                                                        whiteSpace: 'nowrap',
+                                                        // Add color styling for T. Status column
+                                                        ...(column.id === 'status' && {
+                                                            color: getStatusColor(value),
+                                                            fontWeight: 'bold'
+                                                        }),
+                                                         ...(column.id === 'profile_status' && {
+                                                            color: getPStatusColor(value),
+                                                            fontWeight: 'bold'
+                                                        })
+                                                    }}
                                                     key={column.id}
                                                     align={column.align}
                                                 >
@@ -694,7 +739,7 @@ const TransactionHistoryNew: React.FC = () => {
                     onPageChange={handleChangePage}
                     onRowsPerPageChange={handleChangeRowsPerPage}
                 /> */}
-                 {Math.ceil(data.count / rowsPerPage) > 0 && renderCustomPagination()}
+                {Math.ceil(data.count / rowsPerPage) > 0 && renderCustomPagination()}
             </Paper>
         </>
     );
