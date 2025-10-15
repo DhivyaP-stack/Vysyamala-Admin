@@ -22,9 +22,11 @@ import { MdDeleteOutline } from 'react-icons/md';
 import { GrEdit } from 'react-icons/gr';
 import { FaRegEye } from 'react-icons/fa';
 import { Add } from '@mui/icons-material';
+import { toast } from 'react-toastify';
 
 const FEATURED_API_URL = 'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/featured-profiles/';
 const API_URL = 'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api'; // Base API for delete
+const ADD_PROFILE_API_URL = 'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/featured-profiles-add/';
 
 export const getFeaturedProfiles = async (
     search: string,
@@ -95,6 +97,48 @@ const FeaturedProfiles: React.FC = () => {
     const [fromDate, setFromDate] = useState<string>('');
     const [toDate, setToDate] = useState<string>('');
     const [goToPageInput, setGoToPageInput] = useState<string>('');
+    const [addProfileId, setAddProfileId] = useState<string>('');
+    const [addBoostedStartDate, setAddBoostedStartDate] = useState<string>('');
+    const [addBoostedEndDate, setAddBoostedEndDate] = useState<string>('');
+    const [addErrors, setAddErrors] = useState<{ profileId?: string; startDate?: string; endDate?: string }>({});
+
+    const handleAddProfile = async () => {
+        const newErrors: { profileId?: string; startDate?: string; endDate?: string } = {};
+        if (!addProfileId.trim()) newErrors.profileId = 'Profile ID is required.';
+        if (!addBoostedStartDate) newErrors.startDate = 'Start date is required.';
+        if (!addBoostedEndDate) newErrors.endDate = 'End date is required.';
+
+        if (Object.keys(newErrors).length > 0) {
+            setAddErrors(newErrors);
+            return;
+        }
+        setAddErrors({});
+
+        const payload = {
+            profile_id: addProfileId,
+            boosted_startdate: addBoostedStartDate,
+            boosted_enddate: addBoostedEndDate,
+        };
+
+        try {
+            const response = await axios.post(ADD_PROFILE_API_URL, payload);
+            if (response.data.status === 'success') {
+                toast.success(response.data.message || 'Profile added successfully!');
+                // Clear form and refresh data
+                setAddProfileId('');
+                setAddBoostedStartDate('');
+                setAddBoostedEndDate('');
+                fetchData();
+            } else {
+                toast.error(response.data.message || 'An unknown error occurred.');
+            }
+        } catch (error: any) {
+            console.error('Error adding featured profile:', error);
+            const errorMessage = error.response?.data?.message || 'Failed to add profile. Please try again.';
+            toast.error(errorMessage);
+        }
+    };
+
 
     useEffect(() => {
         fetchData();
@@ -337,41 +381,40 @@ const FeaturedProfiles: React.FC = () => {
                     justifyContent: 'space-between',
                     backgroundColor: '#fff',
                     borderRadius: 2,
-                    boxShadow: '0px 4px 10px rgba(0,0,0,0.15)', // ⬆️ Increased shadow depth
+                    boxShadow: '0px 4px 10px rgba(0,0,0,0.15)',
                     padding: 2.5,
                     marginBottom: 3,
                     gap: 2,
+                    flexWrap: 'wrap',
                 }}
             >
-                {/* Left side - All fields in one line */}
                 <Box
-                    sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 2,
-                        flexWrap: 'wrap',
-                        flex: 1,
-                    }}
+                    sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, flexWrap: 'wrap', flex: 1 }}
                 >
-                    {/* Profile ID */}
+                    {/* Add Profile ID */}
                     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                        <Typography
-                            variant="subtitle2"
-                            sx={{ fontWeight: 600, color: '#555', mb: 0.5 }}
-                        >
+                        <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#555', mb: 0.5 }}>
                             Profile ID <span className='text-red-500'>*</span>
                         </Typography>
                         <TextField
                             placeholder="Enter Profile ID"
-                            value={search}
-                            onChange={handleSearchChange}
+                            value={addProfileId}
+                            onChange={(e) => {
+                                setAddProfileId(e.target.value);
+                                if (addErrors.profileId) setAddErrors((prev) => ({ ...prev, profileId: '' }));
+                            }}
                             variant="outlined"
                             size="small"
                             sx={{ width: 250 }}
                         />
+                        {addErrors.profileId && (
+                            <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
+                                {addErrors.profileId}
+                            </Typography>
+                        )}
                     </Box>
 
-                    {/* From Date */}
+                    {/* Boosted Start Date */}
                     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                         <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#555', mb: 0.5 }}>
                             From Date <span className='text-red-500'>*</span>
@@ -379,37 +422,61 @@ const FeaturedProfiles: React.FC = () => {
                         <TextField
                             type="date"
                             size="small"
-                            value={fromDate}
-                            onChange={handleFromDateChange}
-                            sx={{ width: 160 }}
-                            inputProps={{ max: new Date().toISOString().split('T')[0] }}
+                            value={addBoostedStartDate}
+                            onChange={(e) => {
+                                setAddBoostedStartDate(e.target.value);
+                                if (addErrors.startDate) setAddErrors((prev) => ({ ...prev, startDate: '' }));
+                            }}
+                            sx={{ width: 190 }}
+                            InputLabelProps={{ shrink: true }}
+                            inputProps={{
+                                max: new Date().toISOString().split('T')[0],
+                            }}
                         />
+                        {addErrors.startDate && (
+                            <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
+                                {addErrors.startDate}
+                            </Typography>
+                        )}
                     </Box>
 
-                    {/* To Date */}
+                    {/* Boosted End Date */}
                     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                         <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#555', mb: 0.5 }}>
-                            To Date <span className='text-red-500'>*</span>  
+                            To Date <span className='text-red-500'>*</span>
                         </Typography>
                         <TextField
                             type="date"
                             size="small"
-                            value={toDate}
-                            onChange={handleToDateChange}
-                            sx={{ width: 160 }}
-                            inputProps={{ max: new Date().toISOString().split('T')[0] }}
+                            value={addBoostedEndDate}
+                            onChange={(e) => {
+                                setAddBoostedEndDate(e.target.value);
+                                if (addErrors.endDate) setAddErrors((prev) => ({ ...prev, endDate: '' }));
+                            }}
+                            sx={{ width: 190 }}
+                            InputLabelProps={{ shrink: true }}
+                            inputProps={{
+                                max: new Date().toISOString().split('T')[0],
+                            }}
                         />
+                        {addErrors.endDate && (
+                            <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
+                                {addErrors.endDate}
+                            </Typography>
+                        )}
                     </Box>
-                </Box>
 
+                </Box>
 
                 {/* Add Profile Button */}
                 <Button
                     variant="contained"
                     color="primary"
-                    startIcon={<Add />} // ⬅️ Plus icon
+                    startIcon={<Add />}
+                    onClick={handleAddProfile}
                     sx={{
                         height: 40,
+                        alignSelf: 'flex-end',
                         minWidth: 150,
                         textTransform: 'none',
                         fontWeight: 600,
