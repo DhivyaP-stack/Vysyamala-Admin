@@ -114,6 +114,7 @@ import { NewMatchingTable } from './matchingProfile/MatchingFilterAndTable/NewMa
 import { UserProfileVisibilityFilter } from './matchingProfile/ProfileVisibilityFilterAndTable/ProfileVisibilityFilter';
 import { ProfileVisibilityTable } from './matchingProfile/ProfileVisibilityFilterAndTable/ProfileVisibilityTable';
 import TransactionHistoryNew from './components/ReuseProfileTable/userActions/TransactionHistoryNew';
+import FeaturedProfiles from './components/ReuseProfileTable/Profiles/FeaturedProfiles';
 
 
 function App() {
@@ -544,6 +545,15 @@ function App() {
                       <>
                         <PageTitle title="RenewalProfiles" />
                         <RenewalProfiles />
+                      </>
+                    }
+                  />
+                  <Route
+                    path="/FeaturedProfiles"
+                    element={
+                      <>
+                        <PageTitle title="FeaturedProfiles" />
+                        <FeaturedProfiles />
                       </>
                     }
                   />
@@ -1103,14 +1113,14 @@ function App() {
                   element={<MatchingProfilesResultsPage />}
                 />
 
-                 <Route
+                <Route
                   path="/UserProfileVisibilityFilter"
-                  element={<UserProfileVisibilityFilter/>}
+                  element={<UserProfileVisibilityFilter />}
                 />
 
-                 <Route
+                <Route
                   path="/ProfileVisibilityTable"
-                  element={<ProfileVisibilityTable/>}
+                  element={<ProfileVisibilityTable />}
                 />
               </Routes>
             </DefaultLayout>
