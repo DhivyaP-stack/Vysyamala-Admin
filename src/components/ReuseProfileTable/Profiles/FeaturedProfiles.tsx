@@ -101,6 +101,8 @@ const FeaturedProfiles: React.FC = () => {
     const [addBoostedStartDate, setAddBoostedStartDate] = useState<string>('');
     const [addBoostedEndDate, setAddBoostedEndDate] = useState<string>('');
     const [addErrors, setAddErrors] = useState<{ profileId?: string; startDate?: string; endDate?: string }>({});
+    const [tempFromDate, setTempFromDate] = useState<string>('');
+    const [tempToDate, setTempToDate] = useState<string>('');
 
     const handleAddProfile = async () => {
         const newErrors: { profileId?: string; startDate?: string; endDate?: string } = {};
@@ -164,16 +166,19 @@ const FeaturedProfiles: React.FC = () => {
         }
     };
 
-    const handleFromDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setFromDate(event.target.value);
+    const handleTempFromDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setTempFromDate(e.target.value);
     };
 
-    const handleToDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setToDate(event.target.value);
+    const handleTempToDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setTempToDate(e.target.value);
     };
 
+    // On Submit, set actual filter state
     const handleDateFilterSubmit = () => {
-        setPage(0);
+        setFromDate(tempFromDate);
+        setToDate(tempToDate);
+        setPage(0); // Reset page
         fetchData();
     };
 
@@ -495,24 +500,20 @@ const FeaturedProfiles: React.FC = () => {
                     <TextField
                         label="From Date"
                         type="date"
-                        value={fromDate}
-                        onChange={handleFromDateChange}
+                        value={tempFromDate}
+                        onChange={handleTempFromDateChange}
                         InputLabelProps={{ shrink: true }}
                         size="small"
-                        inputProps={{
-                            max: new Date().toISOString().split('T')[0] // This disables future dates
-                        }}
+                        inputProps={{ max: new Date().toISOString().split('T')[0] }}
                     />
                     <TextField
                         label="To Date"
                         type="date"
-                        value={toDate}
-                        onChange={handleToDateChange}
+                        value={tempToDate}
+                        onChange={handleTempToDateChange}
                         InputLabelProps={{ shrink: true }}
                         size="small"
-                        inputProps={{
-                            max: new Date().toISOString().split('T')[0] // This disables future dates
-                        }}
+                        inputProps={{ max: new Date().toISOString().split('T')[0] }}
                     />
                     <Button
                         variant="contained"
