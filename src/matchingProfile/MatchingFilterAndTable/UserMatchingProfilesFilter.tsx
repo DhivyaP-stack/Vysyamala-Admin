@@ -453,9 +453,10 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
                         <select
                             className="w-full outline-none px-4 py-2.5 border border-black rounded"
                             defaultValue="5"
+                            //value={ageDifference}
                             onChange={(e) => setAgeDifference(e.target.value)}
                         >
-                            <option value="" disabled>-- Select Age difference--</option>
+                            <option value="">-- Select Age difference--</option>
                             <option value="1">1</option>
                             <option value="2">2</option>
                             <option value="3">3</option>
@@ -504,7 +505,7 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
                             value={sarpaDhosham}
                             onChange={(e) => setSarpaDhosham(e.target.value)}
                         >
-                            <option value="" disabled>-- Select Sarpa Dhosham --</option>
+                            <option value="">-- Select Sarpa Dhosham --</option>
                             <option value="Yes">Yes</option>
                             <option value="No">No</option>
                             <option value="Both">Both</option>
@@ -521,7 +522,7 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
                             value={chevvaiDhosam}
                             onChange={(e) => setChevvaiDhosam(e.target.value)}
                         >
-                            <option value="" disabled>-- Select Chevvai Dhosam --</option>
+                            <option value="">-- Select Chevvai Dhosam --</option>
                             {/* <option value="Unknown">Unknown</option> */}
                             <option value="Yes">Yes</option>
                             <option value="No">No</option>
