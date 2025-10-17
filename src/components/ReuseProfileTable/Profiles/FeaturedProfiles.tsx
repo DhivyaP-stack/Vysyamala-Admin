@@ -460,9 +460,9 @@ const FeaturedProfiles: React.FC = () => {
                             }}
                             sx={{ width: 190 }}
                             InputLabelProps={{ shrink: true }}
-                            inputProps={{
-                                max: new Date().toISOString().split('T')[0],
-                            }}
+                        // inputProps={{
+                        //     max: new Date().toISOString().split('T')[0],
+                        // }}
                         />
                         {addErrors.endDate && (
                             <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
@@ -513,7 +513,7 @@ const FeaturedProfiles: React.FC = () => {
                         onChange={handleTempToDateChange}
                         InputLabelProps={{ shrink: true }}
                         size="small"
-                        inputProps={{ max: new Date().toISOString().split('T')[0] }}
+                    //inputProps={{ max: new Date().toISOString().split('T')[0] }}
                     />
                     <Button
                         variant="contained"
