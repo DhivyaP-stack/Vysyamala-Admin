@@ -174,6 +174,7 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import VysAssistPopup from '../components/VysAssistPopup';
+import { useNavigate } from 'react-router-dom';
 
 interface Column {
   id: string;
@@ -191,6 +192,7 @@ const VysAssist: React.FC = () => {
   const [search, setSearch] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedVysassistId, setSelectedVysassistId] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchData();
@@ -219,7 +221,7 @@ const VysAssist: React.FC = () => {
   };
 
 
-  
+
   const columns: Column[] = [
     {
       id: 'profile_vysasst_id',
@@ -266,17 +268,17 @@ const VysAssist: React.FC = () => {
             <Table stickyHeader>
               <TableHead>
                 <TableRow>
-                {columns.map((columns)=>(
+                  {columns.map((columns) => (
                     <TableCell key={columns.id} align={columns.align} sx={{ background: '#FFF9C9', color: '#DC2635', fontWeight: 600 }}>{columns.label}</TableCell>
-                ))}
+                  ))}
                 </TableRow>
-              
+
               </TableHead>
               <TableBody>
                 {/* {data
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row, index) => ( */}
-                  {/* {data
+                {/* {data
   .filter((row) =>
     Object.values(row).some((value) =>
       String(value).toLowerCase().includes(search.toLowerCase())
@@ -284,15 +286,15 @@ const VysAssist: React.FC = () => {
   )
   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
   .map((row, index) => ( */}
-  {data
-    .filter((row) =>
-      row.profile_vysasst_id.toString().toLowerCase().includes(search.toLowerCase()) || 
-      Object.values(row).some((value) =>
-        value?.toString().toLowerCase().includes(search.toLowerCase())
-      )
-    ) // Filters based on search input
-    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-    .map((row, index) => (
+                {data
+                  .filter((row) =>
+                    row.profile_vysasst_id.toString().toLowerCase().includes(search.toLowerCase()) ||
+                    Object.values(row).some((value) =>
+                      value?.toString().toLowerCase().includes(search.toLowerCase())
+                    )
+                  ) // Filters based on search input
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row, index) => (
                     <TableRow hover key={index}>
                       <TableCell>
                         <Link
@@ -303,10 +305,40 @@ const VysAssist: React.FC = () => {
                           {row.profile_vysasst_id}
                         </Link>
                       </TableCell>
-                      <TableCell>{row.profile_from_id}</TableCell>
+                      {/* <TableCell>{row.profile_from_id}</TableCell> */}
+                      <TableCell
+                        onClick={() =>
+                          navigate(
+                            `/viewProfile?profileId=${row.profile_from_id}`,
+                          )
+                        }
+                        sx={{
+                          color: 'blue',
+                          cursor: 'pointer',
+                          textDecoration: 'none',
+                          '&:hover': { textDecoration: 'underline' }
+                        }}
+                      >
+                        {row.profile_from_id}
+                      </TableCell>
                       <TableCell>{row.profile_from_name}</TableCell>
                       <TableCell>{row.profile_from_mobile}</TableCell>
-                      <TableCell>{row.profile_to_id}</TableCell>
+                      {/* <TableCell>{row.profile_to_id}</TableCell> */}
+                      <TableCell
+                        onClick={() =>
+                          navigate(
+                            `/viewProfile?profileId=${row.profile_to_id}`,
+                          )
+                        }
+                        sx={{
+                          color: 'blue',
+                          cursor: 'pointer',
+                          textDecoration: 'none',
+                          '&:hover': { textDecoration: 'underline' }
+                        }}
+                      >
+                        {row.profile_to_id}
+                      </TableCell>
                       <TableCell>{row.profile_to_name}</TableCell>
                       <TableCell>{row.profile_to_mobile}</TableCell>
                       <TableCell>{row.to_express_message}</TableCell>

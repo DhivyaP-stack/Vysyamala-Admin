@@ -386,33 +386,33 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
 
 
     // Then update the star details when matchStars data arrives
-    useEffect(() => {
-        if (matchStars && matchStars.length > 0 && selectedStarIds.length > 0) {
-            // Create a mapping of all available stars from matchStars
-            const allStarsMap: { [key: string]: any } = {};
-            matchStars.forEach(matchCountArray => {
-                matchCountArray.forEach(star => {
-                    allStarsMap[star.dest_star_id.toString()] = star;
-                });
-            });
+    // useEffect(() => {
+    //     if (matchStars && matchStars.length > 0 && selectedStarIds.length > 0) {
+    //         // Create a mapping of all available stars from matchStars
+    //         const allStarsMap: { [key: string]: any } = {};
+    //         matchStars.forEach(matchCountArray => {
+    //             matchCountArray.forEach(star => {
+    //                 allStarsMap[star.dest_star_id.toString()] = star;
+    //             });
+    //         });
 
-            // Update selectedStarIds with correct details
-            const updatedSelectedStars = selectedStarIds.map(starItem => {
-                const starDetails = allStarsMap[starItem.star];
-                if (starDetails) {
-                    return {
-                        id: starItem.id,
-                        star: starDetails.dest_star_id.toString(),
-                        rasi: starDetails.dest_rasi_id.toString(),
-                        label: `${starDetails.matching_starname} (${starDetails.matching_rasiname})`
-                    };
-                }
-                return starItem;
-            });
+    //         // Update selectedStarIds with correct details
+    //         const updatedSelectedStars = selectedStarIds.map(starItem => {
+    //             const starDetails = allStarsMap[starItem.star];
+    //             if (starDetails) {
+    //                 return {
+    //                     id: starItem.id,
+    //                     star: starDetails.dest_star_id.toString(),
+    //                     rasi: starDetails.dest_rasi_id.toString(),
+    //                     label: `${starDetails.matching_starname} (${starDetails.matching_rasiname})`
+    //                 };
+    //             }
+    //             return starItem;
+    //         });
 
-            setSelectedStarIds(updatedSelectedStars);
-        }
-    }, [matchStars, selectedStarIds]);
+    //         setSelectedStarIds(updatedSelectedStars);
+    //     }
+    // }, [matchStars, selectedStarIds]);
 
     return (
         <form id="filter-form" onSubmit={handleSubmit}>

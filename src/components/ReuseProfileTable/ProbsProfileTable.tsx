@@ -271,6 +271,14 @@ const ProbsProfiletable: React.FC<ProbsProfiletableProps> = ({
       setGoToPageInput('');
     }
   };
+
+  const formatCellValue = (value: any) => {
+    if (value === null || value === undefined || value === '' || value === 'null') {
+      return 'N/A';
+    }
+    return value;
+  };
+
   return (
     <div className="flex flex-col gap-1">
       <h1 className="text-2xl text-black font-bold mb-4">{heading} <span className="text-lg font-normal">({totalCount})</span></h1>
@@ -385,7 +393,7 @@ const ProbsProfiletable: React.FC<ProbsProfiletableProps> = ({
 
                     {/* Map through columns */}
                     {columns.map((column) => {
-                      const value = row[column.id];
+                      const value = formatCellValue(row[column.id], column.id);
                       return (
                         <TableCell
                           sx={{ whiteSpace: 'nowrap' }}
