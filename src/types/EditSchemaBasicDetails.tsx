@@ -7,12 +7,20 @@ const getMinDOB = () => {
 };
 
 const genderSchema = z.preprocess(
-  (val) => (typeof val === "string" ? val.toLowerCase() : val),
-  z.enum(["male", "female"], {
+  (val) => {
+    if (typeof val === "string") {
+      // Convert to lowercase for validation, then capitalize for storage
+      const lowerVal = val.toLowerCase();
+      if (lowerVal === "male") return "Male";
+      if (lowerVal === "female") return "Female";
+      return lowerVal;
+    }
+    return val;
+  },
+  z.enum(["Male", "Female"], {
     errorMap: () => ({ message: "Please select a gender" }),
   })
 );
-
 
 export const EditScheemaBasicDetails = z.object({
   BasicDetail: z.object({

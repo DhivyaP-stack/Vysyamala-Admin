@@ -56,6 +56,7 @@ interface Column {
 
 const columns: Column[] = [
   { id: 'ProfileId', label: 'Profile ID', minWidth: 100, align: 'center' },
+  { id: 'DateOfJoin', label: 'Date of Registration', minWidth: 100, align: 'left' },
   { id: 'Profile_name', label: 'Profile Name', minWidth: 100 },
   { id: 'Profile_for', label: 'Created By', minWidth: 100, align: 'center' },
   { id: 'Gender', label: 'Gender', minWidth: 100, align: 'left' },
@@ -77,6 +78,8 @@ const columns: Column[] = [
     minWidth: 100,
     align: 'left',
   },
+  { id: 'plan_name', label: 'Mode', minWidth: 100, align: 'left' },
+  { id: 'status', label: 'Profile Status', minWidth: 100, align: 'left' },
 ];
 
 
@@ -233,6 +236,9 @@ const QuickUploadProfiles: React.FC = () => {
             {value}
           </Typography>
         );
+      case 'DateOfJoin':
+        // Format the date (show only YYYY-MM-DD)
+        return value ? value.split(' ')[0] : 'N/A';
 
       case 'Profile_idproof':
       case 'horoscope_file':

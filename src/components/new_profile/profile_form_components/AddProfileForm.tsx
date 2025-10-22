@@ -291,7 +291,7 @@ const AddProfileForm: React.FC<AddProfileForm> = ({
               </label>
               <input
                 type="radio"
-                value="male"
+                value="Male"
                 id="male"
                 // name="Gender"
                 {...register('AddProfileForm.Gender')}
@@ -299,7 +299,7 @@ const AddProfileForm: React.FC<AddProfileForm> = ({
               <label className="text-black px-4" htmlFor="male">Male</label>
               <input
                 type="radio"
-                value="female"
+                value="Female"
                 id="female"
                 // name="Gender"
                 {...register('AddProfileForm.Gender')}
