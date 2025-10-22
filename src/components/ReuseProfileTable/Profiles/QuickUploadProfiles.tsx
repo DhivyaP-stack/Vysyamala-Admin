@@ -57,12 +57,12 @@ interface Column {
 const columns: Column[] = [
   { id: 'ProfileId', label: 'Profile ID', minWidth: 100, align: 'center' },
   { id: 'Profile_name', label: 'Profile Name', minWidth: 100 },
-  { id: 'Profile_for', label: 'Profile For', minWidth: 100, align: 'center' },
+  { id: 'Profile_for', label: 'Created By', minWidth: 100, align: 'center' },
   { id: 'Gender', label: 'Gender', minWidth: 100, align: 'left' },
   { id: 'Mobile_no', label: 'Mobile No', minWidth: 100 },
   {
     id: 'Profile_marital_status',
-    label: 'Profile Marital Status',
+    label: 'Marital Status',
     minWidth: 100,
   },
   {
@@ -375,20 +375,20 @@ const QuickUploadProfiles: React.FC = () => {
                         alignItems="center"
                         gap={1}
                       >
-                        <Button
+                        {/* <Button
                           onClick={() =>
                             navigate(`/viewProfile?profileId=${row.ProfileId}`)
                           }
                         >
                           <FaRegEye />
-                        </Button>
-                        <Button
+                        </Button> */}
+                        {/* <Button
                           onClick={() =>
                             navigate(`/editProfile?profileId=${row.ProfileId}`)
                           }
                         >
                           <GrEdit />
-                        </Button>
+                        </Button> */}
                         <Button onClick={() => handleDelete(row.ContentId)}>
                           <MdDeleteOutline
                             style={{

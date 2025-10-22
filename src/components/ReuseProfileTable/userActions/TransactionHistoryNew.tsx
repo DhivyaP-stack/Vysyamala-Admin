@@ -17,6 +17,7 @@ import {
     FormLabel,
     Box,
     IconButton,
+    Tooltip,
 } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -28,6 +29,13 @@ interface Column {
     minWidth?: number;
     align?: 'right' | 'left' | 'center';
     format?: (value: any) => string;
+}
+
+interface ActionLogEntry {
+    status: string;
+    plan_name: string;
+    addon_packages: string | null;
+    created_at: string;
 }
 
 interface TransactionHistoryData {
@@ -63,6 +71,18 @@ const getTransactionHistory = async (params: FilterParams) => {
 const formatDate = (dateString: string) => {
     if (!dateString) return '';
     return dateString.split(' ')[0];
+};
+
+const formatActionsForTooltip = (actions: ActionLogEntry[]) => {
+    if (!actions || actions.length === 0) {
+        return "No actions recorded";
+    }
+
+    // return actions.map((action, index) =>
+    return actions.map((action) =>
+        // `${index + 1}. Status: ${action.status}\n   Plan: ${action.plan_name}\n   Created At: ${action.created_at}${action.addon_packages ? `\n   Add-ons: ${action.addon_packages}` : ''}`
+     `Status: ${action.status}\n   Plan: ${action.plan_name}\n   Created At: ${action.created_at}${action.addon_packages ? `\n   Add-ons: ${action.addon_packages}` : ''}`
+    ).join('\n\n');
 };
 
 const TransactionHistoryNew: React.FC = () => {
@@ -200,6 +220,7 @@ const TransactionHistoryNew: React.FC = () => {
         { id: 'plan_name', label: 'Mode', minWidth: 120 },
         { id: 'profile_status', label: 'P. Status', minWidth: 120 },
         { id: 'Mobile_no', label: 'Mobile No', minWidth: 140 },
+        { id: 'action_log', label: 'Action Log', minWidth: 100, align: 'left' },
     ];
 
     const getTodayDate = () => {
@@ -684,7 +705,35 @@ const TransactionHistoryNew: React.FC = () => {
                                         {columns.map((column) => {
                                             const value = row[column.id];
                                             const formattedValue = column.format ? column.format(value) : value;
+                                            if (column.id === 'action_log') {
+                                                const actionLogCount = row.action_log?.length || 0;
+                                                return (
+                                                    <TableCell
+                                                        key={column.id}
+                                                        align={column.align}
+                                                        sx={{ whiteSpace: 'nowrap' }}
+                                                    >
+                                                        <Tooltip
+                                                            title={
+                                                                <div style={{ whiteSpace: 'pre-line', fontSize: '12px' }}>
+                                                                    {formatActionsForTooltip(row.action_log || [])}
+                                                                </div>
+                                                            }
+                                                            arrow
+                                                            placement="top"
+                                                        >
+                                                            <span style={{
+                                                                cursor: 'pointer',
+                                                                color: actionLogCount > 0 ? 'black' : 'inherit',
+                                                                textDecoration: actionLogCount > 0 ? "underline" : "none",
 
+                                                            }}>
+                                                                {actionLogCount > 0 ? `${actionLogCount} action${actionLogCount > 1 ? 's' : ''}` : 'No Actions'}
+                                                            </span>
+                                                        </Tooltip>
+                                                    </TableCell>
+                                                );
+                                            }
                                             return (
                                                 <TableCell
                                                     sx={{
@@ -694,7 +743,7 @@ const TransactionHistoryNew: React.FC = () => {
                                                             color: getStatusColor(value),
                                                             fontWeight: 'bold'
                                                         }),
-                                                         ...(column.id === 'profile_status' && {
+                                                        ...(column.id === 'profile_status' && {
                                                             color: getPStatusColor(value),
                                                             fontWeight: 'bold'
                                                         })
@@ -721,6 +770,7 @@ const TransactionHistoryNew: React.FC = () => {
                                                         formattedValue
                                                     )}
                                                 </TableCell>
+
                                             );
                                         })}
                                     </TableRow>
