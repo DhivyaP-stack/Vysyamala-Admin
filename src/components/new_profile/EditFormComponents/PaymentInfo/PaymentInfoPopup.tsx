@@ -14,7 +14,6 @@ function currencyToNumber(v: string | number | null | undefined) {
   return Number.isFinite(x) ? x : 0;
 }
 
-// ----- Data: Main Packages ---------------------------------------------------
 const MAIN_PACKAGES = [
   { key: "Gold", label: "Gold", price: 4900, fixed: true, category: "new" },
   { key: "Platinum", label: "Platinum", price: 7900, fixed: true, category: "new" },
@@ -32,39 +31,7 @@ const MAIN_PACKAGES = [
   { key: "Others", label: "Others", price: null, fixed: false, category: "new" }, // custom
 ];
 
-// ----- Data: Add-on Packages -------------------------------------------------
-const ADDONS = [
-  {
-    key: "VysAssist",
-    label: "Vys Assist",
-    details: "5 members",
-    price: 900,
-  },
-  {
-    key: "AstroService",
-    label: "Astro Service",
-    details: "10 Profiles",
-    price: 900,
-  },
-  {
-    key: "ProfileBooster",
-    label: "Profile Booster",
-    details: "3 months",
-    price: 900,
-  },
-  {
-    key: "PortraitPhotography",
-    label: "Portrait Photography",
-    details: "6 Shots – Physical Presence required",
-    price: 4900,
-  },
-  {
-    key: "VideoProfile",
-    label: "Video Profile",
-    details: "60 Seconds – Video input required",
-    price: 2900,
-  },
-];
+
 
 
 // ----- Interfaces -----
@@ -97,13 +64,25 @@ interface PaymentDetail {
   id: number;
   paid_amount: string;
   payment_mode: string;
-  payment_date: string; // This is required by handleSave
+  payment_date: string;
   gpay_no?: string | null;
   status: number;
   payment_id?: string | null;
   payment_for?: string;
   discount?: string;
   reference_id: string;
+  // Add the new fields
+  plan_id: number | null;
+  addon_package: string | null;
+  validity_startdate: string | null;
+  validity_enddate: string | null;
+  payment_by: string | null;
+  admin_user: string | null;
+  order_id: string | null;
+  trans_id: string | null;
+  offer: string | null;
+  notes: string | null;
+  package_amount: string | null;
 }
 
 interface AddonPackage {
@@ -119,6 +98,17 @@ interface AddonApiResponse {
   data: AddonPackage[];
 }
 
+interface Plan {
+  id: number;
+  plan_name: string;
+  plan_price: string;
+}
+
+interface PlansApiResponse {
+  status: string;
+  data: Plan[];
+}
+
 const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, showAddButton = true }) => {
   const [activeTab, setActiveTab] = useState<"payment" | "transaction">("payment");
   const [isEditing, setIsEditing] = useState<number | null>(null);
@@ -127,19 +117,15 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
   const [loading, setLoading] = useState(false);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [transactionLoading, setTransactionLoading] = useState(false);
-
-  // ----- START: State from PaymentInfoForm -----
   const [mainPackage, setMainPackage] = useState("");
+  console.log("mainPackage", mainPackage)
   const [mainAmount, setMainAmount] = useState(0); // auto for fixed, editable for custom
-  const [selectedAddons, setSelectedAddons] = useState<Record<string, boolean>>({}); // {key: true|false}
+  const [selectedAddons, setSelectedAddons] = useState<Record<number, boolean>>({}); // {key: true|false}
   const [discount, setDiscount] = useState(0);
-
   const [validFrom, setValidFrom] = useState(""); // YYYY-MM-DD
   const [validTo, setValidTo] = useState(""); // YYYY-MM-DD
-
   const [offerAny, setOfferAny] = useState(""); // free text
   const [hintToSave, setHintToSave] = useState(""); // rich text area (simple)
-
   // Payment details
   const [paymentType, setPaymentType] = useState(""); // RazorPay | OnlineGpay | ManualGpay | AccountTransfer | Cash
   const [paymentDate, setPaymentDate] = useState(""); // YYYY-MM-DD (Added this, as it's required for handleSave)
@@ -150,17 +136,28 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
   const [addons, setAddons] = useState<AddonPackage[]>([]);
   const [addonsLoading, setAddonsLoading] = useState(false);
   // Small toggle filter for Main Packages
-  const [packageFilter, setPackageFilter] = useState("all"); // all | new | renewal
+  const [mainPackages, setMainPackages] = useState<Array<{
+    key: string;
+    label: string;
+    price: number | null;
+    fixed: boolean;
+    category: string;
+    id: number;
+  }>>([]);
+  const [packagesLoading, setPackagesLoading] = useState(false);
+  const [packageFilter, setPackageFilter] = useState(""); // all | new | renewal
+  const RoleID = localStorage.getItem('role_id');
+  const [selectedPlanId, setSelectedPlanId] = useState<number | null>(null); // Add this line
+
 
   const filteredMainPackages = useMemo(() => {
-    if (packageFilter === "all") return MAIN_PACKAGES;
-    return MAIN_PACKAGES.filter((p) => p.category === packageFilter);
-  }, [packageFilter]);
+    if (packageFilter === "") return mainPackages;
+    return mainPackages.filter((p) => p.category === packageFilter);
+  }, [packageFilter, mainPackages]);
 
   const addonsTotal = useMemo(() => {
-    return addons.reduce((sum, a) => {
-      const addonKey = a.name.replace(/\s+/g, ''); // Create a key from name
-      return selectedAddons[addonKey] ? sum + a.amount : sum;
+    return addons.reduce((sum, addon) => {
+      return selectedAddons[addon.package_id] ? sum + addon.amount : sum;
     }, 0);
   }, [selectedAddons, addons]);
 
@@ -176,54 +173,59 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
   function needsRefId(type: string) {
     return type === "RazorPay" || type === "OnlineGpay" || type === "ManualGpay" || type === "AccountTransfer";
   }
-  function needsGpayNo(type: string) {
-    return type === "ManualGpay";
-  }
+  // function needsGpayNo(type: string) {
+  //   return type === "ManualGpay";
+  // }
 
   function validate() {
     const e: Record<string, string> = {};
-    if (!mainPackage) {
-      e.mainPackage = "Main package must be selected.";
-    }
-    if (needsGpayNo(paymentType) && !String(gpayNumber).trim()) {
-      e.gpayNumber = "GPay number is required for Manual GPay.";
-    }
+    // if (!mainPackage) {
+    //   e.mainPackage = "Main package must be selected.";
+    // }
+    // if (needsGpayNo(paymentType) && !String(gpayNumber).trim()) {
+    //   e.gpayNumber = "GPay number is required for Manual GPay.";
+    // }
     if (needsRefId(paymentType) && !String(referenceId).trim()) {
       e.referenceId = "Reference ID is required for the selected payment type.";
     }
-    if (validFrom && validTo && validTo < validFrom) {
-      e.validity = "To date cannot be earlier than From date.";
-    }
-    if (!paymentType) {
-      e.paymentType = "Payment type is required.";
-    }
+    // if (validFrom && validTo && validTo < validFrom) {
+    //   e.validity = "To date cannot be earlier than From date.";
+    // }
+    // if (!paymentType) {
+    //   e.paymentType = "Payment type is required.";
+    // }
     if (!paymentDate) {
       e.paymentDate = "Payment date is required."; // Added validation
     }
-    if (!paymentStatus) {
-      e.paymentStatus = "Payment status is required.";
-    }
+    // if (!paymentStatus) {
+    //   e.paymentStatus = "Payment status is required.";
+    // }
     setErrors(e);
     return Object.keys(e).length === 0;
   }
 
   function onChangeMainPackage(key: React.SetStateAction<string>) {
     setMainPackage(key);
-    const pkg = MAIN_PACKAGES.find((p) => p.key === key);
+    const pkg = mainPackages.find((p) => p.key === key);
     if (!pkg) {
       setMainAmount(0);
+      setSelectedPlanId(null); // Reset plan ID
       return;
     }
     if (pkg.fixed && typeof pkg.price === "number") {
       setMainAmount(pkg.price);
     } else {
-      // Custom amount for Delight / Upgrade / Others
+      // Custom amount for non-fixed packages
       setMainAmount(0);
     }
+    setSelectedPlanId(pkg.id); // Set the plan ID from the selected package
   }
 
-  function onToggleAddon(key: string) {
-    setSelectedAddons((prev) => ({ ...prev, [key]: !prev[key] }));
+  function onToggleAddon(packageId: number) {
+    setSelectedAddons((prev) => ({
+      ...prev,
+      [packageId]: !prev[packageId]
+    }));
   }
 
   const fetchAddonPackages = async () => {
@@ -261,39 +263,48 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
     setGpayNumber("");
     setPaymentDate(""); // Reset new field
     setReferenceId("");
-    setPaymentStatus("");
+    setPaymentStatus("Success");
+    setSelectedPlanId(null); // Reset plan ID
+    setPackageFilter("");
     setErrors({});
   }
 
   const handleEdit = (payment: PaymentDetail) => {
-    // We can't perfectly restore the form state, but we can set the values
-    // that were saved in the PaymentDetail object.
     setIsEditing(payment.id);
 
     // Try to find package, default to 'Others'
-    const pkg = MAIN_PACKAGES.find((p) => p.label === payment.payment_for);
+    const pkg = mainPackages.find((p) => p.id === payment.plan_id);
     setMainPackage(pkg ? pkg.key : "Others");
-
+    setSelectedPlanId(pkg ? pkg.id : null); // Set plan ID for editing
     // We can't know the original mainAmount vs addons, so we set netAmount
     // and discount. This will mean subtotal is correct.
     const savedDiscount = currencyToNumber(payment.discount);
     const savedPaidAmount = currencyToNumber(payment.paid_amount);
 
     setMainAmount(savedPaidAmount + savedDiscount); // This sets the subtotal
-    setSelectedAddons({}); // Addons are lost, cannot be reverse-engineered
+
+    // Parse addon_package from existing payment data
+    const addonIds = payment.addon_package ? payment.addon_package.split(',').map(id => parseInt(id.trim())) : [];
+    const addonSelection: Record<number, boolean> = {};
+    addonIds.forEach(id => {
+      addonSelection[id] = true;
+    });
+    setSelectedAddons(addonSelection);
+
     setDiscount(savedDiscount);
 
-    setValidFrom(""); // Not saved in PaymentDetail
-    setValidTo("");   // Not saved in PaymentDetail
-    setOfferAny("");  // Not saved
-    setHintToSave("");// Not saved
+    setValidFrom(payment.validity_startdate ? payment.validity_startdate.split('T')[0] : "");
+    setValidTo(payment.validity_startdate ? payment.validity_startdate.split('T')[0] : "");
+    setOfferAny(payment.offer || "");
+    setHintToSave(payment.notes || "");
 
     setPaymentType(payment.payment_mode || "");
-    setPaymentDate(payment.payment_date ? payment.payment_date.split('T')[0] : ""); // Format as YYYY-MM-DD
+    setPaymentDate(payment.payment_date ? payment.payment_date.split('T')[0] : "");
     setGpayNumber(payment.gpay_no || "");
     setReferenceId(payment.reference_id || "");
-    setPaymentStatus(payment.status === 1 ? "Success" : "Failure"); // Map status 1 to 'Success'
+    setPaymentStatus(payment.status === 1 ? "Success" : "Failure");
   };
+
 
   const handleAddNew = () => {
     resetForm();
@@ -302,27 +313,56 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
 
   const handleSave = async () => {
     if (!validate()) {
-      NotifyError("Please fix the errors in the form."); // Use your toast
+      NotifyError("Please fill all required fields");
       return;
     }
 
     try {
       // Build the 'payment_for' string
       const mainPackageLabel = MAIN_PACKAGES.find((p) => p.key === mainPackage)?.label || "Unknown Package";
-      const addonLabels = ADDONS.filter((a) => selectedAddons[a.key]).map((a) => a.label).join(", ");
-      const paymentForString = addonLabels ? `${mainPackageLabel} + ${addonLabels}` : mainPackageLabel;
 
-      // Build the payload for the *existing* API endpoint
+      // Get selected addon names for payment_for description
+      const selectedAddonNames = addons
+        .filter(addon => selectedAddons[addon.package_id])
+        .map(addon => addon.name)
+        .join(", ");
+
+      // const paymentForString = selectedAddonNames
+      //   ? `${mainPackageLabel} + ${selectedAddonNames}`
+      //   : mainPackageLabel;
+
+      // Build addon_package string as comma-separated IDs
+      const selectedAddonIds = addons
+        .filter(addon => selectedAddons[addon.package_id])
+        .map(addon => addon.package_id)
+        .join(",");
+
+      // Calculate package_amount (main amount without addons)
+      const packageAmount = mainAmount;
+
+      // Build the complete payload
       const payload = {
         profile_id: profileId,
+        plan_id: selectedPlanId, // You may need to map mainPackage to actual plan_id
+        addon_package: selectedAddonIds || null, // Comma-separated IDs like "1,2,3"
         paid_amount: netAmount.toString(),
-        payment_mode: paymentType,
-        payment_date: paymentDate, // From the new state
-        status: paymentStatus === "Success" ? 1 : 0, // Map 'Success' to 1
-        payment_for: paymentForString,
         discount: safeDiscount.toString(),
-        reference_id: referenceId,
-        gpay_no: gpayNumber || null // Add GPay number if it exists
+        payment_mode: paymentType,
+        // payment_for: paymentForString,
+        payment_for: "",
+        status: paymentStatus === "Success" ? 1 : 0,
+        payment_date: paymentDate,
+        validity_startdate: validFrom || null,
+        validity_enddate: validTo || null,
+        payment_by: profileId, // Assuming profile_id is also the payer
+        admin_user: RoleID, // You may need to get this from auth context
+        // order_id: referenceId || null,
+        // payment_id: referenceId || null,
+        gpay_no: gpayNumber || null,
+        // trans_id: referenceId || null,
+        offer: offerAny || null,
+        notes: hintToSave || null,
+        package_amount: packageAmount.toString()
       };
 
       if (isAdding) {
@@ -346,7 +386,7 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
       await fetchPaymentDetails(); // Refresh list
       resetForm(); // Clear the form
 
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error saving payment:", error);
       alert("Failed to save payment. Please try again.");
     }
@@ -357,6 +397,57 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
     resetForm();
     setIsEditing(null);
     setIsAdding(false);
+  };
+
+  const handleInvoice = (payment: PaymentDetail) => {
+    if (!payment.id) {
+      NotifyError("Payment ID is required");
+      return;
+    }
+
+    // Construct the invoice URL with the subscription_id
+    const invoiceUrl = `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/generate-invoice/?subscription_id=${payment.id}`;
+
+    // Open the invoice in a new tab
+    window.open(invoiceUrl, '_blank', 'noopener,noreferrer');
+
+    //NotifySuccess("Opening invoice in new tab...");
+    console.log("Opening invoice in new tab...");
+  };
+
+
+  const fetchMainPackages = async (type: string = "") => {
+    try {
+      setPackagesLoading(true);
+      const response = await apiAxios.post<PlansApiResponse>(
+        "https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/renewal-plan/",
+        { type } // Send type as empty string for "all", "renewal", or "new"
+      );
+
+      if (response.data.status === "success") {
+        // Transform API data to match your existing structure
+        const transformedPackages = response.data.data.map(plan => ({
+          key: plan.plan_name.replace(/\s+/g, ''), // Remove spaces for key
+          label: plan.plan_name,
+          price: parseFloat(plan.plan_price),
+          fixed: true, // Assuming all from API are fixed prices
+          category: type || "", // Use provided type or default to "new"
+          id: plan.id
+        }));
+
+        setMainPackages(transformedPackages);
+      } else {
+        NotifyError("Failed to fetch packages");
+        console.error("Packages API error:", response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching packages:", error);
+      NotifyError("Error loading packages");
+      // Fallback to empty array
+      setMainPackages([]);
+    } finally {
+      setPackagesLoading(false);
+    }
   };
 
   const handleApprove = async (transactionId: number, paymentFor: string = "") => {
@@ -413,11 +504,19 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
     if (open && profileId) {
       fetchPaymentDetails();
       fetchAddonPackages();
+      fetchMainPackages("");
       if (activeTab === "transaction") {
         fetchTransactions();
       }
     }
   }, [open, profileId]);
+
+  useEffect(() => {
+    if (open) {
+      const type = packageFilter === "" ? "" : packageFilter;
+      fetchMainPackages(type);
+    }
+  }, [packageFilter, open]);
 
   useEffect(() => {
     if (open && profileId) {
@@ -554,40 +653,54 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
                             <div className="flex flex-col gap-2">
                               <div className="flex items-center justify-between">
                                 <label htmlFor="mainPackage" className="text-sm font-medium">Package Name <span className="text-neutral-400">(Main Package)</span></label>
+
                                 <div role="tablist" aria-label="Filter packages" className="inline-flex items-center gap-1 rounded-full border bg-white p-0.5 text-xs">
                                   <button
                                     type="button"
-                                    onClick={() => setPackageFilter("all")}
-                                    className={`rounded-full px-2 py-1 ${packageFilter === "all" ? "bg-black text-white" : "text-neutral-700 hover:bg-neutral-100"}`}
-                                  >All</button>
+                                    onClick={() => setPackageFilter("")}
+                                    className={`rounded-full px-2 py-1 ${packageFilter === "" ? "bg-black text-white" : "text-neutral-700 hover:bg-neutral-100"}`}
+                                  >
+                                    All
+                                  </button>
                                   <button
                                     type="button"
                                     onClick={() => setPackageFilter("new")}
                                     className={`rounded-full px-2 py-1 ${packageFilter === "new" ? "bg-black text-white" : "text-neutral-700 hover:bg-neutral-100"}`}
-                                  >New</button>
+                                  >
+                                    New
+                                  </button>
                                   <button
                                     type="button"
                                     onClick={() => setPackageFilter("renewal")}
                                     className={`rounded-full px-2 py-1 ${packageFilter === "renewal" ? "bg-black text-white" : "text-neutral-700 hover:bg-neutral-100"}`}
-                                  >Renewal</button>
+                                  >
+                                    Renewal
+                                  </button>
                                 </div>
                               </div>
-                              <select
-                                id="mainPackage"
-                                name="mainPackage"
-                                value={mainPackage}
-                                onChange={(e) => onChangeMainPackage(e.target.value)}
-                                className="w-full rounded-xl border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black/5"
-                              >
-                                <option value="">
-                                  Select a package
-                                </option>
-                                {filteredMainPackages.map((p) => (
-                                  <option key={p.key} value={p.key}>
-                                    {p.label}
-                                  </option>
-                                ))}
-                              </select>
+                              {packagesLoading ? (
+                                <div className="text-center py-2">Loading packages...</div>
+                              ) : (
+                                <select
+                                  id="mainPackage"
+                                  name="mainPackage"
+                                  value={mainPackage}
+                                  onChange={(e) => onChangeMainPackage(e.target.value)}
+                                  className="w-full rounded-xl border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black/5"
+                                >
+                                  <option value="">Select a package</option>
+                                  {filteredMainPackages.map((p) => (
+                                    <option key={p.key} value={p.key}>
+                                      {/* {p.label} - {INR.format(p.price || 0)} */}
+                                      {p.label}
+                                    </option>
+                                  ))}
+                                  {/* Add custom packages that might not come from API */}
+                                  {/* <option value="VysyamalaDelight">Vysyamala Delight (Custom)</option>
+                                  <option value="Upgrade">Upgrade (Custom)</option>
+                                  <option value="Others">Others (Custom)</option> */}
+                                </select>
+                              )}
                               {errors.mainPackage && (
                                 <p className="mt-1 text-xs text-red-600">{errors.mainPackage}</p>
                               )}
@@ -620,35 +733,34 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
                           {/* Add-ons */}
                           <section className="mt-6 rounded-xl border border-gray p-4">
                             <p className="text-sm font-medium">Another Package Name <span className="text-neutral-400">(Add‑ons)</span></p>
-                            
-                              {addonsLoading ? (
-                                <div className="text-center py-4">Loading addon packages...</div>
-                              ) : (
-                                <div className="mt-3 grid gap-3 md:grid-cols-2">
-                                  {addons.map((addon) => {
-                                    const addonKey = addon.name.replace(/\s+/g, ''); // Create consistent key
-                                    return (
-                                      <label key={addon.package_id} className="flex cursor-pointer items-start gap-3 rounded-xl border p-3 hover:bg-neutral-50">
-                                        <input
-                                          type="checkbox"
-                                          id={`addon_${addon.package_id}`}
-                                          name="addons"
-                                          checked={!!selectedAddons[addonKey]}
-                                          onChange={() => onToggleAddon(addonKey)}
-                                          className="mt-1"
-                                        />
-                                        <div className="flex-1">
-                                          <div className="flex items-center justify-between">
-                                            <span className="font-medium">{addon.name}</span>
-                                            <span className="text-sm text-neutral-600">{INR.format(addon.amount)}</span>
-                                          </div>
-                                          <p className="text-xs text-neutral-500">{addon.description}</p>
+
+                            {addonsLoading ? (
+                              <div className="text-center py-4">Loading addon packages...</div>
+                            ) : (
+                              <div className="mt-3 grid gap-3 md:grid-cols-2">
+                                {addons.map((addon) => {
+                                  return (
+                                    <label key={addon.package_id} className="flex cursor-pointer items-start gap-3 rounded-xl border p-3 hover:bg-neutral-50">
+                                      <input
+                                        type="checkbox"
+                                        id={`addon_${addon.package_id}`}
+                                        name="addons"
+                                        checked={!!selectedAddons[addon.package_id]}
+                                        onChange={() => onToggleAddon(addon.package_id)}
+                                        className="mt-1"
+                                      />
+                                      <div className="flex-1">
+                                        <div className="flex items-center justify-between">
+                                          <span className="font-medium">{addon.name}</span>
+                                          <span className="text-sm text-neutral-600">{INR.format(addon.amount)}</span>
                                         </div>
-                                      </label>
-                                    );
-                                  })}
-                                </div>
-                              )}
+                                        <p className="text-xs text-neutral-500">{addon.description}</p>
+                                      </div>
+                                    </label>
+                                  );
+                                })}
+                              </div>
+                            )}
                           </section>
 
                           {/* Pricing Summary */}
@@ -777,7 +889,7 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
 
                             {/* == ADDED PAYMENT DATE FIELD == */}
                             <div className="flex flex-col gap-2">
-                              <label htmlFor="paymentDate" className="text-sm font-medium">Payment Date</label>
+                              <label htmlFor="paymentDate" className="text-sm font-medium">Payment Date <span className="text-red-500">*</span></label>
                               <input
                                 id="paymentDate"
                                 name="paymentDate"
@@ -909,21 +1021,39 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
                                 </div>
 
                               </div>
-                              <div className="flex space-x-2">
+                              <div className="flex space-x-3">
+                                {/* {showAddButton && !(isAdding || isEditing) && ( */}
+                                  <button
+                                    type="button"
+                                    onClick={() => handleEdit(payment)}
+                                    className="flex items-center gap-2 px-3 py-1.5 bg-blue-500 text-white text-sm font-medium rounded-lg shadow-sm hover:bg-blue-600 transition"
+                                  >
+                                    {/* <FaEdit className="text-white" size={14} /> */}
+                                    Edit
+                                  </button>
+                                 {/* )} */}
                                 <button
                                   type="button"
-                                  onClick={() => handleEdit(payment)}
-                                  className="text-blue-700 hover:text-blue-900 text-sm font-medium"
+                                  onClick={() => handleInvoice(payment)}
+                                  className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500 text-white text-sm font-medium rounded-lg shadow-sm hover:bg-emerald-600 transition"
                                 >
-                                  Edit
+                                  {/* <FaFileInvoice className="text-white" size={14} /> */}
+                                  Invoice
                                 </button>
-                                {/* Remove button is still commented out as per your original code */}
+
+                                <button
+                                  type="button"
+                                  // onClick={() => handleSend(payment)}
+                                  className="flex items-center gap-2 px-3 py-1.5 bg-indigo-500 text-white text-sm font-medium rounded-lg shadow-sm hover:bg-indigo-600 transition"
+                                >
+                                  {/* <FaPaperPlane className="text-white" size={13} /> */}
+                                  Send
+                                </button>
                               </div>
                             </div>
                           ))
                         )}
                       </>
-                      // ----- END: Existing Payment List -----
                     )}
                   </>
                 )}
@@ -932,7 +1062,6 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
           )}
 
           {activeTab === "transaction" && (
-            // ... Transaction tab content remains unchanged ...
             <>
               <div>
                 <h3 className="text-lg font-medium text-gray-800 mb-4">Transaction History</h3>
