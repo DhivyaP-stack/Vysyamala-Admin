@@ -319,13 +319,13 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
 
     try {
       // Build the 'payment_for' string
-      const mainPackageLabel = MAIN_PACKAGES.find((p) => p.key === mainPackage)?.label || "Unknown Package";
+      // const mainPackageLabel = MAIN_PACKAGES.find((p) => p.key === mainPackage)?.label || "Unknown Package";
 
-      // Get selected addon names for payment_for description
-      const selectedAddonNames = addons
-        .filter(addon => selectedAddons[addon.package_id])
-        .map(addon => addon.name)
-        .join(", ");
+      // // Get selected addon names for payment_for description
+      // const selectedAddonNames = addons
+      //   .filter(addon => selectedAddons[addon.package_id])
+      //   .map(addon => addon.name)
+      //   .join(", ");
 
       // const paymentForString = selectedAddonNames
       //   ? `${mainPackageLabel} + ${selectedAddonNames}`
