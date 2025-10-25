@@ -1000,7 +1000,8 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
                               >
                                 Cancel
                               </button>
-                              {showAddButton && !(isAdding || isEditing) && (
+                              {/* {showAddButton && !(isAdding || isEditing) && ( */}
+                              {isAdding && (
                                 <button
                                   type="button"
                                   onClick={resetForm} // Kept reset logic
