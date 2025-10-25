@@ -171,20 +171,25 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
   const netAmount = useMemo(() => subtotal - safeDiscount, [subtotal, safeDiscount]);
 
   function needsRefId(type: string) {
-    return type === "RazorPay" || type === "OnlineGpay" || type === "ManualGpay" || type === "AccountTransfer";
+    return type === "RazorPay" || type === "OnlineGpay" || type === "ManualGpay";
   }
-  // function needsGpayNo(type: string) {
-  //   return type === "ManualGpay";
-  // }
+  function needsGpayNo(type: string) {
+    return type === "ManualGpay";
+  }
 
   function validate() {
     const e: Record<string, string> = {};
     // if (!mainPackage) {
     //   e.mainPackage = "Main package must be selected.";
     // }
-    // if (needsGpayNo(paymentType) && !String(gpayNumber).trim()) {
-    //   e.gpayNumber = "GPay number is required for Manual GPay.";
-    // }
+    if (needsGpayNo(paymentType)) {
+      const gpayStr = String(gpayNumber).trim();
+      if (!gpayStr) {
+        e.gpayNumber = "GPay number is required for Manual GPay.";
+      } else if (gpayStr.length !== 10) {
+        e.gpayNumber = "GPay number must be exactly 10 digits.";
+      }
+    }
     if (needsRefId(paymentType) && !String(referenceId).trim()) {
       e.referenceId = "Reference ID is required for the selected payment type.";
     }
@@ -583,7 +588,10 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
         <div className="flex justify-between items-center border-b pb-2 capitalize">
           <h2 className="text-lg justify-items-center font-semibold">Payment Information</h2>
           <button
-            onClick={onClose}
+            onClick={() => {
+              setIsAdding(false);
+              onClose();
+            }}
             className="text-red-600 text-xl font-bold"
           >
             ✕
@@ -860,7 +868,19 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
                                     inputMode="numeric"
                                     pattern="[0-9]*"
                                     value={gpayNumber}
-                                    onChange={(e) => setGpayNumber(e.target.value)}
+                                    // onChange={(e) => setGpayNumber(e.target.value)}
+                                    onChange={(e) => {
+                                      const numericValue = e.target.value.replace(/[^0-9]/g, "");
+                                      setGpayNumber(numericValue.slice(0, 15));
+                                      if (errors.gpayNumber) {
+                                        setErrors(prev => {
+                                          const newErrors = { ...prev };
+                                          delete newErrors.gpayNumber;
+                                          return newErrors;
+                                        });
+                                      }
+                                    }}
+                                    maxLength={15}
                                     className="mt-1 w-full rounded-xl border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black/5"
                                     placeholder="Enter GPay phone number"
                                   />
@@ -878,7 +898,17 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
                                 name="referenceId"
                                 type="text"
                                 value={referenceId}
-                                onChange={(e) => setReferenceId(e.target.value)}
+                                //onChange={(e) => setReferenceId(e.target.value)}
+                                onChange={(e) => {
+                                  setReferenceId(e.target.value);
+                                  if (errors.referenceId) {
+                                    setErrors(prev => {
+                                      const newErrors = { ...prev };
+                                      delete newErrors.referenceId;
+                                      return newErrors;
+                                    });
+                                  }
+                                }}
                                 className="w-full rounded-xl border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black/5"
                                 placeholder="UTR / Razorpay ID / Txn Ref"
                               />
@@ -895,7 +925,17 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
                                 name="paymentDate"
                                 type="date"
                                 value={paymentDate}
-                                onChange={(e) => setPaymentDate(e.target.value)}
+                                // onChange={(e) => setPaymentDate(e.target.value)}
+                                onChange={(e) => {
+                                  setPaymentDate(e.target.value);
+                                  if (errors.paymentDate) {
+                                    setErrors(prev => {
+                                      const newErrors = { ...prev };
+                                      delete newErrors.paymentDate;
+                                      return newErrors;
+                                    });
+                                  }
+                                }}
                                 className="w-full rounded-xl border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black/5"
                               />
                               {errors.paymentDate && (
@@ -960,13 +1000,15 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
                               >
                                 Cancel
                               </button>
-                              <button
-                                type="button"
-                                onClick={resetForm} // Kept reset logic
-                                className="rounded-2xl border px-4 py-2 text-sm font-medium hover:bg-neutral-50"
-                              >
-                                Reset
-                              </button>
+                              {showAddButton && !(isAdding || isEditing) && (
+                                <button
+                                  type="button"
+                                  onClick={resetForm} // Kept reset logic
+                                  className="rounded-2xl border px-4 py-2 text-sm font-medium hover:bg-neutral-50"
+                                >
+                                  Reset
+                                </button>
+                              )}
                               <button
                                 type="button"
                                 onClick={handleSave} // Wired to new handleSave
@@ -1023,15 +1065,15 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
                               </div>
                               <div className="flex space-x-3">
                                 {/* {showAddButton && !(isAdding || isEditing) && ( */}
-                                  <button
-                                    type="button"
-                                    onClick={() => handleEdit(payment)}
-                                    className="flex items-center gap-2 px-3 py-1.5 bg-blue-500 text-white text-sm font-medium rounded-lg shadow-sm hover:bg-blue-600 transition"
-                                  >
-                                    {/* <FaEdit className="text-white" size={14} /> */}
-                                    Edit
-                                  </button>
-                                 {/* )} */}
+                                <button
+                                  type="button"
+                                  onClick={() => handleEdit(payment)}
+                                  className="flex items-center gap-2 px-3 py-1.5 bg-blue-500 text-white text-sm font-medium rounded-lg shadow-sm hover:bg-blue-600 transition"
+                                >
+                                  {/* <FaEdit className="text-white" size={14} /> */}
+                                  Edit
+                                </button>
+                                {/* )} */}
                                 <button
                                   type="button"
                                   onClick={() => handleInvoice(payment)}
@@ -1047,7 +1089,7 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
                                   className="flex items-center gap-2 px-3 py-1.5 bg-indigo-500 text-white text-sm font-medium rounded-lg shadow-sm hover:bg-indigo-600 transition"
                                 >
                                   {/* <FaPaperPlane className="text-white" size={13} /> */}
-                                  Send
+                                  Send Email
                                 </button>
                               </div>
                             </div>

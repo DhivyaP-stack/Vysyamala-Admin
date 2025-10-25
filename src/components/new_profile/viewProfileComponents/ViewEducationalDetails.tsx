@@ -555,27 +555,50 @@ const ViewEducationalDetails: React.FC<pageProps> = ({ profile }) => {
 
               <div className="flex w-full flex-row gap-4">
                 {educationalDetails.work_country === '1' && (
+                  // <div className="w-2/4">
+                  //   <label className="block text-black font-semibold mb-1">
+                  //     District
+                  //     {/* <span className="text-red-500">*</span> */}
+                  //   </label>
+
+                  //   <select
+                  //     value={educationalDetails.work_district}
+                  //     disabled
+                  //     // {...register('EducationDetails.disttemp')}
+                  //     className="outline-none w-full px-4 py-2 text-black font-medium border border-black rounded"
+                  //   >
+                  //     <option value="">
+                  //       Select your District
+                  //     </option >
+                  //     {WorkDistrict?.map((option: District) => (
+                  //       <option key={option.disctict_id} value={option.disctict_id} >
+                  //         {option.disctict_name}
+                  //       </option>
+                  //     ))}
+                  //   </select>
+                  // </div>
                   <div className="w-2/4">
                     <label className="block text-black font-semibold mb-1">
                       District
                       {/* <span className="text-red-500">*</span> */}
                     </label>
 
-                    <select
-                      value={educationalDetails.work_district}
+                    {/* --- MODIFIED SECTION --- */}
+                    {/* Using Input to display the name instead of a select with an ID */}
+                    <Input
+                      readOnly
                       disabled
-                      // {...register('EducationDetails.disttemp')}
-                      className="outline-none w-full px-4 py-2 text-black font-medium border border-black rounded"
-                    >
-                      <option value="">
-                        Select your District
-                      </option >
-                      {WorkDistrict?.map((option: District) => (
-                        <option key={option.disctict_id} value={option.disctict_id} >
-                          {option.disctict_name}
-                        </option>
-                      ))}
-                    </select>
+                      label={''}
+                      value={
+                        WorkDistrict?.find(
+                          (d: District) => String(d.disctict_id) === String(educationalDetails.work_district)
+                        )?.disctict_name ||
+                        educationalDetails.work_district ||
+                        ''
+                      }
+                      // Using styles from your other disabled inputs for consistency
+                      className="outline-none w-full text-black font-medium px-4 py-[8.5px] border border-ashBorder rounded bg-gray-100 cursor-not-allowed"
+                    />
                   </div>
                 )}
 

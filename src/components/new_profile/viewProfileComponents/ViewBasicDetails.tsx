@@ -154,13 +154,13 @@ const ViewBasicDetails: React.FC<pageProps> = ({ profile, setGennder }) => {
   });
   console.log('5656', District);
 
-  const { data: City } = useQuery({
-    queryKey: [basicDetails.Profile_district, 'City'],
-    queryFn: () => GetCity(basicDetails.Profile_district),
-    enabled: !!basicDetails.Profile_district,
-  });
+  // const { data: City } = useQuery({
+  //   queryKey: [basicDetails.Profile_district, 'City'],
+  //   queryFn: () => GetCity(basicDetails.Profile_district),
+  //   enabled: !!basicDetails.Profile_district,
+  // });
   console.log('5656', basicDetails.Profile_district);
-  console.log('5656', City);
+  // console.log('5656', City);
 
   useEffect(() => {
     setGennder(basicDetails.Gender);
@@ -367,58 +367,33 @@ const ViewBasicDetails: React.FC<pageProps> = ({ profile, setGennder }) => {
                 <label className="block text-[#5a5959e6] font-semibold mb-1">
                   District
                 </label>
-                <select
-                  disabled
-                  value={basicDetails.Profile_district}
-                  className="outline-none w-full px-4 py-2 border border-[#b5b2b2e6]  text-[#222020e6] rounded  font-semibold"
-                >
-                  <option value="" selected disabled>
-                    -- Select District --
-                  </option>
-                  {District?.map((option: any) => (
-                    <option key={option.disctict_id} value={option.disctict_id}>
-                      {option.disctict_name}
-                    </option>
-                  ))}
-                </select>
+
+                <Input
+                  readOnly
+                  value={
+                    // Find matching district name if it's an ID
+                    District?.find(
+                      (d: any) => String(d.disctict_id) === String(basicDetails.Profile_district)
+                    )?.disctict_name ||
+                    // Otherwise show text directly
+                    basicDetails.Profile_district ||
+                    ''
+                  }
+                  label={''}
+                />
               </div>
 
               <div className="w-2/4">
                 <label className="block text-[#5a5959e6] font-semibold mb-1">City</label>
-
-                {/* If Case 1 or Case 2 -> show Input, else show dropdown */}
-                {(
-                  (!basicDetails.Profile_state &&
-                    !basicDetails.Profile_district &&
-                    basicDetails.Profile_city) ||
-                  (basicDetails.Profile_state &&
-                    !basicDetails.Profile_district &&
-                    basicDetails.Profile_city)
-                ) ? (
-                  <Input
-                    required
-                    value={basicDetails.Profile_city}
-                    label={''}
-                    type={'text'}
-                    readOnly
-                  />
-                ) : (
-                  <select
-                    disabled
-                    value={basicDetails.Profile_city}
-                    className="outline-none w-full px-4 py-2 border rounded border-[#b5b2b2e6]  text-[#222020e6] font-semibold"
-                  >
-                    <option value="" selected disabled>
-                      -- Select City --
-                    </option>
-                    {City?.map((option: any) => (
-                      <option key={option.city_id} value={option.city_id}>
-                        {basicDetails.Profile_city}
-                      </option>
-                    ))}
-                  </select>
-                )}
+                <Input
+                  required
+                  value={basicDetails.Profile_city || ''}
+                  label={''}
+                  type={'text'}
+                  readOnly
+                />
               </div>
+
             </div>
           ) : isNonIndiaCountry ? (
             // Non-India country fields

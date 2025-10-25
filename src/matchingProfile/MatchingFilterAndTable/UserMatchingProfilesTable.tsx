@@ -1951,7 +1951,7 @@
 import { useState, useEffect } from 'react';
 import {
     Box, Button, Checkbox, CircularProgress, IconButton, Paper, Table, TableBody,
-    TableCell, TableContainer, TableHead, TableRow, TextField,
+    TableCell, TableContainer, TableHead, TableRow,
     Typography, Tooltip
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -2188,74 +2188,73 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
         setSelectedProfiles([]);
     }, [activeStatus, selectedActionType, search]);
 
-    useEffect(() => {
-        const fetchMatchingData = async () => {
-            if (!profileID) return;
-            setLoading(true);
-            try {
-                let data;
-                // Set a large number for items per page to get all data
-                const largePageSize = 10000;
+    const fetchMatchingData = async () => {
+        if (!profileID) return;
+        setLoading(true);
+        try {
+            let data;
+            // Set a large number for items per page to get all data
+            const largePageSize = 10000;
 
-                if (filters) {
-                    // Use filtered data with profileType
-                    data = await userMatchingProfilesFilterListMatch(
-                        String(profileID),
-                        1, // Always get first page
-                        largePageSize, // Large page size to get all data
-                        filters.selectedComplexions,
-                        filters.selectedEducation,
-                        filters.selectedFieldsOfStudy,
-                        filters.selectedDegrees,
-                        filters.heightFrom,
-                        filters.heightTo,
-                        filters.minAnnualIncome,
-                        filters.maxAnnualIncome,
-                        filters.foreignInterest,
-                        filters.selectedState,
-                        filters.selectedCity,
-                        filters.selectedMembership,
-                        filters.hasphotos,
-                        filters.destRasiIds,
-                        filters.ageDifference,
-                        filters.sarpaDhosham,
-                        filters.chevvaiDhosam,
-                        filters.selectedProfessions,
-                        filters.motherLive,
-                        filters.fatherLive,
-                        filters.selectedMaritalStatus,
-                        filters.selectedFamilyStatus,
-                        filters.sentInWhatsapp,
-                      //  filters.prefPoruthamStarRasi,
-                        filters.fromDateOfJoin,
-                        filters.toDateOfJoin,
-                        profileType,
-                        selectedActionType,
-                        activeStatus.toLowerCase() === 'all' ? 'all' : activeStatus.toLowerCase(),
-                        search.trim()
-                    );
-                } else {
-                    // API call without filters
-                    data = await userMatchingProfilesFilterListMatch(
-                        String(profileID),
-                        1, // Always get first page
-                        largePageSize, // Large page size to get all data
-                        "", "", "", "", 0, 0, 0, 0, "", 0, 0, 0, "", 0, 0, "", "", "", "", "", "", "", "", "", "",  profileType,
-                        selectedActionType,
-                        activeStatus.toLowerCase() === 'all' ? 'all' : activeStatus.toLowerCase(),
-                        search.trim()
-                    );
-                }
-
-                setMatchingData(data.profiles || []);
-                setTotalItems(data.total_count || 0);
-            } catch (error: any) {
-                NotifyError(error.message);
-            } finally {
-                setLoading(false);
+            if (filters) {
+                // Use filtered data with profileType
+                data = await userMatchingProfilesFilterListMatch(
+                    String(profileID),
+                    1, // Always get first page
+                    largePageSize, // Large page size to get all data
+                    filters.selectedComplexions,
+                    filters.selectedEducation,
+                    filters.selectedFieldsOfStudy,
+                    filters.selectedDegrees,
+                    filters.heightFrom,
+                    filters.heightTo,
+                    filters.minAnnualIncome,
+                    filters.maxAnnualIncome,
+                    filters.foreignInterest,
+                    filters.selectedState,
+                    filters.selectedCity,
+                    filters.selectedMembership,
+                    filters.hasphotos,
+                    filters.destRasiIds,
+                    filters.ageDifference,
+                    filters.sarpaDhosham,
+                    filters.chevvaiDhosam,
+                    filters.selectedProfessions,
+                    filters.motherLive,
+                    filters.fatherLive,
+                    filters.selectedMaritalStatus,
+                    filters.selectedFamilyStatus,
+                    filters.sentInWhatsapp,
+                    //  filters.prefPoruthamStarRasi,
+                    filters.fromDateOfJoin,
+                    filters.toDateOfJoin,
+                    profileType,
+                    selectedActionType,
+                    activeStatus.toLowerCase() === 'all' ? 'all' : activeStatus.toLowerCase(),
+                    search.trim()
+                );
+            } else {
+                // API call without filters
+                data = await userMatchingProfilesFilterListMatch(
+                    String(profileID),
+                    1, // Always get first page
+                    largePageSize, // Large page size to get all data
+                    "", "", "", "", 0, 0, 0, 0, "", 0, 0, 0, "", 0, 0, "", "", "", "", "", "", "", "", "", "", profileType,
+                    selectedActionType,
+                    activeStatus.toLowerCase() === 'all' ? 'all' : activeStatus.toLowerCase(),
+                    search.trim()
+                );
             }
-        };
 
+            setMatchingData(data.profiles || []);
+            setTotalItems(data.total_count || 0);
+        } catch (error: any) {
+            NotifyError(error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+    useEffect(() => {
         fetchMatchingData();
     }, [profileID, filters, profileType, selectedActionType, activeStatus, search]);
 
@@ -2329,6 +2328,8 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
             if (newWindow) {
                 newWindow.focus();
                 console.log("Opening profile in new tab...");
+                await fetchMatchingData();
+                setSelectedProfiles([]);
             } else {
                 NotifyError("Popup blocked! Please allow popups for this site.");
             }
@@ -2364,6 +2365,8 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
             if (newWindow) {
                 newWindow.focus();
                 NotifySuccess("Profiles sent via WhatsApp successfully");
+                await fetchMatchingData();
+                setSelectedProfiles([]);
             } else {
                 NotifyError("Popup blocked! Please allow popups for this site.");
             }
@@ -2406,6 +2409,8 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
             }
 
             NotifySuccess("Emails sent successfully");
+            await fetchMatchingData();
+            setSelectedProfiles([]);
         } catch (error: any) {
             console.error("Failed to send emails:", error);
             NotifyError(error.message || "Failed to send emails");
@@ -2829,7 +2834,7 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
 
 
                                         <TableCell // Sticky 'Profile ID' Cell
-                                            onClick={() => navigate(`/viewProfile?profileId=${row.profile_id}`)}
+                                            onClick={() => window.open(`/viewProfile?profileId=${row.profile_id}`, "_blank")}
                                             sx={{
                                                 position: "sticky",
                                                 left: SELECT_COLUMN_WIDTH,
