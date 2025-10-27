@@ -2006,6 +2006,8 @@ interface UserMatchingProfilesProps {
     verified: number;
     action_score: ActionScore;
     dateofjoin: string;
+    // except_viewed:boolean;
+    // except_visitor:boolean;
     profile_status: string;
 }
 
@@ -2195,6 +2197,8 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
             let data;
             // Set a large number for items per page to get all data
             const largePageSize = 10000;
+            const exceptViewedBool = filters.except_viewed === true || filters.except_viewed === 'true';
+            const exceptVisitorBool = filters.except_visitor === true || filters.except_visitor === 'true';
 
             if (filters) {
                 // Use filtered data with profileType
@@ -2228,6 +2232,8 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                     //  filters.prefPoruthamStarRasi,
                     filters.fromDateOfJoin,
                     filters.toDateOfJoin,
+                    exceptViewedBool,  // Pass as boolean
+                    exceptVisitorBool, // Pass as boolean
                     profileType,
                     selectedActionType,
                     activeStatus.toLowerCase() === 'all' ? 'all' : activeStatus.toLowerCase(),
@@ -2239,7 +2245,10 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                     String(profileID),
                     1, // Always get first page
                     largePageSize, // Large page size to get all data
-                    "", "", "", "", 0, 0, 0, 0, "", 0, 0, 0, "", 0, 0, "", "", "", "", "", "", "", "", "", "", profileType,
+                    "", "", "", "", 0, 0, 0, 0, "", 0, 0, 0, "", 0, 0, "", "", "", "", "", "", "", "", "", "",
+                    filters.except_viewed || false,
+                    filters.except_visitor || false,
+                    profileType,
                     selectedActionType,
                     activeStatus.toLowerCase() === 'all' ? 'all' : activeStatus.toLowerCase(),
                     search.trim()

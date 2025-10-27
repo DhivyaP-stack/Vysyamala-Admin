@@ -115,6 +115,8 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
     const [hasphotos, setHasPhotos] = useState<string>('');
     const [fatherLive, setFatherLive] = useState<string>('');
     const [motherLive, setMotherLive] = useState<string>('');
+    const [exceptViewed, setExceptViewed] = useState<boolean>(false);
+    const [exceptVisitor, setExceptVisitor] = useState<boolean>(false);
     const [sentInWhatsapp, setSentInWhatsapp] = useState<string>('');
     const [sarpaDhosham, setSarpaDhosham] = useState<string>('');
     const [ageDifference, setAgeDifference] = useState<string>('')
@@ -302,6 +304,8 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
             //prefPoruthamStarRasi,
             fromDateOfJoin,
             toDateOfJoin,
+            except_viewed: exceptViewed,
+            except_visitor: exceptVisitor,
         };
 
         onFilterSubmit(filters);
@@ -730,6 +734,35 @@ export const UserMatchingProfilesFilter = ({ profileID, onFilterSubmit, loading,
                         </select>
                     </div>
 
+                    <div className="py-4 flex items-end mb-4">
+                        <div className="flex items-center whitespace-nowrap">
+                            <input
+                                type="checkbox"
+                                id="exceptViewed"
+                                className="mr-2"
+                                checked={exceptViewed}
+                                onChange={(e) => setExceptViewed(e.target.checked)}
+                            />
+                            <label htmlFor="exceptViewed" className="text-sm font-medium">
+                                Except Viewed
+                            </label>
+                        </div>
+                    </div>
+
+                    <div className="py-4 flex items-end mb-4">
+                        <div className="flex items-center whitespace-nowrap">
+                            <input
+                                type="checkbox"
+                                id="exceptVisitor"
+                                className="mr-2"
+                                checked={exceptVisitor}
+                                onChange={(e) => setExceptVisitor(e.target.checked)}
+                            />
+                            <label htmlFor="exceptVisitor" className="text-sm font-medium">
+                                Except Visitor
+                            </label>
+                        </div>
+                    </div>
 
 
                     {/* Marital Status */}

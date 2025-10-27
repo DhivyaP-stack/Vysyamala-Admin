@@ -57,6 +57,7 @@ interface FilterParams {
 const getTransactionHistory = async (params: FilterParams) => {
     const queryParams: any = {
         page: params.page.toString(),
+        page_size: '50', // ✅ added page_size
     };
 
     if (params.from_date) queryParams.from_date = params.from_date;
@@ -115,8 +116,6 @@ const TransactionHistoryNew: React.FC = () => {
     const [goToPageInput, setGoToPageInput] = useState<string>('');
     const [tStatus, setTStatus] = useState<string>('');
     const [aStatus, setAStatus] = useState<string>('');
-
-
 
     // Only keep the dependencies that should trigger automatic API calls
     useEffect(() => {

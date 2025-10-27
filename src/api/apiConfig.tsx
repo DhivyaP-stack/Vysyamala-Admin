@@ -324,12 +324,16 @@ export const userMatchingProfilesFilterListMatch = async (
     //prefPoruthamStarRasi: string,
     fromDateOfJoin: string,
     toDateOfJoin: string,
+     ExceptViewed: boolean | string,  // Accept both boolean and string
+    ExceptVisitor: boolean | string, // Accept both boolean and string
     profileType: 'matching' | 'suggested' = 'matching',
     actionType: string = 'all', // New parameter for action type
     status: string = 'all', // New parameter for status
     search: string = ""
 ) => {
     try {
+        const exceptViewedBool = ExceptViewed === true || ExceptViewed === 'true';
+        const exceptVisitorBool = ExceptVisitor === true || ExceptVisitor === 'true';
         // Determine the endpoint based on profileType
         const endpoint = profileType === 'suggested'
             ? '/api/Get_suggest_list_match/'
@@ -365,6 +369,8 @@ export const userMatchingProfilesFilterListMatch = async (
             //pref_porutham_star_rasi: prefPoruthamStarRasi,
             from_dateofjoin: fromDateOfJoin,
             to_dateofjoin: toDateOfJoin,
+           except_viewed: exceptViewedBool,   // Send as proper boolean
+            except_visitor: exceptVisitorBool, // Send as proper booleanF
             action_type: actionType, // Add action_type parameter
             status: status, // Add status parameter
             search: search
