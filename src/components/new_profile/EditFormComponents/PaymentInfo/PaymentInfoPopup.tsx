@@ -83,6 +83,7 @@ interface PaymentDetail {
   offer: string | null;
   notes: string | null;
   package_amount: string | null;
+  is_sent_email: boolean; // Add this field
 }
 
 interface AddonPackage {
@@ -148,7 +149,7 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
   const [packageFilter, setPackageFilter] = useState(""); // all | new | renewal
   const RoleID = localStorage.getItem('role_id');
   const [selectedPlanId, setSelectedPlanId] = useState<number | null>(null); // Add this line
-
+  const [sendingEmail, setSendingEmail] = useState<number | null>(null);
 
   const filteredMainPackages = useMemo(() => {
     if (packageFilter === "") return mainPackages;
@@ -420,6 +421,42 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
     console.log("Opening invoice in new tab...");
   };
 
+  const handleSend = async (payment: PaymentDetail) => {
+    if (!payment.id) {
+      NotifyError("Payment ID is required to send invoice");
+      return;
+    }
+    setSendingEmail(payment.id); // Set loading state
+    try {
+      const response = await apiAxios.get(
+        `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/send-invoice/?subscription_id=${payment.id}`
+      );
+
+      if (response.data.success) {
+        NotifySuccess(response.data.success || "Email sent successfully!");
+        fetchPaymentDetails();
+      } else {
+        NotifyError("Failed to send email");
+        console.error("Send Email API error:", response.data);
+      }
+    } catch (error: any) {
+      console.error("Error sending email:", error);
+
+      // Handle the specific "Recipient email not found" error
+      if (error.response?.data?.error === "Recipient email not found") {
+        NotifyError("Recipient email not found. Please check if the user has a valid email address.");
+      } else if (error.response?.data?.error) {
+        // Display any other error message from the API
+        NotifyError(error.response.data.error);
+      } else if (error.response?.data?.message) {
+        NotifyError(error.response.data.message);
+      } else {
+        NotifyError("Failed to send invoice email. Please try again.");
+      }
+    } finally {
+      setSendingEmail(null); // Clear loading state
+    }
+  };
 
   const fetchMainPackages = async (type: string = "") => {
     try {
@@ -1069,9 +1106,12 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
                                 <button
                                   type="button"
                                   onClick={() => handleEdit(payment)}
-                                  className="flex items-center gap-2 px-3 py-1.5 bg-blue-500 text-white text-sm font-medium rounded-lg shadow-sm hover:bg-blue-600 transition"
+                                  disabled={payment.is_sent_email}
+                                  className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg shadow-sm transition ${payment.is_sent_email
+                                    ? 'bg-[#A4A7AE] text-black cursor-not-allowed opacity-70'
+                                    : 'bg-blue-500 text-white hover:bg-blue-600'
+                                    }`}
                                 >
-                                  {/* <FaEdit className="text-white" size={14} /> */}
                                   Edit
                                 </button>
                                 {/* )} */}
@@ -1086,11 +1126,28 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
 
                                 <button
                                   type="button"
-                                  // onClick={() => handleSend(payment)}
-                                  className="flex items-center gap-2 px-3 py-1.5 bg-indigo-500 text-white text-sm font-medium rounded-lg shadow-sm hover:bg-indigo-600 transition"
+                                  onClick={() => handleSend(payment)}
+                                  disabled={sendingEmail === payment.id}
+                                  className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg shadow-sm transition ${sendingEmail === payment.id
+                                    ? 'bg-indigo-400 cursor-not-allowed'
+                                    : 'bg-indigo-500 hover:bg-indigo-600'
+                                    } text-white`}
                                 >
-                                  {/* <FaPaperPlane className="text-white" size={13} /> */}
-                                  Send Email
+                                  {sendingEmail === payment.id ? (
+                                    <>
+                                      {/* Loading spinner */}
+                                      <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                      </svg>
+                                      Sending Email...
+                                    </>
+                                  ) : (
+                                    <>
+                                      {/* <FaPaperPlane className="text-white" size={13} /> */}
+                                      Send Email
+                                    </>
+                                  )}
                                 </button>
                               </div>
                             </div>
@@ -1170,7 +1227,7 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
           )}
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 

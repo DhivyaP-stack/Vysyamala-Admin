@@ -7,7 +7,6 @@ import {
     TableContainer,
     TableHead,
     TableRow,
-    TablePagination,
     TableSortLabel,
     TextField,
     Button,
@@ -50,6 +49,8 @@ interface FilterParams {
     to_date?: string;
     filter_type?: 'today' | 'last_week' | 'new_approved' | 'delete_others' | 'all';
     search?: string;
+    t_status: string;
+    a_status: string;
     page: number;
 }
 
@@ -62,6 +63,8 @@ const getTransactionHistory = async (params: FilterParams) => {
     if (params.to_date) queryParams.to_date = params.to_date;
     if (params.filter_type && params.filter_type !== 'all') queryParams.filter_type = params.filter_type;
     if (params.search) queryParams.search = params.search;
+    if (params.t_status) queryParams.t_status = params.t_status;
+    if (params.a_status) queryParams.a_status = params.a_status;
 
     const url = `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/transaction-history/`;
     const response = await axios.get(url, { params: queryParams });
@@ -81,7 +84,7 @@ const formatActionsForTooltip = (actions: ActionLogEntry[]) => {
     // return actions.map((action, index) =>
     return actions.map((action) =>
         // `${index + 1}. Status: ${action.status}\n   Plan: ${action.plan_name}\n   Created At: ${action.created_at}${action.addon_packages ? `\n   Add-ons: ${action.addon_packages}` : ''}`
-     `Status: ${action.status}\n   Plan: ${action.plan_name}\n   Created At: ${action.created_at}${action.addon_packages ? `\n   Add-ons: ${action.addon_packages}` : ''}`
+        `Status: ${action.status}\n   Plan: ${action.plan_name}\n   Created At: ${action.created_at}${action.addon_packages ? `\n   Add-ons: ${action.addon_packages}` : ''}`
     ).join('\n\n');
 };
 
@@ -110,13 +113,15 @@ const TransactionHistoryNew: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [isDownloading, setIsDownloading] = useState<boolean>(false);
     const [goToPageInput, setGoToPageInput] = useState<string>('');
+    const [tStatus, setTStatus] = useState<string>('');
+    const [aStatus, setAStatus] = useState<string>('');
 
 
 
     // Only keep the dependencies that should trigger automatic API calls
     useEffect(() => {
         fetchData();
-    }, [page, rowsPerPage, order, orderBy, filterType, appliedFromDate, appliedToDate, debouncedSearch]);
+    }, [page, rowsPerPage, order, orderBy, filterType, appliedFromDate, appliedToDate, debouncedSearch, tStatus, aStatus]);
 
     // Debounced search effect (unchanged)
     useEffect(() => {
@@ -133,6 +138,8 @@ const TransactionHistoryNew: React.FC = () => {
     const buildFilterParams = (): FilterParams => {
         const params: FilterParams = {
             page: page + 1,
+            t_status: '',
+            a_status: ''
         };
 
         // 4. USE APPLIED DATES INSTEAD OF TEMP DATES
@@ -140,6 +147,8 @@ const TransactionHistoryNew: React.FC = () => {
         if (appliedToDate) params.to_date = appliedToDate;
         if (filterType && filterType !== 'all') params.filter_type = filterType;
         if (debouncedSearch) params.search = debouncedSearch;
+        if (tStatus) params.t_status = tStatus;
+        if (aStatus) params.a_status = aStatus;
 
         return params;
     };
@@ -191,20 +200,20 @@ const TransactionHistoryNew: React.FC = () => {
     };
 
     // 7. ADD CLEAR BUTTON HANDLER
-    const handleClear = () => {
-        setTempFromDate('');
-        setTempToDate('');
-        setAppliedFromDate('');
-        setAppliedToDate('');
-        setSearch('');
-        setDebouncedSearch('');
-        setFilterType('all');
-        setPage(0);
-    };
+    // const handleClear = () => {
+    //     setTempFromDate('');
+    //     setTempToDate('');
+    //     setAppliedFromDate('');
+    //     setAppliedToDate('');
+    //     setSearch('');
+    //     setDebouncedSearch('');
+    //     setFilterType('all');
+    //     setPage(0);
+    // };
 
-    const handleChangePage = (_event: unknown, newPage: number) => {
-        setPage(newPage);
-    };
+    // const handleChangePage = (_event: unknown, newPage: number) => {
+    //     setPage(newPage);
+    // };
 
 
     const columns: Column[] = [
@@ -212,12 +221,13 @@ const TransactionHistoryNew: React.FC = () => {
         { id: 'payment_type', label: 'Payment Mode', minWidth: 150 },
         { id: 'status', label: 'T. Status', minWidth: 120 },
         { id: 'order_id', label: 'Order ID', minWidth: 180 },
-        { id: 'admin_status', label: 'A. Status', minWidth: 150 },
+        { id: 'plan_name', label: 'Selected Plan', minWidth: 120 },
+        { id: 'a_status', label: 'A. Status', minWidth: 150 },
         { id: 'ProfileId', label: 'Profile ID', minWidth: 120 },
         { id: 'Profile_name', label: 'Name', minWidth: 150 },
         { id: 'Profile_city', label: 'City', minWidth: 120 },
         { id: 'Profile_state', label: 'State', minWidth: 120 },
-        { id: 'plan_name', label: 'Mode', minWidth: 120 },
+        { id: 'current_plan_name', label: 'P. Mode', minWidth: 120 },
         { id: 'profile_status', label: 'P. Status', minWidth: 120 },
         { id: 'Mobile_no', label: 'Mobile No', minWidth: 140 },
         { id: 'action_log', label: 'Action Log', minWidth: 100, align: 'left' },
@@ -300,11 +310,11 @@ const TransactionHistoryNew: React.FC = () => {
         }
     };
 
-    const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const newRowsPerPage = +event.target.value;
-        setRowsPerPage(newRowsPerPage);
-        setPage(0);
-    };
+    // const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    //     const newRowsPerPage = +event.target.value;
+    //     setRowsPerPage(newRowsPerPage);
+    //     setPage(0);
+    // };
 
 
     // Add this function inside your component
@@ -646,6 +656,40 @@ const TransactionHistoryNew: React.FC = () => {
                 >
                     Profiles ({data.count})
                 </Button>
+                <FormControl size="small" sx={{ minWidth: 160 }}>
+                    {/* <FormLabel sx={{ fontWeight: 'bold', mb: 0.5 }}>T. Status</FormLabel> */}
+                    <TextField
+                        select
+                        value={tStatus}
+                        onChange={(e) => {
+                            setTStatus(e.target.value);
+                            setPage(0);
+                        }}
+                        SelectProps={{ native: true }}
+                    >
+                        <option value="">Select T. Status</option>
+                        <option value="1">Initialized</option>
+                        <option value="2">Paid</option>
+                        <option value="3">Failed</option>
+                    </TextField>
+                </FormControl>
+
+                <FormControl size="small" sx={{ minWidth: 160 }}>
+                    {/* <FormLabel sx={{ fontWeight: 'bold', mb: 0.5 }}>A. Status</FormLabel> */}
+                    <TextField
+                        select
+                        value={aStatus}
+                        onChange={(e) => {
+                            setAStatus(e.target.value);
+                            setPage(0);
+                        }}
+                        SelectProps={{ native: true }}
+                    >
+                        <option value="">Select A. Status</option>
+                        <option value="1">Active</option>
+                        <option value="0">Inactive</option>
+                    </TextField>
+                </FormControl>
             </div>
 
             <Paper className="w-full">
