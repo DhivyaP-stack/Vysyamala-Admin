@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useEffect, useLayoutEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import {
   ArrowBack,
   CameraAlt,
@@ -10,6 +10,10 @@ import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 import { notify, notifyDelete } from '../../TostNotification';
 import {
+  fetchAnnualIncome,
+  fetchGetHighestEducation,
+  fetchProfessionalPrefe,
+  GetDistrict,
   getEditProfileView,
   getEditProfileViewStatus,
   getPrimaryStatus,
@@ -29,6 +33,7 @@ import VerifyOTPPopup from '../verifyotp/verifyotppopup';
 import { apiAxios } from '../../../api/apiUrl';
 import { MyProfileShare } from '../WhatsUpShare/MyProfileShare';
 import PaymentPopup from './PaymentInfo/PaymentInfoPopup';
+import { District } from './EducationalDetails';
 
 interface pageProps {
   handleSubmit: () => void;
@@ -65,6 +70,11 @@ const EditViewProfile: React.FC<pageProps> = ({
   const [OpenAdminDetails, setOpenAdminDetails] = useState<boolean>(false);
   const [showOtpPopup, setShowOtpPopup] = useState(false);
   const [open, setOpen] = useState(false);
+  const [profileView, setProfileView] = useState<any>({});
+  const [pass, setPass] = useState<any>({});
+  const [profileView2, setProfileView2] = useState<any>({}); // State for profile[2]
+  const [profileView3, setProfileView3] = useState<any>({});
+
   const status = watch('profileView.status') ?? ''; // Ensure it doesn't break
 
   const primaryStatus = watch('profileView.primary_status') ?? ''; // Prevent undefined errors
@@ -98,6 +108,82 @@ const EditViewProfile: React.FC<pageProps> = ({
   const payment_date = watch('profileView.payment_date');
   const payment_mode = watch('profileView.payment_mode');
   const add_on_pack_name = watch('profileView.add_on_pack_name');
+
+  const { data: AnnualIncomeData } = useQuery({
+    queryKey: ['AnnualIncome'],
+    queryFn: fetchAnnualIncome,
+  });
+
+  const { data: HighestEducationData } = useQuery({
+    queryKey: ['GetHighestEducation'],
+    queryFn: fetchGetHighestEducation,
+  });
+
+  const { data: ProfessionData } = useQuery({
+    queryKey: ['ProfessionalPreference'],
+    queryFn: fetchProfessionalPrefe,
+  });
+
+  // Fetch districts - needed for Place of Stay if in India
+  const { data: WorkDistrictData } = useQuery({
+    queryKey: [profileView2?.work_state, 'WorkDistrictViewProfile'], // Use a unique key part
+    queryFn: () => GetDistrict(profileView2.work_state),
+    enabled: !!profileView2?.work_state && profileView2?.work_country === '1', // Only fetch if state exists and country is India
+  });
+
+
+  useLayoutEffect(() => {
+    if (EditData && EditData.length > 0) { // Use EditData here
+      setProfileView(EditData[6] || {});   // Now setProfileView exists
+      setProfileView2(EditData[2] || {});
+      setProfileView3(EditData[3] || {});
+      setPass(EditData[0] || {}); // Set pass state if needed
+    }
+  }, [EditData]);
+
+
+  // ... rest of the component logic (toggleSection10, handlePrintProfile, etc.) ...
+
+  // ---> FIND THE NAMES before rendering MyProfileShare <---
+  const annualIncomeName = useMemo(() => {
+    const id = profileView2?.anual_income;
+    if (!id || !AnnualIncomeData) return 'Not available';
+    const found = AnnualIncomeData.find((item: any) => String(item.id) === String(id));
+    return found?.income || 'Not available';
+  }, [profileView2, AnnualIncomeData]);
+
+  const educationName = useMemo(() => {
+    const id = profileView2?.highest_education;
+    if (!id || !HighestEducationData) return 'Not available';
+    const found = HighestEducationData.find((item: any) => String(item.education_id) === String(id));
+    return found?.education_description || 'Not available';
+  }, [profileView2, HighestEducationData]);
+
+  const professionName = useMemo(() => {
+    const id = profileView2?.profession;
+    if (!id || !ProfessionData) return 'Not available';
+    const found = ProfessionData.find((item: any) => String(item.Profes_Pref_id) === String(id));
+    return found?.Profes_name || 'Not available';
+  }, [profileView2, ProfessionData]);
+
+  const placeOfStayName = useMemo(() => {
+    const countryId = profileView2?.work_country;
+    const districtId = profileView2?.work_district;
+    const city = profileView2?.work_city; // Used for non-India
+
+    if (countryId === '1') { // Assuming '1' is India
+      if (!districtId || !WorkDistrictData) return 'Not available';
+      const found = WorkDistrictData.find((d: District) => String(d.disctict_id) === String(districtId));
+      return found?.disctict_name || 'Not available';
+    } else {
+      return city || 'Not available'; // Use city name directly if not India
+    }
+  }, [profileView2, WorkDistrictData]);
+
+  const starName = useMemo(() => {
+    // Assuming star name comes directly from profile[3].star_name
+    return profileView3?.star_name || 'Not available';
+  }, [profileView3]);
   useEffect(() => {
     if (EditData?.[6]) {
       const data = EditData[6];
@@ -339,7 +425,13 @@ const EditViewProfile: React.FC<pageProps> = ({
                         profileId={profileId}
                         profileName={profileName}
                         age={age}
-                        starName={EditData[3]?.star_name}
+                        starName={starName} // Assuming profile[3].star_name has the name
+                        annualIncome={annualIncomeName}
+                        education={educationName}
+                        profession={professionName}
+                        companyName={profileView2?.company_name} // Pass company/business name directly
+                        businessName={profileView2?.business_name}
+                        placeOfStay={placeOfStayName}
                       />
                     )}
                   </div>

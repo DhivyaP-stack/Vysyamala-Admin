@@ -1,11 +1,9 @@
-
-
-
 import {
   Dispatch,
   SetStateAction,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useState,
 } from 'react';
 import { Button } from '@mui/material';
@@ -14,7 +12,7 @@ import ViewProfileButton from '../../../matchingProfile/ViewProfileButton';
 import axios from 'axios';
 import { useForm } from 'react-hook-form';
 import { useQuery } from '@tanstack/react-query';
-import { getStatus } from '../../../action';
+import { fetchAnnualIncome, fetchGetHighestEducation, fetchProfessionalPrefe, GetDistrict, getStatus } from '../../../action';
 import Profile from '../../../pages/Profile';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { downloadProfilePdf } from '../../../services/api';
@@ -25,6 +23,7 @@ import { DataHistoryPopup } from './ProfileViwePopup/DataHistoryPopup';
 import { MyProfileShare } from '../WhatsUpShare/MyProfileShare';
 import { notify } from '../../TostNotification';
 import PaymentPopup from '../EditFormComponents/PaymentInfo/PaymentInfoPopup';
+import { District } from '../profile_form_components/EducationalDetails';
 
 interface pageProps {
   profile: any;
@@ -66,7 +65,8 @@ const ViewProfile: React.FC<pageProps> = ({
 }) => {
   const { register, setValue, watch } = useForm();
   const [profileView, setProfileView] = useState<any>({});
-
+  const [profileView2, setProfileView2] = useState<any>({}); // State for profile[2]
+  const [profileView3, setProfileView3] = useState<any>({});
 
   const [profileView7, setProfileView7] = useState<any>({});
 
@@ -91,6 +91,8 @@ const ViewProfile: React.FC<pageProps> = ({
   //   npm install @types/moment --save-dev
   console.log('profileView7', profileView7);
   console.log("profileView", profileView)
+
+
 
   useEffect(() => {
     if (profile && profile.length > 0) {
@@ -155,6 +157,83 @@ const ViewProfile: React.FC<pageProps> = ({
       }
     }
   }, []);
+
+  const { data: AnnualIncomeData } = useQuery({
+    queryKey: ['AnnualIncome'],
+    queryFn: fetchAnnualIncome,
+  });
+
+  const { data: HighestEducationData } = useQuery({
+    queryKey: ['GetHighestEducation'],
+    queryFn: fetchGetHighestEducation,
+  });
+
+  const { data: ProfessionData } = useQuery({
+    queryKey: ['ProfessionalPreference'],
+    queryFn: fetchProfessionalPrefe,
+  });
+
+  // Fetch districts - needed for Place of Stay if in India
+  const { data: WorkDistrictData } = useQuery({
+    queryKey: [profileView2?.work_state, 'WorkDistrictViewProfile'], // Use a unique key part
+    queryFn: () => GetDistrict(profileView2.work_state),
+    enabled: !!profileView2?.work_state && profileView2?.work_country === '1', // Only fetch if state exists and country is India
+  });
+
+
+  useLayoutEffect(() => {
+    if (profile && profile.length > 0) {
+      setProfileView(profile[6] || {});
+      setProfileView2(profile[2] || {}); // Educational/Professional details
+      setProfileView3(profile[3] || {}); // Horoscope details (for star name)
+      setPass(profile[0] || {});
+    }
+  }, [profile]);
+
+
+  // ... rest of the component logic (toggleSection10, handlePrintProfile, etc.) ...
+
+  // ---> FIND THE NAMES before rendering MyProfileShare <---
+  const annualIncomeName = useMemo(() => {
+    const id = profileView2?.anual_income;
+    if (!id || !AnnualIncomeData) return 'Not available';
+    const found = AnnualIncomeData.find((item: any) => String(item.id) === String(id));
+    return found?.income || 'Not available';
+  }, [profileView2, AnnualIncomeData]);
+
+  const educationName = useMemo(() => {
+    const id = profileView2?.highest_education;
+    if (!id || !HighestEducationData) return 'Not available';
+    const found = HighestEducationData.find((item: any) => String(item.education_id) === String(id));
+    return found?.education_description || 'Not available';
+  }, [profileView2, HighestEducationData]);
+
+  const professionName = useMemo(() => {
+    const id = profileView2?.profession;
+    if (!id || !ProfessionData) return 'Not available';
+    const found = ProfessionData.find((item: any) => String(item.Profes_Pref_id) === String(id));
+    return found?.Profes_name || 'Not available';
+  }, [profileView2, ProfessionData]);
+
+  const placeOfStayName = useMemo(() => {
+    const countryId = profileView2?.work_country;
+    const districtId = profileView2?.work_district;
+    const city = profileView2?.work_city; // Used for non-India
+
+    if (countryId === '1') { // Assuming '1' is India
+      if (!districtId || !WorkDistrictData) return 'Not available';
+      const found = WorkDistrictData.find((d: District) => String(d.disctict_id) === String(districtId));
+      return found?.disctict_name || 'Not available';
+    } else {
+      return city || 'Not available'; // Use city name directly if not India
+    }
+  }, [profileView2, WorkDistrictData]);
+
+  const starName = useMemo(() => {
+    // Assuming star name comes directly from profile[3].star_name
+    return profileView3?.star_name || 'Not available';
+  }, [profileView3]);
+
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -170,6 +249,7 @@ const ViewProfile: React.FC<pageProps> = ({
     queryFn: getStatus,
   });
   console.log(Status);
+
   useEffect(() => {
     axios
       .get<FamilyStatus[]>('https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/family-statuses/')
@@ -379,7 +459,13 @@ const ViewProfile: React.FC<pageProps> = ({
                     profileId={profileId}
                     profileName={profile[6]?.Profile_name}
                     age={profile[6]?.age}
-                    starName={profile[3]?.star_name}
+                    starName={starName} // Assuming profile[3].star_name has the name
+                    annualIncome={annualIncomeName}
+                    education={educationName}
+                    profession={professionName}
+                    companyName={profileView2?.company_name} // Pass company/business name directly
+                    businessName={profileView2?.business_name}
+                    placeOfStay={placeOfStayName}
                   />
                 )}
               </div>

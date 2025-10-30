@@ -10,6 +10,12 @@ interface ShareProps {
   starName?: string;
   profileImage?: string | null; // Public image URL
   profileImagess?: string; // Public image URL
+  annualIncome?: string;
+  education?: string;
+  profession?: string;
+  companyName?: string;
+  placeOfStay?: string;
+  businessName?: string;
 }
 
 export const MyProfileShare: React.FC<ShareProps> = ({
@@ -19,6 +25,12 @@ export const MyProfileShare: React.FC<ShareProps> = ({
   profileName,
   age,
   starName,
+  annualIncome,
+  education,
+  profession,
+  companyName,
+  placeOfStay,
+  businessName,
 }) => {
   // Encode the data to be shared
   // const encodedData = btoa(
@@ -37,7 +49,7 @@ export const MyProfileShare: React.FC<ShareProps> = ({
   const shareUrl = `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/profile/${profileId}/`;
   const shareUrlWithoutImage = `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/profile_view/${profileId}/`
   const title = 'Check out this profile!';
-  const registrationLink = 'https://www.vysyamala.com/'
+  const registrationLink = 'vysyamala.com'
 
   // const shareUrl = `http://103.214.132.20:8000/auth/profile/${profileId}/`;
   // const shareUrlWithoutImage=`http://103.214.132.20:8000/auth/profile_view/${profileId}/`
@@ -45,18 +57,37 @@ export const MyProfileShare: React.FC<ShareProps> = ({
   // const registrationLink = 'http://103.214.132.20:8000/'
 
 
-
   const prepareShareText = () => {
+    let professionLine = '💼 *Profession:* Not available\n';
+
+    if (profession) {
+      if (profession.toLowerCase() === 'employed' && companyName) {
+        professionLine = `💼 *Profession:* Employed at ${companyName}\n`;
+      } else if (profession.toLowerCase() === 'business' && businessName) {
+        professionLine = `💼 *Profession:* Business at ${businessName}\n`;
+      } else if (profession.toLowerCase() === 'employed/business' && businessName) {
+        professionLine = `💼 *Profession:* ${profession}-Employed at ${companyName}, Business at ${businessName}\n`;
+      } else if (profession.toLowerCase() === 'goverment/ psu' && companyName) {
+        professionLine = `💼 *Profession:* Government/ PSU at ${companyName}\n`;
+      } else {
+        professionLine = `💼 *Profession:* ${profession}\n`;
+      }
+    }
     return (
       `${title}\n\n` +
-      `🌟 *Profile  Link:* ${shareUrl}\n` +
       `🆔 *Profile ID:* ${profileId || 'Not available'}\n` +
       `👤 *Profile Name:* ${profileName || 'Not available'}\n` +
       `🎂 *Age:* ${age || 'Not available'} years\n` +
-      `✨ *Star Name:* ${starName || 'Not available'}\n\n` +
+      `✨ *Star Name:* ${starName || 'Not available'}\n` +
+      `💰 *Annual Income:* ${annualIncome || 'Not available'}\n` +
+      `🎓 *Education:* ${education || 'Not available'}\n` +
+      // `💼 *Profession:* ${profession || 'Not available'}${companyName || businessName ? ` at ${companyName || businessName}` : ''}\n` +4
+      professionLine +
+      `📍 *Place of Stay:* ${placeOfStay || 'Not available'}\n\n` +
+      `🌟 *For More Details:* ${shareUrl}\n` +
       `------------------------------------------- \n` +
-      `click here to visit your matrimony profile on Vysyamala -\n` +
-      `Vysyamala matrimony website :\n\n`
+      // `click here to visit your matrimony profile on Vysyamala -\n` +
+      `Click here to register your profile on Vysyamala :\n`
       // +
       // `${registrationLink}\n\n`
 
@@ -66,6 +97,21 @@ export const MyProfileShare: React.FC<ShareProps> = ({
 
   // Prepare WhatsApp share text without the image
   const prepareDetailsOnlyText = () => {
+    let professionLine = '💼 *Profession:* Not available\n';
+
+    if (profession) {
+      if (profession.toLowerCase() === 'employed' && companyName) {
+        professionLine = `💼 *Profession:* Employed at ${companyName}\n`;
+      } else if (profession.toLowerCase() === 'business' && businessName) {
+        professionLine = `💼 *Profession:* Business at ${businessName}\n`;
+      } else if (profession.toLowerCase() === 'employed/business' && businessName) {
+        professionLine = `💼 *Profession:* ${profession}-Employed at ${companyName}, Business at ${businessName}\n`;
+      } else if (profession.toLowerCase() === 'goverment/ psu' && companyName) {
+        professionLine = `💼 *Profession:* Government/ PSU at ${companyName}\n`;
+      } else {
+        professionLine = `💼 *Profession:* ${profession}\n`;
+      }
+    }
     return (
       `${title}\n\n` +
       `🌟 *Profile  Link:* ${shareUrlWithoutImage}\n` +
@@ -73,11 +119,15 @@ export const MyProfileShare: React.FC<ShareProps> = ({
       `👤 *Profile Name:* ${profileName || 'Not available'}\n` +
       `🎂 *Age:* ${age || 'Not available'} years\n` +
       `✨ *Star Name:* ${starName || 'Not available'}\n` +
-      //  `🔗 *Link:* ${shareUrl}\n\n`+
-
+      `💰 *Annual Income:* ${annualIncome || 'Not available'}\n` +
+      `🎓 *Education:* ${education || 'Not available'}\n` +
+      // `💼 *Profession:* ${profession || 'Not available'}${companyName || businessName ? ` at ${companyName || businessName}` : ''}\n` +
+      professionLine +
+      `📍 *Place of Stay:* ${placeOfStay || 'Not available'}\n\n` +
+      `🌟 *For More Details:* ${shareUrl}\n` +
       `------------------------------------------- \n` +
-      `click here to visit your matrimony profile on Vysyamala -\n` +
-      `Vysyamala matrimony website :\n\n`
+      // `click here to visit your matrimony profile on Vysyamala -\n` +
+      `Click here to register your profile on Vysyamala :\n`
       // +
       // `${registrationLink}\n\n`
     );

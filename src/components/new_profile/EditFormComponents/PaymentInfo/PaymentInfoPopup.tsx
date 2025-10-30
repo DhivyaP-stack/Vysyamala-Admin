@@ -14,27 +14,22 @@ function currencyToNumber(v: string | number | null | undefined) {
   return Number.isFinite(x) ? x : 0;
 }
 
-const MAIN_PACKAGES = [
-  { key: "Gold", label: "Gold", price: 4900, fixed: true, category: "new" },
-  { key: "Platinum", label: "Platinum", price: 7900, fixed: true, category: "new" },
-  { key: "PlatinumPrivate", label: "Platinum Private", price: 9900, fixed: true, category: "new" },
-  { key: "VysyamalaDelight", label: "Vysyamala Delight", price: null, fixed: false, category: "new" }, // custom
-  { key: "Mini10", label: "Mini10", price: 2000, fixed: true, category: "new" },
-  { key: "Mini20", label: "Mini20", price: 3000, fixed: true, category: "new" },
-  { key: "Mini30", label: "Mini30", price: 4000, fixed: true, category: "new" },
-  // --- Renewals ---
-  { key: "RenewalGold", label: "Renewal - Gold", price: 2000, fixed: true, category: "renewal" },
-  { key: "RenewalPlatinum", label: "Renewal - Platinum", price: 3000, fixed: true, category: "renewal" },
-  { key: "RenewalPlatinumPrivate", label: "Renewal - Platinum Private", price: 4000, fixed: true, category: "renewal" },
-  { key: "RenewalVysyamalaDelight", label: "Renewal - Vysyamala Delight", price: null, fixed: false, category: "renewal" }, // custom
-  { key: "Upgrade", label: "Upgrade", price: null, fixed: false, category: "new" }, // custom
-  { key: "Others", label: "Others", price: null, fixed: false, category: "new" }, // custom
-];
-
-
-
-
-// ----- Interfaces -----
+// const MAIN_PACKAGES = [
+//   { key: "Gold", label: "Gold", price: 4900, fixed: true, category: "new" },
+//   { key: "Platinum", label: "Platinum", price: 7900, fixed: true, category: "new" },
+//   { key: "PlatinumPrivate", label: "Platinum Private", price: 9900, fixed: true, category: "new" },
+//   { key: "VysyamalaDelight", label: "Vysyamala Delight", price: null, fixed: false, category: "new" }, // custom
+//   { key: "Mini10", label: "Mini10", price: 2000, fixed: true, category: "new" },
+//   { key: "Mini20", label: "Mini20", price: 3000, fixed: true, category: "new" },
+//   { key: "Mini30", label: "Mini30", price: 4000, fixed: true, category: "new" },
+//   // --- Renewals ---
+//   { key: "RenewalGold", label: "Renewal - Gold", price: 2000, fixed: true, category: "renewal" },
+//   { key: "RenewalPlatinum", label: "Renewal - Platinum", price: 3000, fixed: true, category: "renewal" },
+//   { key: "RenewalPlatinumPrivate", label: "Renewal - Platinum Private", price: 4000, fixed: true, category: "renewal" },
+//   { key: "RenewalVysyamalaDelight", label: "Renewal - Vysyamala Delight", price: null, fixed: false, category: "renewal" }, // custom
+//   { key: "Upgrade", label: "Upgrade", price: null, fixed: false, category: "new" }, // custom
+//   { key: "Others", label: "Others", price: null, fixed: false, category: "new" }, // custom
+// ];
 
 interface PaymentPopupProps {
   open: boolean;
@@ -285,9 +280,9 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
     // We can't know the original mainAmount vs addons, so we set netAmount
     // and discount. This will mean subtotal is correct.
     const savedDiscount = currencyToNumber(payment.discount);
-    const savedPaidAmount = currencyToNumber(payment.paid_amount);
+    //const savedPaidAmount = currencyToNumber(payment.paid_amount);
 
-    setMainAmount(savedPaidAmount + savedDiscount); // This sets the subtotal
+    setMainAmount(currencyToNumber(payment.package_amount));
 
     // Parse addon_package from existing payment data
     const addonIds = payment.addon_package ? payment.addon_package.split(',').map(id => parseInt(id.trim())) : [];
@@ -300,7 +295,7 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
     setDiscount(savedDiscount);
 
     setValidFrom(payment.validity_startdate ? payment.validity_startdate.split('T')[0] : "");
-    setValidTo(payment.validity_startdate ? payment.validity_startdate.split('T')[0] : "");
+    setValidTo(payment.validity_enddate ? payment.validity_enddate.split('T')[0] : "");
     setOfferAny(payment.offer || "");
     setHintToSave(payment.notes || "");
 
@@ -616,6 +611,13 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
     }
   };
 
+  const handleChangePackageFilter = (newFilter: "" | "new" | "renewal") => {
+    setPackageFilter(newFilter); // Set the filter
+    setMainPackage("");       // Reset selected package
+    setMainAmount(0);         // Reset package amount
+    setSelectedPlanId(null);  // Reset selected plan ID
+  };
+
   if (!open) return null;
 
   return (
@@ -625,9 +627,17 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
         <div className="flex justify-between items-center border-b pb-2 capitalize">
           <h2 className="text-lg justify-items-center font-semibold">Payment Information</h2>
           <button
+            // onClick={() => {
+            //   setIsAdding(false);
+            //   setIsEditing(null);
+            //   onClose();
+            // }}
             onClick={() => {
-              setIsAdding(false);
-              onClose();
+              if (isEditing || isAdding) {
+                handleCancel(); // Reset form state if editing/adding
+                onClose();
+              }
+              onClose(); // Always close the popup
             }}
             className="text-red-600 text-xl font-bold"
           >
@@ -702,21 +712,21 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
                                 <div role="tablist" aria-label="Filter packages" className="inline-flex items-center gap-1 rounded-full border bg-white p-0.5 text-xs">
                                   <button
                                     type="button"
-                                    onClick={() => setPackageFilter("")}
+                                    onClick={() => handleChangePackageFilter("")}
                                     className={`rounded-full px-2 py-1 ${packageFilter === "" ? "bg-black text-white" : "text-neutral-700 hover:bg-neutral-100"}`}
                                   >
                                     All
                                   </button>
                                   <button
                                     type="button"
-                                    onClick={() => setPackageFilter("new")}
+                                    onClick={() => handleChangePackageFilter("new")}
                                     className={`rounded-full px-2 py-1 ${packageFilter === "new" ? "bg-black text-white" : "text-neutral-700 hover:bg-neutral-100"}`}
                                   >
                                     New
                                   </button>
                                   <button
                                     type="button"
-                                    onClick={() => setPackageFilter("renewal")}
+                                    onClick={() => handleChangePackageFilter("renewal")}
                                     className={`rounded-full px-2 py-1 ${packageFilter === "renewal" ? "bg-black text-white" : "text-neutral-700 hover:bg-neutral-100"}`}
                                   >
                                     Renewal
@@ -765,8 +775,8 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
                                   onChange={(e) => setMainAmount(currencyToNumber(e.target.value))}
                                   className="w-full rounded-xl border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black/5"
                                   placeholder="Auto-filled for fixed plans; enter for custom"
-                                  // Disable if the package is fixed
-                                  disabled={MAIN_PACKAGES.find(p => p.key === mainPackage)?.fixed}
+                                // Disable if the package is fixed
+                                // disabled={MAIN_PACKAGES.find(p => p.key === mainPackage)?.fixed}
                                 />
                               </div>
                               <p className="text-xs text-neutral-500">
@@ -989,7 +999,7 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
                                 onChange={(e) => setPaymentStatus(e.target.value)}
                                 className="w-full rounded-xl border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black/5"
                               >
-                                <option value="" disabled>Select status</option>
+                                <option value="">Select status</option>
                                 <option value="Success">Success</option>
                                 <option value="Failure">Failure</option>
                               </select>
@@ -1202,7 +1212,7 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
                                 </span>
                               </td>
                               <td className="px-4 py-3 whitespace-nowrap flex gap-2">
-                                <button
+                                {/* <button
                                   onClick={() => handleApprove(transaction.id)}
                                   className="px-4 py-1 text-xs font-semibold rounded-md bg-green-600 text-white hover:bg-green-700 shadow-sm"
                                 >
@@ -1213,7 +1223,26 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
                                   className="px-4 py-1 text-xs font-semibold rounded-md border border-red-600 text-red-600 hover:bg-red-50 shadow-sm"
                                 >
                                   Deny
-                                </button>
+                                </button> */}
+                                {transaction.status === "1" ? (
+                                  <div className="flex gap-2 justify-center">
+                                    <button
+                                      onClick={() => handleApprove(transaction.id)}
+                                      className="px-4 py-1 text-xs font-semibold rounded-md bg-green-600 text-white hover:bg-green-700 shadow-sm"
+                                    >
+                                      Approve
+                                    </button>
+                                    <button
+                                      onClick={() => handleDeny(transaction.id)}
+                                      className="px-4 py-1 text-xs font-semibold rounded-md border border-red-600 text-red-600 hover:bg-red-50 shadow-sm"
+                                    >
+                                      Deny
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <span className="text-xs text-gray-500 text-center">No actions available</span>
+                                )}
+
                               </td>
                             </tr>
                           ))
