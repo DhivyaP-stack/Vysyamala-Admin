@@ -762,12 +762,12 @@ const ViewHoroDetails: React.FC<pageProps> = ({ profile, setBirthStar }) => {
   }, [horoDetails.time_of_birth]);
 
   const getDisplayValue = (value: string) => {
-  return value === '0' ? '' : value;
-};
+    return value === '0' ? '' : value;
+  };
 
 
   // Function to check if value is zero for styling
-  
+
 
   return (
     <div>
@@ -1031,7 +1031,7 @@ const ViewHoroDetails: React.FC<pageProps> = ({ profile, setBirthStar }) => {
                     <select
                       disabled
                       // value={year || ""}
-                       value={getDisplayValue(year)|| year}
+                      value={getDisplayValue(year) || year}
                       id="year"
                       className="outline-none w-full px-4 py-2 border border-[#b5b2b2e6] text-[#222020e6] rounded"
                     >
@@ -1049,7 +1049,7 @@ const ViewHoroDetails: React.FC<pageProps> = ({ profile, setBirthStar }) => {
                   <div>
                     <select
                       // value={month || ""}
-                       value={getDisplayValue(month) || month}
+                      value={getDisplayValue(month) || month}
                       disabled
                       id="month"
                       className="outline-none w-full px-4 py-2 border border-[#b5b2b2e6] text-[#222020e6] rounded"
@@ -1067,7 +1067,7 @@ const ViewHoroDetails: React.FC<pageProps> = ({ profile, setBirthStar }) => {
                   <div>
                     <select
                       // value={day || ""}
-                       value={getDisplayValue(day) || day}
+                      value={getDisplayValue(day) || day}
                       disabled
                       id="dasa_balance"
                       className="outline-none w-full px-4 py-2 border-[#b5b2b2e6] text-[#222020e6] font-medium border rounded"
@@ -1121,24 +1121,32 @@ const ViewHoroDetails: React.FC<pageProps> = ({ profile, setBirthStar }) => {
               <h4 className="text-xl font-semibold text-[#5a5959e6] dark:text-white mb-4">
                 Rasi Grid
               </h4>
-              <RasiGridview
-                centerLabel={'Rasi'}
-                rasiTemp={'1'}
-                data={horoDetails.rasi_kattam}
-              />
+              {horoDetails?.rasi_kattam ? (
+                <RasiGridview
+                  centerLabel={'Rasi'}
+                  rasiTemp={'1'}
+                  data={horoDetails.rasi_kattam}
+                />
+              ) : (
+                <div className="text-gray-500 italic">No Rasi Grid data available</div>
+              )}
             </div>
 
             <br />
 
-            <div>
+            <div >
               <h4 className="text-xl font-semibold text-[#5a5959e6] dark:text-white mb-4">
                 Amsam Grid
               </h4>
-              <AmsamGridview
-                centerLabel={'Amsam'}
-                rasiTemp={'1'}
-                data={horoDetails.amsa_kattam}
-              />
+              {horoDetails?.amsa_kattam ? (
+                <AmsamGridview
+                  centerLabel={'Amsam'}
+                  rasiTemp={'1'}
+                  data={horoDetails.amsa_kattam}
+                />
+              ) : (
+                <div className="text-gray-500 italic">No Amsam Grid data available</div>
+              )}
             </div>
           </div>
         )}

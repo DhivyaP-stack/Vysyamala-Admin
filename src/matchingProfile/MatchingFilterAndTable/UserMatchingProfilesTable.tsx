@@ -2575,7 +2575,8 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                             <option value="match_compatability_black">Black</option>
                             <option value="match_compatability_without_horo">Without Horoscope</option>
                             <option value="match_compatability_without_horo_black">Without Horoscope Black</option>
-                            <option value="whatsapp_link_profile">Whatsapp Link Profile</option>
+                            <option value="whatsapp_link_profile_img">Whatsapp Link Profile (with image)</option>
+                            <option value="whatsapp_link_profile">Whatsapp Link Profile (without image)</option>
                         </select>
                     </div>
                 )}
@@ -2595,7 +2596,8 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                             <option value="match_compatability_black">Black</option>
                             <option value="match_compatability_without_horo">Without Horoscope</option>
                             <option value="match_compatability_without_horo_black">Without Horoscope Black</option>
-                            <option value="whatsapp_link_profile">Whatsapp Link Profile</option>
+                            <option value="whatsapp_link_profile_img">Whatsapp Link Profile (with image)</option>
+                            <option value="whatsapp_link_profile">Whatsapp Link Profile (without image)</option>
                         </select>
                     </div>
                 )}
@@ -2615,7 +2617,8 @@ export const UserMatchingProfilesTable = ({ profileID, filters, onBack, profileT
                             <option value="match_compatability_black">Black</option>
                             <option value="match_compatability_without_horo">Without Horoscope</option>
                             <option value="match_compatability_without_horo_black">Without Horoscope Black</option>
-                            <option value="whatsapp_link_profile">Whatsapp Link Profile</option>
+                            <option value="whatsapp_link_profile_img">Whatsapp Link Profile (with image)</option>
+                            <option value="whatsapp_link_profile">Whatsapp Link Profile (without image)</option>
                         </select>
                     </div>
                 )}
