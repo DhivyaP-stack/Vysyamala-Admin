@@ -114,7 +114,7 @@ export const MyProfileShare: React.FC<ShareProps> = ({
     }
     return (
       `${title}\n\n` +
-      `🌟 *Profile  Link:* ${shareUrlWithoutImage}\n` +
+      // `🌟 *Profile  Link:* ${shareUrlWithoutImage}\n` +
       `🆔 *Profile ID:* ${profileId || 'Not available'}\n` +
       `👤 *Profile Name:* ${profileName || 'Not available'}\n` +
       `🎂 *Age:* ${age || 'Not available'} years\n` +
@@ -124,7 +124,7 @@ export const MyProfileShare: React.FC<ShareProps> = ({
       // `💼 *Profession:* ${profession || 'Not available'}${companyName || businessName ? ` at ${companyName || businessName}` : ''}\n` +
       professionLine +
       `📍 *Place of Stay:* ${placeOfStay || 'Not available'}\n\n` +
-      `🌟 *For More Details:* ${shareUrl}\n` +
+      `🌟 *For More Details:* ${shareUrlWithoutImage}\n` +
       `------------------------------------------- \n` +
       // `click here to visit your matrimony profile on Vysyamala -\n` +
       `Click here to register your profile on Vysyamala :\n`
