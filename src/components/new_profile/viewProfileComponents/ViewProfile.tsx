@@ -649,17 +649,27 @@ const ViewProfile: React.FC<pageProps> = ({
                   Data History
                 </Button>
 
-                <Button
+                {/* <Button
                   variant="contained"
                   size="small"
                   className="bg-blue-700 whitespace-nowrap"
                 >
                   Invoice Generation
-                </Button>
+                </Button> */}
+                <div>
+                  <Button
+                    variant="contained"
+                    size="small"
+                    onClick={() => setOpen(true)}
+                    className="bg-blue-700 whitespace-nowrap w-45">
+                    Payment Info
+                  </Button>
+                  <PaymentPopup open={open} onClose={() => setOpen(false)} profileId={profileId ?? ""} showAddButton={false} />
+                </div>
               </div>
 
               {/* Profile Info Sections */}
-              <div className='mt-4'>
+              {/* <div className='mt-4'>
                 <Button
                   variant="contained"
                   size="small"
@@ -668,7 +678,7 @@ const ViewProfile: React.FC<pageProps> = ({
                   Payment Info
                 </Button>
                 <PaymentPopup open={open} onClose={() => setOpen(false)} profileId={profileId ?? ""} showAddButton={false} />
-              </div>
+              </div> */}
 
               <div className="mt-4 flex flex-col lg:flex-row gap-4">
                 {/* Left Section */}

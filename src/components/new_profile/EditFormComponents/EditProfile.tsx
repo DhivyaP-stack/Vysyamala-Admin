@@ -648,7 +648,7 @@ const EditViewProfile: React.FC<pageProps> = ({
                         <button
                           type="button"
                           onClick={() => setOpenDataHistory(true)}
-                          className={`bg-blue-700 text-white px-12 py-1 text-md h-auto rounded `}
+                          className={`bg-blue-700 text-white px-10 py-1 text-md h-auto rounded `}
                         >
                           Data History
                         </button>
@@ -659,18 +659,27 @@ const EditViewProfile: React.FC<pageProps> = ({
                         />
                       </div>
 
-                      <div>
+                      {/* <div>
                         <button
                           type="button"
                           className={`bg-blue-700 text-white px-5 py-1 text-md h-auto rounded whitespace-nowrap text-center`}
                         >
                           Invoice Generation
                         </button>
+                      </div> */}
+                      <div>
+                        <button
+                          type="button"
+                          onClick={() => setOpen(true)}
+                          className={`bg-blue-700 text-white px-10 py-1 text-md h-auto rounded whitespace-nowrap text-center`}
+                        >
+                          Payment Info
+                        </button>
+                        <PaymentPopup open={open} onClose={() => setOpen(false)} profileId={profileId} showAddButton={true} />
                       </div>
 
-
                     </div>
-                    <div className='mb-4 ml-4'>
+                    {/* <div className='mb-4 ml-4'>
                       <button
                         type="button"
                         onClick={() => setOpen(true)}
@@ -679,7 +688,7 @@ const EditViewProfile: React.FC<pageProps> = ({
                         Payment Info
                       </button>
                       <PaymentPopup open={open} onClose={() => setOpen(false)} profileId={profileId} showAddButton={true} />
-                    </div>
+                    </div> */}
                     <div className="flex max-xl:flex-wrap">
                       <div>
                         <div>
