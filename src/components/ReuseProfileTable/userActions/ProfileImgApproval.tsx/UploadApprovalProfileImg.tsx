@@ -180,7 +180,7 @@ export const UploadApprovalProfileImg = () => {
             setLoading(false);
         }
     };
-    
+
     //Image Approval
     const handleImageApprovalChange = (imageId: number) => {
         if (!photoProofDetails) return;
@@ -433,19 +433,21 @@ export const UploadApprovalProfileImg = () => {
                         />
                     </div>
                     {/* Horoscope upload */}
-                    <div className="flex">
-                        <span className="w-50 font-semibold text-black">Original Horoscope File</span>
-                        <a
-                            href="#"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                handleDownloadHoroscopeFile(photoProofDetails.horoscope_file);
-                            }}
-                            className="text-blue-500 underline ml-2"
-                        >
-                            View File
-                        </a>
-                    </div>
+                    {photoProofDetails?.horoscope_file && (
+                        <div className="flex">
+                            <span className="w-50 font-semibold text-black">Original Horoscope File</span>
+                            <a
+                                href="#"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    handleDownloadHoroscopeFile(photoProofDetails.horoscope_file);
+                                }}
+                                className="text-blue-500 underline ml-2"
+                            >
+                                View File
+                            </a>
+                        </div>
+                    )}
 
                     <div className="flex">
                         <FileInput
