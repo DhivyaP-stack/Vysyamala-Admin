@@ -102,7 +102,7 @@ export const downloadExcel = async () => {
 
 
 export const downloadProfilePdf = async (profileId: string, format: string) => {
-  const apiUrl = `${API_URL}/admin-pdf-with-format/?profile_id=${encodeURIComponent(profileId)}&pdf_format=${encodeURIComponent(format)}`;
+  const apiUrl = `https://app.vysyamala.com/api/admin-pdf-with-format/?profile_id=${encodeURIComponent(profileId)}&pdf_format=${encodeURIComponent(format)}`;
 
   try {
     // Show loading indicator
