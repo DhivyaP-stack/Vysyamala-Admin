@@ -115,6 +115,7 @@ import { UserProfileVisibilityFilter } from './matchingProfile/ProfileVisibility
 import { ProfileVisibilityTable } from './matchingProfile/ProfileVisibilityFilterAndTable/ProfileVisibilityTable';
 import TransactionHistoryNew from './components/ReuseProfileTable/userActions/TransactionHistoryNew';
 import FeaturedProfiles from './components/ReuseProfileTable/Profiles/FeaturedProfiles';
+import StaffDetails from './components/StaffDetails/StaffDetails';
 
 
 function App() {
@@ -554,6 +555,15 @@ function App() {
                       <>
                         <PageTitle title="FeaturedProfiles" />
                         <FeaturedProfiles />
+                      </>
+                    }
+                  />
+                  <Route
+                    path="/StaffDetails"
+                    element={
+                      <>
+                        <PageTitle title="StaffDetails" />
+                        <StaffDetails />
                       </>
                     }
                   />

@@ -361,6 +361,18 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                           </li>
                           {/* <li>
                             <NavLink
+                              to="StaffDetails"
+                              className={({ isActive }) =>
+                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                                (isActive && '!text-PrimaryRed')
+                              }
+                            >
+                              <GoDot />
+                              Staff Details
+                            </NavLink>
+                          </li> */}
+                          {/* <li>
+                            <NavLink
                               to="viewProfile"
                               className={({ isActive }) =>
                                 'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +

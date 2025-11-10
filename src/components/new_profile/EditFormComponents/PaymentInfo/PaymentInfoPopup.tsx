@@ -407,7 +407,7 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
     }
 
     // Construct the invoice URL with the subscription_id
-    const invoiceUrl = `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/generate-invoice/?subscription_id=${payment.id}`;
+    const invoiceUrl = `https://app.vysyamala.com/api/generate-invoice/?subscription_id=${payment.id}`;
 
     // Open the invoice in a new tab
     window.open(invoiceUrl, '_blank', 'noopener,noreferrer');
