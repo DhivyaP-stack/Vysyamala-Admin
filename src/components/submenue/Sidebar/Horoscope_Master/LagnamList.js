@@ -37,16 +37,16 @@ const LagnamList = () => {
     }, [lagnams, showPopup, deleteConfirmation]);
 
     const fetchLagnams = async () => {
-        const response = await axios.get('https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/lagnams/');
+        const response = await axios.get('https://app.vysyamala.com/api/accounts/lagnams/');
         setLagnams(response.data);
     };
 
     const addOrUpdateLagnam = async () => {
         const lagnamData = { name: newLagnam };
         if (editLagnamId) {
-            await axios.put(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/lagnams/${editLagnamId}/`, lagnamData);
+            await axios.put(`https://app.vysyamala.com/api/accounts/lagnams/${editLagnamId}/`, lagnamData);
         } else {
-            await axios.post('https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/lagnams/', lagnamData);
+            await axios.post('https://app.vysyamala.com/api/accounts/lagnams/', lagnamData);
         }
         setNewLagnam('');
         setShowPopup(false);
@@ -61,7 +61,7 @@ const LagnamList = () => {
     };
 
     const confirmDeleteLagnam = async () => {
-        await axios.delete(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/lagnams/${lagnamToDelete}/`);
+        await axios.delete(`https://app.vysyamala.com/api/accounts/lagnams/${lagnamToDelete}/`);
         setDeleteConfirmation(false);
         setLagnamToDelete(null);
         fetchLagnams();

@@ -77,7 +77,7 @@ const VysAssistPopup: React.FC<VysAssistPopupProps> = ({ vysassistId, onClose })
     setLoading(true);
     try {
       const response = await axios.get(
-        `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/Vysfollowups/?assist_id=${vysassistId}`
+        `https://app.vysyamala.com/api/Vysfollowups/?assist_id=${vysassistId}`
       );
       setFollowUpData(response.data.followups || response.data || []);
     } catch (error) {
@@ -119,7 +119,7 @@ const VysAssistPopup: React.FC<VysAssistPopupProps> = ({ vysassistId, onClose })
     e.preventDefault();
     try {
       await axios.post(
-        "https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/Vysfollowups/",
+        "https://app.vysyamala.com/api/Vysfollowups/",
         formData,
         { headers: { "Content-Type": "application/json" } }
       );

@@ -36,16 +36,16 @@ const PlaceOfBirthList = () => {
     }, [placesOfBirth, showPopup, deleteConfirmation]);
 
     const fetchPlacesOfBirth = async () => {
-        const response = await axios.get('https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/place-of-births/');
+        const response = await axios.get('https://app.vysyamala.com/api/accounts/place-of-births/');
         setPlacesOfBirth(response.data);
     };
 
     const addOrUpdatePlaceOfBirth = async () => {
         const placeData = { place: newPlaceOfBirth };
         if (editPlaceId) {
-            await axios.put(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/place-of-births/${editPlaceId}/`, placeData);
+            await axios.put(`https://app.vysyamala.com/api/accounts/place-of-births/${editPlaceId}/`, placeData);
         } else {
-            await axios.post('https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/place-of-births/', placeData);
+            await axios.post('https://app.vysyamala.com/api/accounts/place-of-births/', placeData);
         }
         setNewPlaceOfBirth('');
         setShowPopup(false);
@@ -67,7 +67,7 @@ const PlaceOfBirthList = () => {
     };
 
     const confirmDeletePlace = async () => {
-        await axios.delete(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/place-of-births/${placeToDelete}/`);
+        await axios.delete(`https://app.vysyamala.com/api/accounts/place-of-births/${placeToDelete}/`);
         setPlaceToDelete(null);
         setDeleteConfirmation(false);
         fetchPlacesOfBirth();

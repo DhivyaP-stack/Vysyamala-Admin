@@ -39,7 +39,7 @@ export const ViewAlertSettings: React.FC = () => {
     if (profileId) {
       axios
         .post<AlertSettingsResponse>(
-          'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_alert_settings/',
+          'https://app.vysyamala.com/auth/Get_alert_settings/',
         )
         .then((response) => {
           const { data } = response.data;
@@ -63,7 +63,7 @@ export const ViewAlertSettings: React.FC = () => {
       // Fetch enabled notifications for the profile
       axios
         .post<EnabledNotificationsResponse>(
-          'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_enabled_notifications/',
+          'https://app.vysyamala.com/auth/Get_enabled_notifications/',
           { profile_id: profileId },
         )
         .then((response) => {

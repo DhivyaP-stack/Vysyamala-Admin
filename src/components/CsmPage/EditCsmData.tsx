@@ -34,7 +34,7 @@ console.log(editorData,"editorData");
   useEffect(() => {
     const fetchPageData = async () => {
       try {
-        const response = await axios.get(` https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/page-list/${id}/`);
+        const response = await axios.get(` https://app.vysyamala.com/api/page-list/${id}/`);
         const pageData = response.data;
         setPageName(pageData.page_name);
         setStatus(pageData.status);
@@ -114,7 +114,7 @@ console.log(editorData,"editorData");
         meta_keywords: validatedData.metaKeywords, // Changed to snake_case
       };
 
-      const response = await axios.put(` https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/page/edit/${id}/`, formData);
+      const response = await axios.put(` https://app.vysyamala.com/api/page/edit/${id}/`, formData);
       if (response.status >= 200 || response.status <= 299) {
         notify('Successfully Updated');  
         
@@ -231,7 +231,7 @@ console.log(editorData,"editorData");
                 ]
               },
               ckfinder: {
-                uploadUrl: ' https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/upload-image/' // Update this URL as needed
+                uploadUrl: ' https://app.vysyamala.com/api/upload-image/' // Update this URL as needed
               },
             }}
           />

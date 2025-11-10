@@ -202,7 +202,7 @@ const VysAssist: React.FC = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/profile-vys-assist/',
+        'https://app.vysyamala.com/api/profile-vys-assist/',
       );
       setData(response.data.results); // Assuming response.data contains an array of results
     } catch (error) {
@@ -424,7 +424,7 @@ export default VysAssist;
 //     setLoading(true);
 //     try {
 //       const response = await axios.get(
-//         'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/profile-vys-assist/',
+//         'https://app.vysyamala.com/api/profile-vys-assist/',
 //       );
 //       setData(response.data); // Assuming response.data contains the structure { results: [], count: 0 }
 //     } catch (error) {

@@ -356,7 +356,7 @@ const SuggestedProfileForm: React.FC<SuggestedProfileForm> = ({
     const fetchStatePreferences = async () => {
       try {
         const response = await axios.post(
-          `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_State_Pref/`
+          `https://app.vysyamala.com/auth/Get_State_Pref/`
         );
 
         console.log("fffffffffffffffffffffff", response);

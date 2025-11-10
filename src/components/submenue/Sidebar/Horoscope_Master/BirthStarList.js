@@ -43,16 +43,16 @@ const BirthStarList = () => {
     }, [birthStars, showPopup, deleteConfirmation]);
 
     const fetchBirthStars = async () => {
-        const response = await axios.get('https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/birth-stars/');
+        const response = await axios.get('https://app.vysyamala.com/api/accounts/birth-stars/');
         setBirthStars(response.data);
     };
 
     const addOrUpdateBirthStar = async () => {
         const starData = { star: newBirthStar };
         if (editStarId) {
-            await axios.put(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/birth-stars/${editStarId}/`, starData);
+            await axios.put(`https://app.vysyamala.com/api/accounts/birth-stars/${editStarId}/`, starData);
         } else {
-            await axios.post('https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/birth-stars/', starData);
+            await axios.post('https://app.vysyamala.com/api/accounts/birth-stars/', starData);
         }
         setNewBirthStar('');
         setShowPopup(false);
@@ -73,7 +73,7 @@ const BirthStarList = () => {
     };
 
     const confirmDeleteStar = async () => {
-        await axios.delete(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/birth-stars/${starToDelete}/`);
+        await axios.delete(`https://app.vysyamala.com/api/accounts/birth-stars/${starToDelete}/`);
         setStarToDelete(null);
         setDeleteConfirmation(false);
         fetchBirthStars();

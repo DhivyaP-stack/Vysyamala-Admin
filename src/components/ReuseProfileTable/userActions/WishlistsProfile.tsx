@@ -38,7 +38,7 @@ const getWishlistsProfile = async (fromDate: string, toDate: string, page: numbe
     rowsPerPage: rowsPerPage.toString()
   });
 
-  const url = `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/bookmarks/?${params.toString()}`;
+  const url = `https://app.vysyamala.com/api/bookmarks/?${params.toString()}`;
   const response = await axios.get(url);
   return response.data;
 };

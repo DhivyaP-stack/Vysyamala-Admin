@@ -34,7 +34,7 @@ export const DataHistoryPopup: React.FC<DataHistoryProps> = ({ open, onClose, pr
         setError(null);
         try {
             const response = await axios.get(
-                `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/data-history/`,
+                `https://app.vysyamala.com/api/data-history/`,
                 {
                     params: {
                         profile_id: profileId

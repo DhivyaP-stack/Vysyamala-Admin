@@ -35,12 +35,12 @@ const AnnualIncomeList = () => {
     }, [annualIncomes, showAddPopup, showEditPopup, deleteConfirmation]); // Replace icons after render
 
     const fetchAnnualIncomes = async () => {
-        const response = await axios.get('https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/annual-incomes/');
+        const response = await axios.get('https://app.vysyamala.com/api/accounts/annual-incomes/');
         setAnnualIncomes(response.data);
     };
 
     const addAnnualIncome = async () => {
-        await axios.post('https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/annual-incomes/', { income: newAnnualIncome });
+        await axios.post('https://app.vysyamala.com/api/accounts/annual-incomes/', { income: newAnnualIncome });
         setNewAnnualIncome('');
         setShowAddPopup(false);
         fetchAnnualIncomes();
@@ -53,7 +53,7 @@ const AnnualIncomeList = () => {
     };
 
     const confirmDeleteIncome = async () => {
-        await axios.delete(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/annual-incomes/${incomeToDelete}/`);
+        await axios.delete(`https://app.vysyamala.com/api/accounts/annual-incomes/${incomeToDelete}/`);
         setDeleteConfirmation(false);
         setIncomeToDelete(null);
         fetchAnnualIncomes();
@@ -65,7 +65,7 @@ const AnnualIncomeList = () => {
     };
 
     const editAnnualIncome = async () => {
-        await axios.put(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/annual-incomes/${editAnnualIncomeData.id}/`, editAnnualIncomeData);
+        await axios.put(`https://app.vysyamala.com/api/accounts/annual-incomes/${editAnnualIncomeData.id}/`, editAnnualIncomeData);
         setEditAnnualIncomeData(null);
         setShowEditPopup(false);
         fetchAnnualIncomes();

@@ -90,7 +90,7 @@ const AddProfileForm: React.FC<AddProfileForm> = ({
   useEffect(() => {
     const fetchHeight = async () => {
       try {
-        const response = await axios.post(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_Height/`);
+        const response = await axios.post(`https://app.vysyamala.com/auth/Get_Height/`);
         const options = Object.values(response.data) as HeightOption[];
         setHeightOptions(options);
       } catch (error) {
@@ -171,7 +171,7 @@ const AddProfileForm: React.FC<AddProfileForm> = ({
   const getMaritalStatus = async () => {
     try {
       const response = await axios.post(
-        ' https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_Marital_Status/',
+        ' https://app.vysyamala.com/auth/Get_Marital_Status/',
       );
       const options: MaritalStatusOption[] = Object.values(response.data);
       console.log(options)

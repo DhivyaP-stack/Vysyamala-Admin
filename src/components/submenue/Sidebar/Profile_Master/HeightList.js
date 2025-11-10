@@ -34,7 +34,7 @@ const HeightList = () => {
     }, []);
 
     const fetchHeights = () => {
-        axios.get('https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/heights/')
+        axios.get('https://app.vysyamala.com/api/heights/')
             .then(response => {
                 setHeights(response.data);
             }).catch(error => {
@@ -44,7 +44,7 @@ const HeightList = () => {
 
     const handleAddOrEditHeight = () => {
         if (editHeightId) {
-            axios.put(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/heights/${editHeightId}/`, newHeight)
+            axios.put(`https://app.vysyamala.com/api/heights/${editHeightId}/`, newHeight)
                 .then(response => {
                     setHeights(heights.map(height => height.id === editHeightId ? response.data : height));
                     resetForm();
@@ -53,7 +53,7 @@ const HeightList = () => {
                     console.error(error);
                 });
         } else {
-            axios.post('https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/heights/', newHeight)
+            axios.post('https://app.vysyamala.com/api/heights/', newHeight)
                 .then(response => {
                     setHeights([...heights, response.data]);
                     resetForm();
@@ -77,7 +77,7 @@ const HeightList = () => {
     };
 
     const confirmDeleteHeight = () => {
-        axios.delete(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/heights/${heightToDelete}/`)
+        axios.delete(`https://app.vysyamala.com/api/heights/${heightToDelete}/`)
             .then(() => {
                 setHeights(heights.filter(height => height.id !== heightToDelete));
                 setHeightToDelete(null);

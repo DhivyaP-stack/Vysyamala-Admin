@@ -43,7 +43,7 @@ const AdminTable: React.FC = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          ' https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/admin-users/',
+          ' https://app.vysyamala.com/api/admin-users/',
         );
         const data = response.data.map((item: any) => ({
           id: item.id,
@@ -82,7 +82,7 @@ const AdminTable: React.FC = () => {
 
     try {
       let response = await axios.delete(
-        ` https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/admin-user/delete/${selectedUserId}/`,
+        ` https://app.vysyamala.com/api/admin-user/delete/${selectedUserId}/`,
       );
 
       if (response.status >= 200 && response.status <= 299) {

@@ -291,7 +291,7 @@ const EditViewProfile: React.FC<pageProps> = ({
   const fetchAddOnPackages = async () => {
     try {
       const response = await axios.post(
-        'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_addon_packages/',
+        'https://app.vysyamala.com/auth/Get_addon_packages/',
       );
       if (response.data.status === 'success') {
         console.log(response.data.data);

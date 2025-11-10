@@ -40,12 +40,12 @@ const ComplexionList = () => {
     }, [complexions, currentPage, showAddPopup, showEditPopup, deleteConfirmation]);
 
     const fetchComplexions = async () => {
-        const response = await axios.get('https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/complexions/');
+        const response = await axios.get('https://app.vysyamala.com/api/accounts/complexions/');
         setComplexions(response.data);
     };
 
     const addComplexion = async () => {
-        await axios.post('https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/complexions/', { type: newComplexion });
+        await axios.post('https://app.vysyamala.com/api/accounts/complexions/', { type: newComplexion });
         setNewComplexion('');
         fetchComplexions();
         setShowAddPopup(false);
@@ -59,7 +59,7 @@ const ComplexionList = () => {
     };
 
     const confirmDeleteComplexion = async () => {
-        await axios.delete(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/complexions/${complexionToDelete}/`);
+        await axios.delete(`https://app.vysyamala.com/api/accounts/complexions/${complexionToDelete}/`);
         setDeleteConfirmation(false);
         setComplexionToDelete(null);
         fetchComplexions();
@@ -71,7 +71,7 @@ const ComplexionList = () => {
     };
 
     const editComplexion = async () => {
-        await axios.put(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/complexions/${editComplexionData.id}/`, editComplexionData);
+        await axios.put(`https://app.vysyamala.com/api/accounts/complexions/${editComplexionData.id}/`, editComplexionData);
         fetchComplexions();
         setShowEditPopup(false);
         setShowSuccessPopup(true);

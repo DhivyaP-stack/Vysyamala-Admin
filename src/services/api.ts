@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { notify } from '../components/TostNotification';
 
-export const API_URL = 'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api'; // Replace with your actual API URL
-export const API_URL_Auth = ' https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth';
+export const API_URL = 'https://app.vysyamala.com/api'; // Replace with your actual API URL
+export const API_URL_Auth = ' https://app.vysyamala.com/auth';
 
 // export const API_URL = 'https://gl9hwr3r-8000.inc1.devtunnels.ms/api'; // Replace with your actual API URL
 // export const API_URL_Auth = ' https://gl9hwr3r-8000.inc1.devtunnels.ms/auth';
@@ -26,7 +26,7 @@ export const ExpressIntrest = `${API_URL}/express-interest/`;
 
 export const fetchStatePreferences = async () => {
   const response = await axios.post(
-    'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_State_Pref/',
+    'https://app.vysyamala.com/auth/Get_State_Pref/',
   );
   return Object.values(response.data); // Convert response to array
 };
@@ -48,7 +48,7 @@ export const downloadExcel = async () => {
 
 
 // export const downloadProfilePdf = async (profileId: string, format: string) => {
-//   //const apiUrl = 'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/generate_short_profile_pdf/';
+//   //const apiUrl = 'https://app.vysyamala.com/api/generate_short_profile_pdf/';
 //   const apiUrl = `${API_URL}/admin-pdf-with-format/`;
 //   try {
 //     // Show loading indicator
@@ -156,7 +156,7 @@ export const downloadProfilePdf = async (profileId: string, format: string) => {
 //     page_size:rowsPerPage.toString
 //   });
 
-//   const url = `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/express-interest/?${params.toString()}`;
+//   const url = `https://app.vysyamala.com/api/express-interest/?${params.toString()}`;
 //   const response = await axios.get(url);
 //   console.log(response.data)
 //   return response.data;
@@ -177,7 +177,7 @@ export const getExpressIntrest = async (
     page_size: rowsPerPage.toString() // Fix: Add parentheses
   });
 
-  const url = `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/express-interest/?${params.toString()}`;
+  const url = `https://app.vysyamala.com/api/express-interest/?${params.toString()}`;
   const response = await axios.get(url);
   console.log(response.data);
   return response.data;
@@ -762,8 +762,8 @@ export const apiService = {
     axios.delete(`${API_URL}/dasa-balances/${id}/`),
 };
 
-export const BirthStarApi = ' https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/birth-stars/';
-export const GothramApi = ' https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/gothrams/';
+export const BirthStarApi = ' https://app.vysyamala.com/api/birth-stars/';
+export const GothramApi = ' https://app.vysyamala.com/api/gothrams/';
 
 //rasi api
 
@@ -817,7 +817,7 @@ export const profileImgApproval = `${API_URL}/get_profile-images_approval/`;
 export const photoRequest = `${API_URL}/photo-requests/`;
 
 //addOrUpdateProfileHolder
-export const addOrUpdateProfileHolder = `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/profile-holders/`;
+export const addOrUpdateProfileHolder = `https://app.vysyamala.com/api/profile-holders/`;
 
 ///cms page
 export const cmsFetchData = `${API_URL}/page-list/`;
@@ -843,6 +843,6 @@ export const adminsettings = `${API_URL}/admin-settings/`;
 export const adminSettingsUpdate = ` ${API_URL}/admin-settings/update/`;
 
 //edit profile page
-export const getParentOccupation = `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_Parent_Occupation/`;
+export const getParentOccupation = `https://app.vysyamala.com/auth/Get_Parent_Occupation/`;
 //vys assist
 export const vysAssistApi = `${API_URL}/profile-vys-assist/`;

@@ -20,8 +20,8 @@ import { ProfileType } from './matchingProfile/matchingProfile';
 import { string } from 'zod';
 
 //family detail api's
-const API_URL = 'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth';
-export const API = ' https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api';
+const API_URL = 'https://app.vysyamala.com/auth';
+export const API = ' https://app.vysyamala.com/api';
 
 // const API_URL = 'https://gl9hwr3r-8000.inc1.devtunnels.ms/auth';
 // const API = 'https://gl9hwr3r-8000.inc1.devtunnels.ms/api';
@@ -168,7 +168,7 @@ export const fetchFamilyStatuses = async (): Promise<getFamilyStatus[]> => {
 
 // export const getEditProfileViewStatus = async ():Promise<getEditProfileView>=>{
 //   try{
-// const response = await axios.get('https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/get_status_master/')
+// const response = await axios.get('https://app.vysyamala.com/api/get_status_master/')
 // // const data=response.data
 // if(response.data?.status == "success"){
 //   const data = response.data.data;
@@ -207,7 +207,7 @@ export const getEditProfileViewStatus = async (): Promise<getEditProfileView[]> 
 //   }
 
 //   try {
-//      const response = await axios.post(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/get_sub_status_master/`,{
+//      const response = await axios.post(`https://app.vysyamala.com/api/get_sub_status_master/`,{
 //       primary_status: status,
 //     })
 //     console.log("fffff4444444444444444444444444444",response)
@@ -234,7 +234,7 @@ export const getProfilePrimaryStatus = async (status: string | number): Promise<
 
   try {
     const response = await axios.post(
-      `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/get_sub_status_master/`,
+      `https://app.vysyamala.com/api/get_sub_status_master/`,
       {
         primary_status: String(status),
       }
@@ -260,7 +260,7 @@ export const getProfileSecondaryStatus = async (secondaryStatus: string): Promis
     return [];  // You might also want to return a default value here
   }
   try {
-    const response = await axios.post(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/get_plan_bystatus/`, {
+    const response = await axios.post(`https://app.vysyamala.com/api/get_plan_bystatus/`, {
       secondary_status: secondaryStatus,
     })
     console.log(response.data)
@@ -279,7 +279,7 @@ export const getProfileSecondaryStatus = async (secondaryStatus: string): Promis
 export const getStatus = async (): Promise<StatusOption[]> => {
   try {
     const response = await axios.get(
-      `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/get_status_master/`,
+      `https://app.vysyamala.com/api/get_status_master/`,
     );
     const data = Object.values(response.data.data) as StatusOption[];
     console.log(data)
@@ -307,7 +307,7 @@ export const fetchCountryStatus = async (): Promise<Country[]> => {
 
 
 export const fetchAddOnPackage = async (): Promise<AddOnPackage[]> => {
-  const response = await axios.post(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_addon_packages/`);
+  const response = await axios.post(`https://app.vysyamala.com/auth/Get_addon_packages/`);
   const option = Object.values(response.data) as AddOnPackage[];
   console.log(option)
   return option

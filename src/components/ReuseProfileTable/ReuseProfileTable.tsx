@@ -98,7 +98,7 @@ const ReUseDataTable: React.FC<DataTableProps> = ({
     if (!confirmed) return;
 
     try {
-      await axios.delete(` https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/logindetails/${ContentId}/`);
+      await axios.delete(` https://app.vysyamala.com/api/logindetails/${ContentId}/`);
       fetchDataFromApi(); // Refresh the data after deletion
     } catch (error) {
       console.error('Error deleting data:', error);

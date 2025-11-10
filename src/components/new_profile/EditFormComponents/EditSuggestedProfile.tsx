@@ -220,7 +220,7 @@
 //     };
 //     const fetchFieldOfStudy = async () => {
 //       try {
-//         const response = await axios.post(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_Field_ofstudy/`);
+//         const response = await axios.post(`https://app.vysyamala.com/auth/Get_Field_ofstudy/`);
 //         const options = Object.values(response.data) as FieldOfStudy[];
 //         setFieldOfStudyOptions(options);
 //       } catch (error) {
@@ -230,7 +230,7 @@
 
 //     const fetchDegrees = async () => {
 //       try {
-//         const response = await axios.get(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/pref_degree_list/`);
+//         const response = await axios.get(`https://app.vysyamala.com/auth/pref_degree_list/`);
 //         const options = Object.values(response.data) as Degree[];
 //         setDegreeOptions(options);
 //       } catch (error) {
@@ -521,7 +521,7 @@
 //     const fetchStatePreferences = async () => {
 //       try {
 //         const response = await axios.post(
-//           `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_State_Pref/`
+//           `https://app.vysyamala.com/auth/Get_State_Pref/`
 //         );
 
 //         console.log("fffffffffffffffffffffff", response);
@@ -1563,7 +1563,7 @@ const EditSuggestedProfile: React.FC<EditSuggestedProfileProps> = ({
     const fetchStatePreferences = async () => {
       try {
         const response = await axios.post(
-          `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_State_Pref/`
+          `https://app.vysyamala.com/auth/Get_State_Pref/`
         );
 
         console.log("fffffffffffffffffffffff", response);

@@ -88,7 +88,7 @@ const CKEditorComponent: React.FC = () => {
     }
 
     try {
-      const response = await axios.post(' https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/page/', {
+      const response = await axios.post(' https://app.vysyamala.com/api/page/', {
         page_name: formData.pageName,
         meta_title: formData.metaTitle,
         meta_description: formData.metaDescription,
@@ -209,7 +209,7 @@ const CKEditorComponent: React.FC = () => {
                 ]
               },
               ckfinder: {
-                uploadUrl: ' https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/upload-image/' // Update this URL as needed
+                uploadUrl: ' https://app.vysyamala.com/api/upload-image/' // Update this URL as needed
               },
             }}
           />

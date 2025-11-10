@@ -26,7 +26,7 @@ const DashBoard: React.FC = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const response = await fetch('https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/dashboard_counts/');
+        const response = await fetch('https://app.vysyamala.com/api/dashboard_counts/');
         const data = await response.json();
         setDashboardData(data);
       } catch (error) {

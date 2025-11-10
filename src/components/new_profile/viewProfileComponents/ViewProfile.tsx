@@ -252,7 +252,7 @@ const ViewProfile: React.FC<pageProps> = ({
 
   useEffect(() => {
     axios
-      .get<FamilyStatus[]>('https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/family-statuses/')
+      .get<FamilyStatus[]>('https://app.vysyamala.com/api/family-statuses/')
       .then((response) => {
         const filteredStatuses = response.data.filter(
           (status) => !status.is_deleted,
@@ -267,7 +267,7 @@ const ViewProfile: React.FC<pageProps> = ({
     // Fetch alert settings from the API
     axios
       .post<AlertSettingsResponse>(
-        'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_alert_settings/',
+        'https://app.vysyamala.com/auth/Get_alert_settings/',
       )
       .then((response) => {
         if (response.data.status === '1') {
@@ -285,7 +285,7 @@ const ViewProfile: React.FC<pageProps> = ({
   const fetchAddOnPackages = async () => {
     try {
       const response = await axios.post(
-        'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_addon_packages/',
+        'https://app.vysyamala.com/auth/Get_addon_packages/',
       );
       if (response.data.status === 'success') {
         console.log(response.data.data);
@@ -355,7 +355,7 @@ const ViewProfile: React.FC<pageProps> = ({
     const fetchAddOnPackages = async () => {
       try {
         const response = await axios.post(
-          'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_addon_packages/',
+          'https://app.vysyamala.com/auth/Get_addon_packages/',
         );
         if (response.data.status === 'success') {
           console.log(response.data.data);
@@ -519,7 +519,7 @@ const ViewProfile: React.FC<pageProps> = ({
                   <img
                     src={
                       profile[6].profile_image ||
-                      'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/media/default_groom.png'
+                      'https://app.vysyamala.com/media/default_groom.png'
                     }
                     alt="Profile"
                     className="w-32 h-32 sm:w-40 sm:h-40 rounded-full border border-red-500 shadow-md object-cover"

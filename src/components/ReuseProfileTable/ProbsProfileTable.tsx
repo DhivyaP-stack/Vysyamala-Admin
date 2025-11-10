@@ -154,7 +154,7 @@ const ProbsProfiletable: React.FC<ProbsProfiletableProps> = ({
   const generateShortProfilePDF = async (profileData: number[]) => {
     try {
       const response = await axios.post(
-        'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/generate_short_profile_pdf/',
+        'https://app.vysyamala.com/api/generate_short_profile_pdf/',
         {
           profile_id: profileData.join(','),
         },

@@ -58,7 +58,7 @@ const ViewBasicDetails: React.FC<pageProps> = ({ profile, setGennder }) => {
   const getAddonPackages = async () => {
     try {
       const response = await axios.post(
-        `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_addon_packages/`,
+        `https://app.vysyamala.com/auth/Get_addon_packages/`,
       );
       const data = Object.values(response.data.data);
       setAddonPackages(data);
@@ -112,7 +112,7 @@ const ViewBasicDetails: React.FC<pageProps> = ({ profile, setGennder }) => {
   const getMaritalStatus = async () => {
     try {
       const response = await axios.post(
-        'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_Marital_Status/',
+        'https://app.vysyamala.com/auth/Get_Marital_Status/',
       );
       const options = Object.values(response.data);
       setMaritialStatus(options);
@@ -169,7 +169,7 @@ const ViewBasicDetails: React.FC<pageProps> = ({ profile, setGennder }) => {
   const getPlaneDetais = async () => {
     try {
       const response = await axios.post(
-        `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_palns/`,
+        `https://app.vysyamala.com/auth/Get_palns/`,
       );
       const data = Object.values(response.data.data);
       setPlane(data);

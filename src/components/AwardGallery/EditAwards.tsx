@@ -41,7 +41,7 @@ const EditAward: React.FC = () => {
     const fetchAward = async () => {
       try {
         const response = await axios.get(
-          ` https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/awards/${id}/`,
+          ` https://app.vysyamala.com/api/awards/${id}/`,
         );
         const { name, description, status, image } = response.data;
 
@@ -85,7 +85,7 @@ const EditAward: React.FC = () => {
 
       // Sending form data to the edit API
       const response = await axios.put(
-        ` https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/awards/edit/${id}/`,
+        ` https://app.vysyamala.com/api/awards/edit/${id}/`,
         formData,
         {
           headers: {
@@ -175,7 +175,7 @@ const EditAward: React.FC = () => {
                 'sourceEditing',
               ],
               ckfinder: {
-                uploadUrl: ' https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/upload-image/', // Update as necessary
+                uploadUrl: ' https://app.vysyamala.com/api/upload-image/', // Update as necessary
               },
             }}
           />

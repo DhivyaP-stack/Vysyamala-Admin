@@ -36,13 +36,13 @@ const CasteList = () => {
     }, [castes, showPopup, deleteConfirmation]);
 
     const fetchCastes = async () => {
-        const response = await axios.get('https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/castes/');
+        const response = await axios.get('https://app.vysyamala.com/api/castes/');
         setCastes(response.data);
     };
 
     const addCaste = async () => {
         if (newCaste.name.trim() === '') return; 
-        await axios.post('https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/castes/', newCaste);
+        await axios.post('https://app.vysyamala.com/api/castes/', newCaste);
         setNewCaste({ name: '' });
         setShowPopup(false);
         setShowSuccessPopup(true); // Show success popup
@@ -50,13 +50,13 @@ const CasteList = () => {
     };
 
     const deleteCaste = async (id) => {
-        await axios.delete(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/castes/${id}/`);
+        await axios.delete(`https://app.vysyamala.com/api/castes/${id}/`);
         fetchCastes();
     };
 
     const editCaste = async () => {
         if (editingCaste.name.trim() === '') return;
-        await axios.put(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/castes/${editingCaste.id}/`, editingCaste);
+        await axios.put(`https://app.vysyamala.com/api/castes/${editingCaste.id}/`, editingCaste);
         setEditingCaste({ id: null, name: '' });
         setShowPopup(false);
         setShowSuccessPopup(true); // Show success popup

@@ -92,7 +92,7 @@ const EditAdminUserForm: React.FC = () => {
     const fetchUser = async () => {
       try {
         const response = await axios.get(
-          ` https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/admin-users/`,
+          ` https://app.vysyamala.com/api/admin-users/`,
         );
         const users = response.data;
         console.log('Fetched Users:', users);
@@ -119,7 +119,7 @@ const EditAdminUserForm: React.FC = () => {
     const fetchRoles = async () => {
       try {
         const response = await axios.get(
-          ' https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/admin-users/roles/',
+          ' https://app.vysyamala.com/api/admin-users/roles/',
         );
         setRoles(response.data);
       } catch (error) {
@@ -134,7 +134,7 @@ const EditAdminUserForm: React.FC = () => {
   const onSubmit = async (data: EditAdminUserFormValues) => {
     try {
       let response = await axios.put(
-        ` https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/admin-user/edit/${id}/`,
+        ` https://app.vysyamala.com/api/admin-user/edit/${id}/`,
         data,
       );
       if (response.status >= 200 || response.status <= 299) {

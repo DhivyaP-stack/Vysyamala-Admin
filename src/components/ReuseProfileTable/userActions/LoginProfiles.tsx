@@ -39,7 +39,7 @@ const getLoginLogs = async (date: string, fromDate: string, toDate: string, page
   params.append('page', (page + 1).toString());
   params.append('per_page', rowsPerPage.toString());
 
-  const url = `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/login-logs/?${params.toString()}`;
+  const url = `https://app.vysyamala.com/api/login-logs/?${params.toString()}`;
   const response = await axios.get(url);
   return response.data;
 };

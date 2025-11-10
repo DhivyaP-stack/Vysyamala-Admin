@@ -7,7 +7,7 @@ interface pageProps {
 }
 const ViewAddonPackage: React.FC<pageProps> = ({profile}) => {
 
-  const API_URL = ' https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth';
+  const API_URL = ' https://app.vysyamala.com/auth';
   const [data, setPlane] = useState<any[]>([]);
   const [addOnPackages, setAddonPackages] = useState<any[]>([]);
 const [addOnDetails,setAddonDetails]=useState([])

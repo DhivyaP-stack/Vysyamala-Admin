@@ -24,9 +24,9 @@ import { FaRegEye } from 'react-icons/fa';
 import { Add } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 
-const FEATURED_API_URL = 'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/featured-profiles/';
-const API_URL = 'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api'; // Base API for delete
-const ADD_PROFILE_API_URL = 'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/featured-profiles-add/';
+const FEATURED_API_URL = 'https://app.vysyamala.com/api/featured-profiles/';
+const API_URL = 'https://app.vysyamala.com/api'; // Base API for delete
+const ADD_PROFILE_API_URL = 'https://app.vysyamala.com/api/featured-profiles-add/';
 
 export const getFeaturedProfiles = async (
     search: string,

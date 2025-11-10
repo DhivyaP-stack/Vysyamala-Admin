@@ -37,12 +37,12 @@ const HighestEducationList = () => {
     }, [highestEducations, showAddPopup, showEditPopup, deleteConfirmation]); // Replace icons after render
 
     const fetchHighestEducations = async () => {
-        const response = await axios.get('https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/highest-educations/');
+        const response = await axios.get('https://app.vysyamala.com/api/accounts/highest-educations/');
         setHighestEducations(response.data);
     };
 
     const addHighestEducation = async () => {
-        await axios.post('https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/highest-educations/', { degree: newHighestEducation });
+        await axios.post('https://app.vysyamala.com/api/accounts/highest-educations/', { degree: newHighestEducation });
         setNewHighestEducation('');
         setShowAddPopup(false);
         fetchHighestEducations();
@@ -56,7 +56,7 @@ const HighestEducationList = () => {
     };
 
     const confirmDeleteEducation = async () => {
-        await axios.delete(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/highest-educations/${educationToDelete}/`);
+        await axios.delete(`https://app.vysyamala.com/api/accounts/highest-educations/${educationToDelete}/`);
         setDeleteConfirmation(false);
         setEducationToDelete(null);
         fetchHighestEducations();
@@ -68,7 +68,7 @@ const HighestEducationList = () => {
     };
 
     const editHighestEducation = async () => {
-        await axios.put(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/highest-educations/${editHighestEducationData.id}/`, editHighestEducationData);
+        await axios.put(`https://app.vysyamala.com/api/accounts/highest-educations/${editHighestEducationData.id}/`, editHighestEducationData);
         setEditHighestEducationData(null);
         setShowEditPopup(false);
         fetchHighestEducations();

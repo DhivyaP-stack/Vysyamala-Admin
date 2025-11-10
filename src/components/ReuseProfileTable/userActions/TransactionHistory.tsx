@@ -41,7 +41,7 @@ const getTransactionHistory = async (fromDate: string, toDate: string, page: num
   if (fromDate) params.from_date = fromDate;
   if (toDate) params.to_date = toDate;
 
-  const url = `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/transaction-history/`;
+  const url = `https://app.vysyamala.com/api/transaction-history/`;
   const response = await axios.get(url, { params });
   return response.data;
 };

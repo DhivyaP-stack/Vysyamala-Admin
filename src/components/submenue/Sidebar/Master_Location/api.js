@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-const API_URL = 'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts';
+const API_URL = 'https://app.vysyamala.com/api/accounts';
 
-// const API_URL = 'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/';
+// const API_URL = 'https://app.vysyamala.com/api/';
 
 export const getCountries = () => axios.get(`${API_URL}/countries/`);
 export const addCountry = (country) => axios.post(`${API_URL}/countries/`, country);

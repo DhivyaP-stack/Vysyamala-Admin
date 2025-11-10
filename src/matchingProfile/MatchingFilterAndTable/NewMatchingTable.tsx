@@ -568,7 +568,7 @@ export const NewMatchingTable = ({ profileID, filters, onBack, No_Image_Availabl
             setIsPrintProfile(true);
 
             // Construct the API URL with parameters
-            const apiUrl = `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/admin-match-pdf-with-format/`; // Your API endpoint
+            const apiUrl = `https://app.vysyamala.com/api/admin-match-pdf-with-format/`; // Your API endpoint
             const params = new URLSearchParams({
                 pdf_format: printFormat,
                 profile_ids: selectedProfiles.join(","),
@@ -606,7 +606,7 @@ export const NewMatchingTable = ({ profileID, filters, onBack, No_Image_Availabl
             setIsPrintProfile(true);
 
             // Construct the API URL with parameters
-            const apiUrl = `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/admin-match-pdf-with-format/`; // Your API endpoint
+            const apiUrl = `https://app.vysyamala.com/api/admin-match-pdf-with-format/`; // Your API endpoint
             const params = new URLSearchParams({
                 pdf_format: printFormat,
                 profile_ids: selectedProfiles.join(","),
@@ -644,7 +644,7 @@ export const NewMatchingTable = ({ profileID, filters, onBack, No_Image_Availabl
             setIsPrintProfile(true);
 
             // Construct the API URL with parameters
-            const apiUrl = `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/admin-match-pdf-with-format/`; // Your API endpoint
+            const apiUrl = `https://app.vysyamala.com/api/admin-match-pdf-with-format/`; // Your API endpoint
             const params = new URLSearchParams({
                 pdf_format: printFormat,
                 profile_ids: selectedProfiles.join(","),

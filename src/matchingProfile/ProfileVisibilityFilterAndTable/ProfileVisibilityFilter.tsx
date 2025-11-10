@@ -283,7 +283,7 @@ export const UserProfileVisibilityFilter = () => {
         setLoadingVisibility(true);
         try {
             const response = await fetch(
-                'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_profile_visibility/',
+                'https://app.vysyamala.com/auth/Get_profile_visibility/',
                 {
                     method: 'POST',
                     headers: {

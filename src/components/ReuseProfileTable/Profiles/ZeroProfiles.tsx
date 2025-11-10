@@ -12,7 +12,7 @@
 
 // // Fetch profiles data function
 // const fetchProfilesData = async (search: string, orderBy: string, order: 'asc' | 'desc', rowsPerPage: number, page: number) => {
-//   const baseUrl = ` https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/newprofile_get/?page_name=7&page=${page}`;
+//   const baseUrl = ` https://app.vysyamala.com/api/newprofile_get/?page_name=7&page=${page}`;
 //   const params = new URLSearchParams({
 //     page_size: rowsPerPage.toString(),
 //     page: page.toString(),
@@ -66,7 +66,7 @@
 
 // // Fetch profiles data function
 // const fetchProfilesData = async (search: string, orderBy: string, order: 'asc' | 'desc', rowsPerPage: number, page: number,page_name:number) => {
-//   const baseUrl = ` https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/newprofile_get/?page_name=2&page=${page}`;
+//   const baseUrl = ` https://app.vysyamala.com/api/newprofile_get/?page_name=2&page=${page}`;
 //   const params = new URLSearchParams({
 //     page_size: rowsPerPage.toString(),
 //     page_name: page_name.toString(),
@@ -239,7 +239,7 @@
 //     if (!confirmed) return;
 
 //     try {
-//       await axios.delete(` https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/logindetails/${ContentId}/`);
+//       await axios.delete(` https://app.vysyamala.com/api/logindetails/${ContentId}/`);
 //       fetchData(); // Refresh the data after deletion
 //     } catch (error) {
 //       console.error('Error deleting data:', error);

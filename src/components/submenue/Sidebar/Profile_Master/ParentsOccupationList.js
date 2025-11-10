@@ -38,12 +38,12 @@ const ParentsOccupationList = () => {
     }, [parentsOccupations, showAddPopup, showEditPopup, deleteConfirmation]);
 
     const fetchParentsOccupations = async () => {
-        const response = await axios.get('https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/parents-occupations/');
+        const response = await axios.get('https://app.vysyamala.com/api/accounts/parents-occupations/');
         setParentsOccupations(response.data);
     };
 
     const addParentsOccupation = async () => {
-        await axios.post('https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/parents-occupations/', { occupation: newParentsOccupation });
+        await axios.post('https://app.vysyamala.com/api/accounts/parents-occupations/', { occupation: newParentsOccupation });
         setNewParentsOccupation('');
         fetchParentsOccupations();
         setShowAddPopup(false);
@@ -56,7 +56,7 @@ const ParentsOccupationList = () => {
     };
 
     const confirmDeleteOccupation = async () => {
-        await axios.delete(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/parents-occupations/${occupationToDelete}/`);
+        await axios.delete(`https://app.vysyamala.com/api/accounts/parents-occupations/${occupationToDelete}/`);
         setDeleteConfirmation(false);
         setOccupationToDelete(null);
         fetchParentsOccupations();
@@ -68,7 +68,7 @@ const ParentsOccupationList = () => {
     };
 
     const editParentsOccupation = async () => {
-        await axios.put(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/parents-occupations/${editParentsOccupationData.id}/`, editParentsOccupationData);
+        await axios.put(`https://app.vysyamala.com/api/accounts/parents-occupations/${editParentsOccupationData.id}/`, editParentsOccupationData);
         fetchParentsOccupations();
         setShowEditPopup(false);
         setShowSuccessPopup(true);

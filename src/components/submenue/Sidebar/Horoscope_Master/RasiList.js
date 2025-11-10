@@ -43,16 +43,16 @@ const RasiList = () => {
     }, [rasis, showPopup, deleteConfirmation]);
 
     const fetchRasis = async () => {
-        const response = await axios.get('https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/rasis/');
+        const response = await axios.get('https://app.vysyamala.com/api/accounts/rasis/');
         setRasis(response.data);
     };
 
     const addOrUpdateRasi = async () => {
         const rasiData = { name: newRasi };
         if (editRasiId) {
-            await axios.put(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/rasis/${editRasiId}/`, rasiData);
+            await axios.put(`https://app.vysyamala.com/api/accounts/rasis/${editRasiId}/`, rasiData);
         } else {
-            await axios.post('https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/rasis/', rasiData);
+            await axios.post('https://app.vysyamala.com/api/accounts/rasis/', rasiData);
         }
         setNewRasi('');
         setShowPopup(false);
@@ -73,7 +73,7 @@ const RasiList = () => {
     };
 
     const confirmDeleteRasi = async () => {
-        await axios.delete(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/rasis/${rasiToDelete}/`);
+        await axios.delete(`https://app.vysyamala.com/api/accounts/rasis/${rasiToDelete}/`);
         setRasiToDelete(null);
         setDeleteConfirmation(false);
         fetchRasis();

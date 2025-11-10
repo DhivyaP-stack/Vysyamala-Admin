@@ -278,7 +278,7 @@
 // //         }
 // //         try {
 // //             setIsPrintProfile(true);
-// //             const apiUrl = `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/admin-match-pdf-with-format/?action_type=print`;
+// //             const apiUrl = `https://app.vysyamala.com/api/admin-match-pdf-with-format/?action_type=print`;
 
 // //             const params = new URLSearchParams({
 // //                 pdf_format: printFormat,
@@ -313,7 +313,7 @@
 // //         }
 // //         try {
 // //             setIsWhatsappProfile(true);
-// //             const apiUrl = `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/admin-match-pdf-with-format/?action_type=whatsapp`;
+// //             const apiUrl = `https://app.vysyamala.com/api/admin-match-pdf-with-format/?action_type=whatsapp`;
 
 // //             const params = new URLSearchParams({
 // //                 pdf_format: whatsappFormat,
@@ -350,7 +350,7 @@
 // //         try {
 // //             setIsSendingEmail(true);
 
-// //             const apiUrl = `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/admin-match-pdf-with-format/`;
+// //             const apiUrl = `https://app.vysyamala.com/api/admin-match-pdf-with-format/`;
 
 // //             const query = new URLSearchParams({
 // //                 action_type: "email",
@@ -1158,7 +1158,7 @@
 //         }
 //         try {
 //             setIsPrintProfile(true);
-//             const apiUrl = `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/admin-match-pdf-with-format/?action_type=print`;
+//             const apiUrl = `https://app.vysyamala.com/api/admin-match-pdf-with-format/?action_type=print`;
 
 //             const params = new URLSearchParams({
 //                 pdf_format: printFormat,
@@ -1193,7 +1193,7 @@
 //         }
 //         try {
 //             setIsWhatsappProfile(true);
-//             const apiUrl = `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/admin-match-pdf-with-format/?action_type=whatsapp`;
+//             const apiUrl = `https://app.vysyamala.com/api/admin-match-pdf-with-format/?action_type=whatsapp`;
 
 //             const params = new URLSearchParams({
 //                 pdf_format: whatsappFormat,
@@ -1230,7 +1230,7 @@
 //         try {
 //             setIsSendingEmail(true);
 
-//             const apiUrl = `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/admin-match-pdf-with-format/`;
+//             const apiUrl = `https://app.vysyamala.com/api/admin-match-pdf-with-format/`;
 
 //             const query = new URLSearchParams({
 //                 action_type: "email",

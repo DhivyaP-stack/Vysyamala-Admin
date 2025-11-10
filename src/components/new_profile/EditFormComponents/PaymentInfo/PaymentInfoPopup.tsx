@@ -233,7 +233,7 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
     try {
       setAddonsLoading(true);
       const response = await apiAxios.post<AddonApiResponse>(
-        "https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_addon_packages/",
+        "https://app.vysyamala.com/auth/Get_addon_packages/",
         {} // empty payload if required, or add any required parameters
       );
 
@@ -424,7 +424,7 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
     setSendingEmail(payment.id); // Set loading state
     try {
       const response = await apiAxios.get(
-        `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/send-invoice/?subscription_id=${payment.id}`
+        `https://app.vysyamala.com/api/send-invoice/?subscription_id=${payment.id}`
       );
 
       if (response.data.success) {
@@ -457,7 +457,7 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
     try {
       setPackagesLoading(true);
       const response = await apiAxios.post<PlansApiResponse>(
-        "https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/renewal-plan/",
+        "https://app.vysyamala.com/api/renewal-plan/",
         { type } // Send type as empty string for "all", "renewal", or "new"
       );
 

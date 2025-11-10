@@ -51,7 +51,7 @@ const AdminUserForm: React.FC = () => {
   useEffect(() => {
     const fetchRoles = async () => {
       try {
-        const response = await axios.get(' https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/admin-users/roles/');
+        const response = await axios.get(' https://app.vysyamala.com/api/admin-users/roles/');
         setRoles(response.data);
       } catch (error) {
         console.error('Error fetching roles:', error);
@@ -63,7 +63,7 @@ const AdminUserForm: React.FC = () => {
 
   const onSubmit = async (data: AdminUserFormValues) => {
     try {
-      const response = await axios.post(' https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/admin-user/add/', data);
+      const response = await axios.post(' https://app.vysyamala.com/api/admin-user/add/', data);
       if (response.status >= 200 && response.status <= 201) {
         notify('Admin User Successfully Added');  // Trigger notification
       }

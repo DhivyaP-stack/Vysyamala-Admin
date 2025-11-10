@@ -109,7 +109,7 @@ const addOn=profileView.Addon_package?.split(',');
 console.log(Status)
   useEffect(() => {
     axios
-      .get<FamilyStatus[]>('https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/family-statuses/')
+      .get<FamilyStatus[]>('https://app.vysyamala.com/api/family-statuses/')
       .then(response => {
         const filteredStatuses = response.data.filter(status => !status.is_deleted);
         setFamilyStatuses(filteredStatuses);
@@ -120,7 +120,7 @@ console.log(Status)
   }, []);
   useEffect(() => {
     // Fetch alert settings from the API
-    axios.post<AlertSettingsResponse>('https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_alert_settings/')
+    axios.post<AlertSettingsResponse>('https://app.vysyamala.com/auth/Get_alert_settings/')
       .then(response => {
         if (response.data.status === '1') {
           setEmailAlerts(response.data.data['Email Alerts']);
@@ -137,7 +137,7 @@ console.log(Status)
   
   const fetchAddOnPackages = async ()=>{
     try{
-    const response = await axios.post('https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_addon_packages/');
+    const response = await axios.post('https://app.vysyamala.com/auth/Get_addon_packages/');
     if(response.data.status === 'success'){
       console.log(response.data.data)
 setAddonPackage(response.data.data)

@@ -38,7 +38,7 @@ const ProfileHolderList = () => {
     }, []);
 
     const fetchProfileHolders = () => {
-        axios.get('https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/profile-holders/')
+        axios.get('https://app.vysyamala.com/api/accounts/profile-holders/')
             .then(response => {
                 setProfileHolders(response.data);
             }).catch(error => {
@@ -48,7 +48,7 @@ const ProfileHolderList = () => {
 
     const handleAddOrEditHolder = () => {
         if (editHolderId) {
-            axios.put(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/profile-holders/${editHolderId}/`, newProfileHolder)
+            axios.put(`https://app.vysyamala.com/api/accounts/profile-holders/${editHolderId}/`, newProfileHolder)
                 .then(response => {
                     setProfileHolders(profileHolders.map(holder => holder.id === editHolderId ? response.data : holder));
                     resetForm();
@@ -57,7 +57,7 @@ const ProfileHolderList = () => {
                     console.error(error);
                 });
         } else {
-            axios.post('https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/profile-holders/', newProfileHolder)
+            axios.post('https://app.vysyamala.com/api/accounts/profile-holders/', newProfileHolder)
                 .then(response => {
                     setProfileHolders([...profileHolders, response.data]);
                     resetForm();
@@ -81,7 +81,7 @@ const ProfileHolderList = () => {
     };
 
     const confirmDeleteHolder = () => {
-        axios.delete(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/profile-holders/${holderToDelete}/`)
+        axios.delete(`https://app.vysyamala.com/api/accounts/profile-holders/${holderToDelete}/`)
             .then(() => {
                 setProfileHolders(profileHolders.filter(holder => holder.id !== holderToDelete));
                 setHolderToDelete(null);

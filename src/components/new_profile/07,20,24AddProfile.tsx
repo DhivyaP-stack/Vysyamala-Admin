@@ -308,7 +308,7 @@ const ProfileForm = () => {
 
     try {
       const loginDetailsResponse = await axios.post(
-        'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/logindetails/',
+        'https://app.vysyamala.com/api/logindetails/',
         basicDetails,
         {
           headers: {
@@ -320,7 +320,7 @@ const ProfileForm = () => {
       const profileId = loginDetailsResponse.data.ProfileId;
 
       await axios.post(
-        'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/profile-familydetails/',
+        'https://app.vysyamala.com/api/profile-familydetails/',
         {
           profile_id: profileId,
           ...familyDetails,
@@ -333,7 +333,7 @@ const ProfileForm = () => {
       );
 
       await axios.post(
-        'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/profile-edudetails/',
+        'https://app.vysyamala.com/api/profile-edudetails/',
         {
           profile_id: profileId,
           ...educationDetails,
@@ -346,7 +346,7 @@ const ProfileForm = () => {
       );
 
       await axios.post(
-        'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/profile-partner-pref/',
+        'https://app.vysyamala.com/api/profile-partner-pref/',
         {
           profile_id: profileId,
           ...partnerPreferences,
@@ -442,7 +442,7 @@ const ProfileForm = () => {
       try {
         const response = await axios.post<{
           [key: string]: MaritalStatusOption;
-        }>(' https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_Marital_Status/');
+        }>(' https://app.vysyamala.com/auth/Get_Marital_Status/');
         const options = Object.values(response.data);
         setMaritalStatuses(options);
       } catch (error) {
@@ -458,7 +458,7 @@ const ProfileForm = () => {
   useEffect(() => {
     const fetchComplexionStatus = async () => {
       try {
-        const response = await axios.post(" https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_Complexion/");
+        const response = await axios.post(" https://app.vysyamala.com/auth/Get_Complexion/");
         const options = Object.values(response.data) as ComplexionOption[];
         setComplexionOptions(options);
       } catch (error) {
@@ -474,7 +474,7 @@ const ProfileForm = () => {
   useEffect(() => {
     const fetchCountryStatus = async () => {
       try {
-        const response = await axios.post(" https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_Country/");
+        const response = await axios.post(" https://app.vysyamala.com/auth/Get_Country/");
         const options = Object.values(response.data) as CountryOption[];
         setCountryOptions(options);
       } catch (error) {
@@ -500,7 +500,7 @@ const ProfileForm = () => {
       try {
         if (selectedCountryId) {
           const response = await axios.post(
-            ' https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_State/',
+            ' https://app.vysyamala.com/auth/Get_State/',
             { country_id: selectedCountryId }
           );
           const options = Object.values(response.data) as StateOption[];
@@ -521,7 +521,7 @@ const ProfileForm = () => {
   useEffect(() => {
     const fetchHighestEdu = async () => {
       try {
-        const response = await axios.post(` https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_Highest_Education/`);
+        const response = await axios.post(` https://app.vysyamala.com/auth/Get_Highest_Education/`);
         const options = Object.values(response.data) as HighesEducation[];
         setHighestEdu(options);
       } catch (error) {
@@ -536,7 +536,7 @@ const ProfileForm = () => {
   useEffect(() => {
     const fetchUgDegree = async () => {
       try {
-        const response = await axios.post(` https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_Ug_Degree/`);
+        const response = await axios.post(` https://app.vysyamala.com/auth/Get_Ug_Degree/`);
         const options = Object.values(response.data) as Ugdegree[];
         setUgdegree(options);
       } catch (error) {
@@ -552,7 +552,7 @@ const ProfileForm = () => {
   useEffect(() => {
     const fetchAnnualIncome = async () => {
       try {
-        const response = await axios.post(` https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_Annual_Income/`);
+        const response = await axios.post(` https://app.vysyamala.com/auth/Get_Annual_Income/`);
         const options = Object.values(response.data) as AnnualIncome[];
         setAnnualIncome(options);
       } catch (error) {
@@ -567,7 +567,7 @@ const ProfileForm = () => {
   useEffect(() => {
     const fetchOccupations = async () => {
       try {
-        const response = await axios.post(` https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_Parent_Occupation/`);
+        const response = await axios.post(` https://app.vysyamala.com/auth/Get_Parent_Occupation/`);
         const options = Object.values(response.data) as Occupation[];
         setOccupations(options);
       } catch (error) {
@@ -583,7 +583,7 @@ const ProfileForm = () => {
   useEffect(() => {
     const fetchPropertyworth = async () => {
       try {
-        const response = await axios.post(` https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_Property_Worth/`);
+        const response = await axios.post(` https://app.vysyamala.com/auth/Get_Property_Worth/`);
         const options = Object.values(response.data) as PropertyWorth[];
         setPropertyworth(options);
       } catch (error) {
@@ -598,7 +598,7 @@ const ProfileForm = () => {
   useEffect(() => {
     const fetchBirthStar = async () => {
       try {
-        const response = await axios.post(` https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_Birth_Star/`, { state_id: " " });
+        const response = await axios.post(` https://app.vysyamala.com/auth/Get_Birth_Star/`, { state_id: " " });
         const options = Object.values(response.data) as BirthStar[];
         setBirthStar(options);
       } catch (error) {
@@ -624,7 +624,7 @@ const ProfileForm = () => {
     if (selectedBirthStarId) {
       const fetchStateStatus = async () => {
         try {
-          const response = await axios.post(` https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_Rasi/`, { birth_id: selectedBirthStarId });
+          const response = await axios.post(` https://app.vysyamala.com/auth/Get_Rasi/`, { birth_id: selectedBirthStarId });
           const options = Object.values(response.data) as Rasi[];
           setRasiOptions(options);
         } catch (error) {
@@ -643,7 +643,7 @@ const ProfileForm = () => {
   useEffect(() => {
     const fetchLagnam = async () => {
       try {
-        const response = await axios.post(` https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_Lagnam_Didi/`);
+        const response = await axios.post(` https://app.vysyamala.com/auth/Get_Lagnam_Didi/`);
         const options = Object.values(response.data) as Lagnam[];
         setLagnamOptions(options);
       } catch (error) {
@@ -666,7 +666,7 @@ const ProfileForm = () => {
   useEffect(() => {
     const fetchFamilyTypes = async () => {
       try {
-        const response = await axios.post(` https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_FamilyType/`);
+        const response = await axios.post(` https://app.vysyamala.com/auth/Get_FamilyType/`);
         const data = response.data;
         const familyTypesArray = Object.values(data) as FamilyType[];
         setFamilyTypes(familyTypesArray);
@@ -689,7 +689,7 @@ const ProfileForm = () => {
   useEffect(() => {
     const fetchFamilyStatus = async () => {
       try {
-        const response = await axios.post(` https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_FamilyStatus/`);
+        const response = await axios.post(` https://app.vysyamala.com/auth/Get_FamilyStatus/`);
         const data = response.data;
         const familyTypesArray = Object.values(data) as FamilyStatus[];
         setFamilyStatus(familyTypesArray);
@@ -713,7 +713,7 @@ const ProfileForm = () => {
   useEffect(() => {
     const fetchFamilyValue = async () => {
       try {
-        const response = await axios.post(` https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_FamilyValue/`);
+        const response = await axios.post(` https://app.vysyamala.com/auth/Get_FamilyValue/`);
         const data = response.data;
         const familyTypesArray = Object.values(data) as FamilyValue[];
         setFamilyValue(familyTypesArray);
@@ -812,7 +812,7 @@ const ProfileForm = () => {
       const fetchMatchingStars = async () => {
         try {
           const response = await axios.post(
-            ` https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_Matchstr_Pref/`,
+            ` https://app.vysyamala.com/auth/Get_Matchstr_Pref/`,
             {
               birth_star_id: storedBirthStar,
               gender: storedGender,
@@ -837,7 +837,7 @@ const ProfileForm = () => {
     const fetchCountries = async () => {
       try {
         const response = await axios.get(
-          'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/api/countries/',
+          'https://app.vysyamala.com/api/api/countries/',
         );
         setCountries(response.data);
       } catch (error) {
@@ -852,7 +852,7 @@ const ProfileForm = () => {
     const fetchStates = async () => {
       try {
         const response = await axios.get(
-          'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/api/states/',
+          'https://app.vysyamala.com/api/api/states/',
         );
         setStates(response.data);
       } catch (error) {
@@ -867,7 +867,7 @@ const ProfileForm = () => {
     const fetchHighestEducations = async () => {
       try {
         const response = await axios.get(
-          'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/api/highest-educations/',
+          'https://app.vysyamala.com/api/api/highest-educations/',
         );
         setHighestEducations(response.data);
       } catch (error) {
@@ -883,7 +883,7 @@ const ProfileForm = () => {
     const fetchAnnualIncomes = async () => {
       try {
         const response = await axios.get(
-          'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/api/annual-incomes/',
+          'https://app.vysyamala.com/api/api/annual-incomes/',
         );
         fetchAnnualIncomes(response.data);
       } catch (error) {

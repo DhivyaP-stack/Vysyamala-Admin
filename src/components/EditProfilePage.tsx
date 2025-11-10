@@ -103,18 +103,18 @@ const EditProfilePage: React.FC = () => {
 
     const fetchDetails = async () => {
       try {
-        const profileResponse = await axios.get(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/logindetails/${ContentId}/`);
+        const profileResponse = await axios.get(`https://app.vysyamala.com/api/logindetails/${ContentId}/`);
         setProfile(profileResponse.data);
 
         const profileId = profileResponse.data.ProfileId;
         if (profileId) {
-          const familyResponse = await axios.get(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/profile-familydetails/${profileId}/`);
+          const familyResponse = await axios.get(`https://app.vysyamala.com/api/profile-familydetails/${profileId}/`);
           setFamilyDetails(familyResponse.data);
 
-          const educationResponse = await axios.get(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/profile-edudetails/${profileId}/`);
+          const educationResponse = await axios.get(`https://app.vysyamala.com/api/profile-edudetails/${profileId}/`);
           setEducationDetails(educationResponse.data);
 
-          const partnerPrefResponse = await axios.get(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/profile-partner-pref/${profileId}/`);
+          const partnerPrefResponse = await axios.get(`https://app.vysyamala.com/api/profile-partner-pref/${profileId}/`);
           setPartnerPreferences(partnerPrefResponse.data);
         } else {
           setError('ProfileId is missing from profile data');
@@ -152,7 +152,7 @@ const EditProfilePage: React.FC = () => {
   useEffect(() => {
     const fetchOccupations = async () => {
       try {
-        const response = await axios.post(` https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_Parent_Occupation/`);
+        const response = await axios.post(` https://app.vysyamala.com/auth/Get_Parent_Occupation/`);
         const options = Object.values(response.data) as Occupation[];
         setOccupations(options);
       } catch (error) {
@@ -165,7 +165,7 @@ const EditProfilePage: React.FC = () => {
   useEffect(() => {
     const fetchComplexionStatus = async () => {
       try {
-        const response = await axios.post(" https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_Complexion/");
+        const response = await axios.post(" https://app.vysyamala.com/auth/Get_Complexion/");
         const options = Object.values(response.data) as ComplexionOption[];
         setComplexionOptions(options);
       } catch (error) {
@@ -177,12 +177,12 @@ const EditProfilePage: React.FC = () => {
 
   const handleChange = async () => {
     try {
-      await axios.put(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/logindetails/${ContentId}/`, profile);
+      await axios.put(`https://app.vysyamala.com/api/logindetails/${ContentId}/`, profile);
 
       if (profile?.ProfileId) {
-        await axios.put(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/profile-familydetails/${profile.ProfileId}/`, familyDetails);
-        await axios.put(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/profile-edudetails/${profile.ProfileId}/`, educationDetails);
-        await axios.put(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/profile-partner-pref/${profile.ProfileId}/`, partnerPreferences);
+        await axios.put(`https://app.vysyamala.com/api/profile-familydetails/${profile.ProfileId}/`, familyDetails);
+        await axios.put(`https://app.vysyamala.com/api/profile-edudetails/${profile.ProfileId}/`, educationDetails);
+        await axios.put(`https://app.vysyamala.com/api/profile-partner-pref/${profile.ProfileId}/`, partnerPreferences);
       }
 
       if (refreshData) {
@@ -196,12 +196,12 @@ const EditProfilePage: React.FC = () => {
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/logindetails/${ContentId}/`);
+      await axios.delete(`https://app.vysyamala.com/api/logindetails/${ContentId}/`);
 
       if (profile?.ProfileId) {
-        await axios.delete(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/profile-familydetails/${profile.ProfileId}/`);
-        await axios.delete(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/profile-edudetails/${profile.ProfileId}/`);
-        await axios.delete(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/profile-partner-pref/${profile.ProfileId}/`);
+        await axios.delete(`https://app.vysyamala.com/api/profile-familydetails/${profile.ProfileId}/`);
+        await axios.delete(`https://app.vysyamala.com/api/profile-edudetails/${profile.ProfileId}/`);
+        await axios.delete(`https://app.vysyamala.com/api/profile-partner-pref/${profile.ProfileId}/`);
       }
 
       if (refreshData) {

@@ -59,7 +59,7 @@ const CsmManagementComponent: React.FC = () => {
 
     const fetchPages = async () => {
         try {
-            const response = await axios.get<Page[]>(' https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/page-list/');
+            const response = await axios.get<Page[]>(' https://app.vysyamala.com/api/page-list/');
             setPages(response.data);
         } catch (error) {
             console.error('There was an error fetching the data!', error);
@@ -89,7 +89,7 @@ const CsmManagementComponent: React.FC = () => {
 
         try {
             if (isEditing && currentPageId !== null) {
-                await axios.put(` https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/page/${currentPageId}/`, {
+                await axios.put(` https://app.vysyamala.com/api/page/${currentPageId}/`, {
                     page_name: formData.pageName,
                     meta_title: formData.metaTitle,
                     meta_description: formData.metaDescription,
@@ -99,7 +99,7 @@ const CsmManagementComponent: React.FC = () => {
                 });
                 notify('Successfully Updated');
             } else {
-                await axios.post(' https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/page/', {
+                await axios.post(' https://app.vysyamala.com/api/page/', {
                     page_name: formData.pageName,
                     meta_title: formData.metaTitle,
                     meta_description: formData.metaDescription,
@@ -135,7 +135,7 @@ const CsmManagementComponent: React.FC = () => {
 
         if (isConfirmed) {
             try {
-                await axios.delete(` https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/page/delete/${id}/`);
+                await axios.delete(` https://app.vysyamala.com/api/page/delete/${id}/`);
                 notifyDelete('Successfully Deleted');
                 setPages(pages.filter((page) => page.id !== id));
             } catch (error) {
@@ -243,7 +243,7 @@ const CsmManagementComponent: React.FC = () => {
                                     ],
                                 },
                                 ckfinder: {
-                                    uploadUrl: ' https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/upload_image',
+                                    uploadUrl: ' https://app.vysyamala.com/api/upload_image',
                                 },
                             }}
                         />

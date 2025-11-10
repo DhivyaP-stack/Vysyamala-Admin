@@ -36,7 +36,7 @@ const getViewedProfiles = async (fromDate: string, toDate: string, page: number,
     limit: rowsPerPage.toString(), // Ensure correct API parameter
   });
 
-  const url = `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/call_action_received/?${params.toString()}`;
+  const url = `https://app.vysyamala.com/api/call_action_received/?${params.toString()}`;
   const response = await axios.get(url);
   return response.data;
 };

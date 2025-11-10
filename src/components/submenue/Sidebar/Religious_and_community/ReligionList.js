@@ -38,13 +38,13 @@ const ReligionList = () => {
     }, [religions, showPopup, deleteConfirmation]);
 
     const fetchReligions = async () => {
-        const response = await axios.get('https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/religions/');
+        const response = await axios.get('https://app.vysyamala.com/api/religions/');
         setReligions(response.data);
     };
 
     const handleAddReligion = async () => {
         if (newReligion.trim() === '') return; // Prevent empty submission
-        await axios.post('https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/religions/', { name: newReligion });
+        await axios.post('https://app.vysyamala.com/api/religions/', { name: newReligion });
         setNewReligion('');
         setShowPopup(false);
         setShowSuccessPopup(true); // Show success popup
@@ -57,7 +57,7 @@ const ReligionList = () => {
     };
 
     const confirmDeleteReligion = async () => {
-        await axios.delete(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/religions/${religionToDelete}/`);
+        await axios.delete(`https://app.vysyamala.com/api/religions/${religionToDelete}/`);
         setDeleteConfirmation(false);
         setReligionToDelete(null);
         fetchReligions();
@@ -86,7 +86,7 @@ const ReligionList = () => {
 
     const handleUpdateReligion = async () => {
         if (editedReligionName.trim() === '') return; // Prevent empty submission
-        await axios.put(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/religions/${editReligionId}/`, { name: editedReligionName });
+        await axios.put(`https://app.vysyamala.com/api/religions/${editReligionId}/`, { name: editedReligionName });
         setEditReligionId(null);
         setEditedReligionName('');
         setShowPopup(false);

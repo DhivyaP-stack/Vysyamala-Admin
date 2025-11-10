@@ -76,7 +76,7 @@ const AddAward: React.FC = () => {
 
       // Sending form data to the API
       const response = await axios.post(
-        ' https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/awards/',
+        ' https://app.vysyamala.com/api/awards/',
         formData,
         {
           headers: {
@@ -215,7 +215,7 @@ const AddAward: React.FC = () => {
                 ],
               },
               ckfinder: {
-                uploadUrl: ' https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/upload-image/', // Update this URL as needed
+                uploadUrl: ' https://app.vysyamala.com/api/upload-image/', // Update this URL as needed
               },
             }}
           />

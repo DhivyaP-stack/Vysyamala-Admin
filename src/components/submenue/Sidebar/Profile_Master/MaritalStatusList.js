@@ -38,13 +38,13 @@ const MaritalStatusList = () => {
     }, [maritalStatuses, showAddPopup, showEditPopup, deleteConfirmation, showSuccessPopup]);
 
     const fetchMaritalStatuses = async () => {
-        const response = await axios.get('https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/marital-statuses/');
+        const response = await axios.get('https://app.vysyamala.com/api/accounts/marital-statuses/');
         setMaritalStatuses(response.data);
     };
 
     const addMaritalStatus = async () => {
         try {
-            await axios.post('https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/marital-statuses/', { status: newMaritalStatus });
+            await axios.post('https://app.vysyamala.com/api/accounts/marital-statuses/', { status: newMaritalStatus });
             setNewMaritalStatus('');
             setShowAddPopup(false);
             setShowSuccessPopup(true); // Show success popup
@@ -55,14 +55,14 @@ const MaritalStatusList = () => {
     };
 
     const editMaritalStatus = async () => {
-        await axios.put(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/marital-statuses/${editMaritalStatusData.id}/`, editMaritalStatusData);
+        await axios.put(`https://app.vysyamala.com/api/accounts/marital-statuses/${editMaritalStatusData.id}/`, editMaritalStatusData);
         fetchMaritalStatuses();
         setShowEditPopup(false);
         setShowSuccessPopup(true); // Show success popup
     };
 
     const deleteMaritalStatus = async () => {
-        await axios.delete(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/marital-statuses/${statusToDelete}/`);
+        await axios.delete(`https://app.vysyamala.com/api/accounts/marital-statuses/${statusToDelete}/`);
         setDeleteConfirmation(false);
         setStatusToDelete(null);
         setShowSuccessPopup(true); // Show success popup

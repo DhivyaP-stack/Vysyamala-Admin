@@ -24,7 +24,7 @@
 //     }
 
 //     try {
-//       const response = await axios.post(' https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/homepage/', formData, {
+//       const response = await axios.post(' https://app.vysyamala.com/api/homepage/', formData, {
 //         headers: {
 //           'Content-Type': 'multipart/form-data',
 //         },
@@ -152,7 +152,7 @@
 //     }
 
 //     try {
-//       const response = await axios.post(' https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/homepage/', formData, {
+//       const response = await axios.post(' https://app.vysyamala.com/api/homepage/', formData, {
 //         headers: {
 //           'Content-Type': 'multipart/form-data',
 //         },
@@ -284,7 +284,7 @@
 //     }
 
 //     try {
-//       const response = await axios.post(' https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/homepage/', formData, {
+//       const response = await axios.post(' https://app.vysyamala.com/api/homepage/', formData, {
 //         headers: {
 //           'Content-Type': 'multipart/form-data',
 //         },
@@ -413,7 +413,7 @@
 //     }
 
 //     try {
-//       const response = await axios.post(' https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/homepage/', formData, {
+//       const response = await axios.post(' https://app.vysyamala.com/api/homepage/', formData, {
 //         headers: {
 //           'Content-Type': 'multipart/form-data',
 //         },
@@ -546,7 +546,7 @@
 
 //     try {
 //       // Send form data via POST request to the server
-//       const response = await axios.post(' https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/homepage/', formData, {
+//       const response = await axios.post(' https://app.vysyamala.com/api/homepage/', formData, {
 //         headers: {
 //           'Content-Type': 'multipart/form-data',
 //         },
@@ -623,7 +623,7 @@
 //               ]
 //             },
 //             ckfinder: {
-//               uploadUrl: ' https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/upload-image/' // Update this URL as needed
+//               uploadUrl: ' https://app.vysyamala.com/api/upload-image/' // Update this URL as needed
 //             },
 //           }}
 //         />

@@ -2,7 +2,7 @@
 
 import axios from 'axios';
 
-const API_URL = 'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts';
+const API_URL = 'https://app.vysyamala.com/api/accounts';
 
 
 

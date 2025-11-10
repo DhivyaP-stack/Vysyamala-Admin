@@ -38,12 +38,12 @@ const UgDegreeList = () => {
     }, [ugDegrees, showAddPopup, showEditPopup, deleteConfirmation]);
 
     const fetchUgDegrees = async () => {
-        const response = await axios.get('https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/ug-degrees/');
+        const response = await axios.get('https://app.vysyamala.com/api/accounts/ug-degrees/');
         setUgDegrees(response.data);
     };
 
     const addUgDegree = async () => {
-        await axios.post('https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/ug-degrees/', { degree: newUgDegree });
+        await axios.post('https://app.vysyamala.com/api/accounts/ug-degrees/', { degree: newUgDegree });
         setNewUgDegree('');
         setShowAddPopup(false);
         fetchUgDegrees();
@@ -56,7 +56,7 @@ const UgDegreeList = () => {
     };
 
     const confirmDeleteUgDegree = async () => {
-        await axios.delete(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/ug-degrees/${degreeToDelete}/`);
+        await axios.delete(`https://app.vysyamala.com/api/accounts/ug-degrees/${degreeToDelete}/`);
         setDeleteConfirmation(false);
         setDegreeToDelete(null);
         fetchUgDegrees();
@@ -74,7 +74,7 @@ const UgDegreeList = () => {
     };
 
     const editUgDegree = async () => {
-        await axios.put(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/ug-degrees/${editUgDegreeId}/`, { degree: editedUgDegree });
+        await axios.put(`https://app.vysyamala.com/api/accounts/ug-degrees/${editUgDegreeId}/`, { degree: editedUgDegree });
         setEditUgDegreeId(null);
         setEditedUgDegree('');
         setShowEditPopup(false);

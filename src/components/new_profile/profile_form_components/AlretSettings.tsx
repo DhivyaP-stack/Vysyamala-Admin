@@ -32,7 +32,7 @@ export const AlertSettings: React.FC<propType> = ({ setAlretSetting }) => {
     // Fetch all available alerts
     axios
       .post<AlertSettingsResponse>(
-        'https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_alert_settings/',
+        'https://app.vysyamala.com/auth/Get_alert_settings/',
       )
       .then((response) => {
         const { data } = response.data;

@@ -49,7 +49,7 @@
 //       formData.append("Admin_comments", adminComments);
 
 //       const response = await axios.put(
-//         `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/update-admincomments/${profileId}/`,
+//         `https://app.vysyamala.com/api/update-admincomments/${profileId}/`,
 //         formData
 //       );
 
@@ -147,7 +147,7 @@ const ProfileForm: React.FC<PageProps> = ({ profileId, EditData }) => {
       formData.append("Admin_comments", adminComments);
 
       const response = await axios.put( // ✅ Use POST if the API requires FormData
-        `https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/update-admincomments/${profileId}/`,
+        `https://app.vysyamala.com/api/update-admincomments/${profileId}/`,
         formData
       );
 

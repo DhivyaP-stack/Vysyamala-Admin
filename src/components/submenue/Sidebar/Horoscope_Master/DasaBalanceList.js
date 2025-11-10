@@ -36,12 +36,12 @@ const DasaBalanceList = () => {
     }, [dasaBalances, showPopup, deleteConfirmation]);
 
     const fetchDasaBalances = async () => {
-        const response = await axios.get('https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/dasa-balances/');
+        const response = await axios.get('https://app.vysyamala.com/api/accounts/dasa-balances/');
         setDasaBalances(response.data);
     };
 
     const addDasaBalance = async () => {
-        await axios.post('https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/dasa-balances/', { balance: newDasaBalance });
+        await axios.post('https://app.vysyamala.com/api/accounts/dasa-balances/', { balance: newDasaBalance });
         setNewDasaBalance('');
         setShowPopup(false);
         fetchDasaBalances();
@@ -49,7 +49,7 @@ const DasaBalanceList = () => {
     };
 
     const deleteDasaBalance = async (id) => {
-        await axios.delete(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/dasa-balances/${id}/`);
+        await axios.delete(`https://app.vysyamala.com/api/accounts/dasa-balances/${id}/`);
         fetchDasaBalances();
     };
 
@@ -76,7 +76,7 @@ const DasaBalanceList = () => {
     };
 
     const updateDasaBalance = async () => {
-        await axios.put(`https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/api/accounts/dasa-balances/${editDasaBalanceId}/`, { balance: editedDasaBalance });
+        await axios.put(`https://app.vysyamala.com/api/accounts/dasa-balances/${editDasaBalanceId}/`, { balance: editedDasaBalance });
         setEditDasaBalanceId(null);
         setEditedDasaBalance('');
         setShowPopup(false);

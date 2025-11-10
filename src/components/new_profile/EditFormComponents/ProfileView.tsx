@@ -208,7 +208,7 @@ const ProfileView: React.FC<pageProps> = ({ isViewDetais, setViewDetail, EditDat
 
   useEffect(() => {
     // Fetch alert settings from the API
-    axios.post<AlertSettingsResponse>('https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_alert_settings/')
+    axios.post<AlertSettingsResponse>('https://app.vysyamala.com/auth/Get_alert_settings/')
       .then(response => {
         if (response.data.status === '1') {
           setEmailAlerts(response.data.data['Email Alerts']);
@@ -225,7 +225,7 @@ const ProfileView: React.FC<pageProps> = ({ isViewDetais, setViewDetail, EditDat
 
   const fetchAddOnPackages = async () => {
     try {
-      const response = await axios.post('https://vsysmalamat-ejh3ftcdbnezhhfv.westus2-01.azurewebsites.net/auth/Get_addon_packages/');
+      const response = await axios.post('https://app.vysyamala.com/auth/Get_addon_packages/');
       if (response.data.status === 'success') {
         setAddonPackage(response.data.data)
       }
