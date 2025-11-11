@@ -508,6 +508,19 @@ const EducationalDetails: React.FC<formProps> = ({
     }
   }, [profession, setValue]); // This hook runs whenever 'profession' or 'setValue' changes
 
+  useEffect(() => {
+    if (profession === 3 || profession === 4 || profession === 5) {
+      // Clear all work location fields
+      setValue('EducationDetails.work_country', '');
+      setValue('EducationDetails.work_state', '');
+      setValue('EducationDetails.work_district', '');
+      setValue('EducationDetails.work_city', '');
+      setValue('EducationDetails.pincode', '');
+      setValue('EducationDetails.CareerPlans', '');
+      setValue('EducationDetails.workplace', '');
+    }
+  }, [profession, setValue]);
+
 
   return (
     <div className="bg-white p-5 mb-10 rounded shadow-md">
@@ -515,7 +528,7 @@ const EducationalDetails: React.FC<formProps> = ({
         className="text-red-600 flex row items-center justify-between text-xl font-semibold  dark:text-white cursor-pointer  after-red-line::after"
         onClick={toggleSection4}
       >
-        Education Details
+        Education Details 
         <svg
           className={`fill-current transform ${isEducationDetailsOpen ? 'rotate-180' : ''
             }`}

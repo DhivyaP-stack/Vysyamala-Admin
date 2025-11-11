@@ -54,11 +54,11 @@ const DasaBalanceList: React.FC = () => {
 
   const handleDelete = async (id: number) => {
     try {
-     let response = await axios.delete(` ${dasaBalanCeApi}${id}/`);
-     if (response.status >= 200 || response.status <= 201) {
-      notifyDelete('Successfully Deleted');
-      fetchDasaBalances();
-    }
+      let response = await axios.delete(` ${dasaBalanCeApi}${id}/`);
+      if (response.status >= 200 || response.status <= 201) {
+        notifyDelete('Successfully Deleted');
+        fetchDasaBalances();
+      }
       fetchDasaBalances();
     } catch (error) {
       console.error('Error deleting dasa balance:', error);
@@ -67,17 +67,17 @@ const DasaBalanceList: React.FC = () => {
 
   const handleAddOrUpdateDasaBalance = async () => {
     const balanceData = { balance: newDasaBalance };
-    
+
     if (editDasaBalanceId) {
-     let response = await axios.put(` ${dasaBalanCeApi}${editDasaBalanceId}/`, balanceData);
-     if (response.status >= 200 || response.status <= 201) {
-      notify('Successfully updated');
-    }
+      let response = await axios.put(` ${dasaBalanCeApi}${editDasaBalanceId}/`, balanceData);
+      if (response.status >= 200 || response.status <= 201) {
+        notify('Successfully updated');
+      }
     } else {
-     let response = await axios.post(`${dasaBalanCeApi}`, balanceData);
-     if (response.status >= 200 || response.status <= 201) {
-      notify('Successfully updated');
-    }
+      let response = await axios.post(`${dasaBalanCeApi}`, balanceData);
+      if (response.status >= 200 || response.status <= 201) {
+        notify('Successfully updated');
+      }
     }
     setNewDasaBalance('');
     setEditDasaBalanceId(null);
@@ -108,20 +108,20 @@ const DasaBalanceList: React.FC = () => {
     // This is handled within Reuse, so you don't need to do anything here
   };
 
-  const columns:ColumnConfig<DasaBalance>[] = [
+  const columns: ColumnConfig<DasaBalance>[] = [
     { field: 'balance', headerName: 'Dasa Balance', sortable: true },
   ];
 
   return (
     <Container style={{ backgroundColor: 'white', padding: '20px' }}>
-      
+
 
       <Reuse
         data={dasaBalances}
         columns={columns}
         handleSearchChange={handleSearchChange}
         handleEdit={handleEdit}
-        handleDelete={(id) => handleDeleteConfirm(Number(id))} 
+        handleDelete={(id) => handleDeleteConfirm(Number(id))}
         setShowPopup={setShowPopup}
         idField="id"
         title="Dasa Balance"
@@ -144,63 +144,63 @@ const DasaBalanceList: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog> */}
-{showPopup && (
-          <Dialog
-            open={showPopup}
-            onClose={() => setShowPopup(false)}
-            maxWidth="sm"
-            sx={{ background: '#f5f0ef ' }}
-          >
-            <Box>
-              <DialogTitle
-                style={{
-                  color: 'red',
-                  textAlign: 'center',
-                  fontWeight: 'bold',
-                  marginTop: '20px',
-                  fontSize: '50px',
-                }}
-              >
-                {editDasaBalanceId ? 'Edit Rasi' : 'Add Rasi'}
-              </DialogTitle>
-            </Box>
-            <DialogContent style={{ padding: '50px 50px' }}>
-              <Grid container rowSpacing={3} columnSpacing={{ xs: 1, sm: 2 }}>
-                <Grid item xs={12} sm={12}>
-                  <TextField
-                    label="Dasa Balance"
-                    value={newDasaBalance}
-                    onChange={(e) => setNewDasaBalance(e.target.value)}
-                    fullWidth
-                  />
-                </Grid>
-              
+      {showPopup && (
+        <Dialog
+          open={showPopup}
+          onClose={() => setShowPopup(false)}
+          maxWidth="sm"
+          sx={{ background: '#f5f0ef ' }}
+        >
+          <Box>
+            <DialogTitle
+              style={{
+                color: 'red',
+                textAlign: 'center',
+                fontWeight: 'bold',
+                marginTop: '20px',
+                fontSize: '50px',
+              }}
+            >
+              {editDasaBalanceId ? 'Edit Rasi' : 'Add Rasi'}
+            </DialogTitle>
+          </Box>
+          <DialogContent style={{ padding: '50px 50px' }}>
+            <Grid container rowSpacing={3} columnSpacing={{ xs: 1, sm: 2 }}>
+              <Grid item xs={12} sm={12}>
+                <TextField
+                  label="Dasa Balance"
+                  value={newDasaBalance}
+                  onChange={(e) => setNewDasaBalance(e.target.value)}
+                  fullWidth
+                />
               </Grid>
-            </DialogContent>
-            <DialogActions style={{ marginRight: '43px' }}>
-              <Button
-                style={{
-                  background: '#FFFDFF',
-                  color: 'red',
-                  boxShadow: '0px 8px 16px rgba(0, 0, 0, 0.2)',
-                }}
-                onClick={() => setShowPopup(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                style={{
-                  background: 'red',
-                  color: 'white',
-                  boxShadow: '0px 8px 16px rgba(0, 0, 0, 0.4)',
-                }}
-                onClick={handleAddOrUpdateDasaBalance} disabled={!newDasaBalance.trim()}
-              >
-                 {editDasaBalanceId ? 'Update' : 'Submit'}
-              </Button>
-            </DialogActions>
-          </Dialog>
-        )}
+
+            </Grid>
+          </DialogContent>
+          <DialogActions style={{ marginRight: '43px' }}>
+            <Button
+              style={{
+                background: '#FFFDFF',
+                color: 'red',
+                boxShadow: '0px 8px 16px rgba(0, 0, 0, 0.2)',
+              }}
+              onClick={() => setShowPopup(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              style={{
+                background: 'red',
+                color: 'white',
+                boxShadow: '0px 8px 16px rgba(0, 0, 0, 0.4)',
+              }}
+              onClick={handleAddOrUpdateDasaBalance} disabled={!newDasaBalance.trim()}
+            >
+              {editDasaBalanceId ? 'Update' : 'Submit'}
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
       {/* <Dialog open={deleteConfirmation} onClose={() => setDeleteConfirmation(false)}>
         <DialogTitle>Confirm Delete</DialogTitle>
         <DialogContent>
@@ -214,29 +214,29 @@ const DasaBalanceList: React.FC = () => {
         </DialogActions>
       </Dialog> */}
 
-{deleteConfirmation && (
-          <Dialog
-            open={deleteConfirmation}
-            onClose={() => setDeleteConfirmation(false)}
-          >
-            <DialogTitle>Confirm Delete</DialogTitle>
-            <DialogContent>
-              <Typography>
+      {deleteConfirmation && (
+        <Dialog
+          open={deleteConfirmation}
+          onClose={() => setDeleteConfirmation(false)}
+        >
+          <DialogTitle>Confirm Delete</DialogTitle>
+          <DialogContent>
+            <Typography>
               Are you sure you want to delete this Rasi?
-              </Typography>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={() => setDeleteConfirmation(false)}>
-                Cancel
-              </Button>
-              <Button onClick={confirmDelete} color="secondary">
-                Delete
-              </Button>
-            </DialogActions>
-          </Dialog>
-        )}
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setDeleteConfirmation(false)}>
+              Cancel
+            </Button>
+            <Button onClick={confirmDelete} color="secondary">
+              Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
 
-<Notification />
+      <Notification />
     </Container>
   );
 };

@@ -391,6 +391,15 @@ const EducationalDetails: React.FC<pageprop> = ({
     setValue('EducationDetails.business_name', '');
     setValue('EducationDetails.business_address', '');
     setValue('EducationDetails.nature_of_business', '');
+    if (profession === 3 || profession === 4 || profession === 5) {
+      setValue('EducationDetails.workCountry', '');
+      setValue('EducationDetails.work_state', '');
+      setValue('EducationDetails.work_district', '');
+      setValue('EducationDetails.work_city', '');
+      setValue('EducationDetails.work_place', ''); // Although it may not be used, good to clear
+      setValue('EducationDetails.pincode', '');
+      setValue('EducationDetails.CareerPlans', '');
+    }
   }, [profession, setValue]);
 
   return (

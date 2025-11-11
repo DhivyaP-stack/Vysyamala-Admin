@@ -1,367 +1,3 @@
-// import React, { useState, useEffect } from 'react';
-// import { useNavigate } from 'react-router-dom';
-// import {
-//     Paper,
-//     Table,
-//     TableBody,
-//     TableCell,
-//     TableContainer,
-//     TableHead,
-//     TableRow,
-//     TableSortLabel,
-//     TextField,
-//     Button,
-//     Typography,
-//     Box,
-//     IconButton,
-// } from '@mui/material';
-// import { MdDeleteOutline } from 'react-icons/md';
-// import { GrEdit } from 'react-icons/gr';
-// import { Add } from '@mui/icons-material';
-
-// interface Column {
-//     id: string;
-//     label: string;
-//     minWidth?: number;
-// }
-
-// interface FeaturedProfile {
-//     profile_id: string;
-//     Profile_name: string;
-//     Gender: string;
-//     name: string;
-//     plan_name: string;
-//     boosted_date: string | null;
-//     boosted_enddate: string | null;
-//     status_name: string;
-//     active: string;
-// }
-
-// const columns: Column[] = [
-//     { id: "staff_name", label: "Staff Name", minWidth: 150 },
-//     { id: "password", label: "Password", minWidth: 120 },
-//     { id: "role", label: "Role", minWidth: 120 },
-//     { id: "state", label: "State", minWidth: 130 },
-//     { id: "permission", label: "Permission", minWidth: 160 },
-//     { id: "profiles_allocated", label: "No. of Profiles Allocated", minWidth: 200 },
-//     { id: "prospect", label: "Prospect", minWidth: 120 },
-//     { id: "paid", label: "Paid", minWidth: 100 },
-//     { id: "delete_permission", label: "Delete", minWidth: 100 },
-//     { id: "others", label: "Others", minWidth: 160 },
-//     // { id: "actions", label: "Actions", minWidth: 100 },
-// ];
-
-
-// interface Staff {
-//     staff_name: string;
-//     password: string;
-//     role: string;
-//     state: string;
-//     permission: string;
-//     profiles_allocated: number;
-//     prospect: string;
-//     paid: string;
-//     delete_permission: string;
-//     others: string;
-// }
-
-// const staticData: Staff[] = [
-//     {
-//         staff_name: "Priya Kumar",
-//         password: "priya@123",
-//         role: "Admin",
-//         state: "Tamil Nadu",
-//         permission: "Full Access",
-//         profiles_allocated: 20,
-//         prospect: "5",
-//         paid: "3",
-//         delete_permission: "1",
-//         others: "3",
-//     },
-//     {
-//         staff_name: "Arun Raj",
-//         password: "arun@321",
-//         role: "Manager",
-//         state: "Kerala",
-//         permission: "Limited",
-//         profiles_allocated: 15,
-//         prospect: "5",
-//         paid: "3",
-//         delete_permission: "1",
-//         others: "3",
-//     },
-//     {
-//         staff_name: "Divya S",
-//         password: "divya@555",
-//         role: "Executive",
-//         state: "Karnataka",
-//         permission: "Restricted",
-//         profiles_allocated: 10,
-//         prospect: "5",
-//         paid: "3",
-//         delete_permission: "1",
-//         others: "3",
-//     },
-// ];
-
-// const StaffDetails: React.FC = () => {
-//     const navigate = useNavigate();
-//     const [order, setOrder] = useState<'asc' | 'desc'>('asc');
-//     const [orderBy, setOrderBy] = useState<keyof FeaturedProfile>('profile_id');
-//     const [page, setPage] = useState<number>(0);
-//     const [rowsPerPage, setRowsPerPage] = useState<number>(10);
-//     const [data, setData] = useState<{ results: FeaturedProfile[]; count: number }>({
-//         results: [],
-//         count: 0,
-//     });
-//     const [goToPageInput, setGoToPageInput] = useState<string>('');
-
-//     useEffect(() => {
-//         // Load static data
-//         setData({ results: staticData, count: staticData.length });
-//     }, []);
-
-//     const handleRequestSort = (property: keyof FeaturedProfile) => {
-//         const isAsc = orderBy === property && order === 'asc';
-//         setOrder(isAsc ? 'desc' : 'asc');
-//         setOrderBy(property);
-//     };
-
-//     const renderCellContent = (columnId: keyof FeaturedProfile, value: any, row: FeaturedProfile) => {
-//         // Handle date formatting
-//         if (columnId === 'boosted_date' || columnId === 'boosted_enddate') {
-//             return value ? value.split(' ')[0] : 'N/A';
-//         }
-
-//         // Clickable Profile ID
-//         if (columnId === 'profile_id') {
-//             return (
-//                 <Typography
-//                     onClick={() => navigate(`/viewProfile?profileId=${row.profile_id}`)}
-//                     variant="body2"
-//                     sx={{
-//                         color: 'blue',
-//                         cursor: 'pointer',
-//                         textDecoration: 'none',
-//                         '&:hover': { textDecoration: 'underline' },
-//                     }}
-//                 >
-//                     {value}
-//                 </Typography>
-//             );
-//         }
-
-//         return value ?? 'N/A';
-//     };
-
-//     const handleGoToPage = () => {
-//         const pageNumber = parseInt(goToPageInput, 10);
-//         if (!isNaN(pageNumber)) {
-//             const lastPage = Math.ceil(data.count / rowsPerPage) - 1;
-//             const newPage = Math.max(0, Math.min(pageNumber - 1, lastPage));
-//             setPage(newPage);
-//             setGoToPageInput('');
-//         }
-//     };
-
-//     const renderCustomPagination = () => {
-//         const totalPages = Math.ceil(data.count / rowsPerPage);
-//         const maxVisiblePages = 5;
-//         let startPage, endPage;
-
-//         if (totalPages <= maxVisiblePages) {
-//             startPage = 0;
-//             endPage = totalPages - 1;
-//         } else {
-//             const maxPagesBeforeCurrent = Math.floor(maxVisiblePages / 2);
-//             const maxPagesAfterCurrent = Math.ceil(maxVisiblePages / 2) - 1;
-
-//             if (page < maxPagesBeforeCurrent) {
-//                 startPage = 0;
-//                 endPage = maxVisiblePages - 1;
-//             } else if (page + maxPagesAfterCurrent >= totalPages) {
-//                 startPage = totalPages - maxVisiblePages;
-//                 endPage = totalPages - 1;
-//             } else {
-//                 startPage = page - maxPagesBeforeCurrent;
-//                 endPage = page + maxPagesAfterCurrent;
-//             }
-//         }
-
-//         const pages = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
-
-//         return (
-//             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 px-4 py-3 bg-gray-50 rounded-lg border border-gray-200">
-//                 <div className="text-sm text-gray-600">
-//                     Showing {page * rowsPerPage + 1} to {Math.min((page + 1) * rowsPerPage, data.count)} of {data.count} records
-//                 </div>
-
-//                 <div className="flex items-center gap-2">
-//                     <Typography variant="body2">Go to page:</Typography>
-//                     <TextField
-//                         size="small"
-//                         type="number"
-//                         value={goToPageInput}
-//                         onChange={(e) => setGoToPageInput(e.target.value)}
-//                         inputProps={{
-//                             min: 1,
-//                             max: Math.ceil(data.count / rowsPerPage),
-//                         }}
-//                         style={{ width: '80px' }}
-//                         onKeyPress={(e) => e.key === 'Enter' && handleGoToPage()}
-//                     />
-//                     <Button variant="contained" size="small" onClick={handleGoToPage} disabled={!goToPageInput}>
-//                         Go
-//                     </Button>
-
-//                     <IconButton onClick={() => setPage(0)} disabled={page === 0}>
-//                         {"<<"}
-//                     </IconButton>
-//                     <IconButton onClick={() => setPage(prev => Math.max(prev - 1, 0))} disabled={page === 0}>
-//                         {"<"}
-//                     </IconButton>
-
-//                     <div className="flex">
-//                         {pages.map((pageNum) => (
-//                             <Button
-//                                 key={pageNum}
-//                                 variant={page === pageNum ? "contained" : "text"}
-//                                 onClick={() => setPage(pageNum)}
-//                                 style={{
-//                                     minWidth: '32px',
-//                                     height: '32px',
-//                                     margin: '0 2px',
-//                                     backgroundColor: page === pageNum ? '#1976d2' : 'transparent',
-//                                     color: page === pageNum ? '#fff' : '#000',
-//                                 }}
-//                             >
-//                                 {pageNum + 1}
-//                             </Button>
-//                         ))}
-//                     </div>
-
-//                     <IconButton
-//                         onClick={() => setPage(prev => Math.min(prev + 1, Math.ceil(data.count / rowsPerPage) - 1))}
-//                         disabled={page >= Math.ceil(data.count / rowsPerPage) - 1}
-//                     >
-//                         {">"}
-//                     </IconButton>
-//                     <IconButton
-//                         onClick={() => setPage(Math.ceil(data.count / rowsPerPage) - 1)}
-//                         disabled={page >= Math.ceil(data.count / rowsPerPage) - 1}
-//                     >
-//                         {">>"}
-//                     </IconButton>
-//                 </div>
-//             </div>
-//         );
-//     };
-
-//     return (
-//         <div className="p-4">
-//             <h1 className="text-2xl text-black font-bold mb-4">
-//                Staff Details <span className="text-lg font-normal">({data.count})</span>
-//             </h1>
-
-//             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-//                 <Button
-//                     variant="contained"
-//                     color="primary"
-//                     startIcon={<Add />}
-//                     sx={{
-//                         height: 40,
-//                         alignSelf: 'flex-end',
-//                         minWidth: 150,
-//                         textTransform: 'none',
-//                         fontWeight: 600,
-//                         fontSize: '0.95rem',
-//                         borderRadius: '8px',
-//                         boxShadow: '0px 3px 6px rgba(0,0,0,0.2)',
-//                     }}
-//                 >
-//                     Add Profile
-//                 </Button>
-//             </Box>
-
-//             <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-//                 <TableContainer sx={{ maxHeight: 640, backgroundColor: 'white' }}>
-//                     <Table stickyHeader aria-label="featured profiles table">
-//                         <TableHead>
-//                             <TableRow>
-//                                 {columns.map((column) => (
-//                                     <TableCell
-//                                         key={column.id}
-//                                         align={column.align}
-//                                         style={{ minWidth: column.minWidth }}
-//                                         sx={{ backgroundColor: '#FFF9C9', borderBottom: '1px solid #E0E0E0' }}
-//                                     >
-//                                         <TableSortLabel
-//                                             className="!text-red-600 !text-base !font-semibold"
-//                                             active={orderBy === column.id}
-//                                             direction={orderBy === column.id ? order : 'asc'}
-//                                             // onClick={() => handleRequestSort(column.id)}
-//                                         >
-//                                             {column.label}
-//                                         </TableSortLabel>
-//                                     </TableCell>
-//                                 ))}
-//                                 <TableCell
-//                                     align="center"
-//                                     className="!text-red-600 !text-base !font-semibold"
-//                                     sx={{ backgroundColor: '#FFF9C9', borderBottom: '1px solid #E0E0E0' }}
-//                                 >
-//                                     Actions
-//                                 </TableCell>
-//                             </TableRow>
-//                         </TableHead>
-
-//                         <TableBody>
-//                             {data.results.length === 0 ? (
-//                                 <TableRow>
-//                                     <TableCell colSpan={columns.length + 1} align="center">
-//                                         No data found
-//                                     </TableCell>
-//                                 </TableRow>
-//                             ) : (
-//                                 data.results.map((row) => (
-//                                     <TableRow key={row.profile_id} hover>
-//                                         {columns.map((column) => (
-//                                             <TableCell key={column.id} align={column.align}>
-//                                                 {renderCellContent(column.id, row[column.id], row)}
-//                                             </TableCell>
-//                                         ))}
-//                                         <TableCell sx={{ padding: '10px', textAlign: 'center' }}>
-//                                             <Box display="flex" justifyContent="center" alignItems="center" gap={1}>
-//                                                 <Button
-//                                                     // onClick={() => navigate(`/editProfile?profileId=${row.profile_id}`)}
-//                                                 >
-//                                                     <GrEdit />
-//                                                 </Button>
-//                                                 <Button>
-//                                                     <MdDeleteOutline
-//                                                         style={{
-//                                                             height: '17px',
-//                                                             width: '25px',
-//                                                             color: '#ff3333',
-//                                                         }}
-//                                                     />
-//                                                 </Button>
-//                                             </Box>
-//                                         </TableCell>
-//                                     </TableRow>
-//                                 ))
-//                             )}
-//                         </TableBody>
-//                     </Table>
-//                 </TableContainer>
-
-//                 {Math.ceil(data.count / rowsPerPage) > 0 && renderCustomPagination()}
-//             </Paper>
-//         </div>
-//     );
-// };
-
-// export default StaffDetails;
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -373,52 +9,66 @@ import {
     TableHead,
     TableRow,
     TableSortLabel,
-    TextField,
     Button,
     Typography,
     Box,
     IconButton,
-    Select,
-    MenuItem,
-    FormControl,
-    InputLabel,
-    OutlinedInput,
-    Chip,
+    CircularProgress,
+    DialogActions,
+    Dialog,
+    DialogContent,
+    DialogTitle,
 } from '@mui/material';
 import { MdDeleteOutline } from 'react-icons/md';
 import { GrEdit } from 'react-icons/gr';
-import { Add, Cancel } from '@mui/icons-material';
+import { Add } from '@mui/icons-material';
+import { apiAxios } from '../../api/apiUrl';
+import AddStaffForm from './Staffform'; // Adjust path as needed
+import { toast } from 'react-toastify';
 
 // --- Type Definitions ---
-
-interface Column {
-    id: keyof Staff | 'actions'; // Include 'actions' for the last column
-    label: string;
-    minWidth?: number;
-    align?: 'left' | 'right' | 'center';
-}
-
 interface Staff {
-    staff_name: string;
+    id: number;
+    email: string;
+    username: string;
+    role: number | string;
+    role_name: string;
+    state: number | string;
+    state_name: string;
+    status: number;
+    status_display: string;
     password: string;
-    role: string;
-    state: string;
     permission: string;
     profiles_allocated: number;
     prospect: string;
     paid: string;
     delete_permission: string;
     others: string;
-    // Add an ID for mapping if this were real data
-    id: number;
 }
 
-// Ensure the columns match the Staff keys and include 'actions' if needed for sorting logic
+interface Column {
+    id: keyof Staff | 'actions' | 'staff_name' | 'state';
+    label: string;
+    minWidth?: number;
+    align?: 'left' | 'right' | 'center';
+}
+
+interface RoleOption {
+    id: number;
+    name: string;
+}
+
+interface StateOption {
+    State_Pref_id: number;
+    State_name: string;
+}
+
+// Update the columns to match the new API keys (username, role_name, state_name, etc.)
 const columns: Column[] = [
-    { id: "staff_name", label: "Staff Name", minWidth: 150 },
+    { id: "username", label: "Staff Name", minWidth: 150 },
     { id: "password", label: "Password", minWidth: 120 },
-    { id: "role", label: "Role", minWidth: 120 },
-    { id: "state", label: "State", minWidth: 130 },
+    { id: "role_name", label: "Role", minWidth: 120 },
+    { id: "state_name", label: "State", minWidth: 130 },
     { id: "permission", label: "Permission", minWidth: 160 },
     { id: "profiles_allocated", label: "No. of Profiles Allocated", minWidth: 200 },
     { id: "prospect", label: "Prospect", minWidth: 120 },
@@ -427,93 +77,23 @@ const columns: Column[] = [
     { id: "others", label: "Others", minWidth: 160 },
 ];
 
-const staticData: Staff[] = [
-    {
-        id: 1,
-        staff_name: "Priya Kumar",
-        password: "priya@123",
-        role: "Admin",
-        state: "Tamil Nadu",
-        permission: "Full Access",
-        profiles_allocated: 20,
-        prospect: "5",
-        paid: "3",
-        delete_permission: "1",
-        others: "3",
-    },
-    {
-        id: 2,
-        staff_name: "Arun Raj",
-        password: "arun@321",
-        role: "Manager",
-        state: "Kerala",
-        permission: "Limited",
-        profiles_allocated: 15,
-        prospect: "5",
-        paid: "3",
-        delete_permission: "1",
-        others: "3",
-    },
-    {
-        id: 3,
-        staff_name: "Divya S",
-        password: "divya@555",
-        role: "Executive",
-        state: "Karnataka",
-        permission: "Restricted",
-        profiles_allocated: 10,
-        prospect: "5",
-        paid: "3",
-        delete_permission: "1",
-        others: "3",
-    },
-];
-
-// Initial state for a new staff member
-const initialNewStaffState: Staff = {
-    id: 0, // Placeholder, will be replaced with a new unique ID
-    staff_name: "",
-    password: "",
-    role: "",
-    state: "",
-    permission: "Full Access", // Default or user-defined
-    profiles_allocated: 0,
-    prospect: "",
-    paid: "",
-    delete_permission: "",
-    others: "",
-};
-
-// --- Staff Details Component ---
-
 const StaffDetails: React.FC = () => {
     const navigate = useNavigate();
     const [order, setOrder] = useState<'asc' | 'desc'>('asc');
-    // NOTE: Changed default sort key to a valid Staff key for consistency
-    const [orderBy, setOrderBy] = useState<keyof Staff>('staff_name');
-    const [page, setPage] = useState<number>(0);
-    const [rowsPerPage, setRowsPerPage] = useState<number>(10);
-    // NOTE: Updated data state to use the correct Staff interface
+    const [orderBy, setOrderBy] = useState<keyof Staff>('username');
     const [data, setData] = useState<{ results: Staff[]; count: number }>({
         results: [],
         count: 0,
     });
-    const [goToPageInput, setGoToPageInput] = useState<string>('');
-    // New state for form visibility
     const [showAddForm, setShowAddForm] = useState<boolean>(false);
-    // New state for form data
-    const [newStaff, setNewStaff] = useState<Staff>(initialNewStaffState);
-    const [selectedStates, setSelectedStates] = useState<string[]>([]);
-    const [file, setFile] = useState<File | null>(null);
-
-    // Static options for form fields
-    const roleOptions = ["Admin", "Manager", "Executive", "View Only", "Sales", "Biz Dev", "Franchise", "Customer Support"];
-    const stateOptions = ["Tamil Nadu & Pondicherry", "Andhra Pradesh", "Telangana", "Karnataka", "Kerala", "Maharashtra", "Delhi", "Others"];
-
-    useEffect(() => {
-        // Load static data
-        setData({ results: staticData, count: staticData.length });
-    }, []);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [roles, setRoles] = useState<RoleOption[]>([]);
+    const [stateOptions, setStateOptions] = useState<StateOption[]>([]);
+    const [deleteConfirmation, setDeleteConfirmation] = useState<boolean>(false);
+    const [staffToDelete, setStaffToDelete] = useState<Staff | null>(null);
+    const [isDeleting, setIsDeleting] = useState<boolean>(false);
+    const [editingStaff, setEditingStaff] = useState<Staff | null>(null);
+    const [isEditMode, setIsEditMode] = useState<boolean>(false);
 
     const handleRequestSort = (property: keyof Staff) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -521,276 +101,219 @@ const StaffDetails: React.FC = () => {
         setOrderBy(property);
     };
 
-    const renderCellContent = (columnId: keyof Staff, value: any, row: Staff) => {
-        // You can add custom rendering logic here if needed, but for the Staff table, simple rendering works.
-        // For 'password', you might want to obscure it.
+    const fetchData = async () => {
+        setIsLoading(true);
+        try {
+            const response = await apiAxios.get('api/users/');
+            const apiResults: any[] = response.data;
+
+            const formattedData: Staff[] = apiResults.map(item => ({
+                id: item.id,
+                email: item.email,
+                username: item.username,
+                role: item.role,
+                role_name: item.role_name,
+                state: item.state,
+                state_name: item.state_name,
+                status: item.status,
+                status_display: item.status_display,
+                password: '••••••••',
+                permission: item.permission,
+                profiles_allocated: 0,
+                prospect: '0',
+                paid: '0',
+                delete_permission: '0',
+                others: 'N/A',
+            }));
+
+            setData({
+                results: formattedData,
+                count: formattedData.length
+            });
+
+        } catch (error) {
+            console.error("Error fetching staff data:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const fetchRoles = async () => {
+        try {
+            const response = await apiAxios.get('api/roles/dropdown/');
+            if (response.data && response.data.roles) {
+                setRoles(response.data.roles);
+            }
+        } catch (error) {
+            console.error("Error fetching roles data:", error);
+        }
+    };
+
+    const fetchStates = async () => {
+        try {
+            const response = await apiAxios.post('auth/Get_State_Pref/');
+            const apiStates: { [key: string]: StateOption } = response.data;
+            const formattedStates: StateOption[] = Object.values(apiStates).map(state => ({
+                State_Pref_id: state.State_Pref_id,
+                State_name: state.State_name,
+            }));
+            const validStates = formattedStates.filter(s => s.State_Pref_id && s.State_name);
+            setStateOptions(validStates);
+        } catch (error) {
+            console.error("Error fetching state data:", error);
+        }
+    };
+
+    const fetchStaffById = async (id: number) => {
+        try {
+            const response = await apiAxios.get(`api/users/${id}/`);
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching staff details:", error);
+            throw error;
+        }
+    };
+
+    useEffect(() => {
+        fetchStates();
+        fetchRoles();
+        fetchData();
+    }, []);
+
+
+    // Handler for when staff is successfully added
+    const handleStaffAdded = () => {
+        // Refresh the data
+        fetchData();
+        // Close the form
+        setShowAddForm(false);
+    };
+
+    const handleOpenAddForm = () => {
+        // 1. Reset editing state
+        setEditingStaff(null);
+        setIsEditMode(false);
+        // 2. Open the form
+        setShowAddForm(true);
+    };
+
+    // Handler for canceling the form
+    const handleCancelAddForm = () => {
+        // Reset both form visibility and editing state upon cancellation
+        setShowAddForm(false);
+        setEditingStaff(null);
+        setIsEditMode(false);
+    };
+    const handleDeleteStaff = (staff: Staff) => {
+        setStaffToDelete(staff);
+        setDeleteConfirmation(true);
+    };
+
+    const handleEditStaff = async (staff: Staff) => {
+        try {
+            setIsLoading(true);
+            // Fetch the latest staff data by ID
+            const staffDetails = await fetchStaffById(staff.id);
+
+            // Set the staff data for editing
+            setEditingStaff({
+                ...staff,
+                ...staffDetails
+            });
+            setIsEditMode(true);
+            setShowAddForm(true);
+
+        } catch (error) {
+            console.error("Error fetching staff details for editing:", error);
+            toast.error('Failed to load staff details for editing');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const confirmDelete = async () => {
+        if (!staffToDelete) return;
+
+        setIsDeleting(true);
+        try {
+            await apiAxios.delete(`api/users/${staffToDelete.id}/`);
+
+            toast.success(`Staff member deleted successfully`);
+
+            // Refresh the data
+            await fetchData();
+
+            // Close the confirmation dialog
+            setDeleteConfirmation(false);
+            setStaffToDelete(null);
+
+        } catch (error: any) {
+            console.error("Error deleting staff:", error);
+            toast.error(error.response?.data?.message || 'Failed to delete staff member');
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
+    const cancelDelete = () => {
+        setDeleteConfirmation(false);
+        setStaffToDelete(null);
+    };
+
+    const renderCellContent = (columnId: keyof Staff | 'staff_name' | 'state', value: any, row: Staff) => {
         if (columnId === 'password') {
             return '••••••••';
+        }
+        if (columnId === 'state' || columnId === 'state_name') {
+            return row.state_name ?? 'N/A';
+        }
+        if (columnId === 'staff_name' || columnId === 'username') {
+            return row.username ?? 'N/A';
         }
         return value ?? 'N/A';
     };
 
-    const handleGoToPage = () => {
-        const pageNumber = parseInt(goToPageInput, 10);
-        if (!isNaN(pageNumber)) {
-            const lastPage = Math.ceil(data.count / rowsPerPage) - 1;
-            const newPage = Math.max(0, Math.min(pageNumber - 1, lastPage));
-            setPage(newPage);
-            setGoToPageInput('');
-        }
-    };
-
-    const handleAddStaff = () => {
-        // Add logic to save the new staff member
-        console.log("New Staff Data:", newStaff);
-        console.log("Selected States:", selectedStates);
-        console.log("Allocated Profiles File:", file);
-
-        // Simple ID generation for static data simulation
-        const newId = Math.max(...data.results.map(s => s.id), 0) + 1;
-        const newStaffWithId = { ...newStaff, id: newId, state: selectedStates.join(', ') };
-
-        setData(prev => ({
-            results: [...prev.results, newStaffWithId],
-            count: prev.count + 1,
-        }));
-
-        // Reset form
-        setNewStaff(initialNewStaffState);
-        setSelectedStates([]);
-        setFile(null);
-        setShowAddForm(false); // Hide form after submission
-    };
-
-    const renderCustomPagination = () => {
-        const totalPages = Math.ceil(data.count / rowsPerPage);
-        const maxVisiblePages = 5;
-        let startPage, endPage;
-
-        if (totalPages <= maxVisiblePages) {
-            startPage = 0;
-            endPage = totalPages - 1;
+    // Sorting logic
+    const sortedData = data.results.sort((a, b) => {
+        if (orderBy === 'id' || orderBy === 'profiles_allocated' || orderBy === 'status') {
+            // For numeric fields
+            if (a[orderBy as keyof Staff] < b[orderBy as keyof Staff]) {
+                return order === 'asc' ? -1 : 1;
+            }
+            if (a[orderBy as keyof Staff] > b[orderBy as keyof Staff]) {
+                return order === 'asc' ? 1 : -1;
+            }
         } else {
-            const maxPagesBeforeCurrent = Math.floor(maxVisiblePages / 2);
-            const maxPagesAfterCurrent = Math.ceil(maxVisiblePages / 2) - 1;
+            // For string fields
+            const aValue = String(a[orderBy as keyof Staff]).toLowerCase();
+            const bValue = String(b[orderBy as keyof Staff]).toLowerCase();
 
-            if (page < maxPagesBeforeCurrent) {
-                startPage = 0;
-                endPage = maxVisiblePages - 1;
-            } else if (page + maxPagesAfterCurrent >= totalPages) {
-                startPage = totalPages - maxVisiblePages;
-                endPage = totalPages - 1;
-            } else {
-                startPage = page - maxPagesBeforeCurrent;
-                endPage = page + maxPagesAfterCurrent;
+            if (aValue < bValue) {
+                return order === 'asc' ? -1 : 1;
+            }
+            if (aValue > bValue) {
+                return order === 'asc' ? 1 : -1;
             }
         }
-
-        const pages = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
-
-        return (
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 px-4 py-3 bg-gray-50 rounded-lg border border-gray-200">
-                <div className="text-sm text-gray-600">
-                    Showing {page * rowsPerPage + 1} to {Math.min((page + 1) * rowsPerPage, data.count)} of {data.count} records
-                </div>
-
-                <div className="flex items-center gap-2">
-                    <Typography variant="body2">Go to page:</Typography>
-                    <TextField
-                        size="small"
-                        type="number"
-                        value={goToPageInput}
-                        onChange={(e) => setGoToPageInput(e.target.value)}
-                        inputProps={{
-                            min: 1,
-                            max: Math.ceil(data.count / rowsPerPage),
-                        }}
-                        style={{ width: '80px' }}
-                        onKeyPress={(e) => e.key === 'Enter' && handleGoToPage()}
-                    />
-                    <Button variant="contained" size="small" onClick={handleGoToPage} disabled={!goToPageInput}>
-                        Go
-                    </Button>
-
-                    <IconButton onClick={() => setPage(0)} disabled={page === 0}>
-                        {"<<"}
-                    </IconButton>
-                    <IconButton onClick={() => setPage(prev => Math.max(prev - 1, 0))} disabled={page === 0}>
-                        {"<"}
-                    </IconButton>
-
-                    <div className="flex">
-                        {pages.map((pageNum) => (
-                            <Button
-                                key={pageNum}
-                                variant={page === pageNum ? "contained" : "text"}
-                                onClick={() => setPage(pageNum)}
-                                style={{
-                                    minWidth: '32px',
-                                    height: '32px',
-                                    margin: '0 2px',
-                                    backgroundColor: page === pageNum ? '#1976d2' : 'transparent',
-                                    color: page === pageNum ? '#fff' : '#000',
-                                }}
-                            >
-                                {pageNum + 1}
-                            </Button>
-                        ))}
-                    </div>
-
-                    <IconButton
-                        onClick={() => setPage(prev => Math.min(prev + 1, Math.ceil(data.count / rowsPerPage) - 1))}
-                        disabled={page >= Math.ceil(data.count / rowsPerPage) - 1}
-                    >
-                        {">"}
-                    </IconButton>
-                    <IconButton
-                        onClick={() => setPage(Math.ceil(data.count / rowsPerPage) - 1)}
-                        disabled={page >= Math.ceil(data.count / rowsPerPage) - 1}
-                    >
-                        {">>"}
-                    </IconButton>
-                </div>
-            </div>
-        );
-    };
-
-    const AddStaffForm = () => (
-        <Paper elevation={3} sx={{ padding: 4, marginBottom: 4, marginTop: 4, borderRadius: '12px', boxShadow: '0 6px 20px rgba(15,23,42,0.06)' }}>
-            <Typography variant="h5" component="h3" gutterBottom sx={{ fontWeight: 600, color: '#0f172a' }}>
-                Add New Staff
-            </Typography>
-            <Box component="form" noValidate autoComplete="off" sx={{ '& > div': { mb: 2 } }}>
-                {/* Name */}
-                <FormControl fullWidth required>
-                    <TextField
-                        label="Name"
-                        value={newStaff.staff_name}
-                        onChange={(e) => setNewStaff({ ...newStaff, staff_name: e.target.value })}
-                        required
-                        sx={{
-                            '& .MuiFormLabel-asterisk': {
-                                color: 'red',
-                            },
-                        }}
-                    />
-                </FormControl>
-
-                {/* Password */}
-                <FormControl fullWidth required>
-                    <TextField
-                        label="Password"
-                        type="password"
-                        value={newStaff.password}
-                        onChange={(e) => setNewStaff({ ...newStaff, password: e.target.value })}
-                        required
-                        sx={{
-                            '& .MuiFormLabel-asterisk': {
-                                color: 'red',
-                            },
-                        }}
-                    />
-                </FormControl>
-
-                {/* Role */}
-                <FormControl fullWidth required>
-                    <InputLabel id="role-label" sx={{
-                        '& .MuiFormLabel-asterisk': {
-                            color: 'red',
-                        },
-                    }}>Role</InputLabel>
-                    <Select
-                        labelId="role-label"
-                        label="Role"
-                        value={newStaff.role}
-                        onChange={(e) => setNewStaff({ ...newStaff, role: e.target.value })}
-                        required
-                    >
-                        <MenuItem value="">-- Select role --</MenuItem>
-                        {roleOptions.map((role) => (
-                            <MenuItem key={role} value={role}>{role}</MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-
-                {/* State / Region (Multi Select) */}
-                <FormControl fullWidth>
-                    <InputLabel id="state-select-label">State / Region (Multi Select)</InputLabel>
-                    <Select
-                        labelId="state-select-label"
-                        id="state-select-multiple-chip"
-                        multiple
-                        value={selectedStates}
-                        onChange={(e) => setSelectedStates(e.target.value as string[])}
-                        input={<OutlinedInput id="select-multiple-chip" label="State / Region (Multi Select)" />}
-                        renderValue={(selected) => (
-                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                {selected.map((value) => (
-                                    <Chip key={value} label={value} />
-                                ))}
-                            </Box>
-                        )}
-                    >
-                        {stateOptions.map((state) => (
-                            <MenuItem key={state} value={state}>
-                                {state}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-
-                {/* Profile Allocation (File Upload) */}
-                <Box sx={{ border: '1px solid #e6e9ef', borderRadius: '8px', padding: 2, background: '#fff' }}>
-                    <Typography variant="body2" gutterBottom>Profile Allocation (Excel Upload)</Typography>
-                    <input
-                        type="file"
-                        accept=".csv,.xls,.xlsx"
-                        style={{ display: 'block', width: '100%' }}
-                        onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)}
-                    />
-                    <Typography variant="caption" color="text.secondary" sx={{ mt: 1 }}>
-                        Accepted: .xlsx .xls .csv — max 5 MB. Columns: profile_id, profile_owner
-                    </Typography>
-                </Box>
-
-                {/* Actions */}
-                <Box display="flex" justifyContent="flex-end" gap={2} pt={2}>
-                    <Button
-                        variant="outlined"
-                        onClick={() => setShowAddForm(false)}
-                    // startIcon={<Cancel />}
-                    >
-                        Cancel
-                    </Button>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={handleAddStaff}
-                        // startIcon={<Add />}
-                        disabled={!newStaff.staff_name || !newStaff.password || !newStaff.role}
-                    >
-                        Save
-                    </Button>
-                </Box>
-            </Box>
-        </Paper>
-    );
+        return 0;
+    });
 
     return (
         <div className="p-4">
-
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
-                <h1 className="text-2xl text-black font-bold">
-                    Staff Details <span className="text-lg font-normal">({data.count})</span>
+                <Box>
+                    <h1 className="text-2xl text-black font-bold">
+                        Staff Details <span className="text-lg font-normal">({data.count})</span>
+                    </h1>
                     <Typography variant="subtitle2" sx={{ color: '#6b7280', fontSize: '13px' }}>
                         View, add, and manage staff members
                     </Typography>
-                </h1>
+                </Box>
                 <Button
                     variant="contained"
                     color="primary"
                     startIcon={<Add />}
-                    onClick={() => setShowAddForm(true)} // Toggle visibility to true
+                    onClick={handleOpenAddForm}
                     sx={{
                         height: 40,
                         textTransform: 'none',
@@ -804,11 +327,19 @@ const StaffDetails: React.FC = () => {
                 </Button>
             </Box>
 
-            {/* Conditional Rendering of Add Staff Form */}
-            {showAddForm && <AddStaffForm />}
+            {/* Use the separate AddStaffForm component */}
+            {showAddForm && (
+                <AddStaffForm
+                    onStaffAdded={handleStaffAdded}
+                    onCancel={handleCancelAddForm}
+                    roles={roles}
+                    stateOptions={stateOptions}
+                    editingStaff={editingStaff}
+                    isEditMode={isEditMode}
+                />
+            )}
 
             {/* Staff Table */}
-
             <Paper sx={{ width: '100%', overflow: 'hidden' }}>
                 <Typography variant="h6" component="h3" sx={{ fontWeight: 600, mb: 1.5, color: '#0f172a' }}>
                     All Staff Details
@@ -828,8 +359,7 @@ const StaffDetails: React.FC = () => {
                                             className="!text-red-600 !text-base !font-semibold"
                                             active={orderBy === column.id}
                                             direction={orderBy === column.id ? order : 'asc'}
-                                        // The original code commented out sorting logic. Uncomment below to enable sorting.
-                                        // onClick={() => handleRequestSort(column.id as keyof Staff)} 
+                                            onClick={() => column.id !== 'actions' && handleRequestSort(column.id as keyof Staff)}
                                         >
                                             {column.label}
                                         </TableSortLabel>
@@ -846,33 +376,48 @@ const StaffDetails: React.FC = () => {
                         </TableHead>
 
                         <TableBody>
-                            {data.results.length === 0 ? (
+                            {isLoading ? (
+                                <TableRow>
+                                    <TableCell colSpan={columns.length + 1} align="center">
+                                        <Box
+                                            sx={{
+                                                display: 'flex',
+                                                justifyContent: 'center',
+                                                alignItems: 'center',
+                                                height: 100
+                                            }}
+                                        >
+                                            <CircularProgress />
+                                        </Box>
+                                    </TableCell>
+                                </TableRow>
+                            ) : data.results.length === 0 ? (
                                 <TableRow>
                                     <TableCell colSpan={columns.length + 1} align="center">
                                         No staff data found
                                     </TableCell>
                                 </TableRow>
                             ) : (
-                                data.results.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-                                    // NOTE: Using 'id' for the key is safer in real apps, adjusted to use 'id' if available.
+                                sortedData.map((row) => (
                                     <TableRow key={row.id} hover>
                                         {columns.map((column) => (
                                             <TableCell key={column.id} align={column.align}>
-                                                {renderCellContent(column.id, row[column.id], row)}
+                                                {renderCellContent(column.id as keyof Staff | 'staff_name' | 'state', row[column.id as keyof Staff], row)}
                                             </TableCell>
                                         ))}
                                         <TableCell sx={{ padding: '10px', textAlign: 'center' }}>
                                             <Box display="flex" justifyContent="center" alignItems="center" gap={1}>
                                                 <IconButton
-                                                    // onClick={() => navigate(`/editStaff?staffId=${row.id}`)}
                                                     color="primary"
+                                                    onClick={() => handleEditStaff(row)}
                                                 >
                                                     <GrEdit style={{ fontSize: '16px' }} />
                                                 </IconButton>
                                                 <IconButton
-                                                // onClick={() => handleDeleteStaff(row.id)}
+                                                    onClick={() => handleDeleteStaff(row)}
                                                 >
-                                                    <MdDeleteOutline style={{ color: '#ff3333' }} />
+                                                    <MdDeleteOutline
+                                                        style={{ color: '#ff3333' }} />
                                                 </IconButton>
                                             </Box>
                                         </TableCell>
@@ -882,9 +427,40 @@ const StaffDetails: React.FC = () => {
                         </TableBody>
                     </Table>
                 </TableContainer>
-
-                {Math.ceil(data.count / rowsPerPage) > 0 && renderCustomPagination()}
             </Paper>
+            {deleteConfirmation && (
+                <Dialog
+                    open={deleteConfirmation}
+                    onClose={cancelDelete}
+                    maxWidth="xs"
+                    fullWidth
+                >
+                    <DialogTitle>Confirm Delete</DialogTitle>
+                    <DialogContent>
+                        <Typography>
+                            Are you sure you want to delete staff member "{staffToDelete?.username}"?
+                        </Typography>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button
+                            onClick={cancelDelete}
+                            disabled={isDeleting}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            onClick={confirmDelete}
+                            color="error"
+                            variant="contained"
+                            disabled={isDeleting}
+                            startIcon={isDeleting ? <CircularProgress size={16} /> : null}
+                        >
+                            {isDeleting ? 'Deleting...' : 'Delete'}
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            )}
+
         </div>
     );
 };

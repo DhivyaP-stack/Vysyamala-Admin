@@ -359,7 +359,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                               Featured Profiles
                             </NavLink>
                           </li>
-                          {/* <li>
+                          <li>
                             <NavLink
                               to="StaffDetails"
                               className={({ isActive }) =>
@@ -370,7 +370,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                               <GoDot />
                               Staff Details
                             </NavLink>
-                          </li> */}
+                          </li>
                           {/* <li>
                             <NavLink
                               to="viewProfile"

@@ -26,6 +26,8 @@ interface PhotoProofDetails {
     profile_images: ProfileImage[];
     profile_martial_status: string;
     horoscope_file_admin: string;
+    Profile_name: string;
+    photo_protection: boolean;
 }
 
 
@@ -58,7 +60,7 @@ export const UploadApprovalProfileImg = () => {
     const [idProofFiles, setIdProofFiles] = useState<File[]>([]);
     const [divorceProofFiles, setDivorceProofFiles] = useState<File[]>([]);
     const [horoscopeAdminFiles, setHoroscopeAdminFiles] = useState<File[]>([]);
-    const [photoProtection, setPhotoProtection] = useState<number>(0); // Default to 0
+    const [photoProtection, setPhotoProtection] = useState<boolean>(false);
     const {
         register,
         setValue,
@@ -77,6 +79,7 @@ export const UploadApprovalProfileImg = () => {
             setValue("photo_password", data.photo_password); // ✅ Correct position
             setPhotoProofDetails(data);
             setPassword(data.photo_password);
+            setPhotoProtection(data.photo_protection)
             setLoading(false);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'An unknown error occurred');
@@ -85,19 +88,19 @@ export const UploadApprovalProfileImg = () => {
     };
 
     //fetch ProfileDetails
-    const fetchDetails = async () => {
-        try {
-            const profileData = await getProfileDetails(String(profileId));
-            setProfileData(profileData); // ✅ Store in state
-            console.log("profileData", profileData)
-        } catch (err) {
-            console.error(err);
-        }
-    };
+    // const fetchDetails = async () => {
+    //     try {
+    //         const profileData = await getProfileDetails(String(profileId));
+    //         setProfileData(profileData); // ✅ Store in state
+    //         console.log("profileData", profileData)
+    //     } catch (err) {
+    //         console.error(err);
+    //     }
+    // };
 
 
     useEffect(() => {
-        fetchDetails();
+        // fetchDetails();
         fetchPhotoProof();
     }, [profileId, setValue]);
 
@@ -113,15 +116,12 @@ export const UploadApprovalProfileImg = () => {
         try {
             const apiTasks = [];
 
-            // ✅ START: New Block for Profile Image Upload
-            // Check if there are new profile images to upload
             if (newProfileImages.length > 0) {
                 // Add the new profile image upload task to our list
                 apiTasks.push(
                     uploadNewProfileImages(profileId, newProfileImages)
                 );
             }
-            // ✅ END: New Block for Profile Image Upload
 
             // Task for other proof file uploads (ID, Horoscope, etc.)
             const hasProofFilesToUpload =
@@ -155,7 +155,7 @@ export const UploadApprovalProfileImg = () => {
                     isDeleted,
                     imageApprovedStatuses,
                     passwordValue || "",
-                    photoProtection.toString(),
+                    photoProtection ? "1" : "0",
                 )
             );
 
@@ -242,6 +242,16 @@ export const UploadApprovalProfileImg = () => {
         window.open(fileUrl, '_blank');
     };
 
+    const handleProtectionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const isChecked = e.target.checked;
+        setPhotoProtection(isChecked);
+
+        // If the checkbox is unchecked, clear the photo_password value
+        if (!isChecked) {
+            setValue("photo_password", "");
+        }
+    };
+
     if (loading) {
         return (
             <Box
@@ -300,7 +310,7 @@ export const UploadApprovalProfileImg = () => {
                     </div>
                     <div className="flex">
                         <span className="w-50 font-semibold text-black">Name</span>
-                        <span>{profileData?.login_details?.Profile_name || 'Loading name...'}</span>
+                        <span>{photoProofDetails.Profile_name || 'Loading name...'}</span>
                     </div>
                 </div>
             </div>
@@ -398,8 +408,8 @@ export const UploadApprovalProfileImg = () => {
                         <input
                             type="checkbox"
                             className="mr-2p"
-                            checked={photoProtection === 1}
-                            onChange={(e) => setPhotoProtection(e.target.checked ? 1 : 0)}
+                            checked={photoProtection} // ✅ Directly use the boolean state
+                            onChange={handleProtectionChange} // ✅ Set boolean directly 
                         />
                     </div>
 
