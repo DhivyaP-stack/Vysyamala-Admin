@@ -9,6 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { NotifyError, NotifySuccess } from '../../../../common/Toast/ToastMessage';
 import { IoEye, IoEyeOff } from "react-icons/io5";
 import { FileInput } from '../../../ReusableFile/FileInput';
+import { hasPermission } from '../../../utils/auth';
 
 interface ProfileImage {
     id: number;
@@ -418,17 +419,18 @@ export const UploadApprovalProfileImg = () => {
                         <span>04/04/25 11:56:25 AM</span>
                     </div> */}
 
-
-                    <div className="flex">
-                        {/* <span className="w-100 font-semibold text-black">Upload Profile Images</span> */}
-                        <FileInput
-                            label="Profile Images"
-                            files={newProfileImages}
-                            onFilesChange={setNewProfileImages}
-                            accept="image/*"
-                            multiple={true}
-                        />
-                    </div>
+                    {hasPermission('new_photo_update') && (
+                        <div className="flex">
+                            {/* <span className="w-100 font-semibold text-black">Upload Profile Images</span> */}
+                            <FileInput
+                                label="Profile Images"
+                                files={newProfileImages}
+                                onFilesChange={setNewProfileImages}
+                                accept="image/*"
+                                multiple={true}
+                            />
+                        </div>
+                    )}
 
                     {/* ✅ Step 4: Add this block to display selected file names */}
 

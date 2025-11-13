@@ -23,6 +23,7 @@ import { GrEdit } from 'react-icons/gr';
 import { FaRegEye } from 'react-icons/fa';
 import { Add } from '@mui/icons-material';
 import { toast } from 'react-toastify';
+import { hasPermission } from '../../utils/auth';
 
 const FEATURED_API_URL = 'https://app.vysyamala.com/api/featured-profiles/';
 const API_URL = 'https://app.vysyamala.com/api'; // Base API for delete
@@ -379,120 +380,122 @@ const FeaturedProfiles: React.FC = () => {
             <h1 className="text-2xl text-black font-bold mb-4">
                 Featured Profiles <span className="text-lg font-normal">({totalCount})</span>
             </h1>
-            <Box
-                sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    backgroundColor: '#fff',
-                    borderRadius: 2,
-                    boxShadow: '0px 4px 10px rgba(0,0,0,0.15)',
-                    padding: 2.5,
-                    marginBottom: 3,
-                    gap: 2,
-                    flexWrap: 'wrap',
-                }}
-            >
+            {hasPermission('featured_profile_add') && (
                 <Box
-                    sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, flexWrap: 'wrap', flex: 1 }}
-                >
-                    {/* Add Profile ID */}
-                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                        <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#555', mb: 0.5 }}>
-                            Profile ID <span className='text-red-500'>*</span>
-                        </Typography>
-                        <TextField
-                            placeholder="Enter Profile ID"
-                            value={addProfileId}
-                            onChange={(e) => {
-                                setAddProfileId(e.target.value);
-                                if (addErrors.profileId) setAddErrors((prev) => ({ ...prev, profileId: '' }));
-                            }}
-                            variant="outlined"
-                            size="small"
-                            sx={{ width: 250 }}
-                        />
-                        {addErrors.profileId && (
-                            <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
-                                {addErrors.profileId}
-                            </Typography>
-                        )}
-                    </Box>
-
-                    {/* Boosted Start Date */}
-                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                        <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#555', mb: 0.5 }}>
-                            From Date <span className='text-red-500'>*</span>
-                        </Typography>
-                        <TextField
-                            type="date"
-                            size="small"
-                            value={addBoostedStartDate}
-                            onChange={(e) => {
-                                setAddBoostedStartDate(e.target.value);
-                                if (addErrors.startDate) setAddErrors((prev) => ({ ...prev, startDate: '' }));
-                            }}
-                            sx={{ width: 190 }}
-                            InputLabelProps={{ shrink: true }}
-                            inputProps={{
-                                max: new Date().toISOString().split('T')[0],
-                            }}
-                        />
-                        {addErrors.startDate && (
-                            <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
-                                {addErrors.startDate}
-                            </Typography>
-                        )}
-                    </Box>
-
-                    {/* Boosted End Date */}
-                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                        <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#555', mb: 0.5 }}>
-                            To Date <span className='text-red-500'>*</span>
-                        </Typography>
-                        <TextField
-                            type="date"
-                            size="small"
-                            value={addBoostedEndDate}
-                            onChange={(e) => {
-                                setAddBoostedEndDate(e.target.value);
-                                if (addErrors.endDate) setAddErrors((prev) => ({ ...prev, endDate: '' }));
-                            }}
-                            sx={{ width: 190 }}
-                            InputLabelProps={{ shrink: true }}
-                        // inputProps={{
-                        //     max: new Date().toISOString().split('T')[0],
-                        // }}
-                        />
-                        {addErrors.endDate && (
-                            <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
-                                {addErrors.endDate}
-                            </Typography>
-                        )}
-                    </Box>
-
-                </Box>
-
-                {/* Add Profile Button */}
-                <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<Add />}
-                    onClick={handleAddProfile}
                     sx={{
-                        height: 40,
-                        alignSelf: 'flex-end',
-                        minWidth: 150,
-                        textTransform: 'none',
-                        fontWeight: 600,
-                        fontSize: '0.95rem',
-                        borderRadius: '8px',
-                        boxShadow: '0px 3px 6px rgba(0,0,0,0.2)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        backgroundColor: '#fff',
+                        borderRadius: 2,
+                        boxShadow: '0px 4px 10px rgba(0,0,0,0.15)',
+                        padding: 2.5,
+                        marginBottom: 3,
+                        gap: 2,
+                        flexWrap: 'wrap',
                     }}
                 >
-                    Add Profile
-                </Button>
-            </Box>
+                    <Box
+                        sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, flexWrap: 'wrap', flex: 1 }}
+                    >
+                        {/* Add Profile ID */}
+                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                            <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#555', mb: 0.5 }}>
+                                Profile ID <span className='text-red-500'>*</span>
+                            </Typography>
+                            <TextField
+                                placeholder="Enter Profile ID"
+                                value={addProfileId}
+                                onChange={(e) => {
+                                    setAddProfileId(e.target.value);
+                                    if (addErrors.profileId) setAddErrors((prev) => ({ ...prev, profileId: '' }));
+                                }}
+                                variant="outlined"
+                                size="small"
+                                sx={{ width: 250 }}
+                            />
+                            {addErrors.profileId && (
+                                <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
+                                    {addErrors.profileId}
+                                </Typography>
+                            )}
+                        </Box>
+
+                        {/* Boosted Start Date */}
+                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                            <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#555', mb: 0.5 }}>
+                                From Date <span className='text-red-500'>*</span>
+                            </Typography>
+                            <TextField
+                                type="date"
+                                size="small"
+                                value={addBoostedStartDate}
+                                onChange={(e) => {
+                                    setAddBoostedStartDate(e.target.value);
+                                    if (addErrors.startDate) setAddErrors((prev) => ({ ...prev, startDate: '' }));
+                                }}
+                                sx={{ width: 190 }}
+                                InputLabelProps={{ shrink: true }}
+                                inputProps={{
+                                    max: new Date().toISOString().split('T')[0],
+                                }}
+                            />
+                            {addErrors.startDate && (
+                                <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
+                                    {addErrors.startDate}
+                                </Typography>
+                            )}
+                        </Box>
+
+                        {/* Boosted End Date */}
+                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                            <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#555', mb: 0.5 }}>
+                                To Date <span className='text-red-500'>*</span>
+                            </Typography>
+                            <TextField
+                                type="date"
+                                size="small"
+                                value={addBoostedEndDate}
+                                onChange={(e) => {
+                                    setAddBoostedEndDate(e.target.value);
+                                    if (addErrors.endDate) setAddErrors((prev) => ({ ...prev, endDate: '' }));
+                                }}
+                                sx={{ width: 190 }}
+                                InputLabelProps={{ shrink: true }}
+                            // inputProps={{
+                            //     max: new Date().toISOString().split('T')[0],
+                            // }}
+                            />
+                            {addErrors.endDate && (
+                                <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
+                                    {addErrors.endDate}
+                                </Typography>
+                            )}
+                        </Box>
+
+                    </Box>
+
+                    {/* Add Profile Button */}
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        startIcon={<Add />}
+                        onClick={handleAddProfile}
+                        sx={{
+                            height: 40,
+                            alignSelf: 'flex-end',
+                            minWidth: 150,
+                            textTransform: 'none',
+                            fontWeight: 600,
+                            fontSize: '0.95rem',
+                            borderRadius: '8px',
+                            boxShadow: '0px 3px 6px rgba(0,0,0,0.2)',
+                        }}
+                    >
+                        Add Profile
+                    </Button>
+                </Box>
+            )}
 
 
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>

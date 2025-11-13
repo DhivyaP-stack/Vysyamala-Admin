@@ -8,7 +8,7 @@ export const API_URL_Auth = ' https://app.vysyamala.com/auth';
 // export const API_URL_Auth = ' https://gl9hwr3r-8000.inc1.devtunnels.ms/auth';
 
 
-export const signIn = ` ${API_URL}/admin-user/login/`;
+export const signIn = ` ${API_URL}/login/`;
 export const getRecords = () => axios.get(`${API_URL}/logindetails_temp/`);
 export const addRecord = (data: any) =>
   axios.post(`${API_URL}/logindetails_temp/`, data);

@@ -11,6 +11,7 @@ import { ImProfile } from 'react-icons/im';
 import { GoDot } from 'react-icons/go';
 import { IoSettings } from 'react-icons/io5';
 import { FaClipboardUser } from "react-icons/fa6";
+import { hasPermission } from '../utils/auth';
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -321,19 +322,21 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                               Deleted Profiles
                             </NavLink>
                           </li>
-
-                          <li>
-                            <NavLink
-                              to="ProfileForm"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
-                                (isActive && '!text-PrimaryRed')
-                              }
-                            >
-                              <GoDot />
-                              Add New Profile
-                            </NavLink>
-                          </li>
+                          
+                          {hasPermission('add_profile') && (
+                            <li>
+                              <NavLink
+                                to="ProfileForm"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                                  (isActive && '!text-PrimaryRed')
+                                }
+                              >
+                                <GoDot />
+                                Add New Profile
+                              </NavLink>
+                            </li>
+                          )}
 
                           <li>
                             <NavLink
@@ -359,7 +362,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                               Featured Profiles
                             </NavLink>
                           </li>
-                          <li>
+                          {/* <li>
                             <NavLink
                               to="StaffDetails"
                               className={({ isActive }) =>
@@ -370,7 +373,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                               <GoDot />
                               Staff Details
                             </NavLink>
-                          </li>
+                          </li> */}
                           {/* <li>
                             <NavLink
                               to="viewProfile"
@@ -1357,9 +1360,21 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     >
                       <ul className="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6">
                         {/* Submenu Items */}
-                        <li>
+                        {/* <li>
                           <NavLink
                             to="/AdminList"
+                            className={({ isActive }) =>
+                              'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                              (isActive && '!text-PrimaryRed')
+                            }
+                          >
+                            <GoDot />
+                            User Details
+                          </NavLink>
+                        </li> */}
+                        <li>
+                          <NavLink
+                            to="StaffDetails"
                             className={({ isActive }) =>
                               'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
                               (isActive && '!text-PrimaryRed')

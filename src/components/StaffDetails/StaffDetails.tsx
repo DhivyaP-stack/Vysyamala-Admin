@@ -25,6 +25,7 @@ import { Add } from '@mui/icons-material';
 import { apiAxios } from '../../api/apiUrl';
 import AddStaffForm from './Staffform'; // Adjust path as needed
 import { toast } from 'react-toastify';
+import { hasPermission } from '../utils/auth';
 
 // --- Type Definitions ---
 interface Staff {
@@ -66,7 +67,7 @@ interface StateOption {
 // Update the columns to match the new API keys (username, role_name, state_name, etc.)
 const columns: Column[] = [
     { id: "username", label: "Staff Name", minWidth: 150 },
-    { id: "password", label: "Password", minWidth: 120 },
+    // { id: "password", label: "Password", minWidth: 120 },
     { id: "role_name", label: "Role", minWidth: 120 },
     { id: "state_name", label: "State", minWidth: 130 },
     { id: "permission", label: "Permission", minWidth: 160 },
@@ -78,9 +79,9 @@ const columns: Column[] = [
 ];
 
 const StaffDetails: React.FC = () => {
-    const navigate = useNavigate();
+    //const navigate = useNavigate();
     const [order, setOrder] = useState<'asc' | 'desc'>('asc');
-    const [orderBy, setOrderBy] = useState<keyof Staff>('username');
+    const [orderBy, setOrderBy] = useState<keyof Staff | "">("");
     const [data, setData] = useState<{ results: Staff[]; count: number }>({
         results: [],
         count: 0,
@@ -309,22 +310,24 @@ const StaffDetails: React.FC = () => {
                         View, add, and manage staff members
                     </Typography>
                 </Box>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<Add />}
-                    onClick={handleOpenAddForm}
-                    sx={{
-                        height: 40,
-                        textTransform: 'none',
-                        fontWeight: 600,
-                        fontSize: '0.95rem',
-                        borderRadius: '8px',
-                        boxShadow: '0px 3px 6px rgba(0,0,0,0.2)',
-                    }}
-                >
-                    Add New Staff
-                </Button>
+                {hasPermission('featured_profile_add') && (
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        startIcon={<Add />}
+                        onClick={handleOpenAddForm}
+                        sx={{
+                            height: 40,
+                            textTransform: 'none',
+                            fontWeight: 600,
+                            fontSize: '0.95rem',
+                            borderRadius: '8px',
+                            boxShadow: '0px 3px 6px rgba(0,0,0,0.2)',
+                        }}
+                    >
+                        Add New Staff
+                    </Button>
+                )}
             </Box>
 
             {/* Use the separate AddStaffForm component */}
