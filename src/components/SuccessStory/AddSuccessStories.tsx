@@ -24,7 +24,7 @@ const AddSuccessStory: React.FC = () => {
   const [photo, setPhoto] = useState<File | null>(null);
   const [buttonSubmit, setButtonSubmit] = useState('Submit');
   const navigate = useNavigate();
-
+  const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
   const {
     control,
     handleSubmit,
@@ -54,6 +54,7 @@ const AddSuccessStory: React.FC = () => {
     }
     formData.append('date_of_marriage', data.dateOfMarriage);
     formData.append('details', data.details);
+    formData.append('admin_user_id', adminUserID ?? "");
 
     try {
       const response = await axios.post(`${sucessStoriesApi}`, formData, {

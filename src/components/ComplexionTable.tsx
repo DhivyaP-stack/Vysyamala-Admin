@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Container } from '@mui/material';
-import  { notify, notifyDelete } from './TostNotification';
+import { notify, notifyDelete } from './TostNotification';
 import Reuse from './Basic/Reuse';
 import TablePopUp from './TablePopUp';
 import {
@@ -30,6 +30,7 @@ const ComplectionTable: React.FC = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState<boolean>(false);
   const [complexionToDelete, setComplexionToDelete] = useState<number | null>(null);
+  const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
 
   useEffect(() => {
     fetchComplexions();
@@ -50,7 +51,7 @@ const ComplectionTable: React.FC = () => {
   const handleAddOrUpdateComplexion = async () => {
     try {
       if (editComplexionId) {
-        await updateComplexions(editComplexionId.toString(), { complexion_desc: newComplexion! });
+        await updateComplexions(editComplexionId.toString(), { complexion_desc: newComplexion!, admin_user_id: adminUserID });
         notify('Successfully updated');
       } else {
         if (newComplexion) {
@@ -151,18 +152,18 @@ const ComplectionTable: React.FC = () => {
           setDeleteConfirmation={setDeleteConfirmation}
           deletFun={confirmDeleteType}
           deletLabel="Are you sure you want to delete this complexion?"
-          setValueTwo={() => {}}
+          setValueTwo={() => { }}
           valueTwo={null}
-          setValueThree={() => {}}
+          setValueThree={() => { }}
           valueThree={null}
-          setValueFour={() => {}}
+          setValueFour={() => { }}
           valueFour={null}
           labelTwo=""
           LabelThree=""
           LabelFour=""
         />
       </div>
-    
+
     </Container>
   );
 };

@@ -270,11 +270,13 @@ const AddProfile = () => {
     const DateOfJoinToday = today.toISOString().split('T')[0];
     //console.log("today",DateOfJoinToday)
     const ownerID = localStorage.getItem('role_id');
+    const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
     const add_profile = {
       // owner_id: {
       //   owner_id:ownerID
       // },
       owner_id: ownerID,
+      admin_user_id: adminUserID,
       login_details: {
         Mobile_no: data.AddProfileForm.Mobile_no,
         EmailId: data.AddProfileForm.EmailId,

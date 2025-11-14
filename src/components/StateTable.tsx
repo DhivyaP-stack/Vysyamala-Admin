@@ -3,12 +3,12 @@
 
 import React, { useEffect, useState } from 'react';
 import { Container } from '@mui/material';
-import { toast} from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Reuse from './Basic/Reuse';
 import TablePopUp from './TablePopUp';
-import {  addState, deleteState, getStates, updateState } from '../services/api';
-interface  State {
+import { addState, deleteState, getStates, updateState } from '../services/api';
+interface State {
   id: number;        // or string, depending on your API response
   name: string;
   is_active?: boolean; // Optional field if applicable
@@ -27,9 +27,8 @@ const StateTable: React.FC = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState<boolean>(false);
   const [StatesToDelete, setStatesToDelete] = useState<number | null>(null);
- 
-  
   const toastId = React.useRef<string | number | null>(null);
+  const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
 
   useEffect(() => {
     fetchStates();
@@ -45,29 +44,25 @@ const StateTable: React.FC = () => {
   };
 
   const handleAddOrUpdateStates = async () => {
-    
-
     try {
-   
       if (editStatesId) {
-        await updateState(editStatesId.toString(), { name: newStates! });
+        await updateState(editStatesId.toString(), { name: newStates!, admin_user_id: adminUserID });
         if (toastId.current === null || !toast.isActive(toastId.current)) {
           toastId.current = toast.success('Successfully updated');
         }
       } else {
-        await addState({ name: newStates });
+        await addState({ name: newStates, admin_user_id: adminUserID });
         if (toastId.current === null || !toast.isActive(toastId.current)) {
           toastId.current = toast.success('States Added Successfully');
         }
       }
-
       setNewStates('');
       setEditStatesId(null);
       setShowPopup(false);
       fetchStates(); // Refresh the list
     } catch (error) {
       console.error('Error adding/updating States:', error);
-     }
+    }
   };
 
   const handleDeleteStates = async (id: number) => {
@@ -111,7 +106,7 @@ const StateTable: React.FC = () => {
     { field: 'name', headerName: 'States Name', sortable: true },
     { field: 'is_active', headerName: 'Active', sortable: true, type: 'boolean' },
   ];
-  
+
 
   return (
     <Container style={{ backgroundColor: 'white', padding: '20px', width: '100%', maxWidth: '100vw', boxSizing: 'border-box' }}>
@@ -125,7 +120,7 @@ const StateTable: React.FC = () => {
           idField="id"
           title="States" handleSearchChange={function (_query: string): void {
             throw new Error('Function not implemented.');
-          } }        />
+          }} />
         <TablePopUp
           setShowPopup={setShowPopup}
           showPopup={showPopup}
@@ -142,13 +137,13 @@ const StateTable: React.FC = () => {
           deletFun={confirmDeleteType}
           deletLabel="Are you sure you want to delete this States?" setValueTwo={function (_value: string): void {
             throw new Error('Function not implemented.');
-          } } setValueThree={function (_value: string): void {
+          }} setValueThree={function (_value: string): void {
             throw new Error('Function not implemented.');
-          } } setValueFour={function (_value: string): void {
+          }} setValueFour={function (_value: string): void {
             throw new Error('Function not implemented.');
-          } } valueFour={null} labelTwo={''} LabelThree={''} LabelFour={''}        />
+          }} valueFour={null} labelTwo={''} LabelThree={''} LabelFour={''} />
       </div>
-     
+
     </Container>
   );
 };

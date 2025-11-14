@@ -33,6 +33,7 @@ const HeightTable: React.FC = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState<boolean>(false);
   const [heightToDelete, setHeightToDelete] = useState<number | null>(null);
+  const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
 
   useEffect(() => {
     fetchHeights();
@@ -59,7 +60,7 @@ const HeightTable: React.FC = () => {
       return;
     }
     try {
-      const data = { height_desc: newHeightDesc!, height_value: newHeightValue! };
+      const data = { height_desc: newHeightDesc!, height_value: newHeightValue!, admin_user_id: adminUserID };
       if (editHeightId) {
         await updateHeight(editHeightId.toString(), data);
         notify('Successfully updated');
@@ -169,15 +170,14 @@ const HeightTable: React.FC = () => {
           setDeleteConfirmation={setDeleteConfirmation}
           deletFun={confirmDeleteType}
           deletLabel="Are you sure you want to delete this height?"
-          setValueThree={() => {}}
+          setValueThree={() => { }}
           valueThree={null}
-          setValueFour={() => {}}
+          setValueFour={() => { }}
           valueFour={null}
           LabelThree=""
           LabelFour=""
         />
       </div>
-     
     </Container>
   );
 };

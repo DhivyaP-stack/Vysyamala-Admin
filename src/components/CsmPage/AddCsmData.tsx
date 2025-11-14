@@ -28,6 +28,7 @@ const CKEditorComponent: React.FC = () => {
   const [metaKeywords, setMetaKeywords] = useState<string>('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const navigate = useNavigate();
+  const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
 
   const handleEditorReady = (_editor: any) => {
     // You can use the editor instance here if needed
@@ -95,17 +96,18 @@ const CKEditorComponent: React.FC = () => {
         meta_keywords: formData.metaKeywords,
         status: formData.status,
         content: formData.editorData,
+        admin_user_id: adminUserID
       }, {
         headers: {
           'Content-Type': 'application/json'
         }
-        
+
       });
 
       const result = response.data.data;
       if (response.status >= 200 || response.status <= 299) {
-        notify('Successfully Added');  
-        
+        notify('Successfully Added');
+
       }
       console.log("api response:", result)
       //alert('Content saved successfully!');
@@ -175,7 +177,7 @@ const CKEditorComponent: React.FC = () => {
           {errors.metaKeywords && <p className="text-red-500 text-sm">{errors.metaKeywords}</p>}
         </div>
       </div>
-    
+
       <div className="mb-4">
         <div className="custom-editor-container">
           <CKEditor
@@ -187,14 +189,14 @@ const CKEditorComponent: React.FC = () => {
               toolbar: [
                 'heading', '|',
                 'alignment', '|',
-                'bold', 'italic', 'underline', 'link',  'fontFamily', 'fontColor', 'fontBackgroundColor', 'bulletedList', 'numberedList', 'blockQuote', 'selectAll', '|',
-                'fontSize','|',
+                'bold', 'italic', 'underline', 'link', 'fontFamily', 'fontColor', 'fontBackgroundColor', 'bulletedList', 'numberedList', 'blockQuote', 'selectAll', '|',
+                'fontSize', '|',
                 'undo', 'redo', '|',
                 'alignLeft', 'alignCenter', 'alignRight',
                 'strikethrough', '|',
-                'imageUpload', 'insertTable', 'tableColumn', 'tableRow', 'mergeTableCells','|',
-                'mediaEmbed','|',
-                'timestamp','|',
+                'imageUpload', 'insertTable', 'tableColumn', 'tableRow', 'mergeTableCells', '|',
+                'mediaEmbed', '|',
+                'timestamp', '|',
                 'findAndReplace', 'sourceEditing'
               ],
               heading: {
@@ -216,7 +218,7 @@ const CKEditorComponent: React.FC = () => {
         </div>
         {errors.editorData && <p className="text-red-500 text-sm">{errors.editorData}</p>}
       </div>
-    
+
       <div className="mb-4">
         <label htmlFor="status" className="block mb-2">Status</label>
         <select
@@ -230,14 +232,14 @@ const CKEditorComponent: React.FC = () => {
         </select>
         {errors.status && <p className="text-red-500 text-sm">{errors.status}</p>}
       </div>
-    
+
       <button
         onClick={handleSave}
         className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
       >
         Save
       </button>
-      <Notification/>
+      <Notification />
     </div>
   );
 };

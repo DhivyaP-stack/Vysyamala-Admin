@@ -29,6 +29,7 @@ interface Page {
 const PageList: React.FC = () => {
   const [pages, setPages] = useState<Page[]>([]);
   const navigate = useNavigate();
+  const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
   useEffect(() => {
     const fetchPages = async () => {
       try {
@@ -54,7 +55,14 @@ const PageList: React.FC = () => {
 
     if (isConfirmed) {
       try {
-        const response = await axios.delete(` ${cmsDeleteData}${id}/`);
+        const response = await axios.delete(` ${cmsDeleteData}${id}/`, {
+          data: {
+            admin_user_id: adminUserID,   // <-- RAW JSON body
+          },
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
         if (response.status >= 200 || response.status <= 299) {
           notifyDelete('Successfully Deleted');
         }
@@ -74,23 +82,23 @@ const PageList: React.FC = () => {
 
   return (
     <Box>
-    <Box sx={{display:"flex" ,justifyContent:"space-between"}}>
-    <Typography variant="h5" component="h2" sx={{ fontWeight: 'bold', mb: 4 }}>
-        CMS List
-      </Typography>
-      <Button
-        onClick={handleAdd}
-        variant="contained"
-        style={{
-          float: 'right',
-          margin: '10px 10px 10px 20px',
-          height: '56px',
-          backgroundColor: '#ED1E24',
-        }}
-      >
-        <AddIcon />
-      </Button>
-    </Box>
+      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+        <Typography variant="h5" component="h2" sx={{ fontWeight: 'bold', mb: 4 }}>
+          CMS List
+        </Typography>
+        <Button
+          onClick={handleAdd}
+          variant="contained"
+          style={{
+            float: 'right',
+            margin: '10px 10px 10px 20px',
+            height: '56px',
+            backgroundColor: '#ED1E24',
+          }}
+        >
+          <AddIcon />
+        </Button>
+      </Box>
 
       <TableContainer sx={{ borderBottom: '1px solid #E0E0E0' }}>
         <Box>

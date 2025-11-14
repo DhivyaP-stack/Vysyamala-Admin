@@ -258,7 +258,7 @@
 //                         fullWidth
 //                     />
 //                 </Grid>
-              
+
 //               </Grid>
 //             </DialogContent>
 //             <DialogActions  sx={{ mr: 5 }}>
@@ -288,7 +288,7 @@
 //         )}
 
 
-        
+
 //         </>
 //     );
 // };
@@ -511,7 +511,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Container } from '@mui/material';
-import  { notify, notifyDelete } from './TostNotification';
+import { notify, notifyDelete } from './TostNotification';
 import Reuse from './Basic/Reuse';
 import TablePopUp from './TablePopUp';
 import { getEducationLevels, updateEducationLevel, deleteEducationLevel, addEducationLevel } from '../services/api';
@@ -535,6 +535,8 @@ const HighestEducationTable: React.FC = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState<boolean>(false);
   const [educationLevelToDelete, setEducationLevelToDelete] = useState<number | null>(null);
+  const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
+
 
   useEffect(() => {
     fetchEducationLevels();
@@ -557,11 +559,11 @@ const HighestEducationTable: React.FC = () => {
   const handleAddOrUpdateEducationLevel = async () => {
     try {
       if (editEducationLevelId) {
-        await updateEducationLevel(editEducationLevelId.toString(), { EducationLevel: newEducationLevel! });
+        await updateEducationLevel(editEducationLevelId.toString(), { EducationLevel: newEducationLevel!, admin_user_id: adminUserID });
         notify('Successfully updated');
       } else {
         if (newEducationLevel) {
-          await addEducationLevel({ EducationLevel: newEducationLevel });
+          await addEducationLevel({ EducationLevel: newEducationLevel, admin_user_id: adminUserID });
           notify('Education Level Added Successfully');
         } else {
           notifyDelete('Please submit the required field');
@@ -652,7 +654,7 @@ const HighestEducationTable: React.FC = () => {
           valueOne={newEducationLevel}
           setValueOne={setNewEducationLevel}
           valueTwo={null} // Not needed in this context
-          setValueTwo={() => {}} // Not needed in this context
+          setValueTwo={() => { }} // Not needed in this context
           labelOne="Education Level"
           labelTwo="" // Not needed in this context
           addMsg="Add Education Level"
@@ -661,15 +663,15 @@ const HighestEducationTable: React.FC = () => {
           setDeleteConfirmation={setDeleteConfirmation}
           deletFun={confirmDeleteType}
           deletLabel="Are you sure you want to delete this education level?"
-          setValueThree={() => {}} // Not needed
+          setValueThree={() => { }} // Not needed
           valueThree={null} // Not needed
-          setValueFour={() => {}} // Not needed
+          setValueFour={() => { }} // Not needed
           valueFour={null} // Not needed
           LabelThree=""
           LabelFour=""
         />
       </div>
-     
+
     </Container>
   );
 };

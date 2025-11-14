@@ -4,7 +4,7 @@ import axios from 'axios';
 import { Container } from '@mui/material';
 
 import { BirthStarApi } from '../services/api';
-import Notification, {  notifyDelete } from './TostNotification';
+import Notification, { notifyDelete } from './TostNotification';
 import Reuse from './Basic/Reuse';
 import TablePopUp from './TablePopUp';
 import { toast } from 'react-toastify';
@@ -32,10 +32,11 @@ const BirthStarList: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  
+
   const [showPopup, setShowPopup] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState<boolean>(false);
   const [starToDelete, setStarToDelete] = useState<number | null>(null);
+  const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
 
   const valDis = Boolean(
     tamilSeries && teluguSeries && kannadaSeries && newBirthStar,
@@ -56,7 +57,9 @@ const BirthStarList: React.FC = () => {
 
   const handleDelete = async (id: number) => {
     try {
-      const response = await axios.delete(`${BirthStarApi}${id}/`);
+      const response = await axios.delete(`${BirthStarApi}${id}/`, {
+        data: { admin_user_id: adminUserID }
+      });
       if (response.status >= 200 || response.status <= 201) {
         notifyDelete('Successfully Deleted');
         fetchBirthStars();
@@ -84,12 +87,11 @@ const BirthStarList: React.FC = () => {
     tamil_series: tamilSeries,
     telugu_series: teluguSeries,
     kannada_series: kannadaSeries,
+    admin_user_id: adminUserID,
   };
 
 
   const handleAddOrUpdateBirthStar = async () => {
-   
-  
     const starData = addData;
     try {
       let response;
@@ -110,7 +112,7 @@ const BirthStarList: React.FC = () => {
           }
         }
       }
-  
+
       setNewBirthStar(null);
       setTamilSeries(null);
       setTeluguSeries(null);
@@ -122,7 +124,7 @@ const BirthStarList: React.FC = () => {
       console.error('Error adding/updating birth star:', error);
     }
   };
-  
+
   const handleEditStar = (star: BirthStar) => {
     setEditStarId(star.id);
     setNewBirthStar(star.star);

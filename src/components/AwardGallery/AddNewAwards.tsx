@@ -34,6 +34,7 @@ const AddAward: React.FC = () => {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
+  const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
 
   // Cleanup URL.createObjectURL when component unmounts or a new image is selected
   useEffect(() => {
@@ -66,6 +67,7 @@ const AddAward: React.FC = () => {
     formData.append('name', data.name); // Award Name
     formData.append('description', data.editorData); // CKEditor Description
     formData.append('status', data.status); // Status
+    formData.append('admin_user_id', adminUserID ?? ""); // Status
 
     if (image) {
       formData.append('image', image); // Image file

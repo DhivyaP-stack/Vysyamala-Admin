@@ -95,6 +95,7 @@ const DataTable: React.FC = () => {
   const [selectAll, setSelectAll] = useState<boolean>(false);
   const [selectedRows, setSelectedRows] = useState<number[]>([]); // To track selected profile IDs
   console.log(selectedRows);
+  const adminUserId = sessionStorage.getItem('id') || localStorage.getItem('id');
   // Here you can define a value for page_name
   // Change this to the desired page name value
 
@@ -105,14 +106,14 @@ const DataTable: React.FC = () => {
   const [goToPageInput, setGoToPageInput] = useState<string>('');
 
   const handleGoToPage = () => {
-  const pageNumber = parseInt(goToPageInput, 10);
-  if (!isNaN(pageNumber)) {
-    const lastPage = Math.ceil(data.count / rowsPerPage) - 1;
-    const newPage = Math.max(0, Math.min(pageNumber - 1, lastPage));
-    setPage(newPage);
-    setGoToPageInput('');
-  }
-};
+    const pageNumber = parseInt(goToPageInput, 10);
+    if (!isNaN(pageNumber)) {
+      const lastPage = Math.ceil(data.count / rowsPerPage) - 1;
+      const newPage = Math.max(0, Math.min(pageNumber - 1, lastPage));
+      setPage(newPage);
+      setGoToPageInput('');
+    }
+  };
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -166,7 +167,14 @@ const DataTable: React.FC = () => {
     if (!confirmed) return;
 
     try {
-      await axios.delete(`${API_URL}/logindetails/${ContentId}/`);
+      await axios.delete(`${API_URL}/logindetails/${ContentId}/`, {
+        data: {
+          admin_user_id: adminUserId,  // <-- RAW JSON body
+        },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       fetchData(); // Refresh the data after deletion
     } catch (error) {
       console.error('Error deleting data:', error);
@@ -227,10 +235,10 @@ const DataTable: React.FC = () => {
   };
   return (
     <div>
-       <h1 className="text-2xl text-black font-bold mb-4">
+      <h1 className="text-2xl text-black font-bold mb-4">
         New Registered Profiles <span className="text-lg font-normal">({data.count})</span>
       </h1>
-      
+
       <div>
         <div className="">
           <Button
@@ -254,7 +262,7 @@ const DataTable: React.FC = () => {
       </div>
       <Paper className="w-full">
         <TableContainer sx={{ border: '1px solid #E0E0E0' }} className="bg-white">
-          <Table  stickyHeader>
+          <Table stickyHeader>
             <TableHead sx={{ backgroundColor: '#FBED73' }}>
               <TableRow>
                 <TableCell
@@ -396,47 +404,47 @@ const DataTable: React.FC = () => {
               )}
             </TableBody>
           </Table>
-          
+
         </TableContainer>
 
-         <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '16px',justifyContent:'end' }}>
- <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '16px' }}>
-   <Typography variant="body2">Go to page:</Typography>
-  <TextField
-    size="small"
-    type="number"
-    value={goToPageInput}
-    onChange={(e) => setGoToPageInput(e.target.value)}
-    inputProps={{
-      min: 1,
-      max: Math.ceil(data.count / rowsPerPage),
-    }}
-    style={{ width: '80px' }}
-  />
-  <Button
-    variant="contained"
-    size="small"
-    onClick={handleGoToPage}
-    disabled={!goToPageInput}
-  >
-    Go
-  </Button>
- </div>
-    <TablePagination
-          rowsPerPageOptions={[10, 25, 100]}
-          component="div"
-          count={data.count}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '16px', justifyContent: 'end' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '16px' }}>
+            <Typography variant="body2">Go to page:</Typography>
+            <TextField
+              size="small"
+              type="number"
+              value={goToPageInput}
+              onChange={(e) => setGoToPageInput(e.target.value)}
+              inputProps={{
+                min: 1,
+                max: Math.ceil(data.count / rowsPerPage),
+              }}
+              style={{ width: '80px' }}
+            />
+            <Button
+              variant="contained"
+              size="small"
+              onClick={handleGoToPage}
+              disabled={!goToPageInput}
+            >
+              Go
+            </Button>
+          </div>
+          <TablePagination
+            rowsPerPageOptions={[10, 25, 100]}
+            component="div"
+            count={data.count}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </div>
 
-        
-      
+
+
       </Paper>
-     
+
     </div>
   );
 };

@@ -1,7 +1,7 @@
 
 
 import React, { useEffect, useState } from 'react';
-import { Container, Select, MenuItem, FormControl, InputLabel,  } from '@mui/material';
+import { Container, Select, MenuItem, FormControl, InputLabel, } from '@mui/material';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Reuse from './Basic/Reuse'; // Assuming this is the reusable table component
@@ -15,7 +15,7 @@ interface District {
   name: string;
   is_active?: boolean;
   // ... other fields
-   actions?: string;  // Custom field to represent actions
+  actions?: string;  // Custom field to represent actions
 }
 
 interface State {
@@ -39,6 +39,8 @@ const DistrictTable: React.FC = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [StatesToDelete, setStatesToDelete] = useState<number | null>(null);
   const [deleteConfirmation, setDeleteConfirmation] = useState<boolean>(false);
+  const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
+
   useEffect(() => {
     fetchDistricts();
     fetchStates();
@@ -77,6 +79,7 @@ const DistrictTable: React.FC = () => {
       const formData = {
         name: newDistrictName,
         state: newStateId, // Include state in both add and update
+        admin_user_id: adminUserID
       };
 
       if (editDistrictId) {
@@ -101,7 +104,7 @@ const DistrictTable: React.FC = () => {
 
 
   const handleDeleteDistricts = async (id: number) => {
-   // Show confirmation dialog
+    // Show confirmation dialog
     const confirmDelete = window.confirm(`Are you sure you want to delete this district?`);
 
     if (confirmDelete) {
@@ -118,7 +121,7 @@ const DistrictTable: React.FC = () => {
       toast.info('Deletion canceled');
     }
   };
-  
+
 
   const handleEditType = (value: District) => {
     setEditDistrictId(value.id);
@@ -134,7 +137,7 @@ const DistrictTable: React.FC = () => {
     setShowPopup(false);
   };
 
- 
+
   const confirmDeleteType = async () => {
     if (StatesToDelete !== null) {
       await handleDeleteDistricts(StatesToDelete);
@@ -142,23 +145,23 @@ const DistrictTable: React.FC = () => {
       setDeleteConfirmation(false);
     }
   };
- 
+
   const columns: ColumnConfig<District>[] = [
     { field: 'id', headerName: 'ID', sortable: true },
     { field: 'name', headerName: 'Name', sortable: true },
     { field: 'is_active', headerName: 'Active' }  // Custom actions column
   ];
-  
+
   return (
     <Container style={{ backgroundColor: 'white', padding: '20px', width: '100%', maxWidth: '100vw', boxSizing: 'border-box' }}>
       <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '8px' }}>
         {/* State Dropdown to filter districts */}
-       
+
 
         <Reuse
-        states={states}
-        newStateId={newStateId}
-        setNewStateId={setNewStateId}
+          states={states}
+          newStateId={newStateId}
+          setNewStateId={setNewStateId}
           data={filteredDistricts} // Display filtered districts
           columns={columns}
           handleEdit={handleEditType}

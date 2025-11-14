@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Container } from '@mui/material';
-import  { notify, notifyDelete } from './TostNotification';
+import { notify, notifyDelete } from './TostNotification';
 import TablePopUp from './TablePopUp';
 
 import Reuse from './Basic/Reuse';
@@ -26,6 +26,7 @@ const ModesTable: React.FC = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState<boolean>(false);
   const [modeToDelete, setModeToDelete] = useState<number | null>(null);
+  const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
 
   useEffect(() => {
     fetchModes();
@@ -51,11 +52,11 @@ const ModesTable: React.FC = () => {
   const handleAddOrUpdateMode = async () => {
     try {
       if (editModeId) {
-        await updateProfileOwner(editModeId.toString(), { mode_name: newModeName.trim() });
+        await updateProfileOwner(editModeId.toString(), { mode_name: newModeName.trim(), admin_user_id: adminUserID });
         notifyUser('Successfully updated', true);
       } else {
         if (newModeName && newModeName.trim()) {
-          await addProfileOwner({ mode_name: newModeName.trim() });
+          await addProfileOwner({ mode_name: newModeName.trim() , admin_user_id: adminUserID});
           notifyUser('Mode Added Successfully', true);
         } else {
           notifyUser('Please provide the mode name', false);
@@ -139,7 +140,7 @@ const ModesTable: React.FC = () => {
           setShowPopup={setShowPopup}
           idField="mode"
           title="Profile Owners"
-          handleSearchChange={() => {}}
+          handleSearchChange={() => { }}
         />
         <TablePopUp
           setShowPopup={setShowPopup}
@@ -150,7 +151,7 @@ const ModesTable: React.FC = () => {
           valueOne={newModeName}
           setValueOne={setNewModeName}
           valueTwo={null}
-          setValueTwo={() => {}}
+          setValueTwo={() => { }}
           labelOne="Mode Name"
           labelTwo=""
           addMsg="Add Mode"
@@ -159,15 +160,15 @@ const ModesTable: React.FC = () => {
           setDeleteConfirmation={setDeleteConfirmation}
           deletFun={confirmDeleteType}
           deletLabel="Are you sure you want to delete this mode?"
-          setValueThree={() => {}}
+          setValueThree={() => { }}
           valueThree={null}
-          setValueFour={() => {}}
+          setValueFour={() => { }}
           valueFour={null}
           LabelThree=""
           LabelFour=""
         />
       </div>
-    
+
     </Container>
   );
 };

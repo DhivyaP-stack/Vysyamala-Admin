@@ -26,6 +26,7 @@ const AnnualIncomeTable: React.FC = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState<boolean>(false);
   const [incomeToDelete, setIncomeToDelete] = useState<number | null>(null);
+  const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
 
   useEffect(() => {
     fetchAnnualIncomes();
@@ -41,16 +42,15 @@ const AnnualIncomeTable: React.FC = () => {
   };
 
   const handleAddOrUpdateIncome = async () => {
-    
     try {
       if (editIncomeId) {
-        await updateAnnualIncome(editIncomeId.toString(), { income: newIncome!, income_amount: newIncomeAmount! });
+        await updateAnnualIncome(editIncomeId.toString(), { income: newIncome!, income_amount: newIncomeAmount!, admin_user_id: adminUserID });
         notify('Successfully updated');
       } else {
         if (newIncome && newIncomeAmount) {
-          await addAnnualIncome({ income: newIncome, income_amount: newIncomeAmount });
+          await addAnnualIncome({ income: newIncome, income_amount: newIncomeAmount, admin_user_id: adminUserID });
           notify('Income Added Successfully');
-        } 
+        }
       }
       setNewIncome('');
       setNewIncomeAmount('');
@@ -150,15 +150,15 @@ const AnnualIncomeTable: React.FC = () => {
           setDeleteConfirmation={setDeleteConfirmation}
           deletFun={confirmDeleteType}
           deletLabel="Are you sure you want to delete this income?"
-          setValueThree={() => {}}
+          setValueThree={() => { }}
           valueThree={null}
-          setValueFour={() => {}}
+          setValueFour={() => { }}
           valueFour={null}
           LabelThree=""
           LabelFour=""
         />
       </div>
-    
+
     </Container>
   );
 };

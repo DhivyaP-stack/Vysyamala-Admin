@@ -33,16 +33,16 @@ interface AdminCommentTemplate {
 
 // Predefined comment templates
 const adminCommentTemplates: AdminCommentTemplate[] = [
-    { id: 1, title: "Thanks for choosing Vys Assist!", content: "Thanks for choosing Vys Assist! We will call you shortly. Your profile has been shared with VF** through WhatsApp and email. We have also informed the VF** parent** about you. Waiting for their reply." },
-    { id: 2, title: "Interested – Awaiting Astrologer", content: "They have shown some interest in your profile and would like to check with their astrologer before proceeding. Please allow them some time to reply." },
-    { id: 3, title: "Astrologer Approved", content: "The astrologer has given a positive response. They are very much interested in your profile, so we have shared your photo through WhatsApp." },
-    { id: 4, title: "Need More Time", content: "They’ve requested a little more time to discuss and get back to us. We’ll keep you updated once we receive their reply." },
-    { id: 5, title: "Astrologer Not Matching", content: "The astrologer has mentioned that the match is not suitable. Don’t worry — we’ll explore another set of compatible profiles for you soon." },
-    { id: 6, title: "Not Interested", content: "The customer is not interested in your profile.  don’t worry — we’ll share another set of suitable profiles with you shortly." },
-    { id: 7, title: "Ask Photo", content: "Kindly share your recent photo to proceed further with your profile coordination." },
-    { id: 8, title: "Ask Reference Number", content: "Please provide your Relation or friend Reference Number.The customer would like to enquire more about you and your background before proceeding." },
-    { id: 9, title: "Ask About Your Status", content: "The customer would like to know more about your family background, profession, and property details. I’ll be giving you a call shortly to discuss and update them accordingly." },
-    { id: 10, title: "Others", content: "" },
+  { id: 1, title: "Thanks for choosing Vys Assist!", content: "Thanks for choosing Vys Assist! We will call you shortly. Your profile has been shared with VF** through WhatsApp and email. We have also informed the VF** parent** about you. Waiting for their reply." },
+  { id: 2, title: "Interested – Awaiting Astrologer", content: "They have shown some interest in your profile and would like to check with their astrologer before proceeding. Please allow them some time to reply." },
+  { id: 3, title: "Astrologer Approved", content: "The astrologer has given a positive response. They are very much interested in your profile, so we have shared your photo through WhatsApp." },
+  { id: 4, title: "Need More Time", content: "They’ve requested a little more time to discuss and get back to us. We’ll keep you updated once we receive their reply." },
+  { id: 5, title: "Astrologer Not Matching", content: "The astrologer has mentioned that the match is not suitable. Don’t worry — we’ll explore another set of compatible profiles for you soon." },
+  { id: 6, title: "Not Interested", content: "The customer is not interested in your profile.  don’t worry — we’ll share another set of suitable profiles with you shortly." },
+  { id: 7, title: "Ask Photo", content: "Kindly share your recent photo to proceed further with your profile coordination." },
+  { id: 8, title: "Ask Reference Number", content: "Please provide your Relation or friend Reference Number.The customer would like to enquire more about you and your background before proceeding." },
+  { id: 9, title: "Ask About Your Status", content: "The customer would like to know more about your family background, profession, and property details. I’ll be giving you a call shortly to discuss and update them accordingly." },
+  { id: 10, title: "Others", content: "" },
 ];
 
 interface VysAssistPopupProps {
@@ -58,7 +58,8 @@ const VysAssistPopup: React.FC<VysAssistPopupProps> = ({ vysassistId, onClose })
   const [loading, setLoading] = useState<boolean>(false);
   const [showForm, setShowForm] = useState<boolean>(false);
   const [adminComments, setAdminComments] = useState<AdminCommentTemplate[]>([]);
-
+  const adminUserID = sessionStorage.getItem("id") || localStorage.getItem("id");
+  
   // ✨ State to track ONLY the dropdown selection
   const [selectedTemplateTitle, setSelectedTemplateTitle] = useState("");
 
@@ -68,6 +69,7 @@ const VysAssistPopup: React.FC<VysAssistPopupProps> = ({ vysassistId, onClose })
     owner_name: firstName || "",
     admin_comments: "", // This will store the title (template or custom)
     comments: "",       // This will store the content
+    admin_user_id: adminUserID || "",
   });
 
   const [message, setMessage] = useState("");

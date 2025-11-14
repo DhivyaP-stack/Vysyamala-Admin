@@ -36,7 +36,7 @@ const EditSuccessStory: React.FC = () => {
   const [buttonText, setButtonText] = useState('Update');
   const { id } = useParams<{ id: string }>(); // Get the id from the URL
   const navigate = useNavigate();
-
+  const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
   const {
     control,
     handleSubmit,
@@ -81,6 +81,7 @@ const EditSuccessStory: React.FC = () => {
     formDataToSend.append('couple_name', coupleName);
     formDataToSend.append('date_of_marriage', dateOfMarriage);
     formDataToSend.append('details', details);
+    formDataToSend.append('admin_user_id', adminUserID ?? ""); // Status
 
     if (selectedPhoto) {
       formDataToSend.append('photo', selectedPhoto);

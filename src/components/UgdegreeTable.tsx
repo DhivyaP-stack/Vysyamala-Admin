@@ -384,7 +384,7 @@
 //                     fullWidth
 //                   />
 //                 </Grid>
-              
+
 //               </Grid>
 //             </DialogContent>
 //             <DialogActions style={{ marginRight: '43px' }}>
@@ -411,7 +411,7 @@
 //             </DialogActions>
 //           </Dialog>
 //         )}
-        
+
 //     </Paper>
 //   );
 // };
@@ -423,9 +423,9 @@
 import React, { useEffect, useState } from 'react';
 import {
   Box,
- 
+
 } from '@mui/material';
-import  { notify, notifyDelete } from './TostNotification';
+import { notify, notifyDelete } from './TostNotification';
 import Reuse from './Basic/Reuse';
 import TablePopUp from './TablePopUp';
 import { addUgDegree, deleteUgDegree, getUgDegrees, updateUgDegree } from '../services/api';
@@ -449,6 +449,7 @@ const UgDegreeTable: React.FC = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState(false);
   const [selectedDegreeId, setSelectedDegreeId] = useState<string | null>(null);
+  const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
 
   useEffect(() => {
     fetchUgDegrees();
@@ -463,9 +464,9 @@ const UgDegreeTable: React.FC = () => {
     }
   };
 
-  const handleDeleteUgDegree = async (id: string) => {
+  const handleDeleteUgDegree = async (id: string, adminUserID: string) => {
     try {
-      const response = await deleteUgDegree(id);
+      const response = await deleteUgDegree(id, adminUserID);
       if (response.status >= 200 && response.status <= 299) {
         notifyDelete('Successfully deleted');
         fetchUgDegrees();
@@ -481,8 +482,8 @@ const UgDegreeTable: React.FC = () => {
   };
 
   const confirmDeleteStatus = async () => {
-    if (selectedDegreeId) {
-      await handleDeleteUgDegree(selectedDegreeId);
+    if (selectedDegreeId && adminUserID) {
+      await handleDeleteUgDegree(selectedDegreeId, adminUserID);
       setSelectedDegreeId(null);
       setDeleteConfirmation(false);
     }
@@ -490,14 +491,19 @@ const UgDegreeTable: React.FC = () => {
 
   const handleAddOrUpdateUgDegree = async () => {
     try {
+      if (!adminUserID) {
+        notifyDelete('Admin user ID not found');
+        return;
+      }
+
       if (editUgDegreeId) {
-        const response = await updateUgDegree(editUgDegreeId, newUgDegree);
+        const response = await updateUgDegree(editUgDegreeId, newUgDegree, adminUserID);
         if (response.status >= 200 && response.status <= 201) {
           notify('Successfully updated');
         }
       } else {
         if (newUgDegree.degree) {
-          const response = await addUgDegree(newUgDegree);
+          const response = await addUgDegree(newUgDegree, adminUserID);
           if (response.status >= 200 && response.status <= 201) {
             notify('Successfully added');
           }
@@ -524,7 +530,7 @@ const UgDegreeTable: React.FC = () => {
       // Handle the case where id is not defined
     }
   };
-  
+
 
   const clearValues = () => {
     setEditUgDegreeId(null);
@@ -574,13 +580,13 @@ const UgDegreeTable: React.FC = () => {
         deletFun={confirmDeleteStatus}
         deletLabel="Are you sure you want to delete this UG degree?" setValueTwo={function (_value: string): void {
           throw new Error('Function not implemented.');
-        } } valueTwo={null} setValueThree={function (_value: string): void {
+        }} valueTwo={null} setValueThree={function (_value: string): void {
           throw new Error('Function not implemented.');
-        } } valueThree={null} setValueFour={function (_value: string): void {
+        }} valueThree={null} setValueFour={function (_value: string): void {
           throw new Error('Function not implemented.');
-        } } valueFour={null} labelTwo={''} LabelThree={''} LabelFour={''}      />
+        }} valueFour={null} labelTwo={''} LabelThree={''} LabelFour={''} />
 
-    
+
     </Box>
   );
 };

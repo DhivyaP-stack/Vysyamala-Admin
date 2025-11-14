@@ -57,6 +57,7 @@ const CityTable: React.FC = () => {
   const [newDistrictId, setNewDistrictId] = useState<number | null>(null);
   const [editCityId, setEditCityId] = useState<number | null>(null);
   const [showPopup, setShowPopup] = useState(false);
+  const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
 
   useEffect(() => {
     fetchCities();
@@ -106,8 +107,8 @@ const CityTable: React.FC = () => {
     try {
       const formData = {
         city_name: newCityName,
-
         district: newDistrictId,
+        admin_user_id: adminUserID,
       };
 
       if (editCityId) {
@@ -195,10 +196,10 @@ const CityTable: React.FC = () => {
         }}
       >
         {/* State Dropdown to filter cities */}
-       
+
 
         <Reuse
-        districts={districts}
+          districts={districts}
           states={states}
           newStateId={newStateId}
           setNewStateId={setNewStateId}

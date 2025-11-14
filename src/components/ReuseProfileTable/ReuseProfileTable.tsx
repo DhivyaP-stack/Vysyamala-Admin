@@ -37,7 +37,7 @@ interface DataTableProps {
 const ReUseDataTable: React.FC<DataTableProps> = ({
   fetchData,
   columns,
-  initialRowsPerPage =10,
+  initialRowsPerPage = 10,
   initialOrderBy = 'ProfileId',
   initialOrder = 'asc',
   searchPlaceholder = 'Search...',
@@ -95,10 +95,18 @@ const ReUseDataTable: React.FC<DataTableProps> = ({
     }
 
     const confirmed = window.confirm('Are you sure you want to delete this item?');
+    const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
     if (!confirmed) return;
 
     try {
-      await axios.delete(` https://app.vysyamala.com/api/logindetails/${ContentId}/`);
+      await axios.delete(` https://app.vysyamala.com/api/logindetails/${ContentId}/`, {
+        data: {
+          admin_user_id: adminUserID,  // <-- RAW JSON body
+        },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       fetchDataFromApi(); // Refresh the data after deletion
     } catch (error) {
       console.error('Error deleting data:', error);

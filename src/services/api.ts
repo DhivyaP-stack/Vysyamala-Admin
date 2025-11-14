@@ -3,7 +3,7 @@ import { notify } from '../components/TostNotification';
 
 export const API_URL = 'https://app.vysyamala.com/api'; // Replace with your actual API URL
 export const API_URL_Auth = ' https://app.vysyamala.com/auth';
-
+const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
 // export const API_URL = 'https://gl9hwr3r-8000.inc1.devtunnels.ms/api'; // Replace with your actual API URL
 // export const API_URL_Auth = ' https://gl9hwr3r-8000.inc1.devtunnels.ms/auth';
 
@@ -217,7 +217,14 @@ export const updateCountry = async (id: string, countryData: any) => {
 
 // Delete a country
 export const deleteCountry = async (id: string) => {
-  return await axios.delete(`${API_URL}/countries/${id}/`);
+  return await axios.delete(`${API_URL}/countries/${id}/`, {
+    data: {
+      admin_user_id: adminUserID,   // <-- RAW JSON body
+    },
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 };
 
 // State API
@@ -236,7 +243,14 @@ export const updateState = async (stateId: string, state: any) => {
 };
 
 export const deleteState = async (stateId: string) => {
-  return await axios.delete(`${API_URL}/states/${stateId}/`);
+  return await axios.delete(`${API_URL}/states/${stateId}/`, {
+    data: {
+      admin_user_id: adminUserID,   // <-- RAW JSON body
+    },
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 };
 
 // export const getStates = async (countryId: string) => {
@@ -286,8 +300,16 @@ export const updateDistrict = async (districtId: string, district: any) => {
 };
 
 export const deleteDistrict = async (districtId: string) => {
-  return await axios.delete(`${API_URL}/districts/${districtId}/`);
+  return await axios.delete(`${API_URL}/districts/${districtId}/`, {
+    data: {
+      admin_user_id: adminUserID,   // <-- RAW JSON body
+    },
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 };
+
 
 export const getDistrictss = async (stateId: number) => {
   return await axios.get(`${API_URL}/districts/?state_id=${stateId}`);
@@ -311,7 +333,14 @@ export const updateCity = async (cityId: string, city: any) => {
 };
 
 export const deleteCity = async (cityId: string) => {
-  return await axios.delete(`${API_URL}/cities/${cityId}/`);
+  return await axios.delete(`${API_URL}/cities/${cityId}/`, {
+    data: {
+      admin_user_id: adminUserID,
+    },
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 };
 
 // Fetch all profile_owner
@@ -331,8 +360,16 @@ export const updateProfileOwner = async (id: string, modeData: any) => {
 
 // Delete a ProfileOwner
 export const deleteProfileOwner = async (id: string) => {
-  return await axios.delete(`${API_URL}/profile_owner/${id}/`);
+  return await axios.delete(`${API_URL}/profile_owner/${id}/`, {
+    data: {
+      admin_user_id: adminUserID,   // <-- RAW JSON body
+    },
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 };
+
 
 // Religions API
 export const getreligions = async () => {
@@ -412,16 +449,24 @@ export const getUgDegrees = async () => {
   return await axios.get(`${API_URL}/ug-degrees/`);
 };
 
-export const addUgDegree = async (ugDegree: any) => {
-  return await axios.post(`${API_URL}/ug-degrees/`, ugDegree);
+export const addUgDegree = async (ugDegree: any, adminUserID: string) => {
+  return await axios.post(`${API_URL}/ug-degrees/`, {
+    ...ugDegree,
+    admin_user_id: adminUserID,
+  });
 };
 
-export const updateUgDegree = async (id: string, ugDegree: any) => {
-  return await axios.put(`${API_URL}/ug-degrees/${id}/`, ugDegree);
+export const updateUgDegree = async (id: string, ugDegree: any, adminUserID: string) => {
+  return await axios.put(`${API_URL}/ug-degrees/${id}/`, {
+    ...ugDegree,
+    admin_user_id: adminUserID,
+  });
 };
 
-export const deleteUgDegree = async (id: string) => {
-  return await axios.delete(`${API_URL}/ug-degrees/${id}/`);
+export const deleteUgDegree = async (id: string, adminUserID: string) => {
+  return await axios.delete(`${API_URL}/ug-degrees/${id}/`, {
+    data: { admin_user_id: adminUserID } // DELETE requires body in axios
+  });
 };
 
 // Annual Incomes API
@@ -438,9 +483,15 @@ export const updateAnnualIncome = async (id: string, annualIncome: any) => {
 };
 
 export const deleteAnnualIncome = async (id: string) => {
-  return await axios.delete(`${API_URL}/annual-incomes/${id}/`);
+  return await axios.delete(`${API_URL}/annual-incomes/${id}/`, {
+    data: {
+      admin_user_id: adminUserID,   // <-- RAW JSON body
+    },
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 };
-
 // Place of Births API
 export const getPlaceOfBirths = async () => {
   return await axios.get(`${API_URL}/place-of-births/`);
@@ -546,7 +597,14 @@ export const updateFamilyType = async (id: string, familyType: any) => {
 
 // Delete a family type by ID
 export const deleteFamilyType = async (id: string) => {
-  return await axios.delete(`${API_URL}/family-types/${id}/`);
+  return await axios.delete(`${API_URL}/family-types/${id}/`, {
+    data: {
+      admin_user_id: adminUserID,   // <-- RAW JSON body
+    },
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 };
 
 //familystatus
@@ -567,7 +625,14 @@ export const updateFamilyStatus = async (id: string, familyStatus: any) => {
 
 // Delete a family status by ID
 export const deleteFamilyStatus = async (id: string) => {
-  return await axios.delete(`${API_URL}/family-statuses/${id}/`);
+  return await axios.delete(`${API_URL}/family-statuses/${id}/`, {
+    data: {
+      admin_user_id: adminUserID,   // <-- RAW JSON body
+    },
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 };
 
 //Data Table Url
@@ -612,8 +677,16 @@ export const updateEducationLevel = async (id: string, educationData: any) => {
 
 // Delete an education level
 export const deleteEducationLevel = async (id: string) => {
-  return await axios.delete(`${API_URL}/education-levels/${id}/`);
+  return await axios.delete(`${API_URL}/education-levels/${id}/`, {
+    data: {
+      admin_user_id: adminUserID,   // <-- RAW JSON body
+    },
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 };
+
 
 //COMPLEXION
 // Fetch all complexions
@@ -632,7 +705,14 @@ export const updateComplexions = async (id: string, familyValue: any) => {
 };
 // Delete a complexion
 export const deleteComplexions = async (id: string) => {
-  return await axios.delete(`${API_URL}/complexions/${id}/`);
+  return await axios.delete(`${API_URL}/complexions/${id}/`, {
+    data: {
+      admin_user_id: adminUserID,   // <-- RAW JSON body
+    },
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 };
 
 // Fetch all heights
@@ -652,8 +732,16 @@ export const updateHeight = async (id: string, heightData: any) => {
 
 // Delete a height
 export const deleteHeight = async (id: string) => {
-  return await axios.delete(`${API_URL}/heights/${id}/`);
+  return await axios.delete(`${API_URL}/heights/${id}/`, {
+    data: {
+      admin_user_id: adminUserID,   // <-- RAW JSON body
+    },
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 };
+
 
 // Fetch all marital statuses
 export const getMaritalStatuses = async () => {
@@ -672,8 +760,16 @@ export const updateMaritalStatus = async (id: string, statusData: any) => {
 
 // Delete a marital status
 export const deleteMaritalStatus = async (id: string) => {
-  return await axios.delete(`${API_URL}/marital-statuses/${id}/`);
+  return await axios.delete(`${API_URL}/marital-statuses/${id}/`, {
+    data: {
+      admin_user_id: adminUserID,   // <-- RAW JSON body
+    },
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 };
+
 
 // Fetch all state preferences
 export const getStatePrefs = async () => {
@@ -692,8 +788,16 @@ export const updateStatePref = async (id: string, stateValue: any) => {
 
 // Delete a state preference
 export const deleteStatePref = async (id: string) => {
-  return await axios.delete(`${API_URL}/stateprefs/${id}/`);
+  return await axios.delete(`${API_URL}/stateprefs/${id}/`, {
+    data: {
+      admin_user_id: adminUserID,   // <-- RAW JSON body
+    },
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 };
+
 
 export const getDataTable = async (
   search: string = '',
@@ -789,7 +893,14 @@ export const updateFamilyValue = async (id: string, familyValue: any) => {
 };
 // Delete a family Value by ID
 export const deleteFamilyValue = async (id: string) => {
-  return await axios.delete(`${API_URL}/family-values/${id}/`);
+  return await axios.delete(`${API_URL}/family-values/${id}/`, {
+    data: {
+      admin_user_id: adminUserID,   // <-- RAW JSON body
+    },
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 };
 
 //addprofile register flow

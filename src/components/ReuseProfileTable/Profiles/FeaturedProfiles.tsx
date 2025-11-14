@@ -104,6 +104,7 @@ const FeaturedProfiles: React.FC = () => {
     const [addErrors, setAddErrors] = useState<{ profileId?: string; startDate?: string; endDate?: string }>({});
     const [tempFromDate, setTempFromDate] = useState<string>('');
     const [tempToDate, setTempToDate] = useState<string>('');
+    const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
 
     const handleAddProfile = async () => {
         const newErrors: { profileId?: string; startDate?: string; endDate?: string } = {};
@@ -121,6 +122,7 @@ const FeaturedProfiles: React.FC = () => {
             profile_id: addProfileId,
             boosted_startdate: addBoostedStartDate,
             boosted_enddate: addBoostedEndDate,
+            admin_user_id: adminUserID,
         };
 
         try {

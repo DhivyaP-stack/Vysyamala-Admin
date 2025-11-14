@@ -31,6 +31,7 @@ const StatePreferences: React.FC = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState<boolean>(false);
   const [stateToDelete, setStateToDelete] = useState<number | null>(null);
+  const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
 
   useEffect(() => {
     fetchStatePrefs();
@@ -40,8 +41,8 @@ const StatePreferences: React.FC = () => {
     try {
       const response = await getStatePrefs();
       setStatePrefs(response.data.map((item: {
-          is_deleted: any; id: number; state: string 
-}) => ({
+        is_deleted: any; id: number; state: string
+      }) => ({
         id: item.id,
         state: item.state,
         is_deleted: item.is_deleted,
@@ -60,7 +61,7 @@ const StatePreferences: React.FC = () => {
     }
     try {
       if (editStateId) {
-        await updateStatePref(editStateId.toString(), { state: newState! });
+        await updateStatePref(editStateId.toString(), { state: newState!, admin_user_id: adminUserID });
         notify('Successfully updated');
       } else {
         if (newState) {
@@ -161,18 +162,18 @@ const StatePreferences: React.FC = () => {
           setDeleteConfirmation={setDeleteConfirmation}
           deletFun={confirmDeleteType}
           deletLabel="Are you sure you want to delete this state?"
-          setValueTwo={() => {}}
+          setValueTwo={() => { }}
           valueTwo={null}
-          setValueThree={() => {}}
+          setValueThree={() => { }}
           valueThree={null}
-          setValueFour={() => {}}
+          setValueFour={() => { }}
           valueFour={null}
           labelTwo=""
           LabelThree=""
           LabelFour=""
         />
       </div>
-      
+
     </Container>
   );
 };

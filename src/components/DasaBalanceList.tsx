@@ -38,6 +38,7 @@ const DasaBalanceList: React.FC = () => {
   const [editDasaBalanceId, setEditDasaBalanceId] = useState<number | null>(null);
   const [deleteConfirmation, setDeleteConfirmation] = useState(false);
   const [balanceToDelete, setBalanceToDelete] = useState<number | null>(null);
+  const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
 
   useEffect(() => {
     fetchDasaBalances();
@@ -54,7 +55,9 @@ const DasaBalanceList: React.FC = () => {
 
   const handleDelete = async (id: number) => {
     try {
-      let response = await axios.delete(` ${dasaBalanCeApi}${id}/`);
+      let response = await axios.delete(` ${dasaBalanCeApi}${id}/`, {
+        data: { admin_user_id: adminUserID }
+      });
       if (response.status >= 200 || response.status <= 201) {
         notifyDelete('Successfully Deleted');
         fetchDasaBalances();
@@ -66,7 +69,7 @@ const DasaBalanceList: React.FC = () => {
   };
 
   const handleAddOrUpdateDasaBalance = async () => {
-    const balanceData = { balance: newDasaBalance };
+    const balanceData = { balance: newDasaBalance ,  admin_user_id: adminUserID,};
 
     if (editDasaBalanceId) {
       let response = await axios.put(` ${dasaBalanCeApi}${editDasaBalanceId}/`, balanceData);

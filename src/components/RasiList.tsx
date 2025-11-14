@@ -25,6 +25,7 @@ const RasiTable: React.FC = () => {
   const [deleteConfirmation, setDeleteConfirmation] = useState(false);
   const [rasiToDelete, setRasiToDelete] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState(''); // Search query state
+  const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
 
   useEffect(() => {
     fetchRasis();
@@ -36,7 +37,7 @@ const RasiTable: React.FC = () => {
   };
 
   const addOrUpdateRasi = async () => {
-    const rasiData = { name: newRasi };
+    const rasiData = { name: newRasi, admin_user_id: adminUserID, };
     let response;
 
     if (editRasiId) {
@@ -78,7 +79,9 @@ const RasiTable: React.FC = () => {
 
   const confirmDeleteRasi = async () => {
     if (rasiToDelete !== null) {
-      const response = await axios.delete(`${fetchRasi}${rasiToDelete}/`);
+      const response = await axios.delete(`${fetchRasi}${rasiToDelete}/`, {
+      data: { admin_user_id: adminUserID }
+    });
       if (response.status >= 200 && response.status <= 299) {
         notifyDelete('Successfully Deleted');
       }

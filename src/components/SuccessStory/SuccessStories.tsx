@@ -39,6 +39,7 @@ const SuccessStories: React.FC = () => {
   const [search, setSearch] = useState<string>('');
   const navigate = useNavigate();
   const apiEndpoint = `${successStoryList}`;
+  const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
 
   useEffect(() => {
     fetchData();
@@ -105,7 +106,14 @@ const SuccessStories: React.FC = () => {
   const handleDelete = async (id: number) => {
     if (window.confirm('Are you sure you want to delete this success story?')) {
       try {
-        const response = await axios.delete(` ${successStoryDelete}${id}/`);
+        const response = await axios.delete(` ${successStoryDelete}${id}/`, {
+          data: {
+            admin_user_id: adminUserID,  // <-- RAW JSON body
+          },
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
         setData((prevData) => prevData.filter((story) => story.id !== id));
         if (response.status >= 200 || response.status <= 299) {
           notifyDelete('Successfully Deleted');

@@ -197,7 +197,7 @@ const EditProfile = () => {
   const [childrenn, setChildrenn] = useState<boolean>(false)
   const [fieldOfStudySuggested, setFieldOfStudySuggested] = useState('');
   const [prefDegreeSuggested, setPreDegreeSuggested] = useState<string[]>([]);
-
+  const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
 
   const handleProfileUpdate = async (editData: any, Name: string) => {
     try {
@@ -226,6 +226,7 @@ const EditProfile = () => {
 
     const editDataFamilyDetails = {
       family_details: {
+        admin_user_id: adminUserID,
         father_name: data.FamilyDetails.fathername,
         father_occupation: data.FamilyDetails.fatherOccupation,
         mother_name: data.FamilyDetails.motherName,
@@ -271,6 +272,7 @@ const EditProfile = () => {
 
     const editDataBasicDetails = {
       login_details: {
+        admin_user_id: adminUserID,
         Mobile_no: data.BasicDetail.Mobile_no || null,
         EmailId: data.BasicDetail.Email,
         Profile_alternate_mobile: data.BasicDetail.Alt_Mobile_Number,
@@ -303,6 +305,7 @@ const EditProfile = () => {
 
     const payload = {
       profile_visibility_details: {
+        admin_user_id: adminUserID,
         profile_id: profileId, // Make sure profileId is available in your component
         visibility_age_from: data.profile_visibility.visibility_age_from,
         visibility_age_to: data.profile_visibility.visibility_age_to,
@@ -356,6 +359,7 @@ const EditProfile = () => {
 
       const editDataPartnerPreference = {
         partner_pref_details: {
+          admin_user_id: adminUserID,
           pref_height_from: data.PartnerPreference.heightFrom,
           pref_height_to: data.PartnerPreference.toHeight,
           pref_marital_status: setMariedStatus,
@@ -401,6 +405,7 @@ const EditProfile = () => {
     console.log("data suggested profiles ==>", data);
     const editDataSuggestedProfiles = {
       suggested_pref_details: {
+        admin_user_id: adminUserID,
         pref_height_from: data.suggested_pref_details.pref_height_from,
         pref_height_to: data.suggested_pref_details.pref_height_to,
         pref_marital_status: setMariedStatus,
@@ -514,6 +519,7 @@ const EditProfile = () => {
     const dasaBalance = parts.join(', ');
     const editDataHoroscopeDetails = {
       horoscope_details: {
+        admin_user_id: adminUserID,
         time_of_birth: data.HororScopeDetails.timeOfBirth,
         place_of_birth: data.HororScopeDetails.PlaceofBirth,
         birthstar_name: data.HororScopeDetails.BirthStar,
@@ -541,6 +547,7 @@ const EditProfile = () => {
     console.log("data family details ==>", data);
     const editDataEducationDetails = {
       education_details: {
+        admin_user_id: adminUserID,
         highest_education: data.EducationDetails.heighestEducation,
         degree: data.EducationDetails.degree,
         other_degree: data.EducationDetails.other_degree,
@@ -579,10 +586,12 @@ const EditProfile = () => {
         notify("error");
       } else {
         const ownerID = localStorage.getItem('role_id')
+        const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
 
         const editDataProfileView = {
           profile_common_details: {
             owner_id: ownerID,
+            admin_user_id: adminUserID,
             Addon_package: data.profileView.Addon_package,
             Notifcation_enabled: data.profileView.Notifcation_enabled,
             status: data.profileView.status,

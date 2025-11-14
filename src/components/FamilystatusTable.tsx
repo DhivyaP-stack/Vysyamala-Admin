@@ -626,6 +626,7 @@ const FamilyStatusTable: React.FC = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState<boolean>(false);
   const [familyStatusToDelete, setFamilyStatusToDelete] = useState<number | null>(null);
+  const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
 
   useEffect(() => {
     fetchFamilyStatuses();
@@ -669,11 +670,11 @@ const FamilyStatusTable: React.FC = () => {
     }else{
     try {
       if (editFamilyStatusId) {
-        await updateFamilyStatus(editFamilyStatusId.toString(), { status: newFamilyStatus });
+        await updateFamilyStatus(editFamilyStatusId.toString(), { status: newFamilyStatus , admin_user_id: adminUserID });
         notify('Successfully updated');
       } else {
         if (newFamilyStatus) {
-          await addFamilyStatus({ status: newFamilyStatus });
+          await addFamilyStatus({ status: newFamilyStatus, admin_user_id: adminUserID ,  });
           notify('Family Status Added Successfully');
         } 
         // else {

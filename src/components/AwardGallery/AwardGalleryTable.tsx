@@ -38,6 +38,7 @@ const AwardsTable: React.FC = () => {
   const [selectedAwardId, setSelectedAwardId] = useState<number | null>(null); // Track the selected award ID
   const [selectedAwardName, setSelectedAwardName] = useState<string>(''); // Track the selected award name
   const navigate = useNavigate();
+  const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
 
   useEffect(() => {
     const fetchAwards = async () => {
@@ -79,7 +80,14 @@ const AwardsTable: React.FC = () => {
   const handleDelete = async () => {
     if (selectedAwardId === null) return;
     try {
-      const response = await axios.delete(` ${awadrDelete}${selectedAwardId}/`);
+      const response = await axios.delete(` ${awadrDelete}${selectedAwardId}/`, {
+        data: {
+          admin_user_id: adminUserID,   // <-- RAW JSON body
+        },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       if (response.status === 200 || response.status <= 299) {
         notify('Successfully Deleted');
       }
@@ -98,7 +106,7 @@ const AwardsTable: React.FC = () => {
         <Button
           onClick={() => navigate('/AddAward')}
           variant="contained"
-          style={{ 
+          style={{
             float: 'right',
             margin: '10px 10px 10px 20px',
             height: '56px',

@@ -212,10 +212,18 @@ const ProbsProfiletable: React.FC<ProbsProfiletableProps> = ({
     const confirmed = window.confirm(
       'Are you sure you want to delete this item?',
     );
+    const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
     if (!confirmed) return;
 
     try {
-      await axios.delete(`${API_URL}/logindetails/${ContentId}/`);
+      await axios.delete(`${API_URL}/logindetails/${ContentId}/`, {
+        data: {
+          admin_user_id: adminUserID,  // <-- RAW JSON body
+        },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       fetchData(); // Refresh the data after deletion
     } catch (error) {
       console.error('Error deleting data:', error);

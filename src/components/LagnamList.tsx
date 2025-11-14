@@ -27,6 +27,7 @@ const LagnamList: React.FC = () => {
   const [deleteConfirmation, setDeleteConfirmation] = useState(false);
   const [lagnamToDelete, setLagnamToDelete] = useState<number | null>(null);
   const [, setShowSuccessPopup] = useState(false);
+  const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
 
   useEffect(() => {
     fetchLagnams();
@@ -38,7 +39,7 @@ const LagnamList: React.FC = () => {
   };
 
   const addOrUpdateLagnam = async () => {
-    const lagnamData = { name: newLagnam };
+    const lagnamData = { name: newLagnam, admin_user_id: adminUserID, };
     if (!newLagnam?.trim()) {
       notifyDelete('Please provide a Lagnam');
       return;
@@ -84,7 +85,9 @@ const LagnamList: React.FC = () => {
 
   const confirmDeleteLagnam = async () => {
     if (lagnamToDelete !== null) {
-      let response = await axios.delete(`${lagnamApi}${lagnamToDelete}/`);
+      let response = await axios.delete(`${lagnamApi}${lagnamToDelete}/`, {
+        data: { admin_user_id: adminUserID }
+      });
       if (response.status >= 200 || response.status <= 201) {
         notifyDelete('Successfully Deleted');
       }

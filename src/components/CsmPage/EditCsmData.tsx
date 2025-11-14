@@ -29,7 +29,8 @@ const CsmEditorComponent: React.FC = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const navigate = useNavigate();
-console.log(editorData,"editorData");
+  console.log(editorData, "editorData");
+  const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
 
   useEffect(() => {
     const fetchPageData = async () => {
@@ -112,12 +113,13 @@ console.log(editorData,"editorData");
         meta_title: validatedData.metaTitle, // Changed to snake_case
         meta_description: validatedData.metaDescription, // Changed to snake_case
         meta_keywords: validatedData.metaKeywords, // Changed to snake_case
+        admin_user_id: adminUserID
       };
 
       const response = await axios.put(` https://app.vysyamala.com/api/page/edit/${id}/`, formData);
       if (response.status >= 200 || response.status <= 299) {
-        notify('Successfully Updated');  
-        
+        notify('Successfully Updated');
+
       }
       if (response.status === 200) {
         console.log('Page updated successfully');
@@ -210,7 +212,7 @@ console.log(editorData,"editorData");
                 'undo', 'redo', '|',
                 'alignLeft', 'alignCenter', 'alignRight',
                 'strikethrough', '|',
-                'imageUpload', 'insertTable', 'tableColumn', 'tableRow', 'mergeTableCells','|',
+                'imageUpload', 'insertTable', 'tableColumn', 'tableRow', 'mergeTableCells', '|',
                 'mediaEmbed'
               ],
               fontSize: {
@@ -259,7 +261,7 @@ console.log(editorData,"editorData");
           Update
         </button>
       </div>
-      <Notification/>
+      <Notification />
     </div>
   );
 };

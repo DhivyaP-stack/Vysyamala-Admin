@@ -30,11 +30,11 @@ interface Staff {
     status_display: string;
     password: string;
     permission: string;
-    profiles_allocated: number;
-    prospect: string;
-    paid: string;
-    delete_permission: string;
-    others: string;
+    allocated_profiles_count: number;
+    prospect_profile_count: string;
+    paid_profile_count: string;
+    delete_profile_count: string;
+    others_profile_count: string;
 }
 
 interface RoleOption {
@@ -68,11 +68,11 @@ const initialNewStaffState: Staff = {
     status_display: "Active",
     password: "",
     permission: "Full Access",
-    profiles_allocated: 0,
-    prospect: "0",
-    paid: "0",
-    delete_permission: "0",
-    others: "N/A",
+    allocated_profiles_count: 0,
+    prospect_profile_count: '0',
+    paid_profile_count: '0',
+    delete_profile_count: '0',
+    others_profile_count: '0'
 };
 
 const AddStaffForm: React.FC<AddStaffFormProps> = ({
@@ -89,6 +89,7 @@ const AddStaffForm: React.FC<AddStaffFormProps> = ({
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const isFormValid = newStaff.username && newStaff.email;
     const isSaveDisabled = isLoading || !isFormValid || (!isEditMode && !newStaff.password);
+    const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
 
     useEffect(() => {
         if (isEditMode && editingStaff) {
@@ -97,16 +98,26 @@ const AddStaffForm: React.FC<AddStaffFormProps> = ({
                 password: '' // Clear password in edit mode for security
             });
 
-            // Convert state string to array of state names for multi-select
-            if (editingStaff.state_name) {
-                setSelectedStates([editingStaff.state_name]);
+            // Handle comma-separated state IDs (e.g., "1,2,3")
+            if (editingStaff.state) {
+                const stateIds = String(editingStaff.state).split(',').map(id => id.trim());
+
+                // Convert state IDs to state names
+                const stateNames = stateIds
+                    .map(id => {
+                        const state = stateOptions.find(s => String(s.State_Pref_id) === id);
+                        return state ? state.State_name : null;
+                    })
+                    .filter((name): name is string => name !== null);
+
+                setSelectedStates(stateNames);
             }
         } else {
             // Reset form when not in edit mode
             setNewStaff(initialNewStaffState);
             setSelectedStates([]);
         }
-    }, [editingStaff, isEditMode]);
+    }, [editingStaff, isEditMode, stateOptions]);
 
     const handleTextFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -163,6 +174,7 @@ const AddStaffForm: React.FC<AddStaffFormProps> = ({
                 username: newStaff.username,
                 role: String(newStaff.role),
                 state: stateToSend,
+                admin_user_id: adminUserID
             };
 
             // Only include password if it's provided (for new staff or when changing password)

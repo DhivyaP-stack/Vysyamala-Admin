@@ -40,11 +40,11 @@ interface Staff {
     status_display: string;
     password: string;
     permission: string;
-    profiles_allocated: number;
-    prospect: string;
-    paid: string;
-    delete_permission: string;
-    others: string;
+    allocated_profiles_count: number;
+    prospect_profile_count: string;
+    paid_profile_count: string;
+    delete_profile_count: string;
+    others_profile_count: string;
 }
 
 interface Column {
@@ -71,11 +71,11 @@ const columns: Column[] = [
     { id: "role_name", label: "Role", minWidth: 120 },
     { id: "state_name", label: "State", minWidth: 130 },
     { id: "permission", label: "Permission", minWidth: 160 },
-    { id: "profiles_allocated", label: "No. of Profiles Allocated", minWidth: 200 },
-    { id: "prospect", label: "Prospect", minWidth: 120 },
-    { id: "paid", label: "Paid", minWidth: 100 },
-    { id: "delete_permission", label: "Delete", minWidth: 100 },
-    { id: "others", label: "Others", minWidth: 160 },
+    { id: "allocated_profiles_count", label: "No. of Profiles Allocated", minWidth: 200 },
+    { id: "prospect_profile_count", label: "Prospect", minWidth: 120 },
+    { id: "paid_profile_count", label: "Paid", minWidth: 100 },
+    { id: "delete_profile_count", label: "Delete", minWidth: 100 },
+    { id: "others_profile_count", label: "Others", minWidth: 160 },
 ];
 
 const StaffDetails: React.FC = () => {
@@ -95,6 +95,7 @@ const StaffDetails: React.FC = () => {
     const [isDeleting, setIsDeleting] = useState<boolean>(false);
     const [editingStaff, setEditingStaff] = useState<Staff | null>(null);
     const [isEditMode, setIsEditMode] = useState<boolean>(false);
+    const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
 
     const handleRequestSort = (property: keyof Staff) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -120,11 +121,11 @@ const StaffDetails: React.FC = () => {
                 status_display: item.status_display,
                 password: '••••••••',
                 permission: item.permission,
-                profiles_allocated: 0,
-                prospect: '0',
-                paid: '0',
-                delete_permission: '0',
-                others: 'N/A',
+                allocated_profiles_count: item.allocated_profiles_count || 0,
+                prospect_profile_count: item.prospect_profile_count || 0,
+                paid_profile_count: item.paid_profile_count || 0,
+                delete_profile_count: item.delete_profile_count || 0,
+                others_profile_count: item.others_profile_count || 0,
             }));
 
             setData({
@@ -237,7 +238,14 @@ const StaffDetails: React.FC = () => {
 
         setIsDeleting(true);
         try {
-            await apiAxios.delete(`api/users/${staffToDelete.id}/`);
+            await apiAxios.delete(`api/users/${staffToDelete.id}/`, {
+                data: {
+                    admin_user_id: adminUserID,  // <-- RAW JSON body
+                },
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
 
             toast.success(`Staff member deleted successfully`);
 
@@ -276,7 +284,7 @@ const StaffDetails: React.FC = () => {
 
     // Sorting logic
     const sortedData = data.results.sort((a, b) => {
-        if (orderBy === 'id' || orderBy === 'profiles_allocated' || orderBy === 'status') {
+        if (orderBy === 'id' || orderBy === 'allocated_profiles_count' || orderBy === 'status') {
             // For numeric fields
             if (a[orderBy as keyof Staff] < b[orderBy as keyof Staff]) {
                 return order === 'asc' ? -1 : 1;

@@ -242,6 +242,7 @@ const ProfileHolderTable: React.FC = () => {
   const [profileHolderToDelete, setProfileHolderToDelete] = useState<
     number | null
   >(null);
+  const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
 
   useEffect(() => {
     fetchProfileHolders();
@@ -258,7 +259,14 @@ const ProfileHolderTable: React.FC = () => {
 
   const handleDeleteProfileHolder = async (id: number) => {
     try {
-      await axios.delete(` ${addOrUpdateProfileHolder}${id}/`);
+      await axios.delete(` ${addOrUpdateProfileHolder}${id}/`, {
+        data: {
+          admin_user_id: adminUserID,  // <-- RAW JSON body
+        },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       notifyDelete('Successfully Deleted');
       fetchProfileHolders();
     } catch (error) {
@@ -284,12 +292,20 @@ const ProfileHolderTable: React.FC = () => {
       if (editProfileHolderId) {
         await axios.put(
           ` ${addOrUpdateProfileHolder}${editProfileHolderId}/`,
-          newProfileHolder,
+          {
+            ...newProfileHolder,
+            admin_user_id: adminUserID,
+          }
         );
         notify('Successfully updated');
       } else {
         if (newProfileHolder.name && newProfileHolder.relation) {
-          await axios.post(`${addOrUpdateProfileHolder}`, newProfileHolder);
+          await axios.post(`${addOrUpdateProfileHolder}`,
+            {
+              ...newProfileHolder,
+              admin_user_id: adminUserID,
+            }
+          );
           notify('Profile Holder Added Successfully');
         } else {
           notifyDelete('Please submit all required fields');

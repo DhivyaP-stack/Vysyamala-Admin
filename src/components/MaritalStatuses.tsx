@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Container } from '@mui/material';
-import { toast} from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Reuse from './Basic/Reuse';
 import TablePopUp from './TablePopUp';
@@ -25,8 +25,8 @@ const MaritalStatusTable: React.FC = () => {
   const [deleteConfirmation, setDeleteConfirmation] = useState<boolean>(false);
   const [statusToDelete, setStatusToDelete] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  
   const toastId = React.useRef<string | number | null>(null);
+  const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
 
   useEffect(() => {
     fetchStatuses();
@@ -52,13 +52,13 @@ const MaritalStatusTable: React.FC = () => {
     try {
       setIsSubmitting(true);
       if (editStatusId) {
-        await updateMaritalStatus(editStatusId.toString(), { MaritalStatus: newStatus! });
+        await updateMaritalStatus(editStatusId.toString(), { MaritalStatus: newStatus!, admin_user_id: adminUserID });
         if (toastId.current === null || !toast.isActive(toastId.current)) {
           toastId.current = toast.success('Successfully updated');
         }
       } else {
         if (newStatus) {
-          await addMaritalStatus({ MaritalStatus: newStatus });
+          await addMaritalStatus({ MaritalStatus: newStatus, admin_user_id: adminUserID });
           if (toastId.current === null || !toast.isActive(toastId.current)) {
             toastId.current = toast.success('Marital Status Added Successfully');
           }
@@ -117,7 +117,7 @@ const MaritalStatusTable: React.FC = () => {
     { field: 'StatusId', headerName: 'ID', sortable: true },
     { field: 'MaritalStatus', headerName: 'Marital Status', sortable: true },
   ];
-  
+
 
   return (
     <Container style={{ backgroundColor: 'white', padding: '20px', width: '100%', maxWidth: '100vw', boxSizing: 'border-box' }}>
@@ -131,7 +131,7 @@ const MaritalStatusTable: React.FC = () => {
           idField="StatusId"
           title="Marital Statuses" handleSearchChange={function (_query: string): void {
             throw new Error('Function not implemented.');
-          } }        />
+          }} />
         <TablePopUp
           setShowPopup={setShowPopup}
           showPopup={showPopup}
@@ -148,13 +148,13 @@ const MaritalStatusTable: React.FC = () => {
           deletFun={confirmDeleteType}
           deletLabel="Are you sure you want to delete this marital status?" setValueTwo={function (_value: string): void {
             throw new Error('Function not implemented.');
-          } } setValueThree={function (_value: string): void {
+          }} setValueThree={function (_value: string): void {
             throw new Error('Function not implemented.');
-          } } setValueFour={function (_value: string): void {
+          }} setValueFour={function (_value: string): void {
             throw new Error('Function not implemented.');
-          } } valueFour={null} labelTwo={''} LabelThree={''} LabelFour={''}        />
+          }} valueFour={null} labelTwo={''} LabelThree={''} LabelFour={''} />
       </div>
-     
+
     </Container>
   );
 };

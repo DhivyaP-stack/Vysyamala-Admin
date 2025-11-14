@@ -35,7 +35,7 @@ const EditAward: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const { id } = useParams(); // Award ID from route params
   const navigate = useNavigate();
-
+  const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
   // Fetch the existing award data based on ID
   useEffect(() => {
     const fetchAward = async () => {
@@ -75,6 +75,7 @@ const EditAward: React.FC = () => {
     formData.append('name', data.name); // Award Name
     formData.append('description', data.editorData); // CKEditor Description
     formData.append('status', data.status); // Status
+    formData.append('admin_user_id', adminUserID ?? ""); // Status
 
     if (image) {
       formData.append('image', image); // Image file (if updated)

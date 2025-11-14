@@ -221,6 +221,7 @@ const FamilyValueTable: React.FC = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState<boolean>(false);
   const [familyValueToDelete, setFamilyValueToDelete] = useState<number | null>(null);
+  const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
 
   // Fetch family values when component mounts
   useEffect(() => {
@@ -247,12 +248,12 @@ const FamilyValueTable: React.FC = () => {
     try {
       if (editFamilyValueId) {
         // Update the family value
-        await updateFamilyValue(editFamilyValueId.toString(), { FamilyValue: newFamilyValue });
+        await updateFamilyValue(editFamilyValueId.toString(), { FamilyValue: newFamilyValue, admin_user_id: adminUserID  });
         notify('Successfully updated');
       } else {
         if (newFamilyValue) {
           // Add a new family value
-          await addFamilyValue({ FamilyValue: newFamilyValue });
+          await addFamilyValue({ FamilyValue: newFamilyValue,admin_user_id: adminUserID });
           notify('Family Value Added Successfully');
         } else {
           notifyDelete('Please submit all required fields');

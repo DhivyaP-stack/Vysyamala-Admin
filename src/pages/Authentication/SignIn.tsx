@@ -48,6 +48,7 @@ const SignIn: React.FC<SignInProps> = ({ setIsAuthenticated }) => {
         sessionStorage.setItem('role_id', response.data.user.role);
         localStorage.setItem('role_id', response.data.user.role);
         sessionStorage.setItem('id', response.data.user.id);
+        localStorage.setItem('id', response.data.user.id);
         sessionStorage.setItem('role', response.data.user.role);
         localStorage.setItem('role', response.data.user.role);
         sessionStorage.setItem("first_name", response.data.user.username);

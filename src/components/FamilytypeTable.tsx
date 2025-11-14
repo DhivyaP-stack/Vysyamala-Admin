@@ -224,7 +224,7 @@
 // //         title="Lagnam List"
 // //       />
 
-    
+
 // // {showPopup && (
 // //           <Dialog
 // //             open={showPopup}
@@ -255,7 +255,7 @@
 // //                     fullWidth
 // //                   />
 // //                 </Grid>
-              
+
 // //               </Grid>
 // //             </DialogContent>
 // //             <DialogActions style={{ marginRight: '43px' }}>
@@ -282,7 +282,7 @@
 // //             </DialogActions>
 // //           </Dialog>
 // //         )}
-     
+
 
 // // {deleteConfirmation && (
 // //           <Dialog
@@ -307,10 +307,10 @@
 // //         )}
 
 // // <Notification />
-    
+
 // //     </Container>
 // //   );
-  
+
 // // };
 
 // // export default FamilyTypeTable;
@@ -390,7 +390,7 @@
 //   };
 
 
-  
+
 // const confirmDeleteFamilyType = async () => {
 //     if (familyTypeToDelete !== null) {
 //       const response = await deleteFamilyType(familyTypeToDelete.toString());
@@ -402,7 +402,7 @@
 //       fetchFamilyTypes();
 //     }
 //   };
-  
+
 //   const columns: ColumnConfig<FamilyType>[] = useMemo(() => [
 //     {
 //       field: 'id',
@@ -426,7 +426,7 @@
 //     setFamilyTypeToDelete(id);
 //     setDeleteConfirmation(true);
 //   };
-  
+
 
 //   return (
 //     <Container style={{ backgroundColor: 'white', padding: '20px' }}>
@@ -533,7 +533,7 @@
 import React, { useEffect, useState } from 'react';
 
 import { Container } from '@mui/material';
-import  { notify, notifyDelete } from './TostNotification';
+import { notify, notifyDelete } from './TostNotification';
 import Reuse from './Basic/Reuse';
 import TablePopUp from './TablePopUp';
 import { getFamilyTypes, addFamilyType, updateFamilyType, deleteFamilyType } from '../services/api';
@@ -559,6 +559,7 @@ const FamilyTypeTable: React.FC = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState<boolean>(false);
   const [familyTypeToDelete, setFamilyTypeToDelete] = useState<number | null>(null);
+  const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
 
   useEffect(() => {
     fetchFamilyTypes();
@@ -599,11 +600,11 @@ const FamilyTypeTable: React.FC = () => {
   const handleAddOrUpdateFamilyType = async () => {
     try {
       if (editFamilyTypeId) {
-        await updateFamilyType(editFamilyTypeId.toString(),{ name: newFamilyType });
+        await updateFamilyType(editFamilyTypeId.toString(), { name: newFamilyType, admin_user_id: adminUserID });
         notify('Successfully updated');
       } else {
         if (newFamilyType) {
-          await addFamilyType({ name: newFamilyType });
+          await addFamilyType({ name: newFamilyType, admin_user_id: adminUserID });
           notify('Family Type Added Successfully');
         } else {
           notifyDelete('Please submit all required fields');
@@ -678,13 +679,13 @@ const FamilyTypeTable: React.FC = () => {
           deletFun={confirmDeleteType}
           deletLabel="Are you sure you want to delete this family type?" setValueTwo={function (_value: string): void {
             throw new Error('Function not implemented.');
-          } } valueTwo={null} setValueThree={function (_value: string): void {
+          }} valueTwo={null} setValueThree={function (_value: string): void {
             throw new Error('Function not implemented.');
-          } } valueThree={null} setValueFour={function (_value: string): void {
+          }} valueThree={null} setValueFour={function (_value: string): void {
             throw new Error('Function not implemented.');
-          } } valueFour={null} labelTwo={''} LabelThree={''} LabelFour={''}        />
+          }} valueFour={null} labelTwo={''} LabelThree={''} LabelFour={''} />
       </div>
-    
+
     </Container>
   );
 };

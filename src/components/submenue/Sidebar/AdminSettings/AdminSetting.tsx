@@ -26,6 +26,7 @@ const validationSchema = z.object({
 type FormData = z.infer<typeof validationSchema>;
 
 const SiteDetailsForm: React.FC = () => {
+  const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
   const [formData, setFormData] = useState<FormData>({
     site_name: '',
     meta_title: '',
@@ -48,15 +49,34 @@ const SiteDetailsForm: React.FC = () => {
 
   const onSubmit = async (data: FormData) => {
     try {
-      const response = await axios.patch(`${adminSettingsUpdate}`, data);
-      console.log('Response:', response.data);
+      const formData = new FormData();
+
+      // Append all form fields
+      formData.append('site_name', data.site_name);
+      formData.append('meta_title', data.meta_title);
+      formData.append('meta_description', data.meta_description);
+      formData.append('contact_number', data.contact_number);
+      formData.append('whatsapp_number', data.whatsapp_number);
+      formData.append('email_address', data.email_address);
+      formData.append('Location_Address', data.Location_Address);
+
+      // Append admin_user_id (fix null issue)
+      formData.append('admin_user_id', adminUserID ?? '');
+
+      const response = await axios.patch(adminSettingsUpdate, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
       if (response.status === 200) {
-        notify('Successfully Submited');
+        notify('Successfully Submitted');
       }
     } catch (error) {
       console.error('Error updating data:', error);
     }
   };
+
 
   useEffect(() => {
     const fetchPageData = async () => {
@@ -87,7 +107,7 @@ const SiteDetailsForm: React.FC = () => {
 
   return (
     <div className="bg-white ">
-      <Box sx={{ maxWidth: 1300, mx: 'auto', mt: 4,color:"black" }}>
+      <Box sx={{ maxWidth: 1300, mx: 'auto', mt: 4, color: "black" }}>
         <Typography
           variant="h6"
           component="h1"

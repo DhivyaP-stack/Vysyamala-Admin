@@ -26,9 +26,8 @@ const CountryTable: React.FC = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState<boolean>(false);
   const [countryToDelete, setCountryToDelete] = useState<number | null>(null);
- 
-  
   const toastId = React.useRef<string | number | null>(null);
+  const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
 
   useEffect(() => {
     fetchCountries();
@@ -44,17 +43,17 @@ const CountryTable: React.FC = () => {
   };
 
   const handleAddOrUpdateCountry = async () => {
-    
+
 
     try {
-   
+
       if (editCountryId) {
-        await updateCountry(editCountryId.toString(), { name: newCountry! });
+        await updateCountry(editCountryId.toString(), { name: newCountry!, admin_user_id: adminUserID });
         if (toastId.current === null || !toast.isActive(toastId.current)) {
           toastId.current = toast.success('Successfully updated');
         }
       } else {
-        await addCountry({ name: newCountry });
+        await addCountry({ name: newCountry, admin_user_id: adminUserID });
         if (toastId.current === null || !toast.isActive(toastId.current)) {
           toastId.current = toast.success('Country Added Successfully');
         }
@@ -66,7 +65,7 @@ const CountryTable: React.FC = () => {
       fetchCountries(); // Refresh the list
     } catch (error) {
       console.error('Error adding/updating country:', error);
-     }
+    }
   };
 
   const handleDeleteCountry = async (id: number) => {
@@ -110,7 +109,7 @@ const CountryTable: React.FC = () => {
     { field: 'name', headerName: 'Country Name', sortable: true },
     { field: 'is_active', headerName: 'Active', sortable: true, type: 'boolean' },
   ];
-  
+
 
   return (
     <Container style={{ backgroundColor: 'white', padding: '20px', width: '100%', maxWidth: '100vw', boxSizing: 'border-box' }}>
@@ -124,7 +123,7 @@ const CountryTable: React.FC = () => {
           idField="id"
           title="Countries" handleSearchChange={function (_query: string): void {
             throw new Error('Function not implemented.');
-          } }        />
+          }} />
         <TablePopUp
           setShowPopup={setShowPopup}
           showPopup={showPopup}
@@ -141,13 +140,13 @@ const CountryTable: React.FC = () => {
           deletFun={confirmDeleteType}
           deletLabel="Are you sure you want to delete this country?" setValueTwo={function (_value: string): void {
             throw new Error('Function not implemented.');
-          } } setValueThree={function (_value: string): void {
+          }} setValueThree={function (_value: string): void {
             throw new Error('Function not implemented.');
-          } } setValueFour={function (_value: string): void {
+          }} setValueFour={function (_value: string): void {
             throw new Error('Function not implemented.');
-          } } valueFour={null} labelTwo={''} LabelThree={''} LabelFour={''}        />
+          }} valueFour={null} labelTwo={''} LabelThree={''} LabelFour={''} />
       </div>
-     
+
     </Container>
   );
 };

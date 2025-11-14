@@ -21,6 +21,7 @@ const EditHomepageForm: React.FC = () => {
 
   const { control, handleSubmit, setValue } = useForm<FormData>();
   const [existingImage, setExistingImage] = useState<string | null>(null);
+  const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -57,6 +58,7 @@ const EditHomepageForm: React.FC = () => {
     formData.append('why_vysyamala', data.why_vysyamala);
     formData.append('youtube_links', data.youtube_links);
     formData.append('vysyamala_apps', data.vysyamala_apps);
+    formData.append('admin_user_id', adminUserID ?? "");
     if (data.image && data.image[0]) {
       formData.append('image', data.image[0]);
     }

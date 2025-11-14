@@ -128,7 +128,9 @@ const AwardManagement: React.FC = () => {
         const isConfirmed = window.confirm('Are you sure you want to delete this award?');
         if (isConfirmed) {
             try {
-                await axios.delete(` ${awadrDelete}${id}/`);
+                await axios.delete(` ${awadrDelete}${id}/`, {
+      data: { admin_user_id }
+    });
                 notifyDelete('Successfully Deleted');
                 setAwards(awards.filter((award) => award.id !== id));
             } catch (error) {

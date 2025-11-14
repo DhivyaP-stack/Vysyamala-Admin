@@ -4,7 +4,7 @@ import axios from 'axios';
 import { Container } from '@mui/material';
 
 import { GothramApi } from '../services/api'; // Adjust the API import
-import  { notify, notifyDelete } from './TostNotification';
+import { notify, notifyDelete } from './TostNotification';
 import Reuse from './Basic/Reuse';
 import TablePopUp from './TablePopUp';
 
@@ -32,6 +32,7 @@ const GothramList: React.FC = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState<boolean>(false);
   const [gothramToDelete, setGothramToDelete] = useState<number | null>(null);
+  const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
 
   useEffect(() => {
     fetchGothrams();
@@ -48,7 +49,15 @@ const GothramList: React.FC = () => {
 
   const handleDelete = async (id: number) => {
     try {
-      const response = await axios.delete(`${GothramApi}${id}/`);
+      const response = await axios.delete(`${GothramApi}${id}/`, {
+        data: {
+          admin_user_id: adminUserID,   // <-- RAW JSON body
+        },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
       if (response.status >= 200 || response.status <= 201) {
         notifyDelete('Successfully Deleted');
         fetchGothrams();
@@ -76,6 +85,7 @@ const GothramList: React.FC = () => {
     gothram_name: newGothramName,
     rishi: rishi,
     sanketha_namam: sankethaNamam,
+    admin_user_id: adminUserID
   };
 
   const handleAddOrUpdateGothram = async () => {
@@ -96,7 +106,7 @@ const GothramList: React.FC = () => {
     //   notifyDelete("please fill Sanketha Namam")
     //   return;
     // }
-    
+
     if (!newGothramName?.trim()) {
       notifyDelete("Please fill Gothram Name");
     } else if (!rishi?.trim()) {
@@ -105,32 +115,32 @@ const GothramList: React.FC = () => {
       notifyDelete("Please fill Sanketha Namam");
     } else {
       // Proceed with form submission if all fields are filled
-   
-    
-    try {
-      let response;
-      if (editGothramId) {
-        response = await axios.put(`${GothramApi}${editGothramId}/`, addData);
-        if (response.status === 200) {
-          notify('Successfully updated');
-        }
-      } else {
-        response = await axios.post(GothramApi, addData);
-        if (response.status === 200||response.status === 201) {
-          notify('Gothram Added Successfully');
-        }
-      }
 
-      setNewGothramName('');
-      setRishi('');
-      setSankethaNamam('');
-      setEditGothramId(null);
-      setShowPopup(false);
-      fetchGothrams();
-    } catch (error) {
-      console.error('Error adding/updating gothram:', error);
+
+      try {
+        let response;
+        if (editGothramId) {
+          response = await axios.put(`${GothramApi}${editGothramId}/`, addData);
+          if (response.status === 200) {
+            notify('Successfully updated');
+          }
+        } else {
+          response = await axios.post(GothramApi, addData);
+          if (response.status === 200 || response.status === 201) {
+            notify('Gothram Added Successfully');
+          }
+        }
+
+        setNewGothramName('');
+        setRishi('');
+        setSankethaNamam('');
+        setEditGothramId(null);
+        setShowPopup(false);
+        fetchGothrams();
+      } catch (error) {
+        console.error('Error adding/updating gothram:', error);
+      }
     }
-  }
   };
 
   const handleEditGothram = (gothram: Gothram) => {
@@ -184,30 +194,30 @@ const GothramList: React.FC = () => {
           title="Gothram List"
         />
         <TablePopUp
-                  setShowPopup={setShowPopup}
-                  showPopup={showPopup}
-                  clearValues={clearValues}
-                  handleAddOrUpdate={handleAddOrUpdateGothram}
-                  EditId={editGothramId}
-                  valueOne={newGothramName}
-                  setValueOne={setNewGothramName}
-                  valueTwo={rishi}
-                  setValueTwo={setRishi}
-                  valueThree={sankethaNamam}
-                  setValueThree={setSankethaNamam}
-                  labelOne="Gothram Name"
-                  labelTwo="Rishi"
-                  LabelThree="Sanketha Namam"
-                  addMsg="Add Gothram"
-                  editMsg="Edit Gothram"
-                  deleteConfirmation={deleteConfirmation}
-                  setDeleteConfirmation={setDeleteConfirmation}
-                  deletFun={confirmDeleteGothram}
-                  deletLabel="Are you sure you want to delete this gothram?" setValueFour={function (_value: string): void {
-                      throw new Error('Function not implemented.');
-                  } } valueFour={null} LabelFour={''}        />
+          setShowPopup={setShowPopup}
+          showPopup={showPopup}
+          clearValues={clearValues}
+          handleAddOrUpdate={handleAddOrUpdateGothram}
+          EditId={editGothramId}
+          valueOne={newGothramName}
+          setValueOne={setNewGothramName}
+          valueTwo={rishi}
+          setValueTwo={setRishi}
+          valueThree={sankethaNamam}
+          setValueThree={setSankethaNamam}
+          labelOne="Gothram Name"
+          labelTwo="Rishi"
+          LabelThree="Sanketha Namam"
+          addMsg="Add Gothram"
+          editMsg="Edit Gothram"
+          deleteConfirmation={deleteConfirmation}
+          setDeleteConfirmation={setDeleteConfirmation}
+          deletFun={confirmDeleteGothram}
+          deletLabel="Are you sure you want to delete this gothram?" setValueFour={function (_value: string): void {
+            throw new Error('Function not implemented.');
+          }} valueFour={null} LabelFour={''} />
       </div>
-    
+
     </Container>
   );
 };
