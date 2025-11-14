@@ -25,6 +25,7 @@ import EditViewProfile from './EditFormComponents/EditProfile';
 import { EditScheemaSuggestedProfile, suggestedProfile } from '../../types/EditSchemaSuggestedProfile';
 import { EditProfileVisibility } from './EditFormComponents/EditProfileVisibility';
 import { ProfileVisibilityResponse, profileVisibilitySchema } from '../../types/EditProfileVisibiltySchema';
+import { hasPermission } from '../utils/auth';
 
 const EditProfile = () => {
   const familyMethods = useForm<FamilyDetailsValues>({
@@ -505,7 +506,7 @@ const EditProfile = () => {
       parts.push(`${monthNum} ${monthNum === 1 ? 'Months' : 'Months'}`);
     }
 
-    if (dasaDay ) {
+    if (dasaDay) {
       const dayNum = parseInt(dasaDay, 10);
       parts.push(`${dayNum} ${dayNum === 1 ? 'Days' : 'Days'}`);
     }
@@ -700,168 +701,163 @@ const EditProfile = () => {
   </form>
 </FormProvider>
      */}
-      <FormProvider {...BasicDetailsMethods}>
+      {hasPermission('edit_profile_all') && (
+        <FormProvider {...BasicDetailsMethods}>
+          <form onSubmit={BasicDetailsMethods.handleSubmit(handleBasicDetailsSubmit)}>
+            {/* <h2>Basic Details</h2> */}
+            <div ref={AddFormRef}>
+              <div >
+                <BasicDetails
+                  setAlretSetting={setAlretSetting}
+                  isBasicDetailsOpen={isBasicDetailsOpen}
+                  setIsBasicDetailsOpen={setIsBasicDetailsOpen}
+                  error={error}
+                  setGender={setGender}
+                  EditData={EditData}
+                  setGetMaritalStatus={setGetMaritalStatus}
+                />
+                <div className='flex justify-end mt-10'>
 
-        <form onSubmit={BasicDetailsMethods.handleSubmit(handleBasicDetailsSubmit)}>
-          {/* <h2>Basic Details</h2> */}
-          <div ref={AddFormRef}>
-            <div >
-              <BasicDetails
-                setAlretSetting={setAlretSetting}
-                isBasicDetailsOpen={isBasicDetailsOpen}
-                setIsBasicDetailsOpen={setIsBasicDetailsOpen}
-                error={error}
-                setGender={setGender}
-                EditData={EditData}
-                setGetMaritalStatus={setGetMaritalStatus}
-              />
-              <div className='flex justify-end mt-10'>
+                </div>
+              </div>
+            </div>
+          </form>
+        </FormProvider>
+      )}
+      {hasPermission('edit_profile_all') && (
+        <FormProvider {...familyMethods}>
+          <form onSubmit={familyMethods.handleSubmit(handleFamilyDetailsSubmit)}>
+            {/* <h2>Family Details</h2> */}
+            <div ref={FamilySetailsRef}>
+              <div >
+                <FamilyDetails
+                  isFamilyDetailsOpen={isFamilyDetailsOpen}
+                  setIsFamilyDetailsOpen={setIsFamilyDetailsOpen}
+                  EditData={EditData}
+                  getMaritalStatus={getMaritalStatus}
+                  setChildrenn={setChildrenn}
+                />
 
               </div>
             </div>
-          </div>
-        </form>
-      </FormProvider>
-
-
-      <FormProvider {...familyMethods}>
-        <form onSubmit={familyMethods.handleSubmit(handleFamilyDetailsSubmit)}>
-          {/* <h2>Family Details</h2> */}
-          <div ref={FamilySetailsRef}>
-            <div >
-              <FamilyDetails
-                isFamilyDetailsOpen={isFamilyDetailsOpen}
-                setIsFamilyDetailsOpen={setIsFamilyDetailsOpen}
-                EditData={EditData}
-                getMaritalStatus={getMaritalStatus}
-                setChildrenn={setChildrenn}
-              />
-
+          </form>
+        </FormProvider>
+      )}
+      {hasPermission('edit_profile_all') && (
+        <FormProvider {...EducationDetailsMethod}>
+          <form onSubmit={EducationDetailsMethod.handleSubmit(handleEducationalDetailSubmit)}>
+            {/* <h2>Educational Details</h2> */}
+            <div ref={EducationalFormRef}>
+              {/* <div className="bg-white p-5 mb-10 rounded shadow-md"> */}
+              <div>
+                <EducationalDetails
+                  isEducationDetailsOpen={isEducationDetailsOpen}
+                  setIsEducationDetailsOpen={setIsEducationDetailsOpen}
+                  EditData={EditData}
+                />
+              </div>
             </div>
-          </div>
-        </form>
-      </FormProvider>
-
-
-      <FormProvider {...EducationDetailsMethod}>
-        <form onSubmit={EducationDetailsMethod.handleSubmit(handleEducationalDetailSubmit)}>
-          {/* <h2>Educational Details</h2> */}
-          <div ref={EducationalFormRef}>
-            {/* <div className="bg-white p-5 mb-10 rounded shadow-md"> */}
-            <div>
-              <EducationalDetails
-                isEducationDetailsOpen={isEducationDetailsOpen}
-                setIsEducationDetailsOpen={setIsEducationDetailsOpen}
-                EditData={EditData}
-              />
-
-
+          </form>
+        </FormProvider>
+      )}
+      {hasPermission('edit_profile_all') && (
+        <FormProvider {...HororScopeDetailsMethods}>
+          <form onSubmit={HororScopeDetailsMethods.handleSubmit(onSubmit)}>
+            {/* <h2>Horoscope Details</h2> */}
+            <div ref={HoroscopeRef}>
+              <div >
+                <EditHororScopeDetails
+                  isHoroscopeDetailsOpen={isHoroscopeDetailsOpen}
+                  setIsHoroscopeDetailsOpen={setIsHoroscopeDetailsOpen}
+                  setAmsaKattam={setAmsaKattam}
+                  setRasiKattam={setRasiKattam}
+                  setBirthStarId={setBirthStarId}
+                  EditData={EditData}
+                />
+              </div>
             </div>
-          </div>
-        </form>
-      </FormProvider>
-
-
-      <FormProvider {...HororScopeDetailsMethods}>
-        <form onSubmit={HororScopeDetailsMethods.handleSubmit(onSubmit)}>
-          {/* <h2>Horoscope Details</h2> */}
-          <div ref={HoroscopeRef}>
-            <div >
-              <EditHororScopeDetails
-                isHoroscopeDetailsOpen={isHoroscopeDetailsOpen}
-                setIsHoroscopeDetailsOpen={setIsHoroscopeDetailsOpen}
-                setAmsaKattam={setAmsaKattam}
-                setRasiKattam={setRasiKattam}
-                setBirthStarId={setBirthStarId}
-                EditData={EditData}
-              />
-
+          </form>
+        </FormProvider>
+      )}
+      {hasPermission('edit_profile_all') && hasPermission('edit_profile_admin') && (
+        <FormProvider {...PartnerPreferenceMethods}>
+          <form onSubmit={PartnerPreferenceMethods.handleSubmit(handlePartnerPreferenceSubmit)}>
+            {/* <h2>Partner Preference</h2> */}
+            <div ref={partnerSettingspeRef}>
+              <div >
+                <EditPartnerPreference
+                  setIsPartnerPreferenceOpen={setIsPartnerPreferenceOpen}
+                  isPartnerPreferenceOpen={isPartnerPreferenceOpen}
+                  EditData={EditData}
+                  setPreforuthamStarRasi={setPreforuthamStarRasi}
+                  setPoruthamstar={setPoruthamstar}
+                  setAnnualIncomesVal={setAnnualIncomesVal}
+                  setFamilyStatus={setFamilyStatus}
+                  // setAnnualIncomesValmax={setAnnualIncomesValMax}
+                  selectSetMaridStatus={selectSetMaridStatus}
+                  setprefEducation={setprefEducation}
+                  setprefFieldOfStudy={setprefFieldOfStudy}
+                  setprefdegree={setprefdegree}
+                  setPrefProf={setPrefProf}
+                  gender={gender}
+                  birthStarId={birthStarId}
+                  setProfessionVisibility={setProfessionVisibility}
+                  setEducationVisibility={setEducationVisibility}
+                  setAnnualIncomeVisibility={setAnnualIncomeVisibility}
+                  setPrefferedStatePartner={setPrefferedStatePartner}
+                />
+              </div>
             </div>
-          </div>
-        </form>
-      </FormProvider>
+          </form>
+        </FormProvider>
+      )}
 
-      <FormProvider {...PartnerPreferenceMethods}>
-        <form onSubmit={PartnerPreferenceMethods.handleSubmit(handlePartnerPreferenceSubmit)}>
-          {/* <h2>Partner Preference</h2> */}
-          <div ref={partnerSettingspeRef}>
-            <div >
-              <EditPartnerPreference
-                setIsPartnerPreferenceOpen={setIsPartnerPreferenceOpen}
-                isPartnerPreferenceOpen={isPartnerPreferenceOpen}
-                EditData={EditData}
-                setPreforuthamStarRasi={setPreforuthamStarRasi}
-                setPoruthamstar={setPoruthamstar}
-                setAnnualIncomesVal={setAnnualIncomesVal}
-                setFamilyStatus={setFamilyStatus}
-                // setAnnualIncomesValmax={setAnnualIncomesValMax}
-                selectSetMaridStatus={selectSetMaridStatus}
-                setprefEducation={setprefEducation}
-                setprefFieldOfStudy={setprefFieldOfStudy}
-                setprefdegree={setprefdegree}
-                setPrefProf={setPrefProf}
-                gender={gender}
-                birthStarId={birthStarId}
-                setProfessionVisibility={setProfessionVisibility}
-                setEducationVisibility={setEducationVisibility}
-                setAnnualIncomeVisibility={setAnnualIncomeVisibility}
-                setPrefferedStatePartner={setPrefferedStatePartner}
-              />
-
+      {hasPermission('edit_profile_all') && hasPermission('edit_profile_admin') && (
+        <FormProvider {...suggestedProfileMethods}>
+          <form onSubmit={suggestedProfileMethods.handleSubmit(handleSuggestedProfileSubmit)}>
+            {/* <h2>Suggested Profile</h2> */}
+            <div ref={SuggestedSettingspeRef}>
+              <div>
+                <EditSuggestedProfile
+                  isSuggestedProfileOpen={isSuggestedProfileOpen}
+                  setIsSuggestedProfileOpen={setIsSuggestedProfileOpen}
+                  EditData={EditData}
+                  setPreforuthamStar={setPreforuthamStarRasi}
+                  setPorutham={setPoruthamstar}
+                  setAnnualIncomesVal={setAnnualIncomesVal}
+                  setAnnualIncomesValmax={setAnnualIncomesValMax}
+                  selectSetMaridStatus={selectSetMaridStatus}
+                  setprefEducation={setprefEducation}
+                  setPrefProf={setPrefProf}
+                  setFamilyStatusSuggested={setFamilyStatusSuggested}
+                  // gender={''} birthStarId={''}  
+                  gender={gender}
+                  birthStarId={birthStarId}
+                  setPrefferedStateSuggested={setPrefferedStateSuggested}
+                  setPreDegreeSuggested={setPreDegreeSuggested}
+                  setFieldOfStudySuggested={setFieldOfStudySuggested}
+                // setSuggestedProfiles={setSuggestedProfiles}
+                />
+              </div>
             </div>
-          </div>
-        </form>
-      </FormProvider>
-
-
-
-      <FormProvider {...suggestedProfileMethods}>
-        <form onSubmit={suggestedProfileMethods.handleSubmit(handleSuggestedProfileSubmit)}>
-          {/* <h2>Suggested Profile</h2> */}
-          <div ref={SuggestedSettingspeRef}>
-            <div>
-              <EditSuggestedProfile
-                isSuggestedProfileOpen={isSuggestedProfileOpen}
-                setIsSuggestedProfileOpen={setIsSuggestedProfileOpen}
-                EditData={EditData}
-                setPreforuthamStar={setPreforuthamStarRasi}
-                setPorutham={setPoruthamstar}
-                setAnnualIncomesVal={setAnnualIncomesVal}
-                setAnnualIncomesValmax={setAnnualIncomesValMax}
-                selectSetMaridStatus={selectSetMaridStatus}
-                setprefEducation={setprefEducation}
-                setPrefProf={setPrefProf}
-                setFamilyStatusSuggested={setFamilyStatusSuggested}
-                // gender={''} birthStarId={''}  
-
-                gender={gender}
-                birthStarId={birthStarId}
-                setPrefferedStateSuggested={setPrefferedStateSuggested}
-                setPreDegreeSuggested={setPreDegreeSuggested}
-                setFieldOfStudySuggested={setFieldOfStudySuggested}
-
-
-              // setSuggestedProfiles={setSuggestedProfiles}
-              />
-            </div>
-          </div>
-        </form>
-      </FormProvider>
-
-      <FormProvider {...ProfileVisibilityMethods}>
-        <form onSubmit={ProfileVisibilityMethods.handleSubmit(handleVisibilitySubmit)}>
-          <EditProfileVisibility
-            isProfileVisibility={isProfileVisibility}
-            setIsProfileVisibility={setIsProfileVisibility}
-            professionVisibility={professionVisibility}
-            educationVisibility={educationVisibility}
-            annualIncomeVisibility={annualIncomeVisibility}
-            EditData={EditData}
-            setFamilyStatusVisibility={setFamilyStatusVisibility}
-          />
-
-        </form>
-      </FormProvider>
+          </form>
+        </FormProvider>
+      )}
+      {hasPermission('edit_profile_all') && hasPermission('edit_profile_admin') && (
+        <FormProvider {...ProfileVisibilityMethods}>
+          <form onSubmit={ProfileVisibilityMethods.handleSubmit(handleVisibilitySubmit)}>
+            <EditProfileVisibility
+              isProfileVisibility={isProfileVisibility}
+              setIsProfileVisibility={setIsProfileVisibility}
+              professionVisibility={professionVisibility}
+              educationVisibility={educationVisibility}
+              annualIncomeVisibility={annualIncomeVisibility}
+              EditData={EditData}
+              setFamilyStatusVisibility={setFamilyStatusVisibility}
+            />
+          </form>
+        </FormProvider>
+      )}
     </div>
   );
 };

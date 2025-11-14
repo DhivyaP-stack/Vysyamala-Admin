@@ -332,46 +332,50 @@ export const UploadApprovalProfileImg = () => {
 
                         <div className="flex items-center gap-4 mt-2">
                             {/* Approve Controls - Fixed */}
-                            <div className="flex items-center space-x-2">
-                                <input
-                                    id={`approve-${image.id}`}
-                                    type="checkbox"
-                                    checked={image.image_approved}
-                                    onChange={() => handleImageApprovalChange(image.id)}
-                                    style={{
-                                        accentColor: image.image_approved ? 'green' : undefined,
-                                        width: '18px',
-                                        height: '18px',
-                                    }}
-                                />
-                                <label
-                                    htmlFor={`approve-${image.id}`}
-                                    className="cursor-pointer select-none"
-                                >
-                                    Approve Image
-                                </label>
-                            </div>
+                            {hasPermission('new_photo_update') && (
+                                <div className="flex items-center space-x-2">
+                                    <input
+                                        id={`approve-${image.id}`}
+                                        type="checkbox"
+                                        checked={image.image_approved}
+                                        onChange={() => handleImageApprovalChange(image.id)}
+                                        style={{
+                                            accentColor: image.image_approved ? 'green' : undefined,
+                                            width: '18px',
+                                            height: '18px',
+                                        }}
+                                    />
+                                    <label
+                                        htmlFor={`approve-${image.id}`}
+                                        className="cursor-pointer select-none"
+                                    >
+                                        Approve Image
+                                    </label>
+                                </div>
+                            )}
 
                             {/* Delete Controls - Fixed */}
-                            <div className="flex items-center space-x-2">
-                                <input
-                                    id={`delete-${image.id}`}
-                                    type="checkbox"
-                                    checked={image.is_deleted}
-                                    onChange={() => handleDelete(image.id)}
-                                    style={{
-                                        accentColor: image.is_deleted ? 'red' : undefined,
-                                        width: '18px',
-                                        height: '18px',
-                                    }}
-                                />
-                                <label
-                                    htmlFor={`delete-${image.id}`}
-                                    className="cursor-pointer select-none text-red-500 ml-2"
-                                >
-                                    Delete Photo
-                                </label>
-                            </div>
+                            {hasPermission('new_photo_update') && (
+                                <div className="flex items-center space-x-2">
+                                    <input
+                                        id={`delete-${image.id}`}
+                                        type="checkbox"
+                                        checked={image.is_deleted}
+                                        onChange={() => handleDelete(image.id)}
+                                        style={{
+                                            accentColor: image.is_deleted ? 'red' : undefined,
+                                            width: '18px',
+                                            height: '18px',
+                                        }}
+                                    />
+                                    <label
+                                        htmlFor={`delete-${image.id}`}
+                                        className="cursor-pointer select-none text-red-500 ml-2"
+                                    >
+                                        Delete Photo
+                                    </label>
+                                </div>
+                            )}
                         </div>
                     </div>
                 ))}
@@ -433,17 +437,18 @@ export const UploadApprovalProfileImg = () => {
                     )}
 
                     {/* ✅ Step 4: Add this block to display selected file names */}
-
-                    <div className="flex">
-                        {/* <span className="w-100 font-semibold text-black">Upload Horoscope</span> */}
-                        <FileInput
-                            label="Horoscope Original"
-                            files={horoscopeFiles}
-                            onFilesChange={setHoroscopeFiles}
-                            accept="image/*,.pdf,.doc,.docx"
-                            multiple={false}
-                        />
-                    </div>
+                    {hasPermission('edit_horo_photo') && (
+                        <div className="flex">
+                            {/* <span className="w-100 font-semibold text-black">Upload Horoscope</span> */}
+                            <FileInput
+                                label="Horoscope Original"
+                                files={horoscopeFiles}
+                                onFilesChange={setHoroscopeFiles}
+                                accept="image/*,.pdf,.doc,.docx"
+                                multiple={false}
+                            />
+                        </div>
+                    )}
                     {/* Horoscope upload */}
                     {photoProofDetails?.horoscope_file && (
                         <div className="flex">
@@ -460,17 +465,18 @@ export const UploadApprovalProfileImg = () => {
                             </a>
                         </div>
                     )}
-
-                    <div className="flex">
-                        <FileInput
-                            label="Horoscope Admin"
-                            // ▼ USE THE NEW STATE HERE ▼
-                            files={horoscopeAdminFiles}
-                            onFilesChange={setHoroscopeAdminFiles}
-                            accept="image/*,.pdf,.doc,.docx"
-                            multiple={false}
-                        />
-                    </div>
+                    {hasPermission('edit_horo_photo') && (
+                        <div className="flex">
+                            <FileInput
+                                label="Horoscope Admin"
+                                // ▼ USE THE NEW STATE HERE ▼
+                                files={horoscopeAdminFiles}
+                                onFilesChange={setHoroscopeAdminFiles}
+                                accept="image/*,.pdf,.doc,.docx"
+                                multiple={false}
+                            />
+                        </div>
+                    )}
                     {/* Horoscope upload */}
                     {photoProofDetails?.horoscope_file_admin && (
                         <div className="flex">

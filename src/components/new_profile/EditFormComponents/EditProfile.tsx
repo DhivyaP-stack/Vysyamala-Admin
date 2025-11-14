@@ -34,6 +34,7 @@ import { apiAxios } from '../../../api/apiUrl';
 import { MyProfileShare } from '../WhatsUpShare/MyProfileShare';
 import PaymentPopup from './PaymentInfo/PaymentInfoPopup';
 import { District } from './EducationalDetails';
+import { hasPermission } from '../../utils/auth';
 
 interface pageProps {
   handleSubmit: () => void;
@@ -1015,13 +1016,15 @@ const EditViewProfile: React.FC<pageProps> = ({
                       </div>
 
                       <div className="flex flex-col items-center justify-center p-20 space-y-4">
-                        <div className="ml-30">
-                          <ProfileForm
-                            error={errors}
-                            EditData={EditData}
-                            profileId={profileId}
-                          />
-                        </div>
+                        {hasPermission('edit_profile_admin') && (
+                          <div className="ml-30">
+                            <ProfileForm
+                              error={errors}
+                              EditData={EditData}
+                              profileId={profileId}
+                            />
+                          </div>
+                        )}
                         {/* Horo Hint Section */}
                         <div className="flex items-center space-x-4">
                           <label className="font-semibold text-[#5a5959e6]">

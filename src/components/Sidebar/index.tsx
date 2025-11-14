@@ -3,13 +3,13 @@ import { NavLink, useLocation } from 'react-router-dom';
 import SidebarLinkGroup from './SidebarLinkGroup';
 import Logo from '../../../public/Vysyamala.svg';
 import { CgProfile } from 'react-icons/cg';
-import { FaUser, FaUserCog, FaSearch } from 'react-icons/fa';
+import { FaUser, FaUserCog, FaSearch, FaSearchPlus } from 'react-icons/fa';
 import { MdAddLocationAlt } from 'react-icons/md';
 import { FaRegStar } from 'react-icons/fa';
 import { MdFamilyRestroom } from 'react-icons/md';
 import { ImProfile } from 'react-icons/im';
 import { GoDot } from 'react-icons/go';
-import { IoSettings } from 'react-icons/io5';
+import { IoDocumentTextOutline, IoSettings } from 'react-icons/io5';
 import { FaClipboardUser } from "react-icons/fa6";
 import { hasPermission } from '../utils/auth';
 
@@ -137,12 +137,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 </NavLink> */}
               </li>
               <div
-                className={`translate transform overflow-hidden ${!open && 'hidden'
+                className={`translate transform overflow-hidden mb-4 ${!open && 'hidden'
                   }`}
               >
                 <ul className="mt-4 mb-5.5 flex flex-col">
                   {/* Submenu Items */}
-                  <li>
+                  {/* <li>
                     <NavLink
                       to="/SearchProfile"
                       className={({ isActive }) =>
@@ -152,6 +152,34 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     >
                       <FaSearch />
                       Search Profile
+                    </NavLink>
+                  </li> */}
+                  {hasPermission('search_profile') && (
+                    <li>
+                      <NavLink
+                        to="/SearchProfile"
+                        className={({ isActive }) =>
+                          'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                          (isActive && '!text-PrimaryRed')
+                        }
+                      >
+                        <FaSearch />
+                        Basic Search
+                      </NavLink>
+                    </li>
+                  )}
+                </ul>
+                <ul>
+                  <li>
+                    <NavLink
+                      to="/AdvancedSearch"
+                      className={({ isActive }) =>
+                        'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                        (isActive && '!text-PrimaryRed')
+                      }
+                    >
+                      <FaSearchPlus />
+                      Advanced Search
                     </NavLink>
                   </li>
                 </ul>
@@ -322,7 +350,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                               Deleted Profiles
                             </NavLink>
                           </li>
-                          
+
                           {hasPermission('add_profile') && (
                             <li>
                               <NavLink
@@ -1451,25 +1479,48 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                       </ul>
                       <ul className="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6">
                         {/* Submenu Items */}
-                        <li>
-                          <NavLink
-                            to="/mailerTool"
-                            className={({ isActive }) =>
-                              'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
-                              (isActive && '!text-PrimaryRed')
-                            }
-                          >
-                            <GoDot />
-                            Mailer Tool
-                          </NavLink>
-                        </li>
+                        {hasPermission('email_send') && (
+                          <li>
+                            <NavLink
+                              to="/mailerTool"
+                              className={({ isActive }) =>
+                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                                (isActive && '!text-PrimaryRed')
+                              }
+                            >
+                              <GoDot />
+                              Mailer Tool
+                            </NavLink>
+                          </li>
+                        )}
                       </ul>
                     </div>
                     {/* Dropdown Menu End */}
                   </React.Fragment>
                 )}
               </SidebarLinkGroup>
-
+              {hasPermission('report_all') && (
+                <div
+                  className={`translate transform overflow-hidden ${!open && 'hidden'
+                    }`}
+                >
+                  <ul className="mt-4 mb-5.5 flex flex-col">
+                    {/* Submenu Items */}
+                    <li>
+                      <NavLink
+                        to="/Reports"
+                        className={({ isActive }) =>
+                          'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                          (isActive && '!text-PrimaryRed')
+                        }
+                      >
+                        <IoDocumentTextOutline />
+                        Reports
+                      </NavLink>
+                    </li>
+                  </ul>
+                </div>
+              )}
             </ul>
           </div>
         </nav>

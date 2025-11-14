@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { notify } from '../TostNotification';
 import { successStoryEdit, successStoryList } from '../../services/api';
+import { hasPermission } from '../utils/auth';
 
 // Define the Zod schema for validation
 const schema = z.object({
@@ -144,58 +145,60 @@ const EditSuccessStory: React.FC = () => {
               )}
             />
           </Grid>
-          <Grid item xs={12}>
-            <Controller
-              name="photo"
-              control={control}
-              render={({ field: { onChange } }) => (
-                <>
-                  <Button variant="outlined" component="label">
-                    Upload New Photo
-                    <input
-                      type="file"
-                      hidden
-                      onChange={(e) => {
-                        if (e.target.files && e.target.files[0]) {
-                          setSelectedPhoto(e.target.files[0]);
-                          onChange(e.target.files[0]);
-                        }
-                      }}
-                    />
-                  </Button>
-                  {selectedPhoto && (
-                    <div style={{ marginTop: '10px' }}>
-                      <img
-                        src={URL.createObjectURL(selectedPhoto)}
-                        alt="Preview"
-                        style={{
-                          width: '100px',
-                          height: 'auto',
-                          marginTop: '10px',
+          {hasPermission('marriage_photo_upload') && (
+            <Grid item xs={12}>
+              <Controller
+                name="photo"
+                control={control}
+                render={({ field: { onChange } }) => (
+                  <>
+                    <Button variant="outlined" component="label">
+                      Upload New Photo
+                      <input
+                        type="file"
+                        hidden
+                        onChange={(e) => {
+                          if (e.target.files && e.target.files[0]) {
+                            setSelectedPhoto(e.target.files[0]);
+                            onChange(e.target.files[0]);
+                          }
                         }}
                       />
-                    </div>
-                  )}
-                  {!selectedPhoto && photoUrl && (
-                    <div style={{ marginTop: '10px' }}>
-                      <img
-                        src={photoUrl}
-                        alt="Existing Photo"
-                        style={{
-                          width: '200px',
-                          height: 'auto',
-                          marginTop: '10px',
-                        }}
-                      />
-                    </div>
-                  )}
-                  {errors.photo && (
-                    <p style={{ color: 'red' }}>{errors.photo.message}</p>
-                  )}
-                </>
-              )}
-            />
-          </Grid>
+                    </Button>
+                    {selectedPhoto && (
+                      <div style={{ marginTop: '10px' }}>
+                        <img
+                          src={URL.createObjectURL(selectedPhoto)}
+                          alt="Preview"
+                          style={{
+                            width: '100px',
+                            height: 'auto',
+                            marginTop: '10px',
+                          }}
+                        />
+                      </div>
+                    )}
+                    {!selectedPhoto && photoUrl && (
+                      <div style={{ marginTop: '10px' }}>
+                        <img
+                          src={photoUrl}
+                          alt="Existing Photo"
+                          style={{
+                            width: '200px',
+                            height: 'auto',
+                            marginTop: '10px',
+                          }}
+                        />
+                      </div>
+                    )}
+                    {errors.photo && (
+                      <p style={{ color: 'red' }}>{errors.photo.message}</p>
+                    )}
+                  </>
+                )}
+              />
+            </Grid>
+          )}
           <Grid item xs={12}>
             <Controller
               name="dateOfMarriage"
