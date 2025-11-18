@@ -572,126 +572,128 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   );
                 }}
               </SidebarLinkGroup>
-              <SidebarLinkGroup
-                activeCondition={
-                  pathname === '/master-location' ||
-                  pathname.includes('master-location')
-                }
-              >
-                {(handleClick, open) => {
-                  return (
-                    <React.Fragment>
-                      {/* Main Menu Item */}
-                      <NavLink
-                        to="#"
-                        className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out ${(pathname === '/master-location' ||
-                          pathname.includes('master-location')) &&
-                          'bg-graydark dark:bg-meta-4'
-                          }`}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          sidebarExpanded
-                            ? handleClick()
-                            : setSidebarExpanded(true);
-                        }}
-                      >
-                        {/* Location Icon */}
-                        <MdAddLocationAlt />
-                        {/* Menu Item Text */}
-                        Master Location
-                        {/* Arrow Icon for Dropdown */}
-                        <svg
-                          className={`absolute right-4 top-1/2 -translate-y-1/2 fill-current ${open && 'rotate-180'
+              {hasPermission('online_changes_tool') && (
+                <SidebarLinkGroup
+                  activeCondition={
+                    pathname === '/master-location' ||
+                    pathname.includes('master-location')
+                  }
+                >
+                  {(handleClick, open) => {
+                    return (
+                      <React.Fragment>
+                        {/* Main Menu Item */}
+                        <NavLink
+                          to="#"
+                          className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out ${(pathname === '/master-location' ||
+                            pathname.includes('master-location')) &&
+                            'bg-graydark dark:bg-meta-4'
                             }`}
-                          width="20"
-                          height="20"
-                          viewBox="0 0 20 20"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            sidebarExpanded
+                              ? handleClick()
+                              : setSidebarExpanded(true);
+                          }}
                         >
-                          <path
-                            fillRule="evenodd"
-                            clipRule="evenodd"
-                            d="M4.41107 6.9107C4.73651 6.58527 5.26414 6.58527 5.58958 6.9107L10.0003 11.3214L14.4111 6.91071C14.7365 6.58527 15.2641 6.58527 15.5896 6.91071C15.915 7.23614 15.915 7.76378 15.5896 8.08922L10.5896 13.0892C10.2641 13.4147 9.73651 13.4147 9.41107 13.0892L4.41107 8.08922C4.08563 7.76378 4.08563 7.23614 4.41107 6.9107Z"
-                            fill=""
-                          />
-                        </svg>
-                      </NavLink>
+                          {/* Location Icon */}
+                          <MdAddLocationAlt />
+                          {/* Menu Item Text */}
+                          Master Location
+                          {/* Arrow Icon for Dropdown */}
+                          <svg
+                            className={`absolute right-4 top-1/2 -translate-y-1/2 fill-current ${open && 'rotate-180'
+                              }`}
+                            width="20"
+                            height="20"
+                            viewBox="0 0 20 20"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              clipRule="evenodd"
+                              d="M4.41107 6.9107C4.73651 6.58527 5.26414 6.58527 5.58958 6.9107L10.0003 11.3214L14.4111 6.91071C14.7365 6.58527 15.2641 6.58527 15.5896 6.91071C15.915 7.23614 15.915 7.76378 15.5896 8.08922L10.5896 13.0892C10.2641 13.4147 9.73651 13.4147 9.41107 13.0892L4.41107 8.08922C4.08563 7.76378 4.08563 7.23614 4.41107 6.9107Z"
+                              fill=""
+                            />
+                          </svg>
+                        </NavLink>
 
-                      {/* Dropdown Menu Start */}
-                      <div
-                        className={`translate transform overflow-hidden ${!open && 'hidden'
-                          }`}
-                      >
-                        <ul className="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6">
-                          {/* Submenu Items */}
-                          <li>
-                            <NavLink
-                              to="CountryTable"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
-                                (isActive && '!text-PrimaryRed')
-                              }
-                            >
-                              <GoDot />
-                              Countries
-                            </NavLink>
-                          </li>
-                          <li>
-                            <NavLink
-                              to="StateTable"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
-                                (isActive && '!text-PrimaryRed')
-                              }
-                            >
-                              <GoDot />
-                              States
-                            </NavLink>
-                          </li>
-                          <li>
-                            <NavLink
-                              to="DistrictTable"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
-                                (isActive && '!text-PrimaryRed')
-                              }
-                            >
-                              <GoDot />
-                              Districts
-                            </NavLink>
-                          </li>
-                          <li>
-                            <NavLink
-                              to="/CityTable"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
-                                (isActive && '!text-PrimaryRed')
-                              }
-                            >
-                              <GoDot />
-                              Cities
-                            </NavLink>
-                          </li>
-                          <li>
-                            <NavLink
-                              to="/StatePreferences"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
-                                (isActive && '!text-PrimaryRed')
-                              }
-                            >
-                              <GoDot />
-                              State Preferences
-                            </NavLink>
-                          </li>
-                        </ul>
-                      </div>
-                      {/* Dropdown Menu End */}
-                    </React.Fragment>
-                  );
-                }}
-              </SidebarLinkGroup>
+                        {/* Dropdown Menu Start */}
+                        <div
+                          className={`translate transform overflow-hidden ${!open && 'hidden'
+                            }`}
+                        >
+                          <ul className="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6">
+                            {/* Submenu Items */}
+                            <li>
+                              <NavLink
+                                to="CountryTable"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                                  (isActive && '!text-PrimaryRed')
+                                }
+                              >
+                                <GoDot />
+                                Countries
+                              </NavLink>
+                            </li>
+                            <li>
+                              <NavLink
+                                to="StateTable"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                                  (isActive && '!text-PrimaryRed')
+                                }
+                              >
+                                <GoDot />
+                                States
+                              </NavLink>
+                            </li>
+                            <li>
+                              <NavLink
+                                to="DistrictTable"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                                  (isActive && '!text-PrimaryRed')
+                                }
+                              >
+                                <GoDot />
+                                Districts
+                              </NavLink>
+                            </li>
+                            <li>
+                              <NavLink
+                                to="/CityTable"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                                  (isActive && '!text-PrimaryRed')
+                                }
+                              >
+                                <GoDot />
+                                Cities
+                              </NavLink>
+                            </li>
+                            <li>
+                              <NavLink
+                                to="/StatePreferences"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                                  (isActive && '!text-PrimaryRed')
+                                }
+                              >
+                                <GoDot />
+                                State Preferences
+                              </NavLink>
+                            </li>
+                          </ul>
+                        </div>
+                        {/* Dropdown Menu End */}
+                      </React.Fragment>
+                    );
+                  }}
+                </SidebarLinkGroup>
+              )}
               {/* <!-- Menu Item Master Location End --> */}
 
               {/* <!-- Menu Item Religions and Community --> */}
@@ -783,106 +785,106 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 }}
               </SidebarLinkGroup> */}
               {/* <!-- Menu Item Religions and Community End --> */}
-
-              <SidebarLinkGroup
-                activeCondition={
-                  pathname === '/profile-master' ||
-                  pathname.includes('profile-master')
-                }
-              >
-                {(handleClick, open) => {
-                  return (
-                    <React.Fragment>
-                      {/* Main Menu Item */}
-                      <NavLink
-                        to="#"
-                        className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out ${pathname === '/profile-master' ||
-                          pathname.includes('profile-master')
-                          }`}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          sidebarExpanded
-                            ? handleClick()
-                            : setSidebarExpanded(true);
-                        }}
-                      >
-                        {/* Icon (You can add your own icon here) */}
-                        <CgProfile />
-                        Profile Master
-                        <svg
-                          className={`absolute right-4 top-1/2 -translate-y-1/2 fill-current ${open && 'rotate-180'
+              {hasPermission('online_changes_tool') && (
+                <SidebarLinkGroup
+                  activeCondition={
+                    pathname === '/profile-master' ||
+                    pathname.includes('profile-master')
+                  }
+                >
+                  {(handleClick, open) => {
+                    return (
+                      <React.Fragment>
+                        {/* Main Menu Item */}
+                        <NavLink
+                          to="#"
+                          className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out ${pathname === '/profile-master' ||
+                            pathname.includes('profile-master')
                             }`}
-                          width="20"
-                          height="20"
-                          viewBox="0 0 20 20"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            sidebarExpanded
+                              ? handleClick()
+                              : setSidebarExpanded(true);
+                          }}
                         >
-                          <path
-                            fillRule="evenodd"
-                            clipRule="evenodd"
-                            d="M4.41107 6.9107C4.73651 6.58527 5.26414 6.58527 5.58958 6.9107L10.0003 11.3214L14.4111 6.91071C14.7365 6.58527 15.2641 6.58527 15.5896 6.91071C15.915 7.23614 15.915 7.76378 15.5896 8.08922L10.5896 13.0892C10.2641 13.4147 9.73651 13.4147 9.41107 13.0892L4.41107 8.08922C4.08563 7.76378 4.08563 7.23614 4.41107 6.9107Z"
-                            fill=""
-                          />
-                        </svg>
-                      </NavLink>
+                          {/* Icon (You can add your own icon here) */}
+                          <CgProfile />
+                          Profile Master
+                          <svg
+                            className={`absolute right-4 top-1/2 -translate-y-1/2 fill-current ${open && 'rotate-180'
+                              }`}
+                            width="20"
+                            height="20"
+                            viewBox="0 0 20 20"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              clipRule="evenodd"
+                              d="M4.41107 6.9107C4.73651 6.58527 5.26414 6.58527 5.58958 6.9107L10.0003 11.3214L14.4111 6.91071C14.7365 6.58527 15.2641 6.58527 15.5896 6.91071C15.915 7.23614 15.915 7.76378 15.5896 8.08922L10.5896 13.0892C10.2641 13.4147 9.73651 13.4147 9.41107 13.0892L4.41107 8.08922C4.08563 7.76378 4.08563 7.23614 4.41107 6.9107Z"
+                              fill=""
+                            />
+                          </svg>
+                        </NavLink>
 
-                      {/* Dropdown Menu Start */}
-                      <div
-                        className={`translate transform overflow-hidden ${!open && 'hidden'
-                          }`}
-                      >
-                        <ul className="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6">
-                          {/* Submenu Items */}
-                          <li>
-                            <NavLink
-                              to="/ProfileholderTable"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
-                                (isActive && '!text-PrimaryRed')
-                              }
-                            >
-                              <GoDot />
-                              Profile Holder
-                            </NavLink>
-                          </li>
-                          <li>
-                            <NavLink
-                              to="/profile-master/marital-status"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
-                                (isActive && '!text-PrimaryRed')
-                              }
-                            >
-                              <GoDot />
-                              Marital Statuses
-                            </NavLink>
-                          </li>
-                          <li>
-                            <NavLink
-                              to="/profile-master/height"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
-                                (isActive && '!text-PrimaryRed')
-                              }
-                            >
-                              <GoDot />
-                              Height
-                            </NavLink>
-                          </li>
-                          <li>
-                            <NavLink
-                              to="/profile-master/complexion"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
-                                (isActive && '!text-PrimaryRed')
-                              }
-                            >
-                              <GoDot />
-                              Complexion
-                            </NavLink>
-                          </li>
-                          {/* <li>
+                        {/* Dropdown Menu Start */}
+                        <div
+                          className={`translate transform overflow-hidden ${!open && 'hidden'
+                            }`}
+                        >
+                          <ul className="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6">
+                            {/* Submenu Items */}
+                            <li>
+                              <NavLink
+                                to="/ProfileholderTable"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                                  (isActive && '!text-PrimaryRed')
+                                }
+                              >
+                                <GoDot />
+                                Profile Holder
+                              </NavLink>
+                            </li>
+                            <li>
+                              <NavLink
+                                to="/profile-master/marital-status"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                                  (isActive && '!text-PrimaryRed')
+                                }
+                              >
+                                <GoDot />
+                                Marital Statuses
+                              </NavLink>
+                            </li>
+                            <li>
+                              <NavLink
+                                to="/profile-master/height"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                                  (isActive && '!text-PrimaryRed')
+                                }
+                              >
+                                <GoDot />
+                                Height
+                              </NavLink>
+                            </li>
+                            <li>
+                              <NavLink
+                                to="/profile-master/complexion"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                                  (isActive && '!text-PrimaryRed')
+                                }
+                              >
+                                <GoDot />
+                                Complexion
+                              </NavLink>
+                            </li>
+                            {/* <li>
                             <NavLink
                               to="ParentsoccupationTable"
                               className={({ isActive }) =>
@@ -895,117 +897,119 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                               Parents Occupation
                             </NavLink>
                           </li> */}
-                          <li>
-                            <NavLink
-                              to="/profile-master/modes"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
-                                (isActive && '!text-PrimaryRed')
-                              }
-                            >
-                              <GoDot />
-                              Profile Owners
-                            </NavLink>
-                          </li>
-                          <li>
-                            <NavLink
-                              to="/HighesteducationsTable"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
-                                (isActive && '!text-PrimaryRed')
-                              }
-                            >
-                              <GoDot />
-                              Highest Education
-                            </NavLink>
-                          </li>
-                          <li>
-                            <NavLink
-                              to="/UgdegreeTable"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
-                                (isActive && '!text-PrimaryRed')
-                              }
-                            >
-                              <GoDot />
-                              Ug Degrees
-                            </NavLink>
-                          </li>
-                          <li>
-                            <NavLink
-                              to="/AnnualincomesTable"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
-                                (isActive && '!text-PrimaryRed')
-                              }
-                            >
-                              <GoDot />
-                              Annual Incomes
-                            </NavLink>
-                          </li>
-                        </ul>
-                      </div>
-                      {/* Dropdown Menu End */}
-                    </React.Fragment>
-                  );
-                }}
-              </SidebarLinkGroup>
+                            <li>
+                              <NavLink
+                                to="/profile-master/modes"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                                  (isActive && '!text-PrimaryRed')
+                                }
+                              >
+                                <GoDot />
+                                On behalf of
+                              </NavLink>
+                            </li>
+                            <li>
+                              <NavLink
+                                to="/HighesteducationsTable"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                                  (isActive && '!text-PrimaryRed')
+                                }
+                              >
+                                <GoDot />
+                                Highest Education
+                              </NavLink>
+                            </li>
+                            <li>
+                              <NavLink
+                                to="/UgdegreeTable"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                                  (isActive && '!text-PrimaryRed')
+                                }
+                              >
+                                <GoDot />
+                                Ug Degrees
+                              </NavLink>
+                            </li>
+                            <li>
+                              <NavLink
+                                to="/AnnualincomesTable"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                                  (isActive && '!text-PrimaryRed')
+                                }
+                              >
+                                <GoDot />
+                                Annual Incomes
+                              </NavLink>
+                            </li>
+                          </ul>
+                        </div>
+                        {/* Dropdown Menu End */}
+                      </React.Fragment>
+                    );
+                  }}
+                </SidebarLinkGroup>
+              )}
 
               {/* <!-- Menu Item Horoscope Master --> */}
-              <SidebarLinkGroup
-                activeCondition={
-                  pathname === '/horoscope-master' ||
-                  pathname.includes('horoscope-master')
-                }
-              >
-                {(handleClick, open) => {
-                  return (
-                    <React.Fragment>
-                      {/* Main Menu Item */}
-                      <NavLink
-                        to="#"
-                        className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out ${(pathname === '/horoscope-master' ||
-                          pathname.includes('horoscope-master')) &&
-                          'bg-graydark dark:bg-meta-4'
-                          }`}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          sidebarExpanded
-                            ? handleClick()
-                            : setSidebarExpanded(true);
-                        }}
-                      >
-                        {/* Star Icon */}
-                        <FaRegStar />
-                        {/* Menu Item Text */}
-                        Horoscope Master
-                        {/* Arrow Icon for Dropdown */}
-                        <svg
-                          className={`absolute right-4 top-1/2 -translate-y-1/2 fill-current ${open && 'rotate-180'
+              {hasPermission('online_changes_tool') && (
+                <SidebarLinkGroup
+                  activeCondition={
+                    pathname === '/horoscope-master' ||
+                    pathname.includes('horoscope-master')
+                  }
+                >
+                  {(handleClick, open) => {
+                    return (
+                      <React.Fragment>
+                        {/* Main Menu Item */}
+                        <NavLink
+                          to="#"
+                          className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out ${(pathname === '/horoscope-master' ||
+                            pathname.includes('horoscope-master')) &&
+                            'bg-graydark dark:bg-meta-4'
                             }`}
-                          width="20"
-                          height="20"
-                          viewBox="0 0 20 20"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            sidebarExpanded
+                              ? handleClick()
+                              : setSidebarExpanded(true);
+                          }}
                         >
-                          <path
-                            fillRule="evenodd"
-                            clipRule="evenodd"
-                            d="M4.41107 6.9107C4.73651 6.58527 5.26414 6.58527 5.58958 6.9107L10.0003 11.3214L14.4111 6.91071C14.7365 6.58527 15.2641 6.58527 15.5896 6.91071C15.915 7.23614 15.915 7.76378 15.5896 8.08922L10.5896 13.0892C10.2641 13.4147 9.73651 13.4147 9.41107 13.0892L4.41107 8.08922C4.08563 7.76378 4.08563 7.23614 4.41107 6.9107Z"
-                            fill=""
-                          />
-                        </svg>
-                      </NavLink>
+                          {/* Star Icon */}
+                          <FaRegStar />
+                          {/* Menu Item Text */}
+                          Horoscope Master
+                          {/* Arrow Icon for Dropdown */}
+                          <svg
+                            className={`absolute right-4 top-1/2 -translate-y-1/2 fill-current ${open && 'rotate-180'
+                              }`}
+                            width="20"
+                            height="20"
+                            viewBox="0 0 20 20"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              clipRule="evenodd"
+                              d="M4.41107 6.9107C4.73651 6.58527 5.26414 6.58527 5.58958 6.9107L10.0003 11.3214L14.4111 6.91071C14.7365 6.58527 15.2641 6.58527 15.5896 6.91071C15.915 7.23614 15.915 7.76378 15.5896 8.08922L10.5896 13.0892C10.2641 13.4147 9.73651 13.4147 9.41107 13.0892L4.41107 8.08922C4.08563 7.76378 4.08563 7.23614 4.41107 6.9107Z"
+                              fill=""
+                            />
+                          </svg>
+                        </NavLink>
 
-                      {/* Dropdown Menu Start */}
-                      <div
-                        className={`translate transform overflow-hidden ${!open && 'hidden'
-                          }`}
-                      >
-                        <ul className="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6">
-                          {/* Submenu Items */}
-                          {/* <li>
+                        {/* Dropdown Menu Start */}
+                        <div
+                          className={`translate transform overflow-hidden ${!open && 'hidden'
+                            }`}
+                        >
+                          <ul className="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6">
+                            {/* Submenu Items */}
+                            {/* <li>
                             <NavLink
                               to="PlaceOfBirthList"
                               className={({ isActive }) =>
@@ -1017,144 +1021,146 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                               Place of Birth
                             </NavLink>
                           </li> */}
-                          <li>
-                            <NavLink
-                              to="BirthStarList"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
-                                (isActive && '!text-PrimaryRed')
-                              }
-                            >
-                              <GoDot />
-                              BirthStar
-                            </NavLink>
-                          </li>
-                          <li>
-                            <NavLink
-                              to="/RasiList"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
-                                (isActive && '!text-PrimaryRed')
-                              }
-                            >
-                              <GoDot />
-                              Rasi
-                            </NavLink>
-                          </li>
-                          <li>
-                            <NavLink
-                              to="/LagnamList"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
-                                (isActive && '!text-PrimaryRed')
-                              }
-                            >
-                              <GoDot />
-                              Lagnam/Didi
-                            </NavLink>
-                          </li>
-                          <li>
-                            <NavLink
-                              to="/DasaBalanceList"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
-                                (isActive && '!text-PrimaryRed')
-                              }
-                            >
-                              <GoDot />
-                              Dasa Balance
-                            </NavLink>
-                          </li>
-                        </ul>
-                      </div>
-                      {/* Dropdown Menu End */}
-                    </React.Fragment>
-                  );
-                }}
-              </SidebarLinkGroup>
-              <SidebarLinkGroup
-                activeCondition={
-                  pathname === '/family-master' ||
-                  pathname.includes('family-master')
-                }
-              >
-                {(handleClick, open) => {
-                  return (
-                    <React.Fragment>
-                      <NavLink
-                        to="#"
-                        className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out ${pathname === '/family-master' ||
-                          pathname.includes('family-master')
-                          }`}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          sidebarExpanded
-                            ? handleClick()
-                            : setSidebarExpanded(true);
-                        }}
-                      >
-                        <MdFamilyRestroom />
-                        Family Master
-                        <svg
-                          className={`absolute right-4 top-1/2 -translate-y-1/2 fill-current ${open && 'rotate-180'
+                            <li>
+                              <NavLink
+                                to="BirthStarList"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                                  (isActive && '!text-PrimaryRed')
+                                }
+                              >
+                                <GoDot />
+                                BirthStar
+                              </NavLink>
+                            </li>
+                            <li>
+                              <NavLink
+                                to="/RasiList"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                                  (isActive && '!text-PrimaryRed')
+                                }
+                              >
+                                <GoDot />
+                                Rasi
+                              </NavLink>
+                            </li>
+                            <li>
+                              <NavLink
+                                to="/LagnamList"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                                  (isActive && '!text-PrimaryRed')
+                                }
+                              >
+                                <GoDot />
+                                Lagnam/Didi
+                              </NavLink>
+                            </li>
+                            <li>
+                              <NavLink
+                                to="/DasaBalanceList"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                                  (isActive && '!text-PrimaryRed')
+                                }
+                              >
+                                <GoDot />
+                                Dasa Balance
+                              </NavLink>
+                            </li>
+                          </ul>
+                        </div>
+                        {/* Dropdown Menu End */}
+                      </React.Fragment>
+                    );
+                  }}
+                </SidebarLinkGroup>
+              )}
+              {hasPermission('online_changes_tool') && (
+                <SidebarLinkGroup
+                  activeCondition={
+                    pathname === '/family-master' ||
+                    pathname.includes('family-master')
+                  }
+                >
+                  {(handleClick, open) => {
+                    return (
+                      <React.Fragment>
+                        <NavLink
+                          to="#"
+                          className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out ${pathname === '/family-master' ||
+                            pathname.includes('family-master')
                             }`}
-                          width="20"
-                          height="20"
-                          viewBox="0 0 20 20"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            sidebarExpanded
+                              ? handleClick()
+                              : setSidebarExpanded(true);
+                          }}
                         >
-                          <path
-                            fillRule="evenodd"
-                            clipRule="evenodd"
-                            d="M4.41107 6.9107C4.73651 6.58527 5.26414 6.58527 5.58958 6.9107L10.0003 11.3214L14.4111 6.91071C14.7365 6.58527 15.2641 6.58527 15.5896 6.91071C15.915 7.23614 15.915 7.76378 15.5896 8.08922L10.5896 13.0892C10.2641 13.4147 9.73651 13.4147 9.41107 13.0892L4.41107 8.08922C4.08563 7.76378 4.08563 7.23614 4.41107 6.9107Z"
-                            fill=""
-                          />
-                        </svg>
-                      </NavLink>
-                      <div
-                        className={`translate transform overflow-hidden ${!open && 'hidden'
-                          }`}
-                      >
-                        <ul className="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6">
-                          {/* Submenu Items */}
-                          <li>
-                            <NavLink
-                              to="/family-master/family-type"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
-                                (isActive && '!text-PrimaryRed')
-                              }
-                            >
-                              <GoDot />
-                              Family Type
-                            </NavLink>
-                          </li>
-                          <li>
-                            <NavLink
-                              to="/family-master/family-status-options"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
-                                (isActive && '!text-PrimaryRed')
-                              }
-                            >
-                              <GoDot />
-                              Family Status
-                            </NavLink>
-                          </li>
-                          <li>
-                            <NavLink
-                              to="/family-master/family-value-options"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
-                                (isActive && '!text-PrimaryRed')
-                              }
-                            >
-                              <GoDot />
-                              Family Value
-                            </NavLink>
-                          </li>
-                          {/* <li>
+                          <MdFamilyRestroom />
+                          Family Master
+                          <svg
+                            className={`absolute right-4 top-1/2 -translate-y-1/2 fill-current ${open && 'rotate-180'
+                              }`}
+                            width="20"
+                            height="20"
+                            viewBox="0 0 20 20"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              clipRule="evenodd"
+                              d="M4.41107 6.9107C4.73651 6.58527 5.26414 6.58527 5.58958 6.9107L10.0003 11.3214L14.4111 6.91071C14.7365 6.58527 15.2641 6.58527 15.5896 6.91071C15.915 7.23614 15.915 7.76378 15.5896 8.08922L10.5896 13.0892C10.2641 13.4147 9.73651 13.4147 9.41107 13.0892L4.41107 8.08922C4.08563 7.76378 4.08563 7.23614 4.41107 6.9107Z"
+                              fill=""
+                            />
+                          </svg>
+                        </NavLink>
+                        <div
+                          className={`translate transform overflow-hidden ${!open && 'hidden'
+                            }`}
+                        >
+                          <ul className="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6">
+                            {/* Submenu Items */}
+                            <li>
+                              <NavLink
+                                to="/family-master/family-type"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                                  (isActive && '!text-PrimaryRed')
+                                }
+                              >
+                                <GoDot />
+                                Family Type
+                              </NavLink>
+                            </li>
+                            <li>
+                              <NavLink
+                                to="/family-master/family-status-options"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                                  (isActive && '!text-PrimaryRed')
+                                }
+                              >
+                                <GoDot />
+                                Family Status
+                              </NavLink>
+                            </li>
+                            <li>
+                              <NavLink
+                                to="/family-master/family-value-options"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                                  (isActive && '!text-PrimaryRed')
+                                }
+                              >
+                                <GoDot />
+                                Family Value
+                              </NavLink>
+                            </li>
+                            {/* <li>
                             <NavLink
                               to="/family-master/family-Property-Worth"
                               className={({ isActive }) =>
@@ -1166,136 +1172,141 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             Property Worth
                             </NavLink>
                           </li> */}
-                          <li>
-                            <NavLink
-                              to="/family-master/gothrams"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
-                                (isActive && '!text-PrimaryRed')
-                              }
-                            >
-                              <GoDot />
-                              Gotharams
-                            </NavLink>
-                          </li>
-                        </ul>
-                      </div>
-                      {/* Dropdown Menu End */}
-                    </React.Fragment>
-                  );
-                }}
-              </SidebarLinkGroup>
-              <SidebarLinkGroup
-                activeCondition={
-                  pathname === '/CSM page' || pathname.includes('CSM page')
-                }
-              >
-                {(handleClick, open) => {
-                  return (
-                    <React.Fragment>
-                      <NavLink
-                        to="#"
-                        className={`group relative flex items-center gap-2.5 success rounded-sm px-4 py-2 text-black font-medium text-PrimaryRed hover:text-PrimaryRed hover:text-PrimaryRed duration-300 ease-in-out ${pathname === '/' || pathname.includes('dashboard')
-                          }`}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          sidebarExpanded
-                            ? handleClick()
-                            : setSidebarExpanded(true);
-                        }}
-                      >
-                        <svg
-                          className="fill-current"
-                          width="18"
-                          height="18"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            clipRule="evenodd"
-                            d="M12 2L2 10.5858V21H6V14H12V21H16V10.5858L12 2ZM9 13V19H7V13H9ZM17 13V19H15V13H17Z"
-                            fill=""
-                          />
-                        </svg>
-                        CMS Page
-                        <svg
-                          className={`absolute right-4 top-1/2 -translate-y-1/2 fill-current ${open && 'rotate-180'
+                            <li>
+                              <NavLink
+                                to="/family-master/gothrams"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                                  (isActive && '!text-PrimaryRed')
+                                }
+                              >
+                                <GoDot />
+                                Gotharams
+                              </NavLink>
+                            </li>
+                          </ul>
+                        </div>
+                        {/* Dropdown Menu End */}
+                      </React.Fragment>
+                    );
+                  }}
+                </SidebarLinkGroup>
+              )}
+
+              {hasPermission('online_changes_tool') && (
+                <SidebarLinkGroup
+                  activeCondition={
+                    pathname === '/CSM page' || pathname.includes('CSM page')
+                  }
+                >
+                  {(handleClick, open) => {
+                    return (
+                      <React.Fragment>
+                        <NavLink
+                          to="#"
+                          className={`group relative flex items-center gap-2.5 success rounded-sm px-4 py-2 text-black font-medium text-PrimaryRed hover:text-PrimaryRed hover:text-PrimaryRed duration-300 ease-in-out ${pathname === '/' || pathname.includes('dashboard')
                             }`}
-                          width="20"
-                          height="20"
-                          viewBox="0 0 20 20"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            sidebarExpanded
+                              ? handleClick()
+                              : setSidebarExpanded(true);
+                          }}
                         >
-                          <path
-                            fillRule="evenodd"
-                            clipRule="evenodd"
-                            d="M4.41107 6.9107C4.73651 6.58527 5.26414 6.58527 5.58958 6.9107L10.0003 11.3214L14.4111 6.91071C14.7365 6.58527 15.2641 6.58527 15.5896 6.91071C15.915 7.23614 15.915 7.76378 15.5896 8.08922L10.5896 13.0892C10.2641 13.4147 9.73651 13.4147 9.41107 13.0892L4.41107 8.08922C4.08563 7.76378 4.08563 7.23614 4.41107 6.9107Z"
-                            fill=""
-                          />
-                        </svg>
-                      </NavLink>
-                      <div
-                        className={`translate transform overflow-hidden ${!open && 'hidden'
-                          }`}
-                      >
-                        <ul className="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6">
-                          {/* Submenu Items */}
+                          <svg
+                            className="fill-current"
+                            width="18"
+                            height="18"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              clipRule="evenodd"
+                              d="M12 2L2 10.5858V21H6V14H12V21H16V10.5858L12 2ZM9 13V19H7V13H9ZM17 13V19H15V13H17Z"
+                              fill=""
+                            />
+                          </svg>
+                          CMS Page
+                          <svg
+                            className={`absolute right-4 top-1/2 -translate-y-1/2 fill-current ${open && 'rotate-180'
+                              }`}
+                            width="20"
+                            height="20"
+                            viewBox="0 0 20 20"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              clipRule="evenodd"
+                              d="M4.41107 6.9107C4.73651 6.58527 5.26414 6.58527 5.58958 6.9107L10.0003 11.3214L14.4111 6.91071C14.7365 6.58527 15.2641 6.58527 15.5896 6.91071C15.915 7.23614 15.915 7.76378 15.5896 8.08922L10.5896 13.0892C10.2641 13.4147 9.73651 13.4147 9.41107 13.0892L4.41107 8.08922C4.08563 7.76378 4.08563 7.23614 4.41107 6.9107Z"
+                              fill=""
+                            />
+                          </svg>
+                        </NavLink>
+                        <div
+                          className={`translate transform overflow-hidden ${!open && 'hidden'
+                            }`}
+                        >
+                          <ul className="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6">
+                            {/* Submenu Items */}
 
-                          <li>
-                            <NavLink
-                              to="/CsmDataTable"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
-                                (isActive && '!text-PrimaryRed')
-                              }
-                            >
-                              <GoDot />
-                              CMS List
-                            </NavLink>
-                          </li>
-                          <li>
-                            <NavLink
-                              to="/AwardsTable"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
-                                (isActive && '!text-PrimaryRed')
-                              }
-                            >
-                              <GoDot />
-                              Award Gallery
-                            </NavLink>
-                          </li>
-                          <li>
-                            <NavLink
-                              to="/HomepageForm"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
-                                (isActive && '!text-PrimaryRed')
-                              }
-                            >
-                              <GoDot />
-                              Home Page
-                            </NavLink>
-                          </li>
-                          <li>
-                            <NavLink
-                              to="/SuccessStories"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
-                                (isActive && '!text-PrimaryRed')
-                              }
-                            >
-                              <GoDot />
-                              Success Stories
-                            </NavLink>
-                          </li>
-                        </ul>
-                      </div>
+                            <li>
+                              <NavLink
+                                to="/CsmDataTable"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                                  (isActive && '!text-PrimaryRed')
+                                }
+                              >
+                                <GoDot />
+                                CMS List
+                              </NavLink>
+                            </li>
+                            <li>
+                              <NavLink
+                                to="/AwardsTable"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                                  (isActive && '!text-PrimaryRed')
+                                }
+                              >
+                                <GoDot />
+                                Award Gallery
+                              </NavLink>
+                            </li>
+                            <li>
+                              <NavLink
+                                to="/HomepageForm"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                                  (isActive && '!text-PrimaryRed')
+                                }
+                              >
+                                <GoDot />
+                                Home Page
+                              </NavLink>
+                            </li>
+                            {hasPermission('marriage_photo_upload') && (
+                              <li>
+                                <NavLink
+                                  to="/SuccessStories"
+                                  className={({ isActive }) =>
+                                    'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                                    (isActive && '!text-PrimaryRed')
+                                  }
+                                >
+                                  <GoDot />
+                                  Success Stories
+                                </NavLink>
+                              </li>
+                            )}
+                          </ul>
+                        </div>
 
-                      {/* <div
+                        {/* <div
                         className={`translate transform overflow-hidden ${
                           !open && 'hidden'
                         }`}
@@ -1314,11 +1325,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                         </ul>
                       </div> */}
 
-                      {/* Dropdown Menu End */}
-                    </React.Fragment>
-                  );
-                }}
-              </SidebarLinkGroup>
+                        {/* Dropdown Menu End */}
+                      </React.Fragment>
+                    );
+                  }}
+                </SidebarLinkGroup>
+              )}
 
               <div
                 className={`translate transform overflow-hidden ${!open && 'hidden'
@@ -1342,53 +1354,53 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               </div>
 
 
-
-              <SidebarLinkGroup
-                activeCondition={
-                  pathname === '/AdminList' || pathname.includes('AdminList')
-                }
-              >
-                {(handleClick, open) => (
-                  <React.Fragment>
-                    <NavLink
-                      to="#"
-                      className={`group relative flex items-center gap-2.5 success rounded-sm px-4 py-2 text-black font-medium text-PrimaryRed hover:text-PrimaryRed duration-300 ease-in-out ${pathname === '/' || pathname.includes('dashboard')
-                        ? 'bg-gray-100'
-                        : ''
-                        }`}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        sidebarExpanded
-                          ? handleClick()
-                          : setSidebarExpanded(true);
-                      }}
-                    >
-                      <FaUser size={18} /> {/* Replace with user icon */}
-                      Admin Users
-                      <svg
-                        className={`absolute right-4 top-1/2 -translate-y-1/2 fill-current ${open && 'rotate-180'
+              {hasPermission('add_new_staff') && (
+                <SidebarLinkGroup
+                  activeCondition={
+                    pathname === '/AdminList' || pathname.includes('AdminList')
+                  }
+                >
+                  {(handleClick, open) => (
+                    <React.Fragment>
+                      <NavLink
+                        to="#"
+                        className={`group relative flex items-center gap-2.5 success rounded-sm px-4 py-2 text-black font-medium text-PrimaryRed hover:text-PrimaryRed duration-300 ease-in-out ${pathname === '/' || pathname.includes('dashboard')
+                          ? 'bg-gray-100'
+                          : ''
                           }`}
-                        width="20"
-                        height="20"
-                        viewBox="0 0 20 20"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          sidebarExpanded
+                            ? handleClick()
+                            : setSidebarExpanded(true);
+                        }}
                       >
-                        <path
-                          fillRule="evenodd"
-                          clipRule="evenodd"
-                          d="M4.41107 6.9107C4.73651 6.58527 5.26414 6.58527 5.58958 6.9107L10.0003 11.3214L14.4111 6.91071C14.7365 6.58527 15.2641 6.58527 15.5896 6.91071C15.915 7.23614 15.915 7.76378 15.5896 8.08922L10.5896 13.0892C10.2641 13.4147 9.73651 13.4147 9.41107 13.0892L4.41107 8.08922C4.08563 7.76378 4.08563 7.23614 4.41107 6.9107Z"
-                          fill=""
-                        />
-                      </svg>
-                    </NavLink>
-                    <div
-                      className={`translate transform overflow-hidden ${!open && 'hidden'
-                        }`}
-                    >
-                      <ul className="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6">
-                        {/* Submenu Items */}
-                        {/* <li>
+                        <FaUser size={18} /> {/* Replace with user icon */}
+                        Admin Users
+                        <svg
+                          className={`absolute right-4 top-1/2 -translate-y-1/2 fill-current ${open && 'rotate-180'
+                            }`}
+                          width="20"
+                          height="20"
+                          viewBox="0 0 20 20"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            clipRule="evenodd"
+                            d="M4.41107 6.9107C4.73651 6.58527 5.26414 6.58527 5.58958 6.9107L10.0003 11.3214L14.4111 6.91071C14.7365 6.58527 15.2641 6.58527 15.5896 6.91071C15.915 7.23614 15.915 7.76378 15.5896 8.08922L10.5896 13.0892C10.2641 13.4147 9.73651 13.4147 9.41107 13.0892L4.41107 8.08922C4.08563 7.76378 4.08563 7.23614 4.41107 6.9107Z"
+                            fill=""
+                          />
+                        </svg>
+                      </NavLink>
+                      <div
+                        className={`translate transform overflow-hidden ${!open && 'hidden'
+                          }`}
+                      >
+                        <ul className="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6">
+                          {/* Submenu Items */}
+                          {/* <li>
                           <NavLink
                             to="/AdminList"
                             className={({ isActive }) =>
@@ -1400,24 +1412,25 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             User Details
                           </NavLink>
                         </li> */}
-                        <li>
-                          <NavLink
-                            to="StaffDetails"
-                            className={({ isActive }) =>
-                              'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
-                              (isActive && '!text-PrimaryRed')
-                            }
-                          >
-                            <GoDot />
-                            User Details
-                          </NavLink>
-                        </li>
-                      </ul>
-                    </div>
-                    {/* Dropdown Menu End */}
-                  </React.Fragment>
-                )}
-              </SidebarLinkGroup>
+                          <li>
+                            <NavLink
+                              to="StaffDetails"
+                              className={({ isActive }) =>
+                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                                (isActive && '!text-PrimaryRed')
+                              }
+                            >
+                              <GoDot />
+                              User Details
+                            </NavLink>
+                          </li>
+                        </ul>
+                      </div>
+                      {/* Dropdown Menu End */}
+                    </React.Fragment>
+                  )}
+                </SidebarLinkGroup>
+              )}
 
               <SidebarLinkGroup
                 activeCondition={

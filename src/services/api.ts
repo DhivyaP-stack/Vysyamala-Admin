@@ -906,8 +906,8 @@ export const deleteFamilyValue = async (id: string) => {
 //addprofile register flow
 export const addProfileApi = `${API_URL}/add-profile/`;
 //editprofile
-export const editProfileApi = `${API_URL}/edit-profile`;
-
+// export const editProfileApi = `${API_URL}/edit-profile`;
+export const editProfileApi = `${API_URL}/edit-profile-with-permission`;
 //matching profile
 export const matchingProfile = `${API_URL_Auth}/Get_prof_list_match/`;
 export const matchingProfileApi = `${API_URL}/Get_prof_list_match/`;

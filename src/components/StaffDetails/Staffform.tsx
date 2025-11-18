@@ -30,7 +30,7 @@ interface Staff {
     status_display: string;
     password: string;
     permission: string;
-    allocated_profiles_count: number;
+    allocated_profiles_count: string;
     prospect_profile_count: string;
     paid_profile_count: string;
     delete_profile_count: string;
@@ -68,7 +68,7 @@ const initialNewStaffState: Staff = {
     status_display: "Active",
     password: "",
     permission: "Full Access",
-    allocated_profiles_count: 0,
+    allocated_profiles_count: '0',
     prospect_profile_count: '0',
     paid_profile_count: '0',
     delete_profile_count: '0',

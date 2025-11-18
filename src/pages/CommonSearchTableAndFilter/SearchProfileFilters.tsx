@@ -314,7 +314,7 @@ const SearchProfileFilters = ({ onFilterSubmit, loading }: SearchProfileFiltersP
               height: '40px'
             }}
           >
-            {loading ? <CircularProgress size={24} /> : 'Filter Matching Records'}
+            {loading ? <CircularProgress size={24} /> : 'Filter Records'}
           </Button>
         </div>
 

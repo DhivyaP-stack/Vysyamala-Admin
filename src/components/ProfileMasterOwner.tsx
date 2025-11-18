@@ -139,7 +139,7 @@ const ModesTable: React.FC = () => {
           handleDelete={(id) => handleDeleteType(Number(id))}
           setShowPopup={setShowPopup}
           idField="mode"
-          title="Profile Owners"
+          title="On behalf of"
           handleSearchChange={() => { }}
         />
         <TablePopUp
@@ -152,7 +152,7 @@ const ModesTable: React.FC = () => {
           setValueOne={setNewModeName}
           valueTwo={null}
           setValueTwo={() => { }}
-          labelOne="Mode Name"
+          labelOne="On behalf of"
           labelTwo=""
           addMsg="Add Mode"
           editMsg="Edit Mode"

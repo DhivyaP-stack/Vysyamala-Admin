@@ -146,60 +146,60 @@ const EditSuccessStory: React.FC = () => {
               )}
             />
           </Grid>
-          {hasPermission('marriage_photo_upload') && (
-            <Grid item xs={12}>
-              <Controller
-                name="photo"
-                control={control}
-                render={({ field: { onChange } }) => (
-                  <>
-                    <Button variant="outlined" component="label">
-                      Upload New Photo
-                      <input
-                        type="file"
-                        hidden
-                        onChange={(e) => {
-                          if (e.target.files && e.target.files[0]) {
-                            setSelectedPhoto(e.target.files[0]);
-                            onChange(e.target.files[0]);
-                          }
+
+          <Grid item xs={12}>
+            <Controller
+              name="photo"
+              control={control}
+              render={({ field: { onChange } }) => (
+                <>
+                  <Button variant="outlined" component="label">
+                    Upload New Photo
+                    <input
+                      type="file"
+                      hidden
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files[0]) {
+                          setSelectedPhoto(e.target.files[0]);
+                          onChange(e.target.files[0]);
+                        }
+                      }}
+                    />
+                  </Button>
+                  {selectedPhoto && (
+                    <div style={{ marginTop: '10px' }}>
+                      <img
+                        src={URL.createObjectURL(selectedPhoto)}
+                        alt="Preview"
+                        style={{
+                          width: '100px',
+                          height: 'auto',
+                          marginTop: '10px',
                         }}
                       />
-                    </Button>
-                    {selectedPhoto && (
-                      <div style={{ marginTop: '10px' }}>
-                        <img
-                          src={URL.createObjectURL(selectedPhoto)}
-                          alt="Preview"
-                          style={{
-                            width: '100px',
-                            height: 'auto',
-                            marginTop: '10px',
-                          }}
-                        />
-                      </div>
-                    )}
-                    {!selectedPhoto && photoUrl && (
-                      <div style={{ marginTop: '10px' }}>
-                        <img
-                          src={photoUrl}
-                          alt="Existing Photo"
-                          style={{
-                            width: '200px',
-                            height: 'auto',
-                            marginTop: '10px',
-                          }}
-                        />
-                      </div>
-                    )}
-                    {errors.photo && (
-                      <p style={{ color: 'red' }}>{errors.photo.message}</p>
-                    )}
-                  </>
-                )}
-              />
-            </Grid>
-          )}
+                    </div>
+                  )}
+                  {!selectedPhoto && photoUrl && (
+                    <div style={{ marginTop: '10px' }}>
+                      <img
+                        src={photoUrl}
+                        alt="Existing Photo"
+                        style={{
+                          width: '200px',
+                          height: 'auto',
+                          marginTop: '10px',
+                        }}
+                      />
+                    </div>
+                  )}
+                  {errors.photo && (
+                    <p style={{ color: 'red' }}>{errors.photo.message}</p>
+                  )}
+                </>
+              )}
+            />
+          </Grid>
+
           <Grid item xs={12}>
             <Controller
               name="dateOfMarriage"

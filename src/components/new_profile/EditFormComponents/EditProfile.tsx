@@ -75,16 +75,12 @@ const EditViewProfile: React.FC<pageProps> = ({
   const [pass, setPass] = useState<any>({});
   const [profileView2, setProfileView2] = useState<any>({}); // State for profile[2]
   const [profileView3, setProfileView3] = useState<any>({});
+  const [selectedOwner, setSelectedOwner] = useState<number | ''>('');
 
   const status = watch('profileView.status') ?? ''; // Ensure it doesn't break
-
   const primaryStatus = watch('profileView.primary_status') ?? ''; // Prevent undefined errors
-
   const secondaryStatus = watch('profileView.secondary_status') ?? '';
-
   const image = watch('profileView.profile_image');
-
-
   const navigate = useNavigate();
   const primary = watch('profileView.primary_status');
   const secondaryy = watch('profileView.secondary_status');
@@ -110,6 +106,20 @@ const EditViewProfile: React.FC<pageProps> = ({
   const payment_mode = watch('profileView.payment_mode');
   const add_on_pack_name = watch('profileView.add_on_pack_name');
 
+
+  const PROFILE_OWNERS = [
+    { id: 1, name: 'Owner 1' },
+    { id: 2, name: 'Owner 2' },
+    { id: 3, name: 'Owner 3' },
+    { id: 4, name: 'Owner 4' },
+    { id: 5, name: 'Owner 5' },
+  ];
+
+  // Handler function
+  const handleOwnerChange = (event:any) => {
+    setSelectedOwner(event.target.value);
+  };
+
   const { data: AnnualIncomeData } = useQuery({
     queryKey: ['AnnualIncome'],
     queryFn: fetchAnnualIncome,
@@ -131,7 +141,6 @@ const EditViewProfile: React.FC<pageProps> = ({
     queryFn: () => GetDistrict(profileView2.work_state),
     enabled: !!profileView2?.work_state && profileView2?.work_country === '1', // Only fetch if state exists and country is India
   });
-
 
   useLayoutEffect(() => {
     if (EditData && EditData.length > 0) { // Use EditData here
@@ -241,6 +250,7 @@ const EditViewProfile: React.FC<pageProps> = ({
       }
     }
   }, [EditData]);
+
 
   useLayoutEffect(() => {
     if (EditData && EditData.length > 0) {
@@ -370,7 +380,7 @@ const EditViewProfile: React.FC<pageProps> = ({
             onClick={toggleSection1}
             className="text-red-600 flex items-center justify-between text-xl cursor-pointer font-semibold dark:text-white"
           >
-            <span>Edit Profile</span>{' '}
+            <span>Edit Profile </span>{' '}
             {/* Add a title or any text here */}
             <svg
               className={`fill-current transform ${isViewDetais ? 'rotate-180' : ''
@@ -769,7 +779,21 @@ const EditViewProfile: React.FC<pageProps> = ({
                             )}
                           </div>
                         </div>
-
+                        <div className="flex items-center gap-2">
+                          <label className="font-semibold text-[#5a5959e6]">Profile Owner:</label>
+                          <select
+                            value={selectedOwner}
+                            onChange={handleOwnerChange}
+                            className="px-2 py-1 border rounded  border-[#b5b2b2e6]  text-[#222020e6] "
+                          >
+                            <option value="">Select Owner</option>
+                            {PROFILE_OWNERS.map((owner) => (
+                              <option key={owner.id} value={owner.id}>
+                                {owner.name}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
                         <div className="flex gap-2 mt-3 ">
                           <label className="font-semibold text-[#5a5959e6]">
                             Membership Date:
@@ -1099,7 +1123,7 @@ const EditViewProfile: React.FC<pageProps> = ({
         </div>
 
       </div>
-    </div>
+    </div >
   );
 };
 
