@@ -198,6 +198,7 @@ const EditProfile = () => {
   const [fieldOfStudySuggested, setFieldOfStudySuggested] = useState('');
   const [prefDegreeSuggested, setPreDegreeSuggested] = useState<string[]>([]);
   const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
+  const ownerID = localStorage.getItem('role_id');
 
   const handleProfileUpdate = async (editData: any, Name: string) => {
     try {
@@ -225,8 +226,9 @@ const EditProfile = () => {
     if (isSubmitting) return;
 
     const editDataFamilyDetails = {
+      owner_id: ownerID,
+      admin_user_id: adminUserID,
       family_details: {
-        admin_user_id: adminUserID,
         father_name: data.FamilyDetails.fathername,
         father_occupation: data.FamilyDetails.fatherOccupation,
         mother_name: data.FamilyDetails.motherName,
@@ -271,8 +273,9 @@ const EditProfile = () => {
     console.log('Loggggggggggggggggggggggggggggggg', data.BasicDetail.Gender)
 
     const editDataBasicDetails = {
+      admin_user_id: adminUserID,
       login_details: {
-        admin_user_id: adminUserID,
+        owner_id: ownerID,
         Mobile_no: data.BasicDetail.Mobile_no || null,
         EmailId: data.BasicDetail.Email,
         Profile_alternate_mobile: data.BasicDetail.Alt_Mobile_Number,
@@ -304,8 +307,9 @@ const EditProfile = () => {
     if (isSubmitting) return;
 
     const payload = {
+      admin_user_id: adminUserID,
       profile_visibility_details: {
-        admin_user_id: adminUserID,
+        owner_id: ownerID,
         profile_id: profileId, // Make sure profileId is available in your component
         visibility_age_from: data.profile_visibility.visibility_age_from,
         visibility_age_to: data.profile_visibility.visibility_age_to,
@@ -358,8 +362,9 @@ const EditProfile = () => {
       console.log("data partnerPreference ==>", data);
 
       const editDataPartnerPreference = {
+        admin_user_id: adminUserID,
         partner_pref_details: {
-          admin_user_id: adminUserID,
+          owner_id: ownerID,
           pref_height_from: data.PartnerPreference.heightFrom,
           pref_height_to: data.PartnerPreference.toHeight,
           pref_marital_status: setMariedStatus,
@@ -404,8 +409,9 @@ const EditProfile = () => {
     if (isSubmitting) return;
     console.log("data suggested profiles ==>", data);
     const editDataSuggestedProfiles = {
+      admin_user_id: adminUserID,
       suggested_pref_details: {
-        admin_user_id: adminUserID,
+        owner_id: ownerID,
         pref_height_from: data.suggested_pref_details.pref_height_from,
         pref_height_to: data.suggested_pref_details.pref_height_to,
         pref_marital_status: setMariedStatus,
@@ -518,8 +524,9 @@ const EditProfile = () => {
 
     const dasaBalance = parts.join(', ');
     const editDataHoroscopeDetails = {
+      admin_user_id: adminUserID,
       horoscope_details: {
-        admin_user_id: adminUserID,
+        owner_id: ownerID,
         time_of_birth: data.HororScopeDetails.timeOfBirth,
         place_of_birth: data.HororScopeDetails.PlaceofBirth,
         birthstar_name: data.HororScopeDetails.BirthStar,
@@ -546,8 +553,9 @@ const EditProfile = () => {
   const handleEducationalDetailSubmit = async (data: EducationDetails) => {
     console.log("data family details ==>", data);
     const editDataEducationDetails = {
+      admin_user_id: adminUserID,
       education_details: {
-        admin_user_id: adminUserID,
+        owner_id: ownerID,
         highest_education: data.EducationDetails.heighestEducation,
         degree: data.EducationDetails.degree,
         other_degree: data.EducationDetails.other_degree,
@@ -585,13 +593,17 @@ const EditProfile = () => {
       if (data.profileView.mobile_otp_verify === null || "") {
         notify("error");
       } else {
-        const ownerID = localStorage.getItem('role_id')
-        const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
+        const ownerID = localStorage.getItem('role_id');
+        //const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
+        const currentAdminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
+        const selectedOwnerId = data.profileView.admin_user_id;
+        // const finalAdminUserId = selectedOwnerId || currentAdminUserID;
 
         const editDataProfileView = {
+          admin_user_id: currentAdminUserID,
           profile_common_details: {
             owner_id: ownerID,
-            admin_user_id: adminUserID,
+            profile_owner_id: selectedOwnerId,
             Addon_package: data.profileView.Addon_package,
             Notifcation_enabled: data.profileView.Notifcation_enabled,
             status: data.profileView.status,

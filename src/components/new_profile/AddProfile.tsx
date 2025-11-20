@@ -275,9 +275,9 @@ const AddProfile = () => {
       // owner_id: {
       //   owner_id:ownerID
       // },
-      owner_id: ownerID,
       admin_user_id: adminUserID,
       login_details: {
+        owner_id: ownerID,
         Mobile_no: data.AddProfileForm.Mobile_no,
         EmailId: data.AddProfileForm.EmailId,
         Profile_alternate_mobile: data.AddProfileForm.Alt_Mobile_Number,
@@ -305,6 +305,7 @@ const AddProfile = () => {
       },
 
       family_details: {
+        owner_id: ownerID,
         father_name: data.FamilyDetailsForm.fathername,
         father_occupation: data.FamilyDetailsForm.fatherOccupation,
         mother_name: data.FamilyDetailsForm.motherName,
@@ -336,6 +337,7 @@ const AddProfile = () => {
         uncle_gothram_admin: data.FamilyDetailsForm.uncleGothramAdmin || '0',
       },
       education_details: {
+        owner_id: ownerID,
         work_country: data.EducationDetails.workCountry,
         work_district: data.EducationDetails.work_district,
         work_state: data.EducationDetails.work_state,
@@ -360,6 +362,7 @@ const AddProfile = () => {
         career_plans: data.EducationDetails.CareerPlans,
       },
       partner_pref_details: {
+        owner_id: ownerID,
         pref_marital_status: setMariedStatus.join(','),
         pref_education: prefEducation?.join(','),
         pref_fieldof_study: prefFieldOfStudy?.join(','),
@@ -382,6 +385,7 @@ const AddProfile = () => {
       },
 
       horoscope_details: {
+        owner_id: ownerID,
         time_of_birth: data.HororScopeDetails.timeOfBirth,
         place_of_birth: data.HororScopeDetails.PlaceofBirth,
         birthstar_name: data.HororScopeDetails.BirthStar,
@@ -399,6 +403,7 @@ const AddProfile = () => {
         // horoscope_file: horoImage[0],
       },
       suggested_pref_details: {
+        owner_id: ownerID,
         pref_marital_status: setMariedStatus.join(','),
         pref_education: prefEducation?.join(','),
         pref_fieldof_study: sugPrefFieldOfStudy?.join(','),

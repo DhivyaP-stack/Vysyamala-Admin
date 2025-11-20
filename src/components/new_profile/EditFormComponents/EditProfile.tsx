@@ -51,6 +51,18 @@ export interface AddOnPackage {
   amount: number;
 }
 
+export interface ProfileOwner {
+  id: number;
+  username: string;
+}
+
+const fetchProfileOwners = async (): Promise<ProfileOwner[]> => {
+  const response = await apiAxios.get('api/users/'); // Assuming apiAxios points to https://app.vysyamala.com
+  // The API response might return different structures. Adjust data.users or data accordingly.
+  // Assuming the API returns an array of user objects directly in response.data:
+  return response.data;
+};
+
 const EditViewProfile: React.FC<pageProps> = ({
   isViewDetais,
   setViewDetail,
@@ -106,18 +118,24 @@ const EditViewProfile: React.FC<pageProps> = ({
   const payment_mode = watch('profileView.payment_mode');
   const add_on_pack_name = watch('profileView.add_on_pack_name');
 
-
-  const PROFILE_OWNERS = [
-    { id: 1, name: 'Owner 1' },
-    { id: 2, name: 'Owner 2' },
-    { id: 3, name: 'Owner 3' },
-    { id: 4, name: 'Owner 4' },
-    { id: 5, name: 'Owner 5' },
-  ];
-
   // Handler function
-  const handleOwnerChange = (event:any) => {
-    setSelectedOwner(event.target.value);
+  const { data: profileOwnersData, isLoading: isOwnersLoading } = useQuery<ProfileOwner[]>({
+    queryKey: ['profileOwners'],
+    queryFn: fetchProfileOwners,
+  });
+
+  // Handler function (Keep existing handler)
+  // const handleOwnerChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  //   // Convert the value to a number, or keep it as '' if empty
+  //   const value = event.target.value;
+  //   setSelectedOwner(value === '' ? '' : Number(value));
+  // };
+  const handleOwnerChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = event.target.value;
+    const ownerId = value === '' ? '' : Number(value);
+
+    setSelectedOwner(ownerId);
+    setValue('profileView.admin_user_id', ownerId as any);
   };
 
   const { data: AnnualIncomeData } = useQuery({
@@ -247,6 +265,15 @@ const EditViewProfile: React.FC<pageProps> = ({
           .toISOString()
           .split('T')[0];
         setValue('profileView.DateOfJoin', formattedDate);
+      }
+      const currentAdminUserId = data.admin_user_id; // Check your API response for the actual field name
+
+      if (currentAdminUserId !== undefined && currentAdminUserId !== null) {
+        const ownerId = Number(currentAdminUserId);
+        // 1. Initialize local state
+        setSelectedOwner(ownerId);
+        // 2. Initialize RHF context value for submission
+        setValue('profileView.admin_user_id', ownerId as any);
       }
     }
   }, [EditData]);
@@ -784,12 +811,17 @@ const EditViewProfile: React.FC<pageProps> = ({
                           <select
                             value={selectedOwner}
                             onChange={handleOwnerChange}
-                            className="px-2 py-1 border rounded  border-[#b5b2b2e6]  text-[#222020e6] "
+                            className="px-2 py-1 border rounded border-[#b5b2b2e6] text-[#222020e6]"
+                            // Disable while loading owners
+                            disabled={isOwnersLoading}
                           >
-                            <option value="">Select Owner</option>
-                            {PROFILE_OWNERS.map((owner) => (
+                            <option value="">
+                              {isOwnersLoading ? 'Loading Owners...' : 'Select Owner'}
+                            </option>
+                            {/* Use the fetched data here */}
+                            {profileOwnersData?.map((owner) => (
                               <option key={owner.id} value={owner.id}>
-                                {owner.name}
+                                {owner.username} {/* Display the username */}
                               </option>
                             ))}
                           </select>

@@ -70,7 +70,7 @@ mobile_otp_verify: z.union([
     })
 ]).nullable(),
 
- 
+ admin_user_id: z.number().nullable().optional(), // Add this field
 // mobile_otp_verify: z.union([z.string(), z.number()]).optional()
         // profile_image: z
         // .instanceof(File, { message: "File must be selected" }) // Ensures it's a file
@@ -91,6 +91,7 @@ profile_image: any;
 
 
 profileView:{
+    admin_user_id: any;
     Addon_package: string,
     Notifcation_enabled: string,
     PaymentExpire: string,
