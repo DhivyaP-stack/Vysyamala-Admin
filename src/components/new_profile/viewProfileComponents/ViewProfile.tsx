@@ -625,7 +625,8 @@ const ViewProfile: React.FC<pageProps> = ({
                   variant="contained"
                   size="small"
                   className="bg-blue-700 whitespace-nowrap"
-                  onClick={() => setOpenCallManagement(true)}
+                  // onClick={() => setOpenCallManagement(true)}
+                  onClick={() => navigate(`/CallManagement?profileId=${profileId}`)}
                 >
                   Call Management
                 </Button>

@@ -116,6 +116,7 @@ import { ProfileVisibilityTable } from './matchingProfile/ProfileVisibilityFilte
 import TransactionHistoryNew from './components/ReuseProfileTable/userActions/TransactionHistoryNew';
 import FeaturedProfiles from './components/ReuseProfileTable/Profiles/FeaturedProfiles';
 import StaffDetails from './components/StaffDetails/StaffDetails';
+import CallManagementPage from './components/CallManagement/CallManagementPage';
 
 
 function App() {
@@ -1132,6 +1133,7 @@ function App() {
                   path="/ProfileVisibilityTable"
                   element={<ProfileVisibilityTable />}
                 />
+                <Route path="/CallManagement" element={<CallManagementPage />} />
               </Routes>
             </DefaultLayout>
           }

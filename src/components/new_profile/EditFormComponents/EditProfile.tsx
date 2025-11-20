@@ -655,16 +655,17 @@ const EditViewProfile: React.FC<pageProps> = ({
                       <div>
                         <button
                           type="button"
-                          onClick={() => setOpenCallManagement(true)}
+                          // onClick={() => setOpenCallManagement(true)}
+                          onClick={() => navigate(`/CallManagement?profileId=${profileId}`)}
                           className={`bg-blue-700 text-white px-8 py-1 text-md h-auto rounded whitespace-nowrap `}
                         >
                           Call Management
                         </button>
 
-                        <CallManagementModel
+                        {/* <CallManagementModel
                           open={openCallManagement}
                           onClose={() => setOpenCallManagement(false)}
-                        />
+                        /> */}
                       </div>
 
                       <div>
