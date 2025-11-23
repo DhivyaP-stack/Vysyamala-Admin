@@ -217,8 +217,12 @@ const CallManagementPage: React.FC = () => {
     const [AssignByName, setAssignByName] = useState<string>("Owner 1");
     const [nextActionDate, setnextActionDate] = useState<string>("");
     const [nextCallDate, setNextCallDate] = useState<string>("");
+    const [editCallManagementId, setEditCallManagementId] = useState<number | null>(null);
+
+    // ⭐️ EDIT MODE STATES
     const [isEditMode, setIsEditMode] = useState(false);
     const [editLogId, setEditLogId] = useState<number | null>(null);
+
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const profileId = queryParams.get('profileId');
@@ -344,8 +348,6 @@ const CallManagementPage: React.FC = () => {
     };
 
 
-    // Inside CallManagementPage: React.FC
-
     // Utility function to convert API Date (YYYY-MM-DDTHH:MM:SSZ) to HTML Input Date (YYYY-MM-DD)
     const toHtmlDate = (dateString: string): string => {
         if (!dateString) return '';
@@ -355,6 +357,7 @@ const CallManagementPage: React.FC = () => {
     // ⭐️ New: Fetch Log Details Function
     const fetchLogDetails = async (id: number) => {
         try {
+            // Note: Using a trailing slash for consistency if the API needs it
             const response = await apiAxios.get<DetailedLogApiResponse>(
                 `api/call-details/${id}/`
             );
@@ -366,77 +369,77 @@ const CallManagementPage: React.FC = () => {
         }
     };
 
-    // ⭐️ New: Edit Handler for Call Logs
-    const handleCallEditClick = async (log: ApiCallLog) => {
-        const details = await fetchLogDetails(log.call_management_id);
+    const handleEditOpen = async ({
+        callManagementId,
+        logId,
+        formType
+    }: {
+        callManagementId: number;
+        logId: number;
+        formType: "call" | "action" | "assign";
+    }) => {
 
-        if (details && details.call_logs.length > 0) {
-            // Find the specific log entry by its ID within the array
-            const logToEdit = details.call_logs.find(l => l.id === log.id);
+        const data = await fetchLogDetails(callManagementId);
+        if (!data) return;
 
-            if (logToEdit) {
-                setIsEditMode(true);
-                setEditLogId(logToEdit.id);
-                setActiveForm('call'); // Open the dialog
+        setIsEditMode(true);
+        setEditLogId(logId);
+        setEditCallManagementId(callManagementId);
+        setActiveForm(formType); // opens popup
 
-                // Set Form States for Call Log
-                setCallTypeId(String(logToEdit.call_type_id));
-                setCallStatusId(String(logToEdit.call_status_id));
-                setParticularsId(String(logToEdit.particulars_id));
-                setCommentCallText(logToEdit.comments);
-                setNextCallDate(toHtmlDate(logToEdit.next_call_date));
-                // CallOwnerName is likely the currently logged-in user or fetched separately, but using the log's data for completeness if available.
-                // setCallOwnerName(logToEdit.call_owner);
-            } else {
-                toast.error("Specific Call Log not found in details.");
-            }
+        if (formType === "call") {
+            const log = data.call_logs.find(x => x.id === logId);
+            if (!log) return;
+
+            setCallTypeId(String(log.call_type_id));
+            setCallStatusId(String(log.call_status_id));
+            setParticularsId(String(log.particulars_id));
+            setCommentCallText(log.comments);
+            setNextCallDate(toHtmlDate(log.next_call_date));
+        }
+
+        if (formType === "action") {
+            const log = data.action_logs.find(x => x.id === logId);
+            if (!log) return;
+
+            setActionTodayId(String(log.action_point_id));
+            setNextActionCommentId(String(log.next_action_id));
+            setCommentActionText(log.comments);
+            setnextActionDate(toHtmlDate(log.next_action_date));
+        }
+
+        if (formType === "assign") {
+            const log = data.assign_logs.find(x => x.id === logId);
+            if (!log) return;
+
+            setAssignTooId(String(log.assigned_to));
+            setCommentAssignText(log.notes);
         }
     };
 
-    // ⭐️ New: Edit Handler for Action Logs
-    const handleActionEditClick = async (log: ApiActionLog) => {
-        const details = await fetchLogDetails(log.call_management_id);
 
-        if (details && details.action_logs.length > 0) {
-            const logToEdit = details.action_logs.find(l => l.id === log.id);
-
-            if (logToEdit) {
-                setIsEditMode(true);
-                setEditLogId(logToEdit.id);
-                setActiveForm('action'); // Open the dialog
-
-                // Set Form States for Action Log
-                setActionTodayId(String(logToEdit.action_point_id));
-                setNextActionCommentId(String(logToEdit.next_action_id));
-                setCommentActionText(logToEdit.comments);
-                setnextActionDate(toHtmlDate(logToEdit.next_action_date));
-                // setActionOwnerName(logToEdit.action_owner);
-            } else {
-                toast.error("Specific Action Log not found in details.");
-            }
-        }
+    const handleCallEditClick = (log: ApiCallLog) => {
+        handleEditOpen({
+            callManagementId: log.call_management_id,
+            logId: log.id,
+            formType: "call"
+        });
     };
 
-    // ⭐️ New: Edit Handler for Assign Logs
-    const handleAssignEditClick = async (log: ApiAssignLog) => {
-        const details = await fetchLogDetails(log.call_management_id);
+    const handleActionEditClick = (log: ApiActionLog) => {
+        handleEditOpen({
+            callManagementId: log.call_management_id,
+            logId: log.id,
+            formType: "action"
+        });
+    };
 
-        if (details && details.assign_logs.length > 0) {
-            const logToEdit = details.assign_logs.find(l => l.id === log.id);
-
-            if (logToEdit) {
-                setIsEditMode(true);
-                setEditLogId(logToEdit.id);
-                setActiveForm('assign'); // Open the dialog
-
-                // Set Form States for Assign Log
-                setAssignTooId(String(logToEdit.assigned_to)); // Use the ID
-                setCommentAssignText(logToEdit.notes);
-                // setAssignByName(logToEdit.assigned_by_name);
-            } else {
-                toast.error("Specific Assign Log not found in details.");
-            }
-        }
+    const handleAssignEditClick = (log: ApiAssignLog) => {
+        handleEditOpen({
+            callManagementId: log.call_management_id,
+            logId: log.id,
+            formType: "assign"
+        });
     };
 
     const LoadingSpinner = () => (
@@ -467,235 +470,108 @@ const CallManagementPage: React.FC = () => {
         setState(event.target.value as string);
     };
 
-    // const handleAssigneeChange = (event: SelectChangeEvent) => {
-    //     const value = event.target.value;
-    //     // Check if value is the empty string placeholder, otherwise convert to number
-    //     setAssignTooId(value === '' ? '' : Number(value));
-    // };
-
 
     const handleCloseDialog = () => {
-        setActiveForm('none');
-        // Reset comment states and errors on close
-        setCommentCallText('');
-        setCommentActionText('');
-        setCommentAssignText('');
-        setCommentCallError(false);
-        setCommentActionError(false);
-        setCommentAssignError(false);
-
+        setActiveForm("none");
         setIsEditMode(false);
         setEditLogId(null);
+        setEditCallManagementId(null);
 
-        setCallTypeId('');
-        setCallStatusId('');
-        setParticularsId('');
-        setActionTodayId('');
-        setNextActionCommentId('');
-        setAssignTooId('');
+        // clear fields
+        setCallTypeId("");
+        setCallStatusId("");
+        setParticularsId("");
+        setCommentCallText("");
+        setNextCallDate("");
+
+        setActionTodayId("");
+        setNextActionCommentId("");
+        setCommentActionText("");
+        setnextActionDate("");
+
+        setAssignTooId("");
+        setCommentAssignText("");
     };
 
-    // Inside CallManagementPage: React.FC
-
-    // const handleSubmit = () => {
-    //     let isError = false;
-    //     let payload = {};
-    //     if (activeForm === 'call' && commentCallText.trim() === '') {
-    //         setCommentCallError(true);
-    //         isError = true;
-    //     } else if (activeForm === 'action' && commentActionText.trim() === '') {
-    //         setCommentActionError(true);
-    //         isError = true;
-    //     } else if (activeForm === 'assign' && commentAssignText.trim() === '') {
-    //         setCommentAssignError(true);
-    //         isError = true;
-    //     }
-    //     const callManagementId = profileId; // Assuming profileId is the call_management_id
-
-    //     // ... (Existing validation logic remains the same for comments)
-
-    //     if (isError) {
-    //         console.log(`Validation failed for ${activeForm}. Comments required.`);
-    //         return; // Stop submission
-    //     }
-
-    //     // ⭐️ New: Prepare the payload with IDs
-    //     switch (activeForm) {
-    //         case 'call':
-    //             if (!callTypeId || !callStatusId || !particularsId) {
-    //                 console.log("Missing required call selection fields.");
-    //                 // Optionally set an error state for the select fields
-    //                 return;
-    //             }
-    //             payload = {
-    //                 call_management_id: callManagementId,
-    //                 call_date: new Date().toISOString().split('T')[0], // Use today's date
-    //                 comments: commentCallText,
-    //                 call_type_id: Number(callTypeId),
-    //                 call_status_id: Number(callStatusId),
-    //                 particulars_id: Number(particularsId),
-    //                 // Assuming 'next_call_date' and 'call_owner' are handled/sent separately or derived on backend
-    //             };
-    //             console.log("Call Payload:", payload);
-    //             // ⭐️ Add API call: apiAxios.post(`api/call-logs/add`, payload);
-    //             break;
-    //         case 'action':
-    //             if (!actionTodayId || !nextActionCommentId) {
-    //                 console.log("Missing required action selection fields.");
-    //                 return;
-    //             }
-    //             payload = {
-    //                 call_management_id: callManagementId,
-    //                 action_date: new Date().toISOString().split('T')[0],
-    //                 comments: commentActionText,
-    //                 action_point_id: Number(actionTodayId), // Corresponds to Action Today
-    //                 next_action_id: Number(nextActionCommentId), // Corresponds to Next Action Comments
-    //                 // Assuming 'next_action_date' and 'action_owner' are handled/sent separately or derived on backend
-    //             };
-    //             console.log("Action Payload:", payload);
-    //             // ⭐️ Add API call: apiAxios.post(`api/action-logs/add`, payload);
-    //             break;
-    //         case 'assign':
-    //             // You'll need the ID of the selected assignee. Assuming `assignOwner` now holds the ID.
-    //             if (!assignOwner) {
-    //                 console.log("Missing required assignee field.");
-    //                 return;
-    //             }
-    //             payload = {
-    //                 call_management_id: callManagementId,
-    //                 assigned_date: new Date().toISOString().split('T')[0],
-    //                 notes: commentAssignText,
-    //                 assigned_to: Number(assignTooId),
-    //             };
-    //             console.log("Assign Payload:", payload);
-    //             // ⭐️ Add API call: apiAxios.post(`api/assign-logs/add`, payload);
-    //             break;
-    //         default:
-    //             return;
-    //     }
-    //     handleCloseDialog();
-    // };
-
-    // ... (start of CallManagementPage component)
 
     // Utility function to get today's date in YYYY-MM-DD format for API submission
     const getApiDate = () => new Date().toISOString().split('T')[0];
-    // You'll need to use a state for Next Call/Action Date if that field is present
 
+    // 🚀 UPDATED handleSubmit function 🚀
     const handleSubmit = async () => {
-        let isError = false;
-        let payload: Record<string, any> = {};
-        let endpoint = `api/call/save/`; // The common endpoint
 
-        // 1. Basic Comment Validation (Retained)
-        if (activeForm === 'call' && commentCallText.trim() === '') {
-            setCommentCallError(true);
-            isError = true;
-        } else if (activeForm === 'action' && commentActionText.trim() === '') {
-            setCommentActionError(true);
-            isError = true;
-        } else if (activeForm === 'assign' && commentAssignText.trim() === '') {
-            setCommentAssignError(true);
-            isError = true;
-        }
-
-        if (isError) {
-            console.log(`Validation failed for ${activeForm}. Comments required.`);
-            return; // Stop submission
-        }
-
-        // 2. Prepare Payload based on Active Form
-        const callManagementId = profileId; // Use profileId from search params
+        let payload: any = {};
+        const profileIdValue = Number(profileId);
 
         switch (activeForm) {
-            case 'call': {
-                if (!callTypeId || !callStatusId || !particularsId) {
-                    console.log("Missing required call selection fields.");
-                    // Add UI feedback for missing dropdowns here
-                    return;
-                }
-                // Assuming you have a state for Next Call Date, e.g., nextCallDateState
-                // const nextCallDateInput = (document.getElementById('next_call_date') as HTMLInputElement)?.value || getApiDate();
-
+            case "call":
                 payload = {
-                    profile_id: callManagementId, // Use the actual profile ID
-                    call_logs: [{
-                        call_date: getApiDate(), // Today's date for the current call
-                        next_call_date: nextCallDate, // Assuming this is captured from an input
-                        call_type_id: Number(callTypeId),
-                        particulars_id: Number(particularsId),
-                        call_status_id: Number(callStatusId),
-                        comments: commentCallText,
-                        call_owner: callOwnerName,
-                        // You might need to add call_owner/profile_owner info if the API requires it on the client side
-                    }]
+                    profile_id: profileIdValue,
+                    ...(isEditMode && { call_management_id: editCallManagementId }),
+                    call_logs: [
+                        {
+                            ...(isEditMode && { id: editLogId }),
+                            call_date: getApiDate(),
+                            next_call_date: nextCallDate,
+                            call_type_id: Number(callTypeId),
+                            particulars_id: Number(particularsId),
+                            call_status_id: Number(callStatusId),
+                            comments: commentCallText,
+                            call_owner: callOwnerName,
+                        }
+                    ]
                 };
                 break;
-            }
-            case 'action': {
-                if (!actionTodayId || !nextActionCommentId) {
-                    console.log("Missing required action selection fields.");
-                    return;
-                }
-                // Assuming you have a state for Next Action Date, e.g., nextActionDateState
-                // const nextActionDateInput = (document.getElementById('next_action_date') as HTMLInputElement)?.value || getApiDate();
 
+            case "action":
                 payload = {
-                    profile_id: callManagementId,
-                    action_logs: [{
-                        action_date: getApiDate(), // Today's date for the action
-                        action_point_id: Number(actionTodayId),
-                        next_action_id: Number(nextActionCommentId),
-                        next_action_date: nextActionDate, // Assuming this is captured from an input
-                        action_owner: ActionOwnerName,
-                        comments: commentActionText,
-                    }]
+                    profile_id: profileIdValue,
+                    ...(isEditMode && { call_management_id: editCallManagementId }),
+                    action_logs: [
+                        {
+                            ...(isEditMode && { id: editLogId }),
+                            action_date: getApiDate(),
+                            action_point_id: Number(actionTodayId),
+                            next_action_id: Number(nextActionCommentId),
+                            next_action_date: nextActionDate,
+                            comments: commentActionText,
+                            action_owner: ActionOwnerName,
+                        }
+                    ]
                 };
                 break;
-            }
-            case 'assign': {
-                if (!assignTooId) { // assignTooId is now a string ID
-                    console.log("Missing required assignee field.");
-                    return;
-                }
-                // Assuming current user's ID is available as `currentUser.id` or similar
-                // For now, hardcode 'assigned_by' to 2 as per the example. You must replace this.
-                const assignedByUserId = 2;
 
+            case "assign":
                 payload = {
-                    profile_id: callManagementId,
-                    assign_logs: [{
-                        assigned_date: getApiDate(),
-                        assigned_to: assignTooId, // Keep as string ID if API expects it, otherwise convert
-                        assigned_by: String(assignedByUserId), // Convert to string if API expects it
-                        notes: commentAssignText,
-                    }]
+                    profile_id: profileIdValue,
+                    ...(isEditMode && { call_management_id: editCallManagementId }),
+                    assign_logs: [
+                        {
+                            ...(isEditMode && { id: editLogId }),
+                            assigned_date: getApiDate(),
+                            assigned_to: assignTooId,
+                            assigned_by: 2,
+                            notes: commentAssignText,
+                        }
+                    ]
                 };
                 break;
-            }
-            default:
-                return;
         }
 
-        console.log(`Submitting ${activeForm} Payload:`, payload);
-
-        // 3. API Submission using apiAxios.post
         try {
-            // Send the payload to the common save endpoint
-            await apiAxios.post(endpoint, payload);
+            await apiAxios.post("api/call/save/", payload);
 
-            // Success: Refetch logs and close dialog
-            toast.success(`${activeForm.toUpperCase()} Log added successfully!`);
+            toast.success(isEditMode ? "Updated Successfully" : "Saved Successfully");
 
-            // Refresh only the relevant log tables
-            if (activeForm === 'call') fetchCallLogs();
-            if (activeForm === 'action') fetchActionLogs();
-            if (activeForm === 'assign') fetchAssignLogs();
+            // reload respective logs
+            if (activeForm === "call") fetchCallLogs();
+            if (activeForm === "action") fetchActionLogs();
+            if (activeForm === "assign") fetchAssignLogs();
 
             handleCloseDialog();
-        } catch (error: any) {
-            console.error(`Failed to add ${activeForm} log:`, error.response?.data || error.message);
-            toast.error(`Failed to save log: ${error.response?.data?.message || 'Check console for details.'}`);
+        } catch (err) {
+            console.error(err);
+            toast.error("Error saving entry");
         }
     };
 
@@ -729,12 +605,6 @@ const CallManagementPage: React.FC = () => {
                         <Grid container spacing={2} alignItems="flex-end">
                             <Grid item xs={12} sm={6} md={4}>
                                 <Typography sx={labelSx}>Date</Typography>
-                                {/* <TextField
-                                    fullWidth
-                                    type="date"
-                                    {...dateInputProps}
-                                    id="next-call-date"
-                                /> */}
                                 <TextField fullWidth disabled value={currentDateString} {...baseInputProps} />
                             </Grid>
                             <Grid item xs={12} sm={6} md={4}>
@@ -742,12 +612,9 @@ const CallManagementPage: React.FC = () => {
                                 <TextField
                                     fullWidth
                                     type="date"
-
                                     value={nextCallDate}
-
                                     onChange={(e) => setNextCallDate(e.target.value)}
                                     {...dateInputProps}
-
                                     id="next_call_date"
                                 />
                             </Grid>
@@ -775,7 +642,6 @@ const CallManagementPage: React.FC = () => {
                             </Grid>
                             <Grid item xs={12} sm={6} md={4}>
                                 <Typography sx={labelSx}>Particulars</Typography>
-                                {/* NOTE: This Select uses callStatus state, which seems like a bug in the original code, but I'll leave it attached to a state for control. */}
                                 <Select
                                     fullWidth
                                     value={particularsId} // Use ID state
@@ -787,7 +653,6 @@ const CallManagementPage: React.FC = () => {
                             </Grid>
                             <Grid item xs={12} sm={6} md={4}>
                                 <Typography sx={labelSx}>Call Owner</Typography>
-                                {/* <TextField fullWidth disabled value="Owner 1" {...baseInputProps} /> */}
                                 <TextField
                                     fullWidth
                                     disabled
@@ -842,7 +707,6 @@ const CallManagementPage: React.FC = () => {
                             </Grid>
                             <Grid item xs={12} sm={6} md={4}>
                                 <Typography sx={labelSx}>Next Action Date</Typography>
-                                {/* <TextField fullWidth type="date" {...dateInputProps} /> */}
                                 <TextField
                                     fullWidth
                                     type="date"
@@ -865,7 +729,6 @@ const CallManagementPage: React.FC = () => {
                             </Grid>
                             <Grid item xs={12} sm={6} md={4}>
                                 <Typography sx={labelSx}>Action Owner</Typography>
-                                {/* <TextField fullWidth disabled value="Owner 1" {...baseInputProps} /> */}
                                 <TextField
                                     fullWidth
                                     disabled
@@ -936,7 +799,6 @@ const CallManagementPage: React.FC = () => {
                             </Grid>
                             <Grid item xs={12} sm={4}>
                                 <Typography sx={labelSx}>Assign By</Typography>
-                                {/* <TextField fullWidth disabled value="Owner 1" {...baseInputProps} /> */}
                                 <TextField
                                     fullWidth
                                     disabled
@@ -968,9 +830,7 @@ const CallManagementPage: React.FC = () => {
         }
     };
 
-    // const dialogTitle = activeForm === 'call' ? 'Add New Call' :
-    //     activeForm === 'action' ? 'Add New Action' :
-    //         activeForm === 'assign' ? 'Add Assign Profile Owner' : 'New Entry';
+    // Update Dialog Title based on mode
     const dialogTitle = activeForm === 'call'
         ? (isEditMode ? 'Edit Call' : 'Add New Call')
         : activeForm === 'action'
@@ -1008,7 +868,11 @@ const CallManagementPage: React.FC = () => {
                 }}>
                     <Button
                         variant="contained"
-                        onClick={() => setActiveForm('call')}
+                        onClick={() => {
+                            setActiveForm('call');
+                            setIsEditMode(false); // Ensure Add mode is set
+                            setEditLogId(null);
+                        }}
                         startIcon={<CallIcon />}
                         sx={{
                             textTransform: 'none',
@@ -1020,7 +884,11 @@ const CallManagementPage: React.FC = () => {
                     </Button>
                     <Button
                         variant="contained"
-                        onClick={() => setActiveForm('action')}
+                        onClick={() => {
+                            setActiveForm('action');
+                            setIsEditMode(false); // Ensure Add mode is set
+                            setEditLogId(null);
+                        }}
                         startIcon={<FlashOnIcon />}
                         sx={{
                             textTransform: 'none',
@@ -1032,7 +900,11 @@ const CallManagementPage: React.FC = () => {
                     </Button>
                     <Button
                         variant="contained"
-                        onClick={() => setActiveForm('assign')}
+                        onClick={() => {
+                            setActiveForm('assign');
+                            setIsEditMode(false); // Ensure Add mode is set
+                            setEditLogId(null);
+                        }}
                         startIcon={<AssignmentIndIcon />}
                         sx={{
                             textTransform: 'none',
@@ -1077,7 +949,7 @@ const CallManagementPage: React.FC = () => {
                             onClick={handleSubmit}
                             sx={{ backgroundColor: "#2e7d32", "&:hover": { backgroundColor: "#1b5e20" } }}
                         >
-                            SAVE ENTRY
+                            {isEditMode ? 'UPDATE ENTRY' : 'SAVE ENTRY'}
                         </Button>
                         <Button
                             variant="outlined"
@@ -1154,8 +1026,13 @@ const CallManagementPage: React.FC = () => {
                                                     {/* <TableCell>{formatAPIDate(log.created_at)}</TableCell> */}
                                                     <TableCell sx={{ textAlign: 'center' }}>
                                                         <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 1 }}>
-                                                            <Typography component="span" sx={{ color: "#1976d2", cursor: "pointer" }}
-                                                                onClick={() => handleCallEditClick(log)}><GrEdit /></Typography>
+                                                            <Typography
+                                                                component="span"
+                                                                sx={{ color: "#1976d2", cursor: "pointer" }}
+                                                                onClick={() => handleCallEditClick(log)}
+                                                            >
+                                                                <GrEdit />
+                                                            </Typography>
                                                             <Typography component="span" sx={{ color: "#d32f2f", cursor: "pointer" }}><MdDeleteOutline /></Typography>
                                                         </Box>
                                                     </TableCell>
@@ -1194,8 +1071,13 @@ const CallManagementPage: React.FC = () => {
                                                     <TableCell>{formatAPIDate(log.next_action_date) || "N/A"}</TableCell>
                                                     <TableCell sx={{ textAlign: 'center' }}>
                                                         <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 1 }}>
-                                                            <Typography component="span" sx={{ color: "#1976d2", cursor: "pointer" }}
-                                                                onClick={() => handleActionEditClick(log)}><GrEdit /></Typography>
+                                                            <Typography
+                                                                component="span"
+                                                                sx={{ color: "#1976d2", cursor: "pointer" }}
+                                                                onClick={() => handleActionEditClick(log)}
+                                                            >
+                                                                <GrEdit />
+                                                            </Typography>
                                                             <Typography component="span" sx={{ color: "#d32f2f", cursor: "pointer" }}><MdDeleteOutline /></Typography>
                                                         </Box>
                                                     </TableCell>
@@ -1231,8 +1113,13 @@ const CallManagementPage: React.FC = () => {
                                                     {/* <TableCell>{log.assigned_by_name || "N/A"}</TableCell> */}
                                                     <TableCell sx={{ textAlign: 'center' }}>
                                                         <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 1 }}>
-                                                            <Typography component="span" sx={{ color: "#1976d2", cursor: "pointer" }}
-                                                                onClick={() => handleAssignEditClick(log)}><GrEdit /></Typography>
+                                                            <Typography
+                                                                component="span"
+                                                                sx={{ color: "#1976d2", cursor: "pointer" }}
+                                                                onClick={() => handleAssignEditClick(log)}
+                                                            >
+                                                                <GrEdit />
+                                                            </Typography>
                                                             <Typography component="span" sx={{ color: "#d32f2f", cursor: "pointer" }}><MdDeleteOutline /></Typography>
                                                         </Box>
                                                     </TableCell>
