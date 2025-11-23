@@ -77,7 +77,7 @@ interface ApiActionLog {
     comments: string; // Corresponds to the detailed action comments
     created_at: string;
     action_point_id: number;
-    next_action_id: number;
+    next_action_id: string;
     action_point_name: string; // Corresponds to 'Call Action Today'
     next_action_name: string; // Corresponds to 'Future Action' / 'Next Action Comments'
     action_owner: string; // Assuming this is present or can be derived
@@ -187,8 +187,6 @@ const CallManagementPage: React.FC = () => {
     const [commentCallError, setCommentCallError] = useState(false);
     const [commentActionError, setCommentActionError] = useState(false);
     const [commentAssignError, setCommentAssignError] = useState(false);
-
-
     const [currentDateString] = useState(getFormattedDate());
     const tomorrowMinDate = getTomorrowDateForInput();
 
@@ -221,7 +219,10 @@ const CallManagementPage: React.FC = () => {
 
     // ⭐️ EDIT MODE STATES
     const [isEditMode, setIsEditMode] = useState(false);
-    const [editLogId, setEditLogId] = useState<number | null>(null);
+    const [editLogId, setEditLogId] = useState<number | null>(null);// Add these states near your other state declarations
+    const [callDate, setCallDate] = useState<string>("");
+    const [actionDate, setActionDate] = useState<string>("");
+    const [assignDate, setAssignDate] = useState<string>("");
 
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
@@ -396,6 +397,7 @@ const CallManagementPage: React.FC = () => {
             setParticularsId(String(log.particulars_id));
             setCommentCallText(log.comments);
             setNextCallDate(toHtmlDate(log.next_call_date));
+            setCallDate(toHtmlDate(log.call_date));
         }
 
         if (formType === "action") {
@@ -406,6 +408,7 @@ const CallManagementPage: React.FC = () => {
             setNextActionCommentId(String(log.next_action_id));
             setCommentActionText(log.comments);
             setnextActionDate(toHtmlDate(log.next_action_date));
+            setActionDate(toHtmlDate(log.action_date));
         }
 
         if (formType === "assign") {
@@ -414,6 +417,7 @@ const CallManagementPage: React.FC = () => {
 
             setAssignTooId(String(log.assigned_to));
             setCommentAssignText(log.notes);
+            setAssignDate(toHtmlDate(log.assigned_date));
         }
     };
 
@@ -441,6 +445,23 @@ const CallManagementPage: React.FC = () => {
             formType: "assign"
         });
     };
+
+    // Add this utility function near your other utility functions
+    const isToday = (dateString: string): boolean => {
+        if (!dateString) return false;
+        const today = new Date();
+        const checkDate = new Date(dateString);
+        return (
+            checkDate.getDate() === today.getDate() &&
+            checkDate.getMonth() === today.getMonth() &&
+            checkDate.getFullYear() === today.getFullYear()
+        );
+    };
+
+    // const getUsernameById = (userId: number): string => {
+    //     const user = userList.find(u => u.id === userId);
+    //     return user ? user.username : "Unknown";
+    // };
 
     const LoadingSpinner = () => (
         <Box
@@ -483,14 +504,17 @@ const CallManagementPage: React.FC = () => {
         setParticularsId("");
         setCommentCallText("");
         setNextCallDate("");
+        setCallDate("");
 
         setActionTodayId("");
         setNextActionCommentId("");
         setCommentActionText("");
         setnextActionDate("");
+        setActionDate("");
 
         setAssignTooId("");
         setCommentAssignText("");
+        setAssignDate("");
     };
 
 
@@ -499,19 +523,38 @@ const CallManagementPage: React.FC = () => {
 
     // 🚀 UPDATED handleSubmit function 🚀
     const handleSubmit = async () => {
+        let isError = false;
+
+        // ⭐️ Validation Check: Check the appropriate comment field based on activeForm
+        if (activeForm === 'call' && commentCallText.trim() === '') {
+            setCommentCallError(true);
+            isError = true;
+        } else if (activeForm === 'action' && commentActionText.trim() === '') {
+            setCommentActionError(true);
+            isError = true;
+        } else if (activeForm === 'assign' && commentAssignText.trim() === '') {
+            setCommentAssignError(true);
+            isError = true;
+        }
+
+        if (isError) {
+            console.log(`Validation failed for ${activeForm}. Comments required.`);
+            return; // Stop submission
+        }
+
+        console.log(`Submitting form for: ${activeForm}`);
 
         let payload: any = {};
-        const profileIdValue = Number(profileId);
 
         switch (activeForm) {
             case "call":
                 payload = {
-                    profile_id: profileIdValue,
+                    profile_id: profileId,
                     ...(isEditMode && { call_management_id: editCallManagementId }),
                     call_logs: [
                         {
                             ...(isEditMode && { id: editLogId }),
-                            call_date: getApiDate(),
+                            call_date: isEditMode ? callDate : getApiDate(),
                             next_call_date: nextCallDate,
                             call_type_id: Number(callTypeId),
                             particulars_id: Number(particularsId),
@@ -525,14 +568,14 @@ const CallManagementPage: React.FC = () => {
 
             case "action":
                 payload = {
-                    profile_id: profileIdValue,
+                    profile_id: profileId,
                     ...(isEditMode && { call_management_id: editCallManagementId }),
                     action_logs: [
                         {
                             ...(isEditMode && { id: editLogId }),
-                            action_date: getApiDate(),
-                            action_point_id: Number(actionTodayId),
-                            next_action_id: Number(nextActionCommentId),
+                            action_date: isEditMode ? actionDate : getApiDate(),
+                            action_point_id: Number(actionTodayId) || "",
+                            next_action_id: nextActionCommentId || "",
                             next_action_date: nextActionDate,
                             comments: commentActionText,
                             action_owner: ActionOwnerName,
@@ -543,13 +586,13 @@ const CallManagementPage: React.FC = () => {
 
             case "assign":
                 payload = {
-                    profile_id: profileIdValue,
+                    profile_id: profileId,
                     ...(isEditMode && { call_management_id: editCallManagementId }),
                     assign_logs: [
                         {
                             ...(isEditMode && { id: editLogId }),
-                            assigned_date: getApiDate(),
-                            assigned_to: assignTooId,
+                            assigned_date: isEditMode ? assignDate : getApiDate(),
+                            assigned_to: assignTooId || 0,
                             assigned_by: 2,
                             notes: commentAssignText,
                         }
@@ -605,7 +648,15 @@ const CallManagementPage: React.FC = () => {
                         <Grid container spacing={2} alignItems="flex-end">
                             <Grid item xs={12} sm={6} md={4}>
                                 <Typography sx={labelSx}>Date</Typography>
-                                <TextField fullWidth disabled value={currentDateString} {...baseInputProps} />
+                                {/* <TextField fullWidth disabled value={currentDateString} {...baseInputProps} /> */}
+                                <TextField
+                                    fullWidth
+                                    type={isEditMode ? "date" : "text"}
+                                    disabled={isEditMode ? !isToday(callDate) : true}
+                                    value={isEditMode ? callDate : currentDateString}
+                                    onChange={(e) => setCallDate(e.target.value)}
+                                    {...baseInputProps}
+                                />
                             </Grid>
                             <Grid item xs={12} sm={6} md={4}>
                                 <Typography sx={labelSx}>Next Call Date</Typography>
@@ -692,7 +743,16 @@ const CallManagementPage: React.FC = () => {
                         <Grid container spacing={2} alignItems="flex-end">
                             <Grid item xs={12} sm={6} md={4}>
                                 <Typography sx={labelSx}>Date</Typography>
-                                <TextField fullWidth disabled value={currentDateString} {...baseInputProps} />
+                                {/* <TextField fullWidth disabled value={currentDateString} {...baseInputProps} /> */}
+
+                                <TextField
+                                    fullWidth
+                                    type={isEditMode ? "date" : "text"}
+                                    disabled={isEditMode ? !isToday(actionDate) : true}
+                                    value={isEditMode ? actionDate : currentDateString}
+                                    onChange={(e) => setActionDate(e.target.value)}
+                                    {...baseInputProps}
+                                />
                             </Grid>
                             <Grid item xs={12} sm={6} md={4}>
                                 <Typography sx={labelSx}>Action Today</Typography>
@@ -768,7 +828,15 @@ const CallManagementPage: React.FC = () => {
                         <Grid container spacing={2} alignItems="flex-end">
                             <Grid item xs={12} sm={6} md={4}>
                                 <Typography sx={labelSx}>Date</Typography>
-                                <TextField fullWidth disabled value={currentDateString} {...baseInputProps} />
+                                {/* <TextField fullWidth disabled value={currentDateString} {...baseInputProps} /> */}
+                                <TextField
+                                    fullWidth
+                                    type={isEditMode ? "date" : "text"}
+                                    disabled={isEditMode ? !isToday(assignDate) : true}
+                                    value={isEditMode ? assignDate : currentDateString}
+                                    onChange={(e) => setAssignDate(e.target.value)}
+                                    {...baseInputProps}
+                                />
                             </Grid>
                             <Grid item xs={12} sm={4}>
                                 <Typography sx={labelSx}>Assign Too</Typography>
@@ -1104,27 +1172,33 @@ const CallManagementPage: React.FC = () => {
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            {assignLogs.map((log) => (
-                                                <TableRow key={log.id} hover sx={{ '& td': { padding: "12px 16px" } }}>
-                                                    <TableCell>{formatAPIDate(log.assigned_date)}</TableCell>
-                                                    <TableCell>{log.notes || "N/A"}</TableCell>
-                                                    {/* <TableCell>{log.assign_owner || "N/A"}</TableCell> */}
-                                                    <TableCell>{log.assign_too_previous || "N/A"} → {log.assign_too_current || "N/A"}</TableCell>
-                                                    {/* <TableCell>{log.assigned_by_name || "N/A"}</TableCell> */}
-                                                    <TableCell sx={{ textAlign: 'center' }}>
-                                                        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 1 }}>
-                                                            <Typography
-                                                                component="span"
-                                                                sx={{ color: "#1976d2", cursor: "pointer" }}
-                                                                onClick={() => handleAssignEditClick(log)}
-                                                            >
-                                                                <GrEdit />
-                                                            </Typography>
-                                                            <Typography component="span" sx={{ color: "#d32f2f", cursor: "pointer" }}><MdDeleteOutline /></Typography>
-                                                        </Box>
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
+                                            {assignLogs.map((log) => {
+                                                // Get usernames based on IDs
+                                                // const assignedToUsername = getUsernameById(log.assigned_to);
+                                                // const assignedByUsername = getUsernameById(log.assigned_by);
+
+                                                return (
+                                                    <TableRow key={log.id} hover sx={{ '& td': { padding: "12px 16px" } }}>
+                                                        <TableCell>{formatAPIDate(log.assigned_date)}</TableCell>
+                                                        <TableCell>{log.notes || "N/A"}</TableCell>
+                                                        <TableCell>
+                                                            {log.assigned_by_name  || "N/A"} → {log.assigned_to_name || "N/A"}
+                                                        </TableCell>
+                                                        <TableCell sx={{ textAlign: 'center' }}>
+                                                            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 1 }}>
+                                                                <Typography
+                                                                    component="span"
+                                                                    sx={{ color: "#1976d2", cursor: "pointer" }}
+                                                                    onClick={() => handleAssignEditClick(log)}
+                                                                >
+                                                                    <GrEdit />
+                                                                </Typography>
+                                                                <Typography component="span" sx={{ color: "#d32f2f", cursor: "pointer" }}><MdDeleteOutline /></Typography>
+                                                            </Box>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                );
+                                            })}
                                         </TableBody>
                                     </Table>
                                 )}
