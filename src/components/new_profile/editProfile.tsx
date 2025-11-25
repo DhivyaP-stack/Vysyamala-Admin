@@ -198,7 +198,7 @@ const EditProfile = () => {
   const [fieldOfStudySuggested, setFieldOfStudySuggested] = useState('');
   const [prefDegreeSuggested, setPreDegreeSuggested] = useState<string[]>([]);
   const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
-  const ownerID = localStorage.getItem('role_id');
+  const ownerID = sessionStorage.getItem('id') || localStorage.getItem('id');
 
   const handleProfileUpdate = async (editData: any, Name: string) => {
     try {
@@ -593,7 +593,7 @@ const EditProfile = () => {
       if (data.profileView.mobile_otp_verify === null || "") {
         notify("error");
       } else {
-        const ownerID = localStorage.getItem('role_id');
+        const ownerID = localStorage.getItem('id');
         //const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
         const currentAdminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
         const selectedOwnerId = data.profileView.admin_user_id;

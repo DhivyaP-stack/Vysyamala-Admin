@@ -2,10 +2,69 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import ClickOutside from '../ClickOutside';
 
-
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
+
+ 
+  const getUserData = () => {
+    try {
+      console.log('=== CHECKING SESSION STORAGE ===');
+      console.log('All session storage keys:', Object.keys(sessionStorage));
+      
+      
+      const username = sessionStorage.getItem('username');
+      const email = sessionStorage.getItem('email');
+      const firstName = sessionStorage.getItem('first_name');
+      
+      console.log('Username from sessionStorage:', username);
+      console.log('Email from sessionStorage:', email);
+      console.log('First name from sessionStorage:', firstName);
+
+     
+      if (username || email || firstName) {
+        const userData = {
+          username: username,
+          user_name: username, 
+          email: email,
+          first_name: firstName,
+          name: firstName, 
+        };
+        console.log('Constructed user data:', userData);
+        return userData;
+      }
+      
+      console.log('No user data found in sessionStorage');
+      return null;
+    } catch (error) {
+      console.error('Error reading user data from session storage:', error);
+      return null;
+    }
+  };
+
+  const userData = getUserData();
+  
+ 
+  let username = 'User';
+  let email = '';
+
+  if (userData) {
+    if (userData.username) {
+      username = userData.username;
+    } else if (userData.user_name) {
+      username = userData.user_name;
+    } else if (userData.name) {
+      username = userData.name;
+    } else if (userData.first_name) {
+      username = userData.first_name;
+    }
+
+    
+    email = userData.email || '';
+  }
+
+  console.log('Final username to display:', username);
+  console.log('Final email to display:', email);
 
   const handleLogout = () => {
     sessionStorage.clear();
@@ -22,14 +81,10 @@ const DropdownUser = () => {
       >
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
-            admin 
+            {username}
           </span>
-          {/* <span className="block text-xs">UX Designer</span> */}
+          
         </span>
-
-        {/* <span className="h-12 w-12 rounded-full">
-          <img src={UserOne} alt="User" />
-        </span> */}
 
         <svg
           className="hidden fill-current sm:block"
@@ -48,7 +103,7 @@ const DropdownUser = () => {
         </svg>
       </Link>
 
-      {/* <!-- Dropdown Start --> */}
+      
       {dropdownOpen && (
         <div
           className={`absolute right-0 mt-4 flex w-62.5 flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark`}

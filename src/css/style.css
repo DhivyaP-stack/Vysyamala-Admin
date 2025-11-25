@@ -220,3 +220,8 @@ span.flatpickr-weekday,
 .MuiDataGrid-virtualScroller {
   overflow: hidden;
 }
+
+.yellow-bg{
+   background: rgb(255, 249, 201);
+   white-space: nowrap;
+}

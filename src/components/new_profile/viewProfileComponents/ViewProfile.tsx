@@ -8,15 +8,12 @@ import {
 } from 'react';
 import { Button } from '@mui/material';
 import { ArrowBack, CameraAlt, Print, Settings, WhatsApp } from '@mui/icons-material';
-import ViewProfileButton from '../../../matchingProfile/ViewProfileButton';
 import axios from 'axios';
 import { useForm } from 'react-hook-form';
 import { useQuery } from '@tanstack/react-query';
 import { fetchAnnualIncome, fetchGetHighestEducation, fetchProfessionalPrefe, GetDistrict, getStatus } from '../../../action';
-import Profile from '../../../pages/Profile';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { downloadProfilePdf } from '../../../services/api';
-import { ViewCallManagement } from './ProfileViwePopup/ViewCallManagement';
 import { CallManagementModel } from './ProfileViwePopup/CallManagementModel';
 import { AdminDetailsPopup } from './ProfileViwePopup/AdminDetailsPopup';
 import { DataHistoryPopup } from './ProfileViwePopup/DataHistoryPopup';
@@ -24,6 +21,207 @@ import { MyProfileShare } from '../WhatsUpShare/MyProfileShare';
 import { notify } from '../../TostNotification';
 import PaymentPopup from '../EditFormComponents/PaymentInfo/PaymentInfoPopup';
 import { District } from '../profile_form_components/EducationalDetails';
+import { apiAxios } from '../../../api/apiUrl';
+
+// Past Call Data Popup Component
+const PastCallDataPopup: React.FC<{
+  open: boolean;
+  onClose: () => void;
+  profileId: string;
+}> = ({ open, onClose, profileId }) => {
+  const [callData, setCallData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchCallData = async () => {
+    if (!profileId) return;
+
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await apiAxios.get(`/api/profile-call-management/list/?profile_id=${profileId}`);
+
+      console.log('API Response:', response.data);
+
+      if (response.data && Array.isArray(response.data)) {
+        setCallData(response.data);
+      } else {
+        setError('Invalid data format received from server');
+      }
+    } catch (err: any) {
+      console.error('Error fetching call data:', err);
+      setError(err.response?.data?.message || 'Failed to fetch call data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (open && profileId) {
+      fetchCallData();
+    }
+  }, [open, profileId]);
+
+  // Format date for display
+  const formatDate = (dateString: string) => {
+    if (!dateString) return 'N/A';
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-IN');
+    } catch {
+      return 'Invalid Date';
+    }
+  };
+
+  // Format time for display
+  const formatTime = (dateString: string) => {
+    if (!dateString) return 'N/A';
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleTimeString('en-IN', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      });
+    } catch {
+      return 'Invalid Time';
+    }
+  };
+
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-999 p-4">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-6xl max-h-[90vh] overflow-hidden">
+        <div className="flex justify-between items-center p-4 border-b-2 border-grey-600 bg-white">
+          <div className="flex items-center space-x-4">
+            <h2 className="MuiBox-root css-1axc2eg mb-0">Past Call Data</h2>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-red-500 hover:text-gray-700 text-2xl font-bold transition-colors"
+          >
+            ×
+          </button>
+        </div>
+
+        {/* Data Table */}
+        <div className="p-6 overflow-auto max-h-[70vh]">
+          {loading && (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+              <p className="mt-2 text-gray-600">Loading call data...</p>
+            </div>
+          )}
+
+          {error && (
+            <div className="text-center py-8">
+              <p className="text-red-500 bg-red-50 p-4 rounded-lg border border-red-200">{error}</p>
+              <button
+                onClick={fetchCallData}
+                className="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition-colors"
+              >
+                Retry
+              </button>
+            </div>
+          )}
+
+          {!loading && !error && callData.length === 0 && (
+            <div className="text-center py-8">
+              <p className="text-gray-500 text-lg">No call data found for this profile.</p>
+            </div>
+          )}
+
+          {!loading && !error && callData.length > 0 && (
+            <div className="overflow-x-auto bg-white rounded-lg border border-gray-200">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className=" !text-red-600 !text-base !text-md text-nowrap font-bold yellow-bg">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Call Type</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">In/Out</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Updated By</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Comments</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Next Call</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {callData.map((call) => (
+                    <tr key={call.id} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {formatDate(call.updated_on)}
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {formatTime(call.updated_on)}
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap">
+                        <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 border border-blue-200">
+                          {call.call_type_value || 'N/A'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap">
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full border ${
+                          call.call_status_value?.includes('Hot')
+                            ? 'bg-red-100 text-red-800 border-red-200'
+                            : call.call_status_value?.includes('Warm')
+                            ? 'bg-yellow-100 text-yellow-800 border-yellow-200'
+                            : call.call_status_value?.includes('Cold')
+                            ? 'bg-blue-100 text-blue-800 border-blue-200'
+                            : call.call_status_value === 'Completed'
+                            ? 'bg-green-100 text-green-800 border-green-200'
+                            : 'bg-gray-100 text-gray-800 border-gray-200'
+                        }`}>
+                          {call.call_status_value || 'N/A'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {call.inoutbound_id === 1 ? 'Inbound' : call.inoutbound_id === 2 ? 'Outbound' : 'N/A'}
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {call.updated_by || 'N/A'}
+                      </td>
+                      <td className="px-4 py-4 text-sm text-gray-900 max-w-xs">
+                        <div className="break-words" title={call.comments}>
+                          {call.comments || 'No comments'}
+                        </div>
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {call.next_calldate ? formatDate(call.next_calldate) : 'Not Scheduled'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="flex justify-between items-center p-6 border-t bg-gray-50">
+          <div className="text-sm text-gray-600">
+            Total Calls: <span className="font-semibold">{callData.length}</span>
+          </div>
+          <div className="flex gap-3">
+            <button
+              onClick={fetchCallData}
+              className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg shadow-sm transition-colors"
+            >
+              Refresh
+            </button>
+            <button
+              onClick={onClose}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow-sm transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 interface pageProps {
   profile: any;
@@ -65,9 +263,8 @@ const ViewProfile: React.FC<pageProps> = ({
 }) => {
   const { register, setValue, watch } = useForm();
   const [profileView, setProfileView] = useState<any>({});
-  const [profileView2, setProfileView2] = useState<any>({}); // State for profile[2]
+  const [profileView2, setProfileView2] = useState<any>({});
   const [profileView3, setProfileView3] = useState<any>({});
-
   const [profileView7, setProfileView7] = useState<any>({});
 
   const [emailAlerts, setEmailAlerts] = useState<Alert[]>([]);
@@ -78,86 +275,22 @@ const ViewProfile: React.FC<pageProps> = ({
   const [smsAlert, setSmsAlert] = useState<string | undefined>();
   const [checkAddOn, setCheckAddOn] = useState<string | undefined>();
   const [image, setImage] = useState<string | null>(null);
-  const [openCallManagement, setOpenCallManagement] = useState<boolean>(false)
-  const [OpenAdminDetails, setOpenAdminDetails] = useState<boolean>(false)
-  // const [openDataHistory, setOpenDataHistory] = useState<boolean>(false)
+  const [openCallManagement, setOpenCallManagement] = useState<boolean>(false);
+  const [OpenAdminDetails, setOpenAdminDetails] = useState<boolean>(false);
+  const [openPastCallData, setOpenPastCallData] = useState<boolean>(false);
   const [pass, setPass] = useState<any>({});
   const [open, setOpen] = useState(false);
   const [openDataHistory, setOpenDataHistory] = useState(false);
+  const [isShareVisible, setIsShareVisible] = useState(false);
+  const [isPdfOptionsVisible, setIsPdfOptionsVisible] = useState(false);
+  const [addonPackage, setAddonPackage] = useState<AddOnPackage[]>([]);
 
-  // const [profileCountt,setProfileCountt]=useState()
-  //   import moment from "moment";
-  //   npm install moment
-  //   npm install @types/moment --save-dev
-  console.log('profileView7', profileView7);
-  console.log("profileView", profileView)
+  const navigate = useNavigate();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const profileId = queryParams.get('profileId');
 
-
-
-  useEffect(() => {
-    if (profile && profile.length > 0) {
-      setPass(profile[0]);
-    }
-  }, [profile])
-
-  useEffect(() => {
-    if (profile) {
-      if (profile[6]) {
-        const membership_fromdate = new Date(profile[6].membership_fromdate);
-        const formattedDateFrom = membership_fromdate.toISOString().split('T')[0];
-
-        const membership_todate = new Date(profile[6].membership_todate);
-        const formattedDate = membership_todate.toISOString().split('T')[0];
-
-
-        // Set both date fields using setValue
-        setValue('profileView.membership_fromdate', formattedDateFrom);
-        setValue('profileView.membership_todate', formattedDate); // or use the appropriate end date
-      }
-
-      // ... rest of your useEffect code
-    }
-  }, [profile, setValue]);
-
-
-  // useEffect(() => {
-  //     const formattedDate = new Date(apiValue).toISOString().split("T")[0];
-  //     setValue("profileView.membership_fromdate", formattedDate);
-  //   }, []);
-
-  useEffect(() => {
-    if (profile) {
-      // const apiDate =profile[6].DateOfJoin;
-      // const formattedDate=apiDate ? moment(apiDate).format("DD MMM YYYY") : "N/A";
-      // setFormattedDate(formattedDate)
-      // setValue('profileView.DateOfJoin',formattedDate)
-      if (profile[6]?.DateOfJoin) {
-        // Assuming EditData[5].DateOfJoin is like "2023-05-07T00:00:00"
-        const dateOfJoin = new Date(profile[6].DateOfJoin);
-        const formattedDate = dateOfJoin.toISOString().split('T')[0]; // '2023-05-07'
-        console.log(formattedDate);
-        // Set the value for the date input
-        setFormattedDate(formattedDate);
-        setValue('profileView.DateOfJoin', formattedDate);
-      }
-
-      const checkEmailAlert = profile[6].Notifcation_enabled;
-      setCheckEmailAlert(checkEmailAlert);
-      const SmsAlert = profile[6].Notifcation_enabled;
-      setSmsAlert(SmsAlert);
-      console.log(SmsAlert);
-      const AddOnPackages = profile[6].Addon_package;
-      setCheckAddOn(AddOnPackages);
-      console.log(AddOnPackages);
-      const file = profile[6].profile_image; // Get the first file
-      console.log(file);
-      if (file) {
-        // const imageUrl = URL.createObjectURL(file); // Convert to URL
-        setImage(file); // Store URL in state
-      }
-    }
-  }, []);
-
+  // Fetch data using useQuery
   const { data: AnnualIncomeData } = useQuery({
     queryKey: ['AnnualIncome'],
     queryFn: fetchAnnualIncome,
@@ -173,27 +306,129 @@ const ViewProfile: React.FC<pageProps> = ({
     queryFn: fetchProfessionalPrefe,
   });
 
-  // Fetch districts - needed for Place of Stay if in India
   const { data: WorkDistrictData } = useQuery({
-    queryKey: [profileView2?.work_state, 'WorkDistrictViewProfile'], // Use a unique key part
+    queryKey: [profileView2?.work_state, 'WorkDistrictViewProfile'],
     queryFn: () => GetDistrict(profileView2.work_state),
-    enabled: !!profileView2?.work_state && profileView2?.work_country === '1', // Only fetch if state exists and country is India
+    enabled: !!profileView2?.work_state && profileView2?.work_country === '1',
   });
 
+  const { data: Status } = useQuery({
+    queryKey: ['Status'],
+    queryFn: getStatus,
+  });
+
+  // Initialize profile data
+  useEffect(() => {
+    if (profile && profile.length > 0) {
+      setPass(profile[0]);
+    }
+  }, [profile]);
+
+  useEffect(() => {
+    if (profile) {
+      if (profile[6]) {
+        const membership_fromdate = new Date(profile[6].membership_fromdate);
+        const formattedDateFrom = membership_fromdate.toISOString().split('T')[0];
+
+        const membership_todate = new Date(profile[6].membership_todate);
+        const formattedDate = membership_todate.toISOString().split('T')[0];
+
+        setValue('profileView.membership_fromdate', formattedDateFrom);
+        setValue('profileView.membership_todate', formattedDate);
+      }
+    }
+  }, [profile, setValue]);
+
+  useEffect(() => {
+    if (profile) {
+      if (profile[6]?.DateOfJoin) {
+        const dateOfJoin = new Date(profile[6].DateOfJoin);
+        const formattedDate = dateOfJoin.toISOString().split('T')[0];
+        setFormattedDate(formattedDate);
+        setValue('profileView.DateOfJoin', formattedDate);
+      }
+
+      const checkEmailAlert = profile[6].Notifcation_enabled;
+      setCheckEmailAlert(checkEmailAlert);
+      const SmsAlert = profile[6].Notifcation_enabled;
+      setSmsAlert(SmsAlert);
+      const AddOnPackages = profile[6].Addon_package;
+      setCheckAddOn(AddOnPackages);
+      const file = profile[6].profile_image;
+      if (file) {
+        setImage(file);
+      }
+    }
+  }, [profile]);
 
   useLayoutEffect(() => {
     if (profile && profile.length > 0) {
       setProfileView(profile[6] || {});
-      setProfileView2(profile[2] || {}); // Educational/Professional details
-      setProfileView3(profile[3] || {}); // Horoscope details (for star name)
+      setProfileView2(profile[2] || {});
+      setProfileView3(profile[3] || {});
       setPass(profile[0] || {});
     }
   }, [profile]);
 
+  useLayoutEffect(() => {
+    if (profile && profile.length > 0) {
+      setProfileView7(profile[7]);
+    }
+  }, [profile]);
 
-  // ... rest of the component logic (toggleSection10, handlePrintProfile, etc.) ...
+  // Fetch additional data
+  useEffect(() => {
+    axios
+      .get<FamilyStatus[]>('https://app.vysyamala.com/api/family-statuses/')
+      .then((response) => {
+        const filteredStatuses = response.data.filter(
+          (status) => !status.is_deleted,
+        );
+        setFamilyStatuses(filteredStatuses);
+      })
+      .catch((error) => {
+        console.error('Error fetching family statuses:', error);
+      });
+  }, []);
 
-  // ---> FIND THE NAMES before rendering MyProfileShare <---
+  useEffect(() => {
+    axios
+      .post<AlertSettingsResponse>(
+        'https://app.vysyamala.com/auth/Get_alert_settings/',
+      )
+      .then((response) => {
+        if (response.data.status === '1') {
+          setEmailAlerts(response.data.data['Email Alerts']);
+          setSmsAlerts(response.data.data['SMS Alerts']);
+        } else {
+          console.error('Failed to fetch alert settings.');
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching alert settings:', error);
+      });
+  }, []);
+
+  const fetchAddOnPackages = async () => {
+    try {
+      const response = await axios.post(
+        'https://app.vysyamala.com/auth/Get_addon_packages/',
+      );
+      if (response.data.status === 'success') {
+        setAddonPackage(response.data.data);
+      } else {
+        console.log(response.data.message || 'Failed to fetch packages');
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchAddOnPackages();
+  }, []);
+
+  // Memoized computed values for profile data
   const annualIncomeName = useMemo(() => {
     const id = profileView2?.anual_income;
     if (!id || !AnnualIncomeData) return 'Not available';
@@ -218,159 +453,25 @@ const ViewProfile: React.FC<pageProps> = ({
   const placeOfStayName = useMemo(() => {
     const countryId = profileView2?.work_country;
     const districtId = profileView2?.work_district;
-    const city = profileView2?.work_city; // Used for non-India
+    const city = profileView2?.work_city;
 
-    if (countryId === '1') { // Assuming '1' is India
+    if (countryId === '1') {
       if (!districtId || !WorkDistrictData) return 'Not available';
       const found = WorkDistrictData.find((d: District) => String(d.disctict_id) === String(districtId));
       return found?.disctict_name || 'Not available';
     } else {
-      return city || 'Not available'; // Use city name directly if not India
+      return city || 'Not available';
     }
   }, [profileView2, WorkDistrictData]);
 
   const starName = useMemo(() => {
-    // Assuming star name comes directly from profile[3].star_name
     return profileView3?.star_name || 'Not available';
   }, [profileView3]);
 
-  const navigate = useNavigate();
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const profileId = queryParams.get('profileId');
-  console.log(profileId);
-  const email = profileView.Notifcation_enabled?.split(',');
-  const sms = profileView.Notifcation_enabled?.split(',');
-  const addOn = profileView.Addon_package?.split(',');
-  console.log("addd123addd123", addOn)
-  console.log(addOn);
-  const { data: Status } = useQuery({
-    queryKey: ['Status'],
-    queryFn: getStatus,
-  });
-  console.log(Status);
-
-  useEffect(() => {
-    axios
-      .get<FamilyStatus[]>('https://app.vysyamala.com/api/family-statuses/')
-      .then((response) => {
-        const filteredStatuses = response.data.filter(
-          (status) => !status.is_deleted,
-        );
-        setFamilyStatuses(filteredStatuses);
-      })
-      .catch((error) => {
-        console.error('Error fetching family statuses:', error);
-      });
-  }, []);
-  useEffect(() => {
-    // Fetch alert settings from the API
-    axios
-      .post<AlertSettingsResponse>(
-        'https://app.vysyamala.com/auth/Get_alert_settings/',
-      )
-      .then((response) => {
-        if (response.data.status === '1') {
-          setEmailAlerts(response.data.data['Email Alerts']);
-          setSmsAlerts(response.data.data['SMS Alerts']);
-        } else {
-          console.error('Failed to fetch alert settings.');
-        }
-      })
-      .catch((error) => {
-        console.error('Error fetching alert settings:', error);
-      });
-  }, []);
-
-  const fetchAddOnPackages = async () => {
-    try {
-      const response = await axios.post(
-        'https://app.vysyamala.com/auth/Get_addon_packages/',
-      );
-      if (response.data.status === 'success') {
-        console.log(response.data.data);
-        setAddonPackage(response.data.data);
-      } else {
-        console.log(response.data.message || 'Failed to fetch packages');
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  useEffect(() => {
-    fetchAddOnPackages();
-  }, []);
-
-  useLayoutEffect(() => {
-    if (profile && profile.length > 0) {
-      setProfileView(profile[6]);
-    }
-  }, [profile]);
-
-  useLayoutEffect(() => {
-    if (profile && profile.length > 0) {
-      setProfileView7(profile[7]);
-    }
-  }, [profile]);
-
-
-
+  // Helper functions
   const toggleSection10 = () => {
     setViewDetails(!isViewDetai);
-    console.log(isViewDetai, 'isViewDetais');
   };
-
-  // const handlePrintProfile = () => {
-  //   if (profileId) {
-  //     downloadProfilePdf(profileId);
-  //   } else {
-  //     console.error('Profile ID is not available');
-  //   }
-  // };
-
-  const profileData = [
-    { count: 453, label: 'Matching Profile' },
-    { count: 38, label: 'Suggested Profile' },
-    { count: 34, label: 'Viewed Profile' },
-    { count: 26, label: 'Visitor Profile' },
-    { count: 4, label: 'C to C Sent' },
-    { count: 6, label: 'C to C Received' },
-    { count: 56, label: 'EI Sent' },
-    { count: 23, label: 'EI Received' },
-    { count: 6, label: 'Mutual Interest' },
-    { count: 23, label: 'Shortlisted' },
-    { count: 3, label: 'PR Sent' },
-    { count: 5, label: 'VA Request' },
-  ];
-
-
-  const [addonPackage, setAddonPackage] = useState<AddOnPackage[]>([]);
-
-
-
-  useEffect(() => {
-
-
-    const fetchAddOnPackages = async () => {
-      try {
-        const response = await axios.post(
-          'https://app.vysyamala.com/auth/Get_addon_packages/',
-        );
-        if (response.data.status === 'success') {
-          console.log(response.data.data);
-          setAddonPackage(response.data.data);
-        } else {
-          console.log(response.data.message || 'Failed to fetch packages');
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchAddOnPackages();
-  }, []);
-
-
 
   const handlePrintProfile = (format: string) => {
     if (profileId) {
@@ -381,19 +482,19 @@ const ViewProfile: React.FC<pageProps> = ({
     }
   };
 
-  const [isShareVisible, setIsShareVisible] = useState(false);
-  const [isPdfOptionsVisible, setIsPdfOptionsVisible] = useState(false);
   const toggleShareVisibility = () => {
     setIsShareVisible((prevState) => !prevState);
-    setIsPdfOptionsVisible(false)
+    setIsPdfOptionsVisible(false);
   };
 
-
   const togglePdfVisibility = () => {
-    setIsPdfOptionsVisible((prevState) => !prevState)
-    setIsShareVisible(false)
-  }
+    setIsPdfOptionsVisible((prevState) => !prevState);
+    setIsShareVisible(false);
+  };
 
+  const email = profileView.Notifcation_enabled?.split(',');
+  const sms = profileView.Notifcation_enabled?.split(',');
+  const addOn = profileView.Addon_package?.split(',');
 
   return (
     <div className="bg-white p-8 mb-10 rounded shadow-md">
@@ -431,10 +532,6 @@ const ViewProfile: React.FC<pageProps> = ({
             </div>
 
             <div className="flex flex-wrap gap-4 sm:gap-6 text-gray-700">
-              {/* <div className="flex items-center gap-2 cursor-pointer hover:text-green-600">
-                <WhatsApp fontSize="small" className="text-green-700" />
-                <span>WhatsApp</span>
-              </div> */}
               <div
                 className="flex items-center gap-2 cursor-pointer hover:text-gray-900"
                 onClick={() =>
@@ -449,21 +546,17 @@ const ViewProfile: React.FC<pageProps> = ({
                 <span>WhatsApp</span>
 
                 {isShareVisible && (
-                  // <Share closePopup={toggleShareVisibility} />
                   <MyProfileShare
-
                     closePopup={toggleShareVisibility}
-                    // profileImagess={'https://www.kannikadhanam.com/members/parthasarathyr/'}
                     profileImagess={profile[6]?.profile_image || ""}
-                    //   profileImage={get_myprofile_personal?.profile_id}
                     profileId={profileId}
                     profileName={profile[6]?.Profile_name}
                     age={profile[6]?.age}
-                    starName={starName} // Assuming profile[3].star_name has the name
+                    starName={starName}
                     annualIncome={annualIncomeName}
                     education={educationName}
                     profession={professionName}
-                    companyName={profileView2?.company_name} // Pass company/business name directly
+                    companyName={profileView2?.company_name}
                     businessName={profileView2?.business_name}
                     placeOfStay={placeOfStayName}
                   />
@@ -471,37 +564,33 @@ const ViewProfile: React.FC<pageProps> = ({
               </div>
               <div
                 className="flex items-center gap-2 cursor-pointer hover:text-gray-900"
-                // onClick={handlePrintProfile}
                 onClick={togglePdfVisibility}
               >
                 <Print fontSize="small" />
                 <span>Print</span>
 
-                {
-                  isPdfOptionsVisible && (
-                    <div className='absolute right-20 mt-30 z-10 w-[220px] rounded-md shadow-lg p-2 bg-white max-sm:left-auto max-sm:right-[-200px]'>
-                      <div className='flex flex-col items-start pb-1 font-semibold'>
-                        <button onClick={() => handlePrintProfile('withoutaddress')}>Format 1</button>
-                      </div>
-                      <div className='flex flex-col items-start pb-1 font-semibold'>
-                        <button onClick={() => handlePrintProfile('withaddress')}>Format 2</button>
-                      </div>
-                      <div className='flex flex-col items-start pb-1 font-semibold'>
-                        <button onClick={() => handlePrintProfile('withoutcontact')}>Format 3</button>
-                      </div>
-                      <div className='flex flex-col items-start pb-1 font-semibold'>
-                        <button onClick={() => handlePrintProfile('withonlystar')}>Format 5</button>
-                      </div>
-                      <div className='flex flex-col items-start pb-1 font-semibold'>
-                        <button onClick={() => handlePrintProfile('withcontactonly')}>Format 7</button>
-                      </div>
-                      <div className='flex flex-col items-start pb-1 font-semibold'>
-                        <button onClick={() => handlePrintProfile('withoutcontactonly')}>Format 8</button>
-                      </div>
+                {isPdfOptionsVisible && (
+                  <div className='absolute right-20 mt-30 z-10 w-[220px] rounded-md shadow-lg p-2 bg-white max-sm:left-auto max-sm:right-[-200px]'>
+                    <div className='flex flex-col items-start pb-1 font-semibold'>
+                      <button onClick={() => handlePrintProfile('withoutaddress')}>Format 1</button>
                     </div>
-                  )
-                }
-
+                    <div className='flex flex-col items-start pb-1 font-semibold'>
+                      <button onClick={() => handlePrintProfile('withaddress')}>Format 2</button>
+                    </div>
+                    <div className='flex flex-col items-start pb-1 font-semibold'>
+                      <button onClick={() => handlePrintProfile('withoutcontact')}>Format 3</button>
+                    </div>
+                    <div className='flex flex-col items-start pb-1 font-semibold'>
+                      <button onClick={() => handlePrintProfile('withonlystar')}>Format 5</button>
+                    </div>
+                    <div className='flex flex-col items-start pb-1 font-semibold'>
+                      <button onClick={() => handlePrintProfile('withcontactonly')}>Format 7</button>
+                    </div>
+                    <div className='flex flex-col items-start pb-1 font-semibold'>
+                      <button onClick={() => handlePrintProfile('withoutcontactonly')}>Format 8</button>
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="flex items-center gap-2 cursor-pointer hover:text-gray-900">
                 <Settings fontSize="small" />
@@ -572,11 +661,6 @@ const ViewProfile: React.FC<pageProps> = ({
                     { count: profileView7.matchingprofile_count, label: "Matching Profile", onClick: `/UserMatchingProfiles?profileId=${profileId}` },
                     { count: profileView7.suggestedprofile_count, label: "Suggested Profile", onClick: `/suggestedProfiles?profileId=${profileId}` },
                     { count: profileView7.visibility_count, label: "Profile Visibility", onClick: `/UserProfileVisibilityFilter?profileId=${profileId}` },
-                    // {
-                    //   label: (
-                    //     <span className="block mt-9">Profile Visibility</span> // 👈 mt-2 pushes it down slightly
-                    //   ), onClick: `/UserProfileVisibilityFilter?profileId=${profileId}`
-                    // },
                     { count: profileView7.viewedprofile_count, label: "Viewed Profile", onClick: `/ViewedProfilesById?profileId=${profileId}` },
                     { count: profileView7.visitorprofile_count, label: "Visitor Profile", onClick: `/VisitorProfilesById?profileId=${profileId}` },
                     { count: profileView7.ctocsend_count, label: "C to C Sent", onClick: `/CToCSentProfiles?profileId=${profileId}` },
@@ -615,7 +699,6 @@ const ViewProfile: React.FC<pageProps> = ({
                   variant="contained"
                   size="small"
                   className="bg-blue-700 whitespace-nowrap"
-                  // onClick={() => window.location.href = `/UserMatchingProfiles?profileId=${profileId}`}
                   onClick={() => navigate(`/UserMatchingProfiles?profileId=${profileId}`)}
                 >
                   Matching Profiles
@@ -625,7 +708,6 @@ const ViewProfile: React.FC<pageProps> = ({
                   variant="contained"
                   size="small"
                   className="bg-blue-700 whitespace-nowrap"
-                  // onClick={() => setOpenCallManagement(true)}
                   onClick={() => navigate(`/CallManagement?profileId=${profileId}`)}
                 >
                   Call Management
@@ -645,18 +727,10 @@ const ViewProfile: React.FC<pageProps> = ({
                   size="small"
                   className="bg-blue-700 whitespace-nowrap"
                   onClick={() => setOpenDataHistory(true)}
-                // onClick={() => handleOpenDataHistory(profile.id)}
                 >
                   Data History
                 </Button>
 
-                {/* <Button
-                  variant="contained"
-                  size="small"
-                  className="bg-blue-700 whitespace-nowrap"
-                >
-                  Invoice Generation
-                </Button> */}
                 <div>
                   <Button
                     variant="contained"
@@ -667,20 +741,19 @@ const ViewProfile: React.FC<pageProps> = ({
                   </Button>
                   <PaymentPopup open={open} onClose={() => setOpen(false)} profileId={profileId ?? ""} showAddButton={false} />
                 </div>
-              </div>
 
-              {/* Profile Info Sections */}
-              {/* <div className='mt-4'>
+                {/* Past Call Data Button */}
                 <Button
                   variant="contained"
                   size="small"
-                  onClick={() => setOpen(true)}
-                  className="bg-blue-700 whitespace-nowrap w-45">
-                  Payment Info
+                  onClick={() => setOpenPastCallData(true)}
+                  className="bg-blue-700 whitespace-nowrap hover:bg-blue-800 transition-colors"
+                >
+                  Past Call Data
                 </Button>
-                <PaymentPopup open={open} onClose={() => setOpen(false)} profileId={profileId ?? ""} showAddButton={false} />
-              </div> */}
+              </div>
 
+              {/* Profile Info Sections */}
               <div className="mt-4 flex flex-col lg:flex-row gap-4">
                 {/* Left Section */}
                 <div className="flex-1">
@@ -714,13 +787,6 @@ const ViewProfile: React.FC<pageProps> = ({
                     </div>
                   </div>
 
-                  {/* <div className="flex flex-wrap items-center gap-1 mb-2">
-                    <span className="font-semibold text-[#5a5959e6] whitespace-nowrap">AddOn Packages:</span>
-                    <span className="text-[#5a5959e6]">
-                      {addonPackage.map(pkg => `${pkg.name}-${pkg.amount}`).join(', ')}
-                    </span>
-                  </div> */}
-
                   <div className="flex flex-wrap items-center gap-1 mb-2">
                     <span className="font-semibold text-[#5a5959e6] whitespace-nowrap">AddOn Packages:</span>
                     <span className="text-[#222020e6]">
@@ -731,14 +797,12 @@ const ViewProfile: React.FC<pageProps> = ({
                     </span>
                   </div>
 
-
                   <div className="flex flex-wrap items-center gap-4 mb-2">
                     <span className="font-semibold text-[#5a5959e6]">
                       Visit Count No: <span className="font-normal">{profileView.visit_count}</span>
                     </span>
                   </div>
                   <div>
-
                     <span className="font-semibold text-[#5a5959e6]">
                       Exp Interest: <span className="font-normal">
                         {profileView.exp_int_lock === 1 ? "Yes" : "No"}
@@ -827,16 +891,18 @@ const ViewProfile: React.FC<pageProps> = ({
         open={OpenAdminDetails}
         onClose={() => setOpenAdminDetails(false)}
       />
-      {/* <DataHistoryPopup
-        open={openDataHistory}
-        onClose={() => setOpenDataHistory(false)}
-      /> */}
       <DataHistoryPopup
         open={openDataHistory}
         onClose={() => setOpenDataHistory(false)}
         profileId={profileId || ''}
       />
-
+      
+      {/* Past Call Data Popup */}
+      <PastCallDataPopup
+        open={openPastCallData}
+        onClose={() => setOpenPastCallData(false)}
+        profileId={profileId || ''}
+      />
     </div>
   );
 };

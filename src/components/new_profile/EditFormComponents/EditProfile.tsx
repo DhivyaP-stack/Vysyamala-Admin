@@ -36,6 +36,206 @@ import PaymentPopup from './PaymentInfo/PaymentInfoPopup';
 import { District } from './EducationalDetails';
 import { hasPermission } from '../../utils/auth';
 
+// Past Call Data Popup Component
+const PastCallDataPopup: React.FC<{
+  open: boolean;
+  onClose: () => void;
+  profileId: string;
+}> = ({ open, onClose, profileId }) => {
+  const [callData, setCallData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchCallData = async () => {
+    if (!profileId) return;
+
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await apiAxios.get(`/api/profile-call-management/list/?profile_id=${profileId}`);
+
+      // Log the response to see the actual structure
+      console.log('API Response:', response.data);
+
+      if (response.data && Array.isArray(response.data)) {
+        setCallData(response.data);
+      } else {
+        setError('Invalid data format received from server');
+      }
+    } catch (err: any) {
+      console.error('Error fetching call data:', err);
+      setError(err.response?.data?.message || 'Failed to fetch call data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (open && profileId) {
+      fetchCallData();
+    }
+  }, [open, profileId]);
+
+  // Format date for display
+  const formatDate = (dateString: string) => {
+    if (!dateString) return 'N/A';
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-IN');
+    } catch {
+      return 'Invalid Date';
+    }
+  };
+
+  // Format time for display
+  const formatTime = (dateString: string) => {
+    if (!dateString) return 'N/A';
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleTimeString('en-IN', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      });
+    } catch {
+      return 'Invalid Time';
+    }
+  };
+
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-999 p-4">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-6xl max-h-[90vh] overflow-hidden">
+        <div className="flex justify-between items-center p-4 border-b-2 border-grey-600 bg-white">
+          <div className="flex items-center space-x-4">
+            <h2 className="MuiBox-root css-1axc2eg mb-0">Past Call Data</h2>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-red-500 hover:text-gray-700 text-2xl font-bold transition-colors"
+          >
+            ×
+          </button>
+        </div>
+
+        {/* Data Table */}
+        <div className="p-6 overflow-auto max-h-[70vh]">
+          {loading && (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+              <p className="mt-2 text-gray-600">Loading call data...</p>
+            </div>
+          )}
+
+          {error && (
+            <div className="text-center py-8">
+              <p className="text-red-500 bg-red-50 p-4 rounded-lg border border-red-200">{error}</p>
+              <button
+                onClick={fetchCallData}
+                className="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition-colors"
+              >
+                Retry
+              </button>
+            </div>
+          )}
+
+          {!loading && !error && callData.length === 0 && (
+            <div className="text-center py-8">
+              <p className="text-gray-500 text-lg">No call data found for this profile.</p>
+            </div>
+          )}
+
+          {!loading && !error && callData.length > 0 && (
+            <div className="overflow-x-auto bg-white rounded-lg border border-gray-200">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className=" !text-red-600 !text-base !text-md text-nowrap font-bold yellow-bg">
+                  <tr className=''>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Call Type</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">In/Out</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Updated By</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Comments</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Next Call</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {callData.map((call) => (
+                    <tr key={call.id} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {formatDate(call.updated_on)}
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {formatTime(call.updated_on)}
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap">
+                        <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 border border-blue-200">
+                          {call.call_type_value || 'N/A'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap">
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full border ${call.call_status_value?.includes('Hot')
+                            ? 'bg-red-100 text-red-800 border-red-200'
+                            : call.call_status_value?.includes('Warm')
+                              ? 'bg-yellow-100 text-yellow-800 border-yellow-200'
+                              : call.call_status_value?.includes('Cold')
+                                ? 'bg-blue-100 text-blue-800 border-blue-200'
+                                : call.call_status_value === 'Completed'
+                                  ? 'bg-green-100 text-green-800 border-green-200'
+                                  : 'bg-gray-100 text-gray-800 border-gray-200'
+                          }`}>
+                          {call.call_status_value || 'N/A'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {call.inoutbound_id === 1 ? 'Inbound' : call.inoutbound_id === 2 ? 'Outbound' : 'N/A'}
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {call.updated_by || 'N/A'}
+                      </td>
+                      <td className="px-4 py-4 text-sm text-gray-900 max-w-xs">
+                        <div className="break-words" title={call.comments}>
+                          {call.comments || 'No comments'}
+                        </div>
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {call.next_calldate ? formatDate(call.next_calldate) : 'Not Scheduled'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="flex justify-between items-center p-6 border-t bg-gray-50">
+          <div className="text-sm text-gray-600">
+            Total Calls: <span className="font-semibold">{callData.length}</span>
+          </div>
+          <div className="flex gap-3">
+            <button
+              onClick={fetchCallData}
+              className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg shadow-sm transition-colors"
+            >
+              Refresh
+            </button>
+            <button
+              onClick={onClose}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow-sm transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 interface pageProps {
   handleSubmit: () => void;
   error: any;
@@ -69,6 +269,9 @@ const EditViewProfile: React.FC<pageProps> = ({
   EditData,
   handleSubmit
 }) => {
+  // Add state for Past Call Data popup
+  const [openPastCallData, setOpenPastCallData] = useState<boolean>(false);
+
   const {
     setValue,
     watch,
@@ -88,6 +291,7 @@ const EditViewProfile: React.FC<pageProps> = ({
   const [profileView2, setProfileView2] = useState<any>({}); // State for profile[2]
   const [profileView3, setProfileView3] = useState<any>({});
   const [selectedOwner, setSelectedOwner] = useState<number | ''>('');
+
 
   const status = watch('profileView.status') ?? ''; // Ensure it doesn't break
   const primaryStatus = watch('profileView.primary_status') ?? ''; // Prevent undefined errors
@@ -134,8 +338,12 @@ const EditViewProfile: React.FC<pageProps> = ({
     const value = event.target.value;
     const ownerId = value === '' ? '' : Number(value);
 
+
     setSelectedOwner(ownerId);
-    setValue('profileView.admin_user_id', ownerId as any);
+    setValue('profileView.admin_user_id', ownerId as any, {
+      shouldValidate: true,
+      shouldDirty: true
+    });
   };
 
   const { data: AnnualIncomeData } = useQuery({
@@ -643,6 +851,7 @@ const EditViewProfile: React.FC<pageProps> = ({
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 p-4 gap-4">
+
                       <div>
                         <button
                           type="button"
@@ -715,6 +924,16 @@ const EditViewProfile: React.FC<pageProps> = ({
                           Payment Info
                         </button>
                         <PaymentPopup open={open} onClose={() => setOpen(false)} profileId={profileId} showAddButton={true} />
+                      </div>
+
+                      <div>
+                        <button
+                          type="button"
+                          onClick={() => setOpenPastCallData(true)}
+                          className="bg-blue-700 text-white px-8 py-1 text-md h-auto rounded whitespace-nowrap hover:bg-blue-800 transition-colors"
+                        >
+                          Past Call Data
+                        </button>
                       </div>
 
                     </div>
@@ -810,19 +1029,20 @@ const EditViewProfile: React.FC<pageProps> = ({
                         <div className="flex items-center gap-2">
                           <label className="font-semibold text-[#5a5959e6]">Profile Owner:</label>
                           <select
-                            value={selectedOwner}
+                            {...register('profileView.admin_user_id', {
+                              setValueAs: (value) => value === "" ? undefined : Number(value)
+                            })}
+                            value={watch('profileView.admin_user_id') || ''}
                             onChange={handleOwnerChange}
                             className="px-2 py-1 border rounded border-[#b5b2b2e6] text-[#222020e6]"
-                            // Disable while loading owners
                             disabled={isOwnersLoading}
                           >
                             <option value="">
                               {isOwnersLoading ? 'Loading Owners...' : 'Select Owner'}
                             </option>
-                            {/* Use the fetched data here */}
                             {profileOwnersData?.map((owner) => (
                               <option key={owner.id} value={owner.id}>
-                                {owner.username} {/* Display the username */}
+                                {owner.username}
                               </option>
                             ))}
                           </select>
@@ -1156,9 +1376,36 @@ const EditViewProfile: React.FC<pageProps> = ({
         </div>
 
       </div>
+
+      {/* PAST CALL DATA POPUP - ADDED HERE */}
+      <PastCallDataPopup
+        open={openPastCallData}
+        onClose={() => setOpenPastCallData(false)}
+        profileId={profileId || ''}
+      />
+
+      {/* Other existing popups */}
+      <CallManagementModel
+        open={openCallManagement}
+        onClose={() => setOpenCallManagement(false)}
+      />
+      <AdminDetailsPopup
+        open={OpenAdminDetails}
+        onClose={() => setOpenAdminDetails(false)}
+      />
+      <DataHistoryPopup
+        open={openDataHistory}
+        onClose={() => setOpenDataHistory(false)}
+        profileId={profileId || ''}
+      />
+      {showOtpPopup && (
+        <VerifyOTPPopup
+          onClose={() => setShowOtpPopup(false)}
+          profileId={profileId}
+        />
+      )}
     </div >
   );
 };
 
 export default EditViewProfile;
-
