@@ -145,6 +145,7 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
   const RoleID = localStorage.getItem('role_id');
   const [selectedPlanId, setSelectedPlanId] = useState<number | null>(null); // Add this line
   const [sendingEmail, setSendingEmail] = useState<number | null>(null);
+  const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
 
   const filteredMainPackages = useMemo(() => {
     if (packageFilter === "") return mainPackages;
@@ -344,6 +345,7 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
       // Build the complete payload
       const payload = {
         profile_id: profileId,
+        admin_user_id: adminUserID,
         plan_id: selectedPlanId, // You may need to map mainPackage to actual plan_id
         addon_package: selectedAddonIds || null, // Comma-separated IDs like "1,2,3"
         paid_amount: netAmount.toString(),
@@ -407,7 +409,7 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
     }
 
     // Construct the invoice URL with the subscription_id
-    const invoiceUrl = `https://app.vysyamala.com/api/generate-invoice/?subscription_id=${payment.id}`;
+    const invoiceUrl = `https://app.vysyamala.com/api/generate-invoice/?subscription_id=${payment.id}&admin_user_id=${adminUserID}`;
 
     // Open the invoice in a new tab
     window.open(invoiceUrl, '_blank', 'noopener,noreferrer');
@@ -424,7 +426,12 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
     setSendingEmail(payment.id); // Set loading state
     try {
       const response = await apiAxios.get(
-        `https://app.vysyamala.com/api/send-invoice/?subscription_id=${payment.id}`
+        `https://app.vysyamala.com/api/send-invoice/?subscription_id=${payment.id}`, {
+        params: {
+          // subscription_id: payment.id,
+          admin_user_id: adminUserID       // 👈 Added here
+        }
+      }
       );
 
       if (response.data.success) {
@@ -517,7 +524,8 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
       const payload = {
         transaction_id: transactionId.toString(),
         action: "reject",
-        payment_for: paymentFor
+        payment_for: paymentFor,
+        admin_user_id: adminUserID
       };
 
       const response = await apiAxios.post(
@@ -569,8 +577,11 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
     try {
       setLoading(true);
       const res = await apiAxios.get(
-        `/api/subscriptions/?profile_id=${profileId}`
-      );
+        `/api/subscriptions/?profile_id=${profileId}`, {
+        params: {
+          admin_user_id: adminUserID,
+        },
+      });
       setPaymentDetails(res.data || []);
     } catch (error) {
       console.error("Error fetching payment details:", error);
@@ -583,8 +594,11 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
     try {
       setTransactionLoading(true);
       const res = await apiAxios.get(
-        `/api/payment-transactions/?profile_id=${profileId}`
-      );
+        `/api/payment-transactions/?profile_id=${profileId}`, {
+        params: {
+          admin_user_id: adminUserID
+        }
+      });
       setTransactions(res.data || []);
     } catch (error) {
       console.error("Error fetching transactions:", error);

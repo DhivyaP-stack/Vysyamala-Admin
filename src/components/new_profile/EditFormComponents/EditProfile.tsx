@@ -177,14 +177,14 @@ const PastCallDataPopup: React.FC<{
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap">
                         <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full border ${call.call_status_value?.includes('Hot')
-                            ? 'bg-red-100 text-red-800 border-red-200'
-                            : call.call_status_value?.includes('Warm')
-                              ? 'bg-yellow-100 text-yellow-800 border-yellow-200'
-                              : call.call_status_value?.includes('Cold')
-                                ? 'bg-blue-100 text-blue-800 border-blue-200'
-                                : call.call_status_value === 'Completed'
-                                  ? 'bg-green-100 text-green-800 border-green-200'
-                                  : 'bg-gray-100 text-gray-800 border-gray-200'
+                          ? 'bg-red-100 text-red-800 border-red-200'
+                          : call.call_status_value?.includes('Warm')
+                            ? 'bg-yellow-100 text-yellow-800 border-yellow-200'
+                            : call.call_status_value?.includes('Cold')
+                              ? 'bg-blue-100 text-blue-800 border-blue-200'
+                              : call.call_status_value === 'Completed'
+                                ? 'bg-green-100 text-green-800 border-green-200'
+                                : 'bg-gray-100 text-gray-800 border-gray-200'
                           }`}>
                           {call.call_status_value || 'N/A'}
                         </span>
@@ -615,7 +615,7 @@ const EditViewProfile: React.FC<pageProps> = ({
             onClick={toggleSection1}
             className="text-red-600 flex items-center justify-between text-xl cursor-pointer font-semibold dark:text-white"
           >
-            <span>Edit Profile </span>{' '}
+            <span>Edit Profile</span>{' '}
             {/* Add a title or any text here */}
             <svg
               className={`fill-current transform ${isViewDetais ? 'rotate-180' : ''
@@ -845,9 +845,9 @@ const EditViewProfile: React.FC<pageProps> = ({
                         </span>
                       </span>
 
-                      <button type='button' className="bg-blue-700 text-white px-2 py-1 text-md mt-1 rounded">
+                      {/* <button type='button' className="bg-blue-700 text-white px-2 py-1 text-md mt-1 rounded">
                         Update owner
-                      </button>
+                      </button> */}
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 p-4 gap-4">
@@ -1347,19 +1347,21 @@ const EditViewProfile: React.FC<pageProps> = ({
                             {errors.profileView.calc_raguketu_dhosham.message}
                           </p>
                         )}
-                        <div className=" justify-start items-start ">
-                          <button
-                            type="submit"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleSubmit();
-                            }}
-                            name="save2"
-                            className="hidden max-xl:block bg-blue-700  text-white justify-start items-start px-3 py-1 text-md mt-8 rounded"
-                          >
-                            Update profile
-                          </button>
-                        </div>
+                        {hasPermission('edit_profile_all') && (
+                          < div className=" justify-start items-start " >
+                            <button
+                              type="submit"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleSubmit();
+                              }}
+                              name="save2"
+                              className="hidden max-xl:block bg-blue-700  text-white justify-start items-start px-3 py-1 text-md mt-8 rounded"
+                            >
+                              Update profile
+                            </button>
+                          </div>
+                        )}
                       </div>
                       {showOtpPopup && (
                         <VerifyOTPPopup
@@ -1398,12 +1400,14 @@ const EditViewProfile: React.FC<pageProps> = ({
         onClose={() => setOpenDataHistory(false)}
         profileId={profileId || ''}
       />
-      {showOtpPopup && (
-        <VerifyOTPPopup
-          onClose={() => setShowOtpPopup(false)}
-          profileId={profileId}
-        />
-      )}
+      {
+        showOtpPopup && (
+          <VerifyOTPPopup
+            onClose={() => setShowOtpPopup(false)}
+            profileId={profileId}
+          />
+        )
+      }
     </div >
   );
 };

@@ -146,19 +146,77 @@ const AddStaffForm: React.FC<AddStaffFormProps> = ({
         }
     };
 
+    // const handleAddOrUpdateStaff = async () => {
+    //     // Validation Check
+    //     // if (!newStaff.username || !newStaff.email) {
+    //     //     alert("Name and Email are required.");
+    //     //     return;
+    //     // }
+
+    //     // // For new staff, password is required
+    //     // if (!newStaff.password) {
+    //     //     alert("Password is required for new staff.");
+    //     //     return;
+    //     // }
+
+    //     setIsLoading(true);
+
+    //     try {
+    //         const selectedStateIDs = selectedStates.map(stateName => {
+    //             const state = stateOptions.find(s => s.State_name === stateName);
+    //             return state ? String(state.State_Pref_id) : null;
+    //         }).filter((id): id is string => id !== null);
+
+    //         const stateToSend = selectedStateIDs.join(',');
+
+    //         let staffPayload: any = {
+    //             email: newStaff.email,
+    //             username: newStaff.username,
+    //             role: String(newStaff.role),
+    //             state: stateToSend,
+    //             admin_user_id: adminUserID
+    //         };
+
+    //         // Only include password if it's provided (for new staff or when changing password)
+    //         if (newStaff.password) {
+    //             staffPayload.password = newStaff.password;
+    //         }
+
+    //         let response;
+    //         if (isEditMode && editingStaff) {
+    //             // UPDATE existing staff
+    //             response = await apiAxios.patch(`/api/users/${editingStaff.id}/`, staffPayload);
+    //             toast.success("Staff updated successfully");
+    //         } else {
+    //             // CREATE new staff
+    //             response = await apiAxios.post('/api/users/', staffPayload);
+    //             toast.success("Staff added successfully");
+    //         }
+
+    //         console.log(isEditMode ? 'Update staff' : 'Add staff', response);
+
+    //         // Reset form
+    //         setNewStaff(initialNewStaffState);
+    //         setSelectedStates([]);
+    //         setFile(null);
+
+    //         // Notify parent component
+    //         onStaffAdded();
+
+    //     } catch (error) {
+    //         if (axios.isAxiosError(error) && error.response) {
+    //             console.error("API Error:", error.response.data);
+    //             toast.error("Error: " + JSON.stringify(error.response.data));
+    //         } else {
+    //             console.error("General error:", error);
+    //             toast.error("An unexpected error occurred.");
+    //         }
+    //     } finally {
+    //         setIsLoading(false);
+    //     }
+    // };
+
     const handleAddOrUpdateStaff = async () => {
-        // Validation Check
-        // if (!newStaff.username || !newStaff.email) {
-        //     alert("Name and Email are required.");
-        //     return;
-        // }
-
-        // // For new staff, password is required
-        // if (!newStaff.password) {
-        //     alert("Password is required for new staff.");
-        //     return;
-        // }
-
         setIsLoading(true);
 
         try {
@@ -169,27 +227,44 @@ const AddStaffForm: React.FC<AddStaffFormProps> = ({
 
             const stateToSend = selectedStateIDs.join(',');
 
-            let staffPayload: any = {
-                email: newStaff.email,
-                username: newStaff.username,
-                role: String(newStaff.role),
-                state: stateToSend,
-                admin_user_id: adminUserID
-            };
+            // Use FormData to handle file upload with other form data
+            const formData = new FormData();
 
-            // Only include password if it's provided (for new staff or when changing password)
+            // Append all staff data
+            formData.append('email', newStaff.email);
+            formData.append('username', newStaff.username);
+            formData.append('role', String(newStaff.role));
+            formData.append('state', stateToSend);
+            if (adminUserID) {
+                formData.append('admin_user_id', adminUserID);
+            }
+
+            // Only include password if it's provided
             if (newStaff.password) {
-                staffPayload.password = newStaff.password;
+                formData.append('password', newStaff.password);
+            }
+
+            // Append the Excel file if selected
+            if (file) {
+                formData.append('excel_file', file);
             }
 
             let response;
             if (isEditMode && editingStaff) {
-                // UPDATE existing staff
-                response = await apiAxios.patch(`/api/users/${editingStaff.id}/`, staffPayload);
+                // UPDATE existing staff with file
+                response = await apiAxios.patch(`/api/users/${editingStaff.id}/`, formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
                 toast.success("Staff updated successfully");
             } else {
-                // CREATE new staff
-                response = await apiAxios.post('/api/users/', staffPayload);
+                // CREATE new staff with file
+                response = await apiAxios.post('/api/users/', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
                 toast.success("Staff added successfully");
             }
 

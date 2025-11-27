@@ -3,6 +3,8 @@ import { MatchingStar } from '../components/new_profile/profile_form_components/
 import { apiAxios } from './apiUrl';
 import { SubStatus } from '../components/new_profile/viewProfileComponents/ProfileViwePopup/CallManagementModel';
 
+const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
+
 // User Matching Profiles Page -> Annual Income List
 export const userAnnualIncome = async () => {
     try {
@@ -324,7 +326,7 @@ export const userMatchingProfilesFilterListMatch = async (
     //prefPoruthamStarRasi: string,
     fromDateOfJoin: string,
     toDateOfJoin: string,
-     ExceptViewed: boolean | string,  // Accept both boolean and string
+    ExceptViewed: boolean | string,  // Accept both boolean and string
     ExceptVisitor: boolean | string, // Accept both boolean and string
     profileType: 'matching' | 'suggested' = 'matching',
     actionType: string = 'all', // New parameter for action type
@@ -369,7 +371,7 @@ export const userMatchingProfilesFilterListMatch = async (
             //pref_porutham_star_rasi: prefPoruthamStarRasi,
             from_dateofjoin: fromDateOfJoin,
             to_dateofjoin: toDateOfJoin,
-           except_viewed: exceptViewedBool,   // Send as proper boolean
+            except_viewed: exceptViewedBool,   // Send as proper boolean
             except_visitor: exceptVisitorBool, // Send as proper booleanF
             action_type: actionType, // Add action_type parameter
             status: status, // Add status parameter
@@ -933,7 +935,8 @@ export const fetchPhotoProofDetails = async (profileID: string) => {
     try {
         const response = await apiAxios.get(`/api/get-photo-proof-details/`, {
             params: {
-                profile_id: profileID
+                profile_id: profileID,
+                admin_user_id: adminUserID,
             }
         });
         if (!response.data || response.status !== 200 || response.data.status !== "success") {
@@ -963,11 +966,14 @@ export const getPhotoProofDetails = async (
         formData.append("image_approved", imageApproved);
         formData.append("photo_password", photoPassword);
         formData.append("photo_protection", photoProtection);
+        formData.append("admin_user_id", adminUserID ?? '');
+
 
         const response = await apiAxios.post('/api/get-photo-proof-details/', formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
             },
+
         });
 
         console.log("Photo Proof Details fetched successfully", response);
@@ -1027,7 +1033,7 @@ export const uploadNewProfileImages = async (profileId: string, newFiles: File[]
 
     // 1. Append the profile_id
     formData.append('profile_id', profileId);
-
+    formData.append('admin_user_id', adminUserID ?? '');
     // 2. Append each new image file.
     // The key 'new_image_files' is used for every file.
     // The backend will receive this as a list of files.

@@ -308,7 +308,7 @@ const CallManagementPage: React.FC = () => {
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const profileId = queryParams.get('profileId');
-
+    const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
     // Date formatting functions
     const formatAPIDate = (dateString: string): string => {
         if (!dateString) return 'N/A';
@@ -470,58 +470,58 @@ const CallManagementPage: React.FC = () => {
     };
 
     const fetchProfileData = async () => {
-    if (!profileId) return;
+        if (!profileId) return;
 
-    try {
-        const response = await apiAxios.get<any>(
-            `api/logs/${profileId}`
-        );
+        try {
+            const response = await apiAxios.get<any>(
+                `api/logs/${profileId}`
+            );
 
-        // Extract all data from the API response
-        const callLogs = response.data.call_logs || [];
-        const actionLogs = response.data.action_logs || [];
-        const assignLogs = response.data.assign_logs || [];
+            // Extract all data from the API response
+            const callLogs = response.data.call_logs || [];
+            const actionLogs = response.data.action_logs || [];
+            const assignLogs = response.data.assign_logs || [];
 
-        // Get the FIRST record from each array (most recently added - index 0)
-        const lastCall = callLogs.length > 0 ? callLogs[0] : null;
-        const lastAction = actionLogs.length > 0 ? actionLogs[0] : null;
-        const lastAssignment = assignLogs.length > 0 ? assignLogs[0] : null;
+            // Get the FIRST record from each array (most recently added - index 0)
+            const lastCall = callLogs.length > 0 ? callLogs[0] : null;
+            const lastAction = actionLogs.length > 0 ? actionLogs[0] : null;
+            const lastAssignment = assignLogs.length > 0 ? assignLogs[0] : null;
 
-        // Debug logs to check what we're getting from FIRST records
-        console.log('=== FIRST RECORDS DEBUG ===');
-        console.log('All Call Logs:', callLogs.map(log => ({ id: log.id, date: log.call_date })));
-        console.log('First Call (Last):', lastCall);
-        console.log('All Action Logs:', actionLogs.map(log => ({ id: log.id, date: log.action_date })));
-        console.log('First Action (Last):', lastAction);
-        console.log('All Assign Logs:', assignLogs.map(log => ({ id: log.id, date: log.assigned_date })));
-        console.log('First Assignment (Last):', lastAssignment);
-        console.log('API Response owner_name:', response.data.owner_name);
-        console.log('API Response status_name:', response.data.status_name);
+            // Debug logs to check what we're getting from FIRST records
+            console.log('=== FIRST RECORDS DEBUG ===');
+            console.log('All Call Logs:', callLogs.map(log => ({ id: log.id, date: log.call_date })));
+            console.log('First Call (Last):', lastCall);
+            console.log('All Action Logs:', actionLogs.map(log => ({ id: log.id, date: log.action_date })));
+            console.log('First Action (Last):', lastAction);
+            console.log('All Assign Logs:', assignLogs.map(log => ({ id: log.id, date: log.assigned_date })));
+            console.log('First Assignment (Last):', lastAssignment);
+            console.log('API Response owner_name:', response.data.owner_name);
+            console.log('API Response status_name:', response.data.status_name);
 
-        // Map the data according to your requirements - using FIRST records (most recent)
-        const profileData: ProfileData = {
-            profile_id: response.data.profile_id || profileId || "N/A",
-            profile_owner: response.data.owner_name || lastAssignment?.assigned_to_name || "N/A",
-            last_call_date: lastCall?.call_date || "N/A",
-            last_call_comments: lastCall?.comments || "N/A",
-            profile_status: response.data.status_name || lastCall?.call_status_name || "N/A",
-            last_action_date: lastAction?.action_date || "N/A",
-            last_action: lastAction?.action_point_name || "N/A"
-        };
+            // Map the data according to your requirements - using FIRST records (most recent)
+            const profileData: ProfileData = {
+                profile_id: response.data.profile_id || profileId || "N/A",
+                profile_owner: response.data.owner_name || lastAssignment?.assigned_to_name || "N/A",
+                last_call_date: lastCall?.call_date || "N/A",
+                last_call_comments: lastCall?.comments || "N/A",
+                profile_status: response.data.status_name || lastCall?.call_status_name || "N/A",
+                last_action_date: lastAction?.action_date || "N/A",
+                last_action: lastAction?.action_point_name || "N/A"
+            };
 
-        console.log('=== FINAL PROFILE DATA (Using First Records) ===');
-        console.log('Profile Data:', profileData);
+            console.log('=== FINAL PROFILE DATA (Using First Records) ===');
+            console.log('Profile Data:', profileData);
 
-        setProfileData(profileData);
+            setProfileData(profileData);
 
-    } catch (error: any) {
-        console.error("Failed to fetch profile data:", error);
-        if (error.response) {
-            console.error("Response error:", error.response.data);
+        } catch (error: any) {
+            console.error("Failed to fetch profile data:", error);
+            if (error.response) {
+                console.error("Response error:", error.response.data);
+            }
+            toast.error("Failed to load profile information");
         }
-        toast.error("Failed to load profile information");
-    }
-};
+    };
 
     const fetchMasterData = async () => {
         setMasterLoading(true);
@@ -746,7 +746,8 @@ const CallManagementPage: React.FC = () => {
             const payload = {
                 delete_module: itemToDelete.module,
                 call_id: itemToDelete.id,
-                deleted_by: userData.id || userData.user_id || userData.userId
+                deleted_by: userData.id || userData.user_id || userData.userId,
+                admin_user_id: adminUserID,
             };
 
             await apiAxios.post("api/call_manage-delete/", payload);
@@ -899,7 +900,7 @@ const CallManagementPage: React.FC = () => {
             userData: userData
         });
 
-        let payload: any = {};
+        let payload: any = { admin_user_id: adminUserID };
 
         switch (activeForm) {
             case "call":
@@ -916,6 +917,7 @@ const CallManagementPage: React.FC = () => {
                             call_status_id: Number(callStatusId) || "",
                             comments: commentCallText,
                             call_owner: callOwnerId,
+                            admin_user_id: adminUserID,
                         }
                     ]
                 };
@@ -934,6 +936,7 @@ const CallManagementPage: React.FC = () => {
                             next_action_date: nextActionDate,
                             comments: commentActionText,
                             action_owner: actionOwnerId,
+                            admin_user_id: adminUserID,
                         }
                     ]
                 };
@@ -950,6 +953,7 @@ const CallManagementPage: React.FC = () => {
                             assigned_to: assignTooId || 0,
                             assigned_by: assignById,
                             notes: commentAssignText,
+                            admin_user_id: adminUserID,
                         }
                     ]
                 };

@@ -128,6 +128,7 @@ const ProfileForm: React.FC<PageProps> = ({ profileId, EditData }) => {
 
   // ✅ Track the admin comment dynamically
   const adminComments = watch("profileView.Admin_comments", "");
+  const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
 
   // ✅ Function to submit admin comments only
   const onSubmitAdminComments = async () => {
@@ -145,6 +146,7 @@ const ProfileForm: React.FC<PageProps> = ({ profileId, EditData }) => {
     try {
       const formData = new FormData();
       formData.append("Admin_comments", adminComments);
+      formData.append("admin_user_id", adminUserID ?? "");
 
       const response = await axios.put( // ✅ Use POST if the API requires FormData
         `https://app.vysyamala.com/api/update-admincomments/${profileId}/`,

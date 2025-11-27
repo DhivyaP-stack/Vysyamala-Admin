@@ -87,6 +87,7 @@ import ViewSuggestedProfile from './viewProfileComponents/ViewSuggestedProfile';
 import ViewProfileView from './viewProfileComponents/ViewProfileView';
 import ViewProfile from './viewProfileComponents/ViewProfile';
 import { ViewProfileVisibility } from './viewProfileComponents/ViewProfileVisibility';
+import { hasPermission } from '../utils/auth';
 
 
 
@@ -219,12 +220,14 @@ const ViewProfileForm: React.FC = () => {
             className="  text-orange-500 text-title-md">
             {profileId}
           </button>
-          <button
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded shadow-md transition-colors"
-            onClick={() => navigate(`/editProfile?profileId=${profileId}`)}
-          >
-            To edit this form
-          </button>
+          {hasPermission('edit_profile_admin') && (
+            <button
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded shadow-md transition-colors"
+              onClick={() => navigate(`/editProfile?profileId=${profileId}`)}
+            >
+              To edit this form
+            </button>
+          )}
         </div>
       </div>
       <div className='mt-6'>

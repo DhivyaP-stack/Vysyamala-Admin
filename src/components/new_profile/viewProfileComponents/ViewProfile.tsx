@@ -22,6 +22,7 @@ import { notify } from '../../TostNotification';
 import PaymentPopup from '../EditFormComponents/PaymentInfo/PaymentInfoPopup';
 import { District } from '../profile_form_components/EducationalDetails';
 import { apiAxios } from '../../../api/apiUrl';
+import { toast } from 'react-toastify';
 
 // Past Call Data Popup Component
 const PastCallDataPopup: React.FC<{
@@ -162,17 +163,16 @@ const PastCallDataPopup: React.FC<{
                         </span>
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap">
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full border ${
-                          call.call_status_value?.includes('Hot')
-                            ? 'bg-red-100 text-red-800 border-red-200'
-                            : call.call_status_value?.includes('Warm')
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full border ${call.call_status_value?.includes('Hot')
+                          ? 'bg-red-100 text-red-800 border-red-200'
+                          : call.call_status_value?.includes('Warm')
                             ? 'bg-yellow-100 text-yellow-800 border-yellow-200'
                             : call.call_status_value?.includes('Cold')
-                            ? 'bg-blue-100 text-blue-800 border-blue-200'
-                            : call.call_status_value === 'Completed'
-                            ? 'bg-green-100 text-green-800 border-green-200'
-                            : 'bg-gray-100 text-gray-800 border-gray-200'
-                        }`}>
+                              ? 'bg-blue-100 text-blue-800 border-blue-200'
+                              : call.call_status_value === 'Completed'
+                                ? 'bg-green-100 text-green-800 border-green-200'
+                                : 'bg-gray-100 text-gray-800 border-gray-200'
+                          }`}>
                           {call.call_status_value || 'N/A'}
                         </span>
                       </td>
@@ -256,6 +256,11 @@ interface FamilyStatus {
   is_deleted: boolean;
 }
 
+interface AdminCommentResponse {
+  status: number; // 1 for success
+  message: string;
+}
+
 const ViewProfile: React.FC<pageProps> = ({
   profile,
   isViewDetai,
@@ -284,11 +289,14 @@ const ViewProfile: React.FC<pageProps> = ({
   const [isShareVisible, setIsShareVisible] = useState(false);
   const [isPdfOptionsVisible, setIsPdfOptionsVisible] = useState(false);
   const [addonPackage, setAddonPackage] = useState<AddOnPackage[]>([]);
+  const [adminComments, setAdminComments] = useState<string>('');
+  const [isSavingComments, setIsSavingComments] = useState<boolean>(false); // To show loading state
 
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const profileId = queryParams.get('profileId');
+  const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
 
   // Fetch data using useQuery
   const { data: AnnualIncomeData } = useQuery({
@@ -335,6 +343,7 @@ const ViewProfile: React.FC<pageProps> = ({
 
         setValue('profileView.membership_fromdate', formattedDateFrom);
         setValue('profileView.membership_todate', formattedDate);
+        setAdminComments(profile[6].Admin_comments || '');
       }
     }
   }, [profile, setValue]);
@@ -376,6 +385,33 @@ const ViewProfile: React.FC<pageProps> = ({
     }
   }, [profile]);
 
+
+  const handleSaveAdminComments = async () => {
+    if (!profileId || isSavingComments) return;
+
+    setIsSavingComments(true);
+
+    const apiUrl = `/api/update-admincomments/${profileId}/`;
+
+    try {
+      const response = await apiAxios.put<AdminCommentResponse>(apiUrl, {
+        Admin_comments: adminComments,
+        admin_user_id: adminUserID,
+      });
+
+      if (response.status === 200) {
+        toast.success('Admin comments saved successfully!');
+        setProfileView((prev: any) => ({ ...prev, Admin_comments: adminComments }));
+      } else {
+        toast.error(response.data.message || 'Failed to save admin comments.', { type: 'error' });
+      }
+    } catch (error) {
+      console.error('Error saving admin comments:', error);
+      notify('An unexpected error occurred while saving comments.', { type: 'error' });
+    } finally {
+      setIsSavingComments(false);
+    }
+  };
   // Fetch additional data
   useEffect(() => {
     axios
@@ -850,11 +886,22 @@ const ViewProfile: React.FC<pageProps> = ({
                 {/* Right Section - Admin Comments */}
                 <div className="flex-1 max-w-full lg:max-w-md">
                   <textarea
-                    value={profileView.Admin_comments}
-                    placeholder="Enter Admin Comments..."
+                    id="admin-comments"
+                    value={adminComments}
+                    onChange={(e) => setAdminComments(e.target.value)}
+                    onBlur={handleSaveAdminComments}
                     className="w-full h-32 sm:h-40 border-2 border-green-500 rounded-3xl p-4 text-[#5a5959e6] focus:outline-none focus:border-blue-700 transition duration-300 resize-none"
+                  // ... other props
                   />
-
+                  <Button
+                    variant="contained"
+                    size="small"
+                    onClick={handleSaveAdminComments}
+                    // disabled={isSavingComments}
+                    className="bg-green-600 hover:bg-green-700 text-white mt-2"
+                  >
+                    {isSavingComments ? 'Saving...' : 'Save Admin Comments'}
+                  </Button>
                   <div className="mt-4">
                     <div className="flex items-center gap-2 mb-2">
                       <label className="font-semibold">Horo Hint:</label>
@@ -896,7 +943,7 @@ const ViewProfile: React.FC<pageProps> = ({
         onClose={() => setOpenDataHistory(false)}
         profileId={profileId || ''}
       />
-      
+
       {/* Past Call Data Popup */}
       <PastCallDataPopup
         open={openPastCallData}
