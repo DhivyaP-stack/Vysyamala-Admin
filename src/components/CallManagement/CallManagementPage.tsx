@@ -1015,9 +1015,9 @@ const CallManagementPage: React.FC = () => {
                     original: isEditMode ? actionDate : 'current date',
                     formatted: isEditMode ? formatDateForAPI(actionDate) : getApiDate()
                 });
-                console.log('Next action date:', {
-                    original: nextActionDate,
-                    formatted: formatDateForAPI(nextActionDate)
+                console.log('Action IDs:', {
+                    actionTodayId: actionTodayId,
+                    nextActionCommentId: nextActionCommentId
                 });
 
                 payload = {
@@ -1028,7 +1028,8 @@ const CallManagementPage: React.FC = () => {
                             ...(isEditMode && { id: editLogId }),
                             action_date: isEditMode ? formatDateForAPI(actionDate) : getApiDate(),
                             action_point_id: Number(actionTodayId) || "",
-                            next_action_id: nextActionCommentId || "",
+                           
+                            next_action_id: nextActionCommentId === "null" ? "" : nextActionCommentId || "",
                             next_action_date: formatDateForAPI(nextActionDate),
                             comments: commentActionText,
                             action_owner: actionOwnerId,
@@ -1037,7 +1038,6 @@ const CallManagementPage: React.FC = () => {
                     ]
                 };
                 break;
-
             case "assign":
                 console.log('Assign date:', {
                     original: isEditMode ? assignDate : 'current date',
