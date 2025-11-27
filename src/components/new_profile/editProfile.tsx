@@ -722,7 +722,7 @@ const EditProfile = () => {
   </form>
 </FormProvider>
      */}
-      {hasPermission('edit_profile_all') && (
+      {hasPermission('edit_profile_admin') && (
         <FormProvider {...BasicDetailsMethods}>
           <form onSubmit={BasicDetailsMethods.handleSubmit(handleBasicDetailsSubmit)}>
             {/* <h2>Basic Details</h2> */}
@@ -745,7 +745,7 @@ const EditProfile = () => {
           </form>
         </FormProvider>
       )}
-      {hasPermission('edit_profile_all') && (
+      {hasPermission('edit_profile_admin') && (
         <FormProvider {...familyMethods}>
           <form onSubmit={familyMethods.handleSubmit(handleFamilyDetailsSubmit)}>
             {/* <h2>Family Details</h2> */}
@@ -764,7 +764,7 @@ const EditProfile = () => {
           </form>
         </FormProvider>
       )}
-      {hasPermission('edit_profile_all') && (
+      {hasPermission('edit_profile_admin') && (
         <FormProvider {...EducationDetailsMethod}>
           <form onSubmit={EducationDetailsMethod.handleSubmit(handleEducationalDetailSubmit)}>
             {/* <h2>Educational Details</h2> */}
@@ -781,7 +781,7 @@ const EditProfile = () => {
           </form>
         </FormProvider>
       )}
-      {hasPermission('edit_profile_all') && (
+      {hasPermission('edit_profile_admin') && (
         <FormProvider {...HororScopeDetailsMethods}>
           <form onSubmit={HororScopeDetailsMethods.handleSubmit(onSubmit)}>
             {/* <h2>Horoscope Details</h2> */}
@@ -800,7 +800,7 @@ const EditProfile = () => {
           </form>
         </FormProvider>
       )}
-      {hasPermission('edit_profile_all') && hasPermission('edit_profile_admin') && (
+      {hasPermission('edit_profile_admin') && hasPermission('edit_profile_admin') && (
         <FormProvider {...PartnerPreferenceMethods}>
           <form onSubmit={PartnerPreferenceMethods.handleSubmit(handlePartnerPreferenceSubmit)}>
             {/* <h2>Partner Preference</h2> */}
@@ -833,7 +833,7 @@ const EditProfile = () => {
         </FormProvider>
       )}
 
-      {hasPermission('edit_profile_all') && hasPermission('edit_profile_admin') && (
+      {hasPermission('edit_profile_admin') && hasPermission('edit_profile_admin') && (
         <FormProvider {...suggestedProfileMethods}>
           <form onSubmit={suggestedProfileMethods.handleSubmit(handleSuggestedProfileSubmit)}>
             {/* <h2>Suggested Profile</h2> */}
@@ -864,7 +864,7 @@ const EditProfile = () => {
           </form>
         </FormProvider>
       )}
-      {hasPermission('edit_profile_all') && hasPermission('edit_profile_admin') && (
+      {hasPermission('edit_profile_admin') && hasPermission('edit_profile_admin') && (
         <FormProvider {...ProfileVisibilityMethods}>
           <form onSubmit={ProfileVisibilityMethods.handleSubmit(handleVisibilitySubmit)}>
             <EditProfileVisibility

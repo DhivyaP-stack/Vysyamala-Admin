@@ -1195,7 +1195,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 </SidebarLinkGroup>
               )}
 
-              {hasPermission('online_changes_tool') && (
+          
+              {(hasPermission('online_changes_tool') || hasPermission('marriage_photo_upload')) && (
                 <SidebarLinkGroup
                   activeCondition={
                     pathname === '/CSM page' || pathname.includes('CSM page')
@@ -1253,44 +1254,49 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             }`}
                         >
                           <ul className="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6">
-                            {/* Submenu Items */}
+                            
+                            {hasPermission('online_changes_tool') && (
+                              <>
+                                <li>
+                                  <NavLink
+                                    to="/CsmDataTable"
+                                    className={({ isActive }) =>
+                                      'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                                      (isActive && '!text-PrimaryRed')
+                                    }
+                                  >
+                                    <GoDot />
+                                    CMS List
+                                  </NavLink>
+                                </li>
+                                <li>
+                                  <NavLink
+                                    to="/AwardsTable"
+                                    className={({ isActive }) =>
+                                      'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                                      (isActive && '!text-PrimaryRed')
+                                    }
+                                  >
+                                    <GoDot />
+                                    Award Gallery
+                                  </NavLink>
+                                </li>
+                                <li>
+                                  <NavLink
+                                    to="/HomepageForm"
+                                    className={({ isActive }) =>
+                                      'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                                      (isActive && '!text-PrimaryRed')
+                                    }
+                                  >
+                                    <GoDot />
+                                    Home Page
+                                  </NavLink>
+                                </li>
+                              </>
+                            )}
 
-                            <li>
-                              <NavLink
-                                to="/CsmDataTable"
-                                className={({ isActive }) =>
-                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
-                                  (isActive && '!text-PrimaryRed')
-                                }
-                              >
-                                <GoDot />
-                                CMS List
-                              </NavLink>
-                            </li>
-                            <li>
-                              <NavLink
-                                to="/AwardsTable"
-                                className={({ isActive }) =>
-                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
-                                  (isActive && '!text-PrimaryRed')
-                                }
-                              >
-                                <GoDot />
-                                Award Gallery
-                              </NavLink>
-                            </li>
-                            <li>
-                              <NavLink
-                                to="/HomepageForm"
-                                className={({ isActive }) =>
-                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
-                                  (isActive && '!text-PrimaryRed')
-                                }
-                              >
-                                <GoDot />
-                                Home Page
-                              </NavLink>
-                            </li>
+                           
                             {hasPermission('marriage_photo_upload') && (
                               <li>
                                 <NavLink
@@ -1307,27 +1313,6 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             )}
                           </ul>
                         </div>
-
-                        {/* <div
-                        className={`translate transform overflow-hidden ${
-                          !open && 'hidden'
-                        }`}
-                      >
-                        <ul className="mt-4 mb-5.5 flex flex-col">
-                       
-                          <li>
-                            <NavLink
-                              to="/Award"
-                              className="group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out"
-                            >
-                              <FaAward />
-                              Award Gallery
-                            </NavLink>
-                          </li>
-                        </ul>
-                      </div> */}
-
-                        {/* Dropdown Menu End */}
                       </React.Fragment>
                     );
                   }}

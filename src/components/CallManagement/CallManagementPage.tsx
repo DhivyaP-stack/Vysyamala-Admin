@@ -824,7 +824,42 @@ const CallManagementPage: React.FC = () => {
         setAssignDate("");
     };
 
-    const getApiDate = () => new Date().toISOString().split('T')[0];
+    const getApiDate = (): string => {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+
+    const formatDateForAPI = (dateString: string): string => {
+        if (!dateString) return '';
+
+        try {
+            // If it's already in YYYY-MM-DD format, return as is
+            if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+                return dateString;
+            }
+
+            // If it contains time (ISO format), extract only date part
+            if (dateString.includes('T')) {
+                return dateString.split('T')[0];
+            }
+
+            // For other formats, create date object and format
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return '';
+
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+
+            return `${year}-${month}-${day}`;
+        } catch (error) {
+            console.error('Error formatting date for API:', error);
+            return '';
+        }
+    };
 
     const handleSubmit = async () => {
         // Check if we have valid user data
@@ -902,16 +937,68 @@ const CallManagementPage: React.FC = () => {
 
         let payload: any = { admin_user_id: adminUserID };
 
+        // Date formatting functions
+        const getApiDate = (): string => {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
+
+        const formatDateForAPI = (dateString: string): string => {
+            if (!dateString) return '';
+
+            try {
+                // If it's already in YYYY-MM-DD format, return as is
+                if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+                    return dateString;
+                }
+
+                // If it contains time (ISO format), extract only date part
+                if (dateString.includes('T')) {
+                    return dateString.split('T')[0];
+                }
+
+                // For other formats, create date object and format
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) return '';
+
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+
+                return `${year}-${month}-${day}`;
+            } catch (error) {
+                console.error('Error formatting date for API:', error);
+                return '';
+            }
+        };
+
+        // Debug logging for dates
+        console.log('=== DATE FORMAT VERIFICATION ===');
+        console.log('Active form:', activeForm);
+        console.log('Is edit mode:', isEditMode);
+
         switch (activeForm) {
             case "call":
+                console.log('Call date:', {
+                    original: isEditMode ? callDate : 'current date',
+                    formatted: isEditMode ? formatDateForAPI(callDate) : getApiDate()
+                });
+                console.log('Next call date:', {
+                    original: nextCallDate,
+                    formatted: formatDateForAPI(nextCallDate)
+                });
+
                 payload = {
                     profile_id: profileId,
                     ...(isEditMode && { call_management_id: editCallManagementId }),
                     call_logs: [
                         {
                             ...(isEditMode && { id: editLogId }),
-                            call_date: isEditMode ? callDate : getApiDate(),
-                            next_call_date: nextCallDate,
+                            call_date: isEditMode ? formatDateForAPI(callDate) : getApiDate(),
+                            next_call_date: formatDateForAPI(nextCallDate),
                             call_type_id: Number(callTypeId) || "",
                             particulars_id: Number(particularsId) || "",
                             call_status_id: Number(callStatusId) || "",
@@ -924,16 +1011,25 @@ const CallManagementPage: React.FC = () => {
                 break;
 
             case "action":
+                console.log('Action date:', {
+                    original: isEditMode ? actionDate : 'current date',
+                    formatted: isEditMode ? formatDateForAPI(actionDate) : getApiDate()
+                });
+                console.log('Next action date:', {
+                    original: nextActionDate,
+                    formatted: formatDateForAPI(nextActionDate)
+                });
+
                 payload = {
                     profile_id: profileId,
                     ...(isEditMode && { call_management_id: editCallManagementId }),
                     action_logs: [
                         {
                             ...(isEditMode && { id: editLogId }),
-                            action_date: isEditMode ? actionDate : getApiDate(),
+                            action_date: isEditMode ? formatDateForAPI(actionDate) : getApiDate(),
                             action_point_id: Number(actionTodayId) || "",
                             next_action_id: nextActionCommentId || "",
-                            next_action_date: nextActionDate,
+                            next_action_date: formatDateForAPI(nextActionDate),
                             comments: commentActionText,
                             action_owner: actionOwnerId,
                             admin_user_id: adminUserID,
@@ -943,13 +1039,18 @@ const CallManagementPage: React.FC = () => {
                 break;
 
             case "assign":
+                console.log('Assign date:', {
+                    original: isEditMode ? assignDate : 'current date',
+                    formatted: isEditMode ? formatDateForAPI(assignDate) : getApiDate()
+                });
+
                 payload = {
                     profile_id: profileId,
                     ...(isEditMode && { call_management_id: editCallManagementId }),
                     assign_logs: [
                         {
                             ...(isEditMode && { id: editLogId }),
-                            assigned_date: isEditMode ? assignDate : getApiDate(),
+                            assigned_date: isEditMode ? formatDateForAPI(assignDate) : getApiDate(),
                             assigned_to: assignTooId || 0,
                             assigned_by: assignById,
                             notes: commentAssignText,
@@ -960,7 +1061,12 @@ const CallManagementPage: React.FC = () => {
                 break;
         }
 
-        console.log('Payload being sent:', payload);
+        console.log('Final payload:', JSON.stringify(payload, null, 2));
+        console.log('Payload dates verification:', {
+            call_date: payload.call_logs?.[0]?.call_date,
+            action_date: payload.action_logs?.[0]?.action_date,
+            assigned_date: payload.assign_logs?.[0]?.assigned_date
+        });
 
         try {
             setLoading(true);
