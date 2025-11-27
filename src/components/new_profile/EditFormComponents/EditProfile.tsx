@@ -474,7 +474,7 @@ const EditViewProfile: React.FC<pageProps> = ({
           .split('T')[0];
         setValue('profileView.DateOfJoin', formattedDate);
       }
-      const currentAdminUserId = data.admin_user_id; // Check your API response for the actual field name
+      const currentAdminUserId = data.profile_owner_id; // Check your API response for the actual field name
 
       if (currentAdminUserId !== undefined && currentAdminUserId !== null) {
         const ownerId = Number(currentAdminUserId);
