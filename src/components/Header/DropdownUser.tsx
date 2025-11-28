@@ -6,34 +6,34 @@ const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
 
- 
+
   const getUserData = () => {
     try {
       console.log('=== CHECKING SESSION STORAGE ===');
       console.log('All session storage keys:', Object.keys(sessionStorage));
-      
-      
-      const username = sessionStorage.getItem('username');
-      const email = sessionStorage.getItem('email');
-      const firstName = sessionStorage.getItem('first_name');
-      
+
+
+      const username = localStorage.getItem('username') || sessionStorage.getItem('username');
+      const email = localStorage.getItem('email') || sessionStorage.getItem('email');
+      const firstName = localStorage.getItem('first_name') || sessionStorage.getItem('first_name');
+
       console.log('Username from sessionStorage:', username);
       console.log('Email from sessionStorage:', email);
       console.log('First name from sessionStorage:', firstName);
 
-     
+
       if (username || email || firstName) {
         const userData = {
           username: username,
-          user_name: username, 
+          user_name: username,
           email: email,
           first_name: firstName,
-          name: firstName, 
+          name: firstName,
         };
         console.log('Constructed user data:', userData);
         return userData;
       }
-      
+
       console.log('No user data found in sessionStorage');
       return null;
     } catch (error) {
@@ -43,8 +43,8 @@ const DropdownUser = () => {
   };
 
   const userData = getUserData();
-  
- 
+
+
   let username = 'User';
   let email = '';
 
@@ -59,7 +59,7 @@ const DropdownUser = () => {
       username = userData.first_name;
     }
 
-    
+
     email = userData.email || '';
   }
 
@@ -83,7 +83,7 @@ const DropdownUser = () => {
           <span className="block text-sm font-medium text-black dark:text-white">
             {username}
           </span>
-          
+
         </span>
 
         <svg
@@ -103,7 +103,7 @@ const DropdownUser = () => {
         </svg>
       </Link>
 
-      
+
       {dropdownOpen && (
         <div
           className={`absolute !z-99 right-0 mt-4 flex w-62.5 flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark`}

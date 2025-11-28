@@ -52,15 +52,21 @@ const SignIn: React.FC<SignInProps> = ({ setIsAuthenticated }) => {
         sessionStorage.setItem('role', response.data.user.role);
         localStorage.setItem('role', response.data.user.role);
         sessionStorage.setItem("first_name", response.data.user.username);
+        localStorage.setItem("first_name", response.data.user.usernamee);
 
         // You might also want to store the username and email
         sessionStorage.setItem('username', response.data.user.username);
+        localStorage.setItem('username', response.data.user.username);
         sessionStorage.setItem('email', response.data.user.email);
+        localStorage.setItem('email', response.data.user.email);
         sessionStorage.setItem('user_permissions', JSON.stringify(response.data.role.permissions));
+        localStorage.setItem('user_permissions', JSON.stringify(response.data.role.permissions));
 
         setLoginStatus('success');
         localStorage.setItem('token', response.data.token);
+        sessionStorage.setItem('token', response.data.token);
         localStorage.setItem('isAuthenticated', 'true');
+        sessionStorage.setItem('isAuthenticated', 'true');
         setIsAuthenticated(true);
         navigate('/');
       } else {

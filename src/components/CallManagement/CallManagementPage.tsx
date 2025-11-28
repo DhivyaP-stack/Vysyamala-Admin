@@ -203,11 +203,11 @@ const getTomorrowDateForInput = () => {
 const getUserFromSession = () => {
     try {
         // Get individual properties from sessionStorage
-        const userId = sessionStorage.getItem('id');
-        const username = sessionStorage.getItem('username');
-        const firstName = sessionStorage.getItem('first_name');
-        const email = sessionStorage.getItem('email');
-        const role = sessionStorage.getItem('role');
+        const userId = localStorage.getItem('id') || sessionStorage.getItem('id');
+        const username = localStorage.getItem('username') || sessionStorage.getItem('username');
+        const firstName = localStorage.getItem('first_name') || sessionStorage.getItem('first_name');
+        const email = localStorage.getItem('email') || sessionStorage.getItem('email');
+        const role = localStorage.getItem('role') || sessionStorage.getItem('role');
 
         if (userId) {
             const user = {
@@ -1028,7 +1028,7 @@ const CallManagementPage: React.FC = () => {
                             ...(isEditMode && { id: editLogId }),
                             action_date: isEditMode ? formatDateForAPI(actionDate) : getApiDate(),
                             action_point_id: Number(actionTodayId) || "",
-                           
+
                             next_action_id: nextActionCommentId === "null" ? "" : nextActionCommentId || "",
                             next_action_date: formatDateForAPI(nextActionDate),
                             comments: commentActionText,

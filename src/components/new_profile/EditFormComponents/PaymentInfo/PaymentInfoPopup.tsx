@@ -391,7 +391,7 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
 
     } catch (error: any) {
       console.error("Error saving payment:", error);
-      alert("Failed to save payment. Please try again.");
+      NotifyError("Failed to save payment. Please try again.");
     }
   };
 
@@ -509,14 +509,14 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
       );
 
       if (response.data.status === "success") {
-        NotifySuccess(response.data.message || "Transaction rejected successfully");
+        NotifySuccess(response.data.message || "Transaction approving successfully");
         await fetchTransactions();
       } else {
-        alert(response.data.message || "Failed to reject transaction");
+        NotifyError(response.data.message || "Failed to approving transaction");
       }
     } catch (error) {
-      console.error("Error rejecting transaction:", error);
-      alert("Failed to reject transaction. Please try again.");
+      console.error("Error approving transaction:", error);
+      NotifyError("Failed to approve transaction. Please try again.");
     }
   };
 
@@ -538,11 +538,11 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
         NotifySuccess(response.data.message || "Transaction rejected successfully");
         await fetchTransactions();
       } else {
-        alert(response.data.message || "Failed to reject transaction");
+        NotifyError(response.data.message || "Failed to reject transaction");
       }
     } catch (error) {
       console.error("Error rejecting transaction:", error);
-      alert("Failed to reject transaction. Please try again.");
+      NotifyError("Failed to reject transaction. Please try again.");
     }
   };
 
@@ -1242,12 +1242,14 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
                                 {transaction.status === "1" ? (
                                   <div className="flex gap-2 justify-center">
                                     <button
+                                      type="button"
                                       onClick={() => handleApprove(transaction.id)}
                                       className="px-4 py-1 text-xs font-semibold rounded-md bg-green-600 text-white hover:bg-green-700 shadow-sm"
                                     >
                                       Approve
                                     </button>
                                     <button
+                                      type="button"
                                       onClick={() => handleDeny(transaction.id)}
                                       className="px-4 py-1 text-xs font-semibold rounded-md border border-red-600 text-red-600 hover:bg-red-50 shadow-sm"
                                     >

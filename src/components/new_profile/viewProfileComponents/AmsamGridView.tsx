@@ -37,7 +37,7 @@
 //     Array(12).fill([])
 //   );
 
-  
+
 
 //   // const formattedDatamsamval = sessionStorage.getItem("formattedDatamsam");
 
@@ -49,7 +49,7 @@
 //   }, [data]);
 
 
- 
+
 
 //   useEffect(() => {
 //     const formattedDatarasival = sessionStorage.getItem("formattedDatamsam");
@@ -79,7 +79,7 @@
 //   }, [initialLabels]); // Only run when "initialLabels" changes
 
 
- 
+
 
 //   const handleDragStart = (
 //     e: React.DragEvent<HTMLDivElement>,
@@ -254,7 +254,7 @@ import { RiDraggable } from "react-icons/ri";
 interface AmsamGridProps {
   centerLabel: string;
   rasiTemp: any
-  data:any;
+  data: any;
 
 }
 
@@ -263,7 +263,7 @@ interface Label {
   name: string;
 }
 
-const AmsamGridview: React.FC<AmsamGridProps> = ({ centerLabel, rasiTemp,data }) => {
+const AmsamGridview: React.FC<AmsamGridProps> = ({ centerLabel, rasiTemp, data }) => {
   const initialLabels: Label[] = useMemo(
     () => [
       // { id: 8, name: "Raghu/Rahu" },
@@ -297,22 +297,23 @@ const AmsamGridview: React.FC<AmsamGridProps> = ({ centerLabel, rasiTemp,data })
     Array(12).fill([])
   );
 
-  
+
 
   // const formattedDatamsamval = sessionStorage.getItem("formattedDatamsam");
 
   useEffect(() => {
     // Only update sessionStorage when "data" changes
     if (data) {
+      localStorage.setItem("formattedDatamsam", data);
       sessionStorage.setItem("formattedDatamsam", data);
     }
   }, [data]);
 
 
- 
+
 
   useEffect(() => {
-    const formattedDatarasival = sessionStorage.getItem("formattedDatamsam");
+    const formattedDatarasival = sessionStorage.getItem("formattedDatamsam") || localStorage.getItem("formattedDatamsam");
     if (formattedDatarasival) {
       const parsedData = formattedDatarasival
         .slice(1, -1)
@@ -339,7 +340,7 @@ const AmsamGridview: React.FC<AmsamGridProps> = ({ centerLabel, rasiTemp,data })
   }, [initialLabels]); // Only run when "initialLabels" changes
 
 
- 
+
 
   const handleDragStart = (
     e: React.DragEvent<HTMLDivElement>,
@@ -381,32 +382,32 @@ const AmsamGridview: React.FC<AmsamGridProps> = ({ centerLabel, rasiTemp,data })
     }
   };
 
-//   const handleRemoveLabel = (index: number, labelIndex: number) => {
-//     // Create a copy of the current amsamContents state
-//     const newContents = [...amsamContents];
-//     const removedLabel = newContents[index][labelIndex];
+  //   const handleRemoveLabel = (index: number, labelIndex: number) => {
+  //     // Create a copy of the current amsamContents state
+  //     const newContents = [...amsamContents];
+  //     const removedLabel = newContents[index][labelIndex];
 
-//     // Remove the label from the copied state
-//     newContents[index].splice(labelIndex, 1);
-//     setAmsamContents(newContents);
+  //     // Remove the label from the copied state
+  //     newContents[index].splice(labelIndex, 1);
+  //     setAmsamContents(newContents);
 
-//     // Find the removed label object from the initialLabels
-//     const removedLabelObj = initialLabels.find(
-//       (label) => label.name === removedLabel
-//     );
+  //     // Find the removed label object from the initialLabels
+  //     const removedLabelObj = initialLabels.find(
+  //       (label) => label.name === removedLabel
+  //     );
 
-//     // If the removed label object is found
-//     if (removedLabelObj) {
-//       setLabels((prevLabels) => {
-//         // Check if the label already exists in the state
-//         if (prevLabels.some((label) => label.name === removedLabel)) {
-//           return prevLabels; // Return the current state if label is already present
-//         }
-//         // Add the label to the state if it's not already present
-//         return [...prevLabels, removedLabelObj];
-//       });
-//     }
-//   };
+  //     // If the removed label object is found
+  //     if (removedLabelObj) {
+  //       setLabels((prevLabels) => {
+  //         // Check if the label already exists in the state
+  //         if (prevLabels.some((label) => label.name === removedLabel)) {
+  //           return prevLabels; // Return the current state if label is already present
+  //         }
+  //         // Add the label to the state if it's not already present
+  //         return [...prevLabels, removedLabelObj];
+  //       });
+  //     }
+  //   };
 
 
   const formatGridData = () => {
@@ -428,6 +429,7 @@ const AmsamGridview: React.FC<AmsamGridProps> = ({ centerLabel, rasiTemp,data })
     console.log(formattedData);
 
     // Store formattedData in sessionStorage
+    localStorage.setItem("formattedData1", JSON.stringify(formattedData));
     sessionStorage.setItem("formattedData1", JSON.stringify(formattedData));
   }, [amsamContents]);
 
@@ -438,7 +440,7 @@ const AmsamGridview: React.FC<AmsamGridProps> = ({ centerLabel, rasiTemp,data })
         {rasiTemp == "1" && labels.map((label, index) => (
           <div
             key={index}
-           // draggable
+            // draggable
             onDragStart={(e) => handleDragStart(e, label)}
             className="flex items-center text-black font-bold bg-yellow-100 text-xs px-2 py-2 rounded text-center hover:cursor-grab 2xl:text-[12px] 2xl:px-1 max-2xl:text-[10px]"
           >

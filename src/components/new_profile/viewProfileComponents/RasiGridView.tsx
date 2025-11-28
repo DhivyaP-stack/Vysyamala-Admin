@@ -249,12 +249,13 @@ const RasiGridview: React.FC<RasiGridProps> = ({
   useEffect(() => {
     // Only update sessionStorage when "data" changes
     if (data) {
+      localStorage.setItem("formattedDatarasi", data);
       sessionStorage.setItem("formattedDatarasi", data);
     }
   }, [data]); // Only run when "data" changes
 
   useEffect(() => {
-    const formattedDatarasival = sessionStorage.getItem("formattedDatarasi");
+    const formattedDatarasival = sessionStorage.getItem("formattedDatarasi") || localStorage.getItem("formattedDatarasi");
     if (formattedDatarasival) {
       const parsedData = formattedDatarasival
         .slice(1, -1)
@@ -337,6 +338,7 @@ const RasiGridview: React.FC<RasiGridProps> = ({
     const formattedData = formatGridData();
     console.log("Rasi Contents:", formattedData);
 
+    localStorage.setItem("formattedData", JSON.stringify(formattedData));
     sessionStorage.setItem("formattedData", JSON.stringify(formattedData));
   }, [rasiContents]);
 
@@ -351,7 +353,7 @@ const RasiGridview: React.FC<RasiGridProps> = ({
               onDragStart={(e) => handleDragStart(e, label)}
               className="flex items-center text-black font-semibold bg-yellow-100 text-xs px-2 py-2 rounded text-center hover:cursor-grab 2xl:text-[12px] 2xl:px-1 max-2xl:text-[10px]"
             >
-            {/* <RiDraggable className="mr-2 2xl:mr-1" /> */}
+              {/* <RiDraggable className="mr-2 2xl:mr-1" /> */}
               {label.name}
             </div>
           ))}

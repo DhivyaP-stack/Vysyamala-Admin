@@ -51,15 +51,15 @@ interface VysAssistPopupProps {
 }
 
 const VysAssistPopup: React.FC<VysAssistPopupProps> = ({ vysassistId, onClose }) => {
-  const ownerId = sessionStorage.getItem("id");
-  const firstName = sessionStorage.getItem("first_name");
+  const ownerId = localStorage.getItem("id") || sessionStorage.getItem("id");
+  const firstName = localStorage.getItem("first_name") || sessionStorage.getItem("first_name");
 
   const [followUpData, setFollowUpData] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [showForm, setShowForm] = useState<boolean>(false);
   const [adminComments, setAdminComments] = useState<AdminCommentTemplate[]>([]);
   const adminUserID = sessionStorage.getItem("id") || localStorage.getItem("id");
-  
+
   // ✨ State to track ONLY the dropdown selection
   const [selectedTemplateTitle, setSelectedTemplateTitle] = useState("");
 

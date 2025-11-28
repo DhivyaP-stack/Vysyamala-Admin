@@ -553,8 +553,6 @@ const EditViewProfile: React.FC<pageProps> = ({
     fetchAddOnPackages();
   }, []);
 
-
-
   const handlePrintProfile = (format: string) => {
     if (profileId) {
       downloadProfilePdf(profileId, format);
@@ -600,11 +598,11 @@ const EditViewProfile: React.FC<pageProps> = ({
     setIsPdfOptionsVisible(false)
   };
 
-
   const togglePdfVisibility = () => {
     setIsPdfOptionsVisible((prevState) => !prevState)
     setIsShareVisible(false)
   }
+  
 
   return (
     <div>
