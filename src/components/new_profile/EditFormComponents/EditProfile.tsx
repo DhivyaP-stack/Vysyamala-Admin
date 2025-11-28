@@ -1347,7 +1347,7 @@ const EditViewProfile: React.FC<pageProps> = ({
                             {errors.profileView.calc_raguketu_dhosham.message}
                           </p>
                         )}
-                        {hasPermission('edit_profile_admin') && (
+                        {(hasPermission('edit_profile_admin') && hasPermission('membership_activation')) && (
                           < div className=" justify-start items-start " >
                             <button
                               type="submit"

@@ -499,7 +499,8 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ open, onClose, profileId, s
       const payload = {
         transaction_id: transactionId.toString(),
         action: "accept",
-        payment_for: paymentFor
+        payment_for: paymentFor,
+        admin_user_id: adminUserID
       };
 
       const response = await apiAxios.post(
