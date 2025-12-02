@@ -121,6 +121,8 @@ interface UserOption {
 
 interface DetailedLogApiResponse {
     call_management_id: number;
+    profile_id: string;
+    mobile_no: string;
     call_logs: (ApiCallLog & { profile_owner: string })[];
     action_logs: ApiActionLog[];
     assign_logs: ApiAssignLog[];
@@ -628,6 +630,17 @@ const GeneralCallManagementPage: React.FC = () => {
         setActiveForm(formType);
 
         if (formType === "call") {
+            setProfileIdInForm(data.profile_id);
+            setPhoneNumber(data.mobile_no);
+        } else if (formType === "action") {
+            setActionProfileIdInForm(data.profile_id);
+            setActionPhoneNumber(data.mobile_no);
+        } else if (formType === "assign") {
+            setAssignProfileIdInForm(data.profile_id);
+            setAssignPhoneNumber(data.mobile_no);
+        }
+
+        if (formType === "call") {
             const log = data.call_logs.find(x => x.id === logId);
             if (!log) return;
 
@@ -1068,6 +1081,8 @@ const GeneralCallManagementPage: React.FC = () => {
 
                 payload = {
                     //  profile_id: profileId,
+                    profile_id: profileIdInForm,
+                    mobile_no: phoneNumber,
                     ...(isEditMode && { call_management_id: editCallManagementId }),
                     call_logs: [
                         {
@@ -1080,8 +1095,6 @@ const GeneralCallManagementPage: React.FC = () => {
                             comments: commentCallText,
                             call_owner: callOwnerId,
                             admin_user_id: adminUserID,
-                            profile_id: profileIdInForm,
-                            mobile_no: phoneNumber
                         }
                     ]
                 };
@@ -1099,6 +1112,8 @@ const GeneralCallManagementPage: React.FC = () => {
 
                 payload = {
                     //profile_id: profileId,
+                    profile_id: actionprofileIdInForm,
+                    mobile_no: actionphoneNumber,
                     ...(isEditMode && { call_management_id: editCallManagementId }),
                     action_logs: [
                         {
@@ -1111,8 +1126,6 @@ const GeneralCallManagementPage: React.FC = () => {
                             comments: commentActionText,
                             action_owner: actionOwnerId,
                             admin_user_id: adminUserID,
-                            profile_id: actionprofileIdInForm,
-                            mobile_no: actionphoneNumber
                         }
                     ]
                 };
@@ -1125,6 +1138,8 @@ const GeneralCallManagementPage: React.FC = () => {
 
                 payload = {
                     //profile_id: profileId,
+                    profile_id: assignprofileIdInForm,
+                    mobile_no: assignphoneNumber,
                     ...(isEditMode && { call_management_id: editCallManagementId }),
                     assign_logs: [
                         {
@@ -1134,8 +1149,6 @@ const GeneralCallManagementPage: React.FC = () => {
                             assigned_by: assignById,
                             notes: commentAssignText,
                             admin_user_id: adminUserID,
-                            profile_id: assignprofileIdInForm,
-                            mobile_no: assignphoneNumber,
                         }
                     ]
                 };
