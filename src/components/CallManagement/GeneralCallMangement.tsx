@@ -309,8 +309,12 @@ const GeneralCallManagementPage: React.FC = () => {
     const queryParams = new URLSearchParams(location.search);
     const profileId = queryParams.get('profileId');
     const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
-    const [profileIdInForm, setProfileIdInForm] = useState<string>(profileId || '');
+    const [profileIdInForm, setProfileIdInForm] = useState<string>('');
     const [phoneNumber, setPhoneNumber] = useState<string>('');
+    const [actionprofileIdInForm, setActionProfileIdInForm] = useState<string>('');
+    const [actionphoneNumber, setActionPhoneNumber] = useState<string>('');
+    const [assignprofileIdInForm, setAssignProfileIdInForm] = useState<string>('');
+    const [assignphoneNumber, setAssignPhoneNumber] = useState<string>('');
     // Date formatting functions
     const formatAPIDate = (dateString: string): string => {
         if (!dateString) return 'N/A';
@@ -420,7 +424,7 @@ const GeneralCallManagementPage: React.FC = () => {
 
     // Fetch data based on active tab
     const fetchTabData = async () => {
-        if (!profileId) return;
+        // if (!profileId) return;
 
         setLoading(true);
         try {
@@ -596,7 +600,7 @@ const GeneralCallManagementPage: React.FC = () => {
     const fetchLogDetails = async (id: number) => {
         try {
             const response = await apiAxios.get<DetailedLogApiResponse>(
-                `api/call-details/${id}/`
+                `api/call-details-new/${id}/`
             );
             return response.data;
         } catch (error) {
@@ -844,8 +848,12 @@ const GeneralCallManagementPage: React.FC = () => {
         setAssignTooId("");
         setCommentAssignText("");
         setAssignDate("");
-        setProfileIdInForm(profileId || '');
+        setProfileIdInForm('');
         setPhoneNumber('');
+        setActionProfileIdInForm('');
+        setActionPhoneNumber('');
+        setAssignProfileIdInForm('');
+        setAssignPhoneNumber('');
     };
 
     const getApiDate = (): string => {
@@ -1072,6 +1080,8 @@ const GeneralCallManagementPage: React.FC = () => {
                             comments: commentCallText,
                             call_owner: callOwnerId,
                             admin_user_id: adminUserID,
+                            profile_id: profileIdInForm,
+                            mobile_no: phoneNumber
                         }
                     ]
                 };
@@ -1088,7 +1098,7 @@ const GeneralCallManagementPage: React.FC = () => {
                 });
 
                 payload = {
-                    profile_id: profileId,
+                    //profile_id: profileId,
                     ...(isEditMode && { call_management_id: editCallManagementId }),
                     action_logs: [
                         {
@@ -1101,6 +1111,8 @@ const GeneralCallManagementPage: React.FC = () => {
                             comments: commentActionText,
                             action_owner: actionOwnerId,
                             admin_user_id: adminUserID,
+                            profile_id: actionprofileIdInForm,
+                            mobile_no: actionphoneNumber
                         }
                     ]
                 };
@@ -1112,7 +1124,7 @@ const GeneralCallManagementPage: React.FC = () => {
                 });
 
                 payload = {
-                    profile_id: profileId,
+                    //profile_id: profileId,
                     ...(isEditMode && { call_management_id: editCallManagementId }),
                     assign_logs: [
                         {
@@ -1122,6 +1134,8 @@ const GeneralCallManagementPage: React.FC = () => {
                             assigned_by: assignById,
                             notes: commentAssignText,
                             admin_user_id: adminUserID,
+                            profile_id: assignprofileIdInForm,
+                            mobile_no: assignphoneNumber,
                         }
                     ]
                 };
@@ -1387,9 +1401,8 @@ const GeneralCallManagementPage: React.FC = () => {
                                 <Typography sx={labelSx}>Profile ID</Typography>
                                 <TextField
                                     fullWidth
-                                    // Profile ID should be display-only, pulled from URL param state
-                                    value={profileIdInForm}
-                                    disabled={true}
+                                    value={actionprofileIdInForm}
+                                    onChange={(e) => setActionProfileIdInForm(e.target.value)}
                                     {...baseInputProps}
                                 />
                             </Grid>
@@ -1398,11 +1411,11 @@ const GeneralCallManagementPage: React.FC = () => {
                                 <TextField
                                     fullWidth
                                     type="tel" // Use tel for appropriate mobile keyboard
-                                    value={phoneNumber}
+                                    value={actionphoneNumber}
                                     onChange={(e) => {
                                         // Allow only digits
                                         const cleanedValue = e.target.value.replace(/\D/g, '').slice(0, 15);
-                                        setPhoneNumber(cleanedValue);
+                                        setActionPhoneNumber(cleanedValue);
                                     }}
                                     //placeholder="Enter Phone Number"
                                     {...baseInputProps}
@@ -1504,9 +1517,8 @@ const GeneralCallManagementPage: React.FC = () => {
                                 <Typography sx={labelSx}>Profile ID</Typography>
                                 <TextField
                                     fullWidth
-                                    // Profile ID should be display-only, pulled from URL param state
-                                    value={profileIdInForm}
-                                    disabled={true}
+                                    onChange={(e) => setAssignProfileIdInForm(e.target.value)}
+                                    value={assignprofileIdInForm}
                                     {...baseInputProps}
                                 />
                             </Grid>
@@ -1515,11 +1527,11 @@ const GeneralCallManagementPage: React.FC = () => {
                                 <TextField
                                     fullWidth
                                     type="tel" // Use tel for appropriate mobile keyboard
-                                    value={phoneNumber}
+                                    value={assignphoneNumber}
                                     onChange={(e) => {
                                         // Allow only digits
                                         const cleanedValue = e.target.value.replace(/\D/g, '').slice(0, 15);
-                                        setPhoneNumber(cleanedValue);
+                                        setAssignPhoneNumber(cleanedValue);
                                     }}
                                     //placeholder="Enter Phone Number"
                                     {...baseInputProps}
@@ -1578,7 +1590,7 @@ const GeneralCallManagementPage: React.FC = () => {
     return (
         <div className="p-4">
             <h1 className="text-2xl text-black font-bold mb-4">
-                Profile Call Management
+                General Call Management
             </h1>
 
             <Paper sx={{ width: '100%', overflow: 'hidden' }}>
