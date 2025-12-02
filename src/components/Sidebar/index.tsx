@@ -1340,12 +1340,11 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 </ul>
               </div>
 
-              <div
+              {/* <div
                 className={`translate transform overflow-hidden ${!open && 'hidden'
                   }`}
               >
                 <ul className="mt-4 mb-5.5 flex flex-col">
-                  {/* Submenu Items */}
                   <li>
                     <NavLink
                       to="/GeneralCallManagement"
@@ -1359,7 +1358,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     </NavLink>
                   </li>
                 </ul>
-              </div>
+              </div> */}
 
               {hasPermission('add_new_staff') && (
                 <SidebarLinkGroup

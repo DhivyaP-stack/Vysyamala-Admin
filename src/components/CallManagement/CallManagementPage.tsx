@@ -471,7 +471,7 @@ const CallManagementPage: React.FC = () => {
 
     const fetchProfileData = async () => {
         if (!profileId) return;
-
+        setLoading(true);
         try {
             const response = await apiAxios.get<any>(
                 `api/logs/${profileId}`
@@ -520,6 +520,9 @@ const CallManagementPage: React.FC = () => {
                 console.error("Response error:", error.response.data);
             }
             toast.error("Failed to load profile information");
+        } finally {
+            // Set loading state OFF when fetch completes (success or failure)
+            setLoading(false);
         }
     };
 
@@ -791,11 +794,28 @@ const CallManagementPage: React.FC = () => {
         </Box>
     );
 
+    // const handleSelectChange = (
+    //     event: SelectChangeEvent<string>,
+    //     setState: React.Dispatch<React.SetStateAction<string>>
+    // ) => {
+    //     setState(event.target.value as string);
+    // };
+
+
     const handleSelectChange = (
         event: SelectChangeEvent<string>,
-        setState: React.Dispatch<React.SetStateAction<string>>
+        setState: React.Dispatch<React.SetStateAction<string>>,
+        // Added a specific handler name parameter
+        fieldName?: 'callStatus'
     ) => {
-        setState(event.target.value as string);
+        const newValue = event.target.value as string;
+        setState(newValue);
+
+        // 🔥 NEW LOGIC: Check if the state being updated is callStatusId
+        if (fieldName === 'callStatus') {
+            const newNextCallDate = calculateNextCallDate(newValue);
+            setNextCallDate(newNextCallDate);
+        }
     };
 
     const handleCloseDialog = () => {
@@ -859,6 +879,43 @@ const CallManagementPage: React.FC = () => {
             console.error('Error formatting date for API:', error);
             return '';
         }
+    };
+
+    const calculateNextCallDate = (statusId: string): string => {
+        if (!statusId) return '';
+
+        let daysToAdd = 0;
+        const numericStatusId = Number(statusId);
+
+        // Logic based on the user's requirements:
+        switch (numericStatusId) {
+            case 1: // If call status ID 1 is selected, set the next call date after 3 days.
+                daysToAdd = 3;
+                break;
+            case 2: // If call status ID 2 is selected, set the next call date after 7 days.
+                daysToAdd = 7;
+                break;
+            case 3: // If call status ID 3 is selected, set the next call date after 30 days.
+                daysToAdd = 30;
+                break;
+            default:
+                daysToAdd = 0; // Default: no date set or next day, adjust as needed
+                break;
+        }
+
+        if (daysToAdd > 0) {
+            const today = new Date();
+            const nextDate = new Date(today);
+            nextDate.setDate(today.getDate() + daysToAdd);
+
+            // Format to YYYY-MM-DD for the HTML date input
+            const year = nextDate.getFullYear();
+            const month = String(nextDate.getMonth() + 1).padStart(2, '0');
+            const day = String(nextDate.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        return '';
     };
 
     const handleSubmit = async () => {
@@ -1159,7 +1216,7 @@ const CallManagementPage: React.FC = () => {
                                 <Select
                                     fullWidth
                                     value={callStatusId}
-                                    onChange={(e) => handleSelectChange(e, setCallStatusId)}
+                                    onChange={(e) => handleSelectChange(e, setCallStatusId, 'callStatus')}
                                     error={!callStatusId && isError}
                                     {...baseInputProps}
                                 >
@@ -1490,11 +1547,7 @@ const CallManagementPage: React.FC = () => {
                                 <strong>Last Action:</strong> {profileData.last_action || "N/A"}
                             </Typography>
                         </>
-                    ) : (
-                        <Typography color="error">
-                            Failed to load profile data
-                        </Typography>
-                    )}
+                    ) : null}
                 </Box>
 
 
