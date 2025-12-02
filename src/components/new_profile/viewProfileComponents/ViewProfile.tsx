@@ -744,7 +744,8 @@ const ViewProfile: React.FC<pageProps> = ({
                   variant="contained"
                   size="small"
                   className="bg-blue-700 whitespace-nowrap"
-                  onClick={() => navigate(`/CallManagement?profileId=${profileId}`)}
+                  // onClick={() => navigate(`/CallManagement?profileId=${profileId}`)}
+                  onClick={() => window.open(`/CallManagement?profileId=${profileId}`, "_blank")}
                 >
                   Call Management
                 </Button>
@@ -802,7 +803,7 @@ const ViewProfile: React.FC<pageProps> = ({
                     </p>
                   </div>
 
-                 
+
                   <div className="flex flex-wrap items-center gap-2 mb-2">
                     <span className="font-semibold text-[#5a5959e6]">Profile Status:</span>
                     <span className="text-[#5a5959e6]">{profileView?.profile_status || "N/A"}</span>

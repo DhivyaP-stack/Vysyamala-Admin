@@ -234,7 +234,7 @@ const getUserFromSession = () => {
     }
 };
 
-const CallManagementPage: React.FC = () => {
+const GeneralCallManagementPage: React.FC = () => {
     const [activeForm, setActiveForm] = useState<'none' | 'call' | 'action' | 'assign'>('none');
     const [activeTab, setActiveTab] = useState<"call" | "action" | "assign">("call");
 
@@ -275,6 +275,7 @@ const CallManagementPage: React.FC = () => {
     const [userList, setUserList] = useState<UserOption[]>([]);
     const [userLoading, setUserLoading] = useState(false);
     const [assignTooId, setAssignTooId] = useState<string>('');
+    const [nextCallMinDate, setNextCallMinDate] = useState<string>(tomorrowMinDate);
 
     // User data with better fallback handling
     const callOwnerName = userData?.username || userData?.name || userData?.user_name || userData?.first_name || "Unknown User";
@@ -383,6 +384,30 @@ const CallManagementPage: React.FC = () => {
         const day = String(date.getDate()).padStart(2, '0');
 
         return `${year}-${month}-${day}`;
+    };
+
+    // Helper function (can be placed inside CallManagementPage or outside)
+    const calculateMinNextCallDate = (statusId: string): string => {
+        const today = new Date();
+        const daysToAddMap: { [key: string]: number } = {
+            "1": 3, // "Hot - 3 days"
+            "2": 7, // "Warm - 7 days"
+            "3": 30, // "Cold - 30 days"
+        };
+
+        let daysToAdd = 1; // Default to tomorrow if status is "Not interested", "Inprogress", "Completed", or not selected.
+
+        const delayDays = daysToAddMap[statusId];
+        if (delayDays) {
+            daysToAdd = delayDays;
+        }
+
+        const minDate = new Date();
+        // Add the required number of days to the current date
+        minDate.setDate(today.getDate() + daysToAdd);
+
+        // Format to YYYY-MM-DD (ISO format for date input min attribute)
+        return minDate.toISOString().split('T')[0];
     };
 
     const isToday = (dateString: string): boolean => {
@@ -621,7 +646,29 @@ const CallManagementPage: React.FC = () => {
         if (formType === "call") {
             const log = data.call_logs.find(x => x.id === logId);
             if (!log) return;
+            setCallTypeId(String(log.call_type_id));
+            setCallStatusId(String(log.call_status_id));
+            setParticularsId(String(log.particulars_id));
+            // ... existing setters ...
 
+            // --- NEW LOGIC FOR EDIT MODE ---
+            // 1. Calculate the *default* minimum date based on the existing status
+            const calculatedMinDate = calculateMinNextCallDate(String(log.call_status_id));
+            setNextCallMinDate(calculatedMinDate);
+
+            // 2. Set the actual next call date from the log, converted to HTML format
+            const logNextCallDateHtml = toHtmlDate(log.next_call_date);
+            setNextCallDate(logNextCallDateHtml);
+
+            // 3. OPTIONAL: If the existing log's date is earlier than the newly calculated min date (e.g., status was changed in API since log creation),
+            //    you might want to enforce the minimum for future edits.
+            if (logNextCallDateHtml && new Date(logNextCallDateHtml) < new Date(calculatedMinDate)) {
+                // You can choose to leave the original date (for the API call) 
+                // but set the input's min attribute to the new min date.
+                // If you want to force the date to the new min: 
+                // setNextCallDate(calculatedMinDate);
+            }
+            setCallDate(log.call_date);
             console.log('Call log raw dates:', {
                 call_date: log.call_date,
                 next_call_date: log.next_call_date,
@@ -795,7 +842,21 @@ const CallManagementPage: React.FC = () => {
         event: SelectChangeEvent<string>,
         setState: React.Dispatch<React.SetStateAction<string>>
     ) => {
-        setState(event.target.value as string);
+        const value = event.target.value as string;
+        setState(value);
+
+        // --- NEW LOGIC FOR CALL STATUS ---
+        if (setState === setCallStatusId) {
+            const newMinDate = calculateMinNextCallDate(value);
+            setNextCallMinDate(newMinDate);
+
+            if (nextCallDate && new Date(nextCallDate) < new Date(newMinDate)) {
+                setNextCallDate(newMinDate);
+            } else if (!nextCallDate) {
+                // If no date is set, default to the new min date
+                setNextCallDate(newMinDate);
+            }
+        }
     };
 
     const handleCloseDialog = () => {
@@ -1862,4 +1923,4 @@ const CallManagementPage: React.FC = () => {
     );
 };
 
-export default CallManagementPage;
+export default GeneralCallManagementPage;

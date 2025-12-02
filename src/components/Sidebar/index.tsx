@@ -1195,7 +1195,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 </SidebarLinkGroup>
               )}
 
-          
+
               {(hasPermission('online_changes_tool') || hasPermission('marriage_photo_upload')) && (
                 <SidebarLinkGroup
                   activeCondition={
@@ -1254,7 +1254,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             }`}
                         >
                           <ul className="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6">
-                            
+
                             {hasPermission('online_changes_tool') && (
                               <>
                                 <li>
@@ -1296,7 +1296,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                               </>
                             )}
 
-                           
+
                             {hasPermission('marriage_photo_upload') && (
                               <li>
                                 <NavLink
@@ -1340,6 +1340,26 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 </ul>
               </div>
 
+              <div
+                className={`translate transform overflow-hidden ${!open && 'hidden'
+                  }`}
+              >
+                <ul className="mt-4 mb-5.5 flex flex-col">
+                  {/* Submenu Items */}
+                  <li>
+                    <NavLink
+                      to="/GeneralCallManagement"
+                      className={({ isActive }) =>
+                        'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                        (isActive && '!text-PrimaryRed')
+                      }
+                    >
+                      <IoSettings />
+                      General Call Management
+                    </NavLink>
+                  </li>
+                </ul>
+              </div>
 
               {hasPermission('add_new_staff') && (
                 <SidebarLinkGroup

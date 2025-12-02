@@ -602,7 +602,7 @@ const EditViewProfile: React.FC<pageProps> = ({
     setIsPdfOptionsVisible((prevState) => !prevState)
     setIsShareVisible(false)
   }
-  
+
 
   return (
     <div>
@@ -863,7 +863,8 @@ const EditViewProfile: React.FC<pageProps> = ({
                         <button
                           type="button"
                           // onClick={() => setOpenCallManagement(true)}
-                          onClick={() => navigate(`/CallManagement?profileId=${profileId}`)}
+                          // onClick={() => navigate(`/CallManagement?profileId=${profileId}`)}
+                          onClick={() => window.open(`/CallManagement?profileId=${profileId}`, "_blank")}
                           className={`bg-blue-700 text-white px-8 py-1 text-md h-auto rounded whitespace-nowrap `}
                         >
                           Call Management

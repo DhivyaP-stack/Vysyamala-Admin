@@ -117,6 +117,7 @@ import TransactionHistoryNew from './components/ReuseProfileTable/userActions/Tr
 import FeaturedProfiles from './components/ReuseProfileTable/Profiles/FeaturedProfiles';
 import StaffDetails from './components/StaffDetails/StaffDetails';
 import CallManagementPage from './components/CallManagement/CallManagementPage';
+import GeneralCallManagementPage from './components/CallManagement/GeneralCallMangement';
 
 
 function App() {
@@ -1134,6 +1135,7 @@ function App() {
                   element={<ProfileVisibilityTable />}
                 />
                 <Route path="/CallManagement" element={<CallManagementPage />} />
+                <Route path="/GeneralCallManagement" element={<GeneralCallManagementPage />} />
               </Routes>
             </DefaultLayout>
           }

@@ -217,13 +217,15 @@ const SearchProfileFilters = ({ onFilterSubmit, loading }: SearchProfileFiltersP
       chevvaiDhosam,
       fatherAlive,
       motherAlive,
-      selectedMaritalStatus,
-      selectedFamilyStatus,
+      // selectedMaritalStatus,
+      // selectedFamilyStatus,
       mobileNo,
       dobDay,
       dobMonth,
       dobYear,
       selectedProfileStatus,
+      selectedMaritalStatus: selectedMaritalStatus.join(","),
+      selectedFamilyStatus: selectedFamilyStatus.join(","),
     };
 
     // Pass filters to parent component

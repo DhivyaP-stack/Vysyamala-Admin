@@ -118,7 +118,9 @@ const SearchProfileResults = ({ filters, onBack, No_Image_Available }: SearchPro
           filters.dobDay, // day component
           filters.dobMonth, // month component
           filters.dobYear, // year component
-          String(filters.selectedProfileStatus) // Add status
+          String(filters.selectedProfileStatus),
+          String(filters.selectedMaritalStatus),
+          String(filters.selectedFamilyStatus)
         );
 
         setMatchingData(MatchingprofileFilter.profiles || []);
