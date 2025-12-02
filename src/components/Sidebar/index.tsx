@@ -9,7 +9,7 @@ import { FaRegStar } from 'react-icons/fa';
 import { MdFamilyRestroom } from 'react-icons/md';
 import { ImProfile } from 'react-icons/im';
 import { GoDot } from 'react-icons/go';
-import { IoDocumentTextOutline, IoSettings } from 'react-icons/io5';
+import { IoCall, IoDocumentTextOutline, IoSettings } from 'react-icons/io5';
 import { FaClipboardUser } from "react-icons/fa6";
 import { hasPermission } from '../utils/auth';
 
@@ -1340,7 +1340,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 </ul>
               </div>
 
-              {/* <div
+              <div
                 className={`translate transform overflow-hidden ${!open && 'hidden'
                   }`}
               >
@@ -1353,12 +1353,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                         (isActive && '!text-PrimaryRed')
                       }
                     >
-                      <IoSettings />
+                      <IoCall />
                       General Call Management
                     </NavLink>
                   </li>
                 </ul>
-              </div> */}
+              </div>
 
               {hasPermission('add_new_staff') && (
                 <SidebarLinkGroup

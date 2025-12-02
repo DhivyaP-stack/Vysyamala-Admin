@@ -128,7 +128,7 @@ interface DetailedLogApiResponse {
 
 // Profile Data Interface
 interface ProfileData {
-    profile_id: string;
+    //profile_id: string;
     profile_owner: string;
     last_call_date: string;
     last_call_comments: string;
@@ -275,7 +275,6 @@ const GeneralCallManagementPage: React.FC = () => {
     const [userList, setUserList] = useState<UserOption[]>([]);
     const [userLoading, setUserLoading] = useState(false);
     const [assignTooId, setAssignTooId] = useState<string>('');
-    const [nextCallMinDate, setNextCallMinDate] = useState<string>(tomorrowMinDate);
 
     // User data with better fallback handling
     const callOwnerName = userData?.username || userData?.name || userData?.user_name || userData?.first_name || "Unknown User";
@@ -310,6 +309,8 @@ const GeneralCallManagementPage: React.FC = () => {
     const queryParams = new URLSearchParams(location.search);
     const profileId = queryParams.get('profileId');
     const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
+    const [profileIdInForm, setProfileIdInForm] = useState<string>(profileId || '');
+    const [phoneNumber, setPhoneNumber] = useState<string>('');
     // Date formatting functions
     const formatAPIDate = (dateString: string): string => {
         if (!dateString) return 'N/A';
@@ -386,30 +387,6 @@ const GeneralCallManagementPage: React.FC = () => {
         return `${year}-${month}-${day}`;
     };
 
-    // Helper function (can be placed inside CallManagementPage or outside)
-    const calculateMinNextCallDate = (statusId: string): string => {
-        const today = new Date();
-        const daysToAddMap: { [key: string]: number } = {
-            "1": 3, // "Hot - 3 days"
-            "2": 7, // "Warm - 7 days"
-            "3": 30, // "Cold - 30 days"
-        };
-
-        let daysToAdd = 1; // Default to tomorrow if status is "Not interested", "Inprogress", "Completed", or not selected.
-
-        const delayDays = daysToAddMap[statusId];
-        if (delayDays) {
-            daysToAdd = delayDays;
-        }
-
-        const minDate = new Date();
-        // Add the required number of days to the current date
-        minDate.setDate(today.getDate() + daysToAdd);
-
-        // Format to YYYY-MM-DD (ISO format for date input min attribute)
-        return minDate.toISOString().split('T')[0];
-    };
-
     const isToday = (dateString: string): boolean => {
         if (!dateString) return false;
 
@@ -452,17 +429,17 @@ const GeneralCallManagementPage: React.FC = () => {
 
             switch (activeTab) {
                 case "call":
-                    endpoint = `api/call-logs/${profileId}/`;
+                    endpoint = `api/call-logs_new/`;
                     response = await apiAxios.get<CallLogApiResponse>(endpoint);
                     setCallLogs(response.data.call_logs || []);
                     break;
                 case "action":
-                    endpoint = `api/action-logs/${profileId}/`;
+                    endpoint = `api/action-logs-new/`;
                     response = await apiAxios.get<ActionLogApiResponse>(endpoint);
                     setActionLogs(response.data.action_logs || []);
                     break;
                 case "assign":
-                    endpoint = `api/assign-logs/${profileId}/`;
+                    endpoint = `api/assign-logs-new/`;
                     response = await apiAxios.get<AssignLogApiResponse>(endpoint);
                     setAssignLogs(response.data.assign_logs || []);
                     break;
@@ -496,7 +473,7 @@ const GeneralCallManagementPage: React.FC = () => {
 
     const fetchProfileData = async () => {
         if (!profileId) return;
-
+        setLoading(true);
         try {
             const response = await apiAxios.get<any>(
                 `api/logs/${profileId}`
@@ -525,7 +502,7 @@ const GeneralCallManagementPage: React.FC = () => {
 
             // Map the data according to your requirements - using FIRST records (most recent)
             const profileData: ProfileData = {
-                profile_id: response.data.profile_id || profileId || "N/A",
+                //profile_id: response.data.profile_id || profileId || "N/A",
                 profile_owner: response.data.owner_name || lastAssignment?.assigned_to_name || "N/A",
                 last_call_date: lastCall?.call_date || "N/A",
                 last_call_comments: lastCall?.comments || "N/A",
@@ -545,6 +522,9 @@ const GeneralCallManagementPage: React.FC = () => {
                 console.error("Response error:", error.response.data);
             }
             toast.error("Failed to load profile information");
+        } finally {
+            // Set loading state OFF when fetch completes (success or failure)
+            setLoading(false);
         }
     };
 
@@ -646,29 +626,7 @@ const GeneralCallManagementPage: React.FC = () => {
         if (formType === "call") {
             const log = data.call_logs.find(x => x.id === logId);
             if (!log) return;
-            setCallTypeId(String(log.call_type_id));
-            setCallStatusId(String(log.call_status_id));
-            setParticularsId(String(log.particulars_id));
-            // ... existing setters ...
 
-            // --- NEW LOGIC FOR EDIT MODE ---
-            // 1. Calculate the *default* minimum date based on the existing status
-            const calculatedMinDate = calculateMinNextCallDate(String(log.call_status_id));
-            setNextCallMinDate(calculatedMinDate);
-
-            // 2. Set the actual next call date from the log, converted to HTML format
-            const logNextCallDateHtml = toHtmlDate(log.next_call_date);
-            setNextCallDate(logNextCallDateHtml);
-
-            // 3. OPTIONAL: If the existing log's date is earlier than the newly calculated min date (e.g., status was changed in API since log creation),
-            //    you might want to enforce the minimum for future edits.
-            if (logNextCallDateHtml && new Date(logNextCallDateHtml) < new Date(calculatedMinDate)) {
-                // You can choose to leave the original date (for the API call) 
-                // but set the input's min attribute to the new min date.
-                // If you want to force the date to the new min: 
-                // setNextCallDate(calculatedMinDate);
-            }
-            setCallDate(log.call_date);
             console.log('Call log raw dates:', {
                 call_date: log.call_date,
                 next_call_date: log.next_call_date,
@@ -797,7 +755,7 @@ const GeneralCallManagementPage: React.FC = () => {
                 admin_user_id: adminUserID,
             };
 
-            await apiAxios.post("api/call_manage-delete/", payload);
+            await apiAxios.post("api/call_manage_new-delete/", payload);
 
             toast.success("Record deleted successfully");
 
@@ -838,24 +796,27 @@ const GeneralCallManagementPage: React.FC = () => {
         </Box>
     );
 
+    // const handleSelectChange = (
+    //     event: SelectChangeEvent<string>,
+    //     setState: React.Dispatch<React.SetStateAction<string>>
+    // ) => {
+    //     setState(event.target.value as string);
+    // };
+
+
     const handleSelectChange = (
         event: SelectChangeEvent<string>,
-        setState: React.Dispatch<React.SetStateAction<string>>
+        setState: React.Dispatch<React.SetStateAction<string>>,
+        // Added a specific handler name parameter
+        fieldName?: 'callStatus'
     ) => {
-        const value = event.target.value as string;
-        setState(value);
+        const newValue = event.target.value as string;
+        setState(newValue);
 
-        // --- NEW LOGIC FOR CALL STATUS ---
-        if (setState === setCallStatusId) {
-            const newMinDate = calculateMinNextCallDate(value);
-            setNextCallMinDate(newMinDate);
-
-            if (nextCallDate && new Date(nextCallDate) < new Date(newMinDate)) {
-                setNextCallDate(newMinDate);
-            } else if (!nextCallDate) {
-                // If no date is set, default to the new min date
-                setNextCallDate(newMinDate);
-            }
+        // 🔥 NEW LOGIC: Check if the state being updated is callStatusId
+        if (fieldName === 'callStatus') {
+            const newNextCallDate = calculateNextCallDate(newValue);
+            setNextCallDate(newNextCallDate);
         }
     };
 
@@ -883,6 +844,8 @@ const GeneralCallManagementPage: React.FC = () => {
         setAssignTooId("");
         setCommentAssignText("");
         setAssignDate("");
+        setProfileIdInForm(profileId || '');
+        setPhoneNumber('');
     };
 
     const getApiDate = (): string => {
@@ -920,6 +883,43 @@ const GeneralCallManagementPage: React.FC = () => {
             console.error('Error formatting date for API:', error);
             return '';
         }
+    };
+
+    const calculateNextCallDate = (statusId: string): string => {
+        if (!statusId) return '';
+
+        let daysToAdd = 0;
+        const numericStatusId = Number(statusId);
+
+        // Logic based on the user's requirements:
+        switch (numericStatusId) {
+            case 1: // If call status ID 1 is selected, set the next call date after 3 days.
+                daysToAdd = 3;
+                break;
+            case 2: // If call status ID 2 is selected, set the next call date after 7 days.
+                daysToAdd = 7;
+                break;
+            case 3: // If call status ID 3 is selected, set the next call date after 30 days.
+                daysToAdd = 30;
+                break;
+            default:
+                daysToAdd = 0; // Default: no date set or next day, adjust as needed
+                break;
+        }
+
+        if (daysToAdd > 0) {
+            const today = new Date();
+            const nextDate = new Date(today);
+            nextDate.setDate(today.getDate() + daysToAdd);
+
+            // Format to YYYY-MM-DD for the HTML date input
+            const year = nextDate.getFullYear();
+            const month = String(nextDate.getMonth() + 1).padStart(2, '0');
+            const day = String(nextDate.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        return '';
     };
 
     const handleSubmit = async () => {
@@ -1059,7 +1059,7 @@ const GeneralCallManagementPage: React.FC = () => {
                 });
 
                 payload = {
-                    profile_id: profileId,
+                    //  profile_id: profileId,
                     ...(isEditMode && { call_management_id: editCallManagementId }),
                     call_logs: [
                         {
@@ -1138,7 +1138,7 @@ const GeneralCallManagementPage: React.FC = () => {
         try {
             setLoading(true);
 
-            const response = await apiAxios.post("api/call/save/", payload);
+            const response = await apiAxios.post("api/call_new/save/", payload);
 
             // Check if the response contains the specific error message
             if (response.data && response.data.status === "failed") {
@@ -1220,7 +1220,7 @@ const GeneralCallManagementPage: React.FC = () => {
                                 <Select
                                     fullWidth
                                     value={callStatusId}
-                                    onChange={(e) => handleSelectChange(e, setCallStatusId)}
+                                    onChange={(e) => handleSelectChange(e, setCallStatusId, 'callStatus')}
                                     error={!callStatusId && isError}
                                     {...baseInputProps}
                                 >
@@ -1256,6 +1256,29 @@ const GeneralCallManagementPage: React.FC = () => {
                                     fullWidth
                                     disabled
                                     value={callOwnerName}
+                                    {...baseInputProps}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={4}>
+                                <Typography sx={labelSx}>Profile ID</Typography>
+                                <TextField
+                                    fullWidth
+                                    value={profileIdInForm}
+                                    onChange={(e) => setProfileIdInForm(e.target.value)}
+                                    {...baseInputProps}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={4}>
+                                <Typography sx={labelSx}>Phone Number</Typography>
+                                <TextField
+                                    fullWidth
+                                    type="tel"
+                                    value={phoneNumber}
+                                    onChange={(e) => {
+                                        const cleanedValue = e.target.value.replace(/\D/g, '').slice(0, 15);
+                                        setPhoneNumber(cleanedValue);
+                                    }}
+                                    // placeholder="Enter Phone Number"
                                     {...baseInputProps}
                                 />
                             </Grid>
@@ -1360,6 +1383,31 @@ const GeneralCallManagementPage: React.FC = () => {
                                     {...baseInputProps}
                                 />
                             </Grid>
+                            <Grid item xs={12} sm={6} md={4}>
+                                <Typography sx={labelSx}>Profile ID</Typography>
+                                <TextField
+                                    fullWidth
+                                    // Profile ID should be display-only, pulled from URL param state
+                                    value={profileIdInForm}
+                                    disabled={true}
+                                    {...baseInputProps}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={4}>
+                                <Typography sx={labelSx}>Phone Number</Typography>
+                                <TextField
+                                    fullWidth
+                                    type="tel" // Use tel for appropriate mobile keyboard
+                                    value={phoneNumber}
+                                    onChange={(e) => {
+                                        // Allow only digits
+                                        const cleanedValue = e.target.value.replace(/\D/g, '').slice(0, 15);
+                                        setPhoneNumber(cleanedValue);
+                                    }}
+                                    //placeholder="Enter Phone Number"
+                                    {...baseInputProps}
+                                />
+                            </Grid>
                             <Grid item xs={12}>
                                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.75 }}>
                                     <Typography sx={labelSx}>Comments (Rich Text) <span className='text-red-500'>*</span></Typography>
@@ -1418,7 +1466,7 @@ const GeneralCallManagementPage: React.FC = () => {
                                     {...baseInputProps}
                                 />
                             </Grid>
-                            <Grid item xs={12} sm={4}>
+                            <Grid item xs={12} sm={6} md={4}>
                                 <Typography sx={labelSx}>Assign To</Typography>
                                 <Select
                                     fullWidth
@@ -1443,12 +1491,37 @@ const GeneralCallManagementPage: React.FC = () => {
                                     )}
                                 </Select>
                             </Grid>
-                            <Grid item xs={12} sm={4}>
+                            <Grid item xs={12} sm={6} md={4}>
                                 <Typography sx={labelSx}>Assign By</Typography>
                                 <TextField
                                     fullWidth
                                     disabled
                                     value={AssignByName}
+                                    {...baseInputProps}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={4}>
+                                <Typography sx={labelSx}>Profile ID</Typography>
+                                <TextField
+                                    fullWidth
+                                    // Profile ID should be display-only, pulled from URL param state
+                                    value={profileIdInForm}
+                                    disabled={true}
+                                    {...baseInputProps}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={4}>
+                                <Typography sx={labelSx}>Phone Number</Typography>
+                                <TextField
+                                    fullWidth
+                                    type="tel" // Use tel for appropriate mobile keyboard
+                                    value={phoneNumber}
+                                    onChange={(e) => {
+                                        // Allow only digits
+                                        const cleanedValue = e.target.value.replace(/\D/g, '').slice(0, 15);
+                                        setPhoneNumber(cleanedValue);
+                                    }}
+                                    //placeholder="Enter Phone Number"
                                     {...baseInputProps}
                                 />
                             </Grid>
@@ -1511,7 +1584,7 @@ const GeneralCallManagementPage: React.FC = () => {
             <Paper sx={{ width: '100%', overflow: 'hidden' }}>
 
                 {/* Dynamic Profile Data Section */}
-                <Box sx={{
+                {/* <Box sx={{
                     display: "flex",
                     gap: 3,
                     flexWrap: "wrap",
@@ -1551,12 +1624,8 @@ const GeneralCallManagementPage: React.FC = () => {
                                 <strong>Last Action:</strong> {profileData.last_action || "N/A"}
                             </Typography>
                         </>
-                    ) : (
-                        <Typography color="error">
-                            Failed to load profile data
-                        </Typography>
-                    )}
-                </Box>
+                    ) : null}
+                </Box> */}
 
 
                 <Box sx={{
