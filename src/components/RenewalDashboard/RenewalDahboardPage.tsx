@@ -1,7 +1,8 @@
 import axios from "axios";
-import React from "react";
+import React, { useEffect } from "react";
 import { apiAxios } from "../../api/apiUrl";
 import { ProfileOwner, fetchProfileOwners } from "../new_profile/EditFormComponents/EditProfile";
+import { Box, CircularProgress, Typography } from "@mui/material";
 
 interface RenewalStats {
     overall_count: number;
@@ -101,7 +102,8 @@ const RenewalDashboard = () => {
     const [plansError, setPlansError] = React.useState<string | null>(null);
     const profileTableRef = React.useRef<HTMLDivElement | null>(null);
     const [tableLoading, setTableLoading] = React.useState(false);
-
+    const [searchTimer, setSearchTimer] = React.useState<NodeJS.Timeout | null>(null);
+    const SuperAdminID = localStorage.getItem('id') || sessionStorage.getItem('id');
     // Utility class translations based on your CSS
     const customButtons = {
         // .btn-dark-custom (Navy Filled Button)
@@ -111,10 +113,14 @@ const RenewalDashboard = () => {
     };
 
     React.useEffect(() => {
-        if (!loading && stats && profileTableRef.current) {
+        if (applyFilters && profileTableRef.current) {
             profileTableRef.current.scrollIntoView({ behavior: "smooth" });
+            setTimeout(() => {
+                fetchData();
+                setApplyFilters(false);
+            }, 500); // 500ms delay for smooth scroll
         }
-    }, [stats, loading]);
+    }, [applyFilters]);
 
     const statCardsMap: StatCardMapEntry[] = [
         ["overall_count", "TOTAL RENEWALS", "light-blue"],
@@ -155,6 +161,15 @@ const RenewalDashboard = () => {
         }
         return 0;
     };
+
+    useEffect(() => {
+        if (SuperAdminID && profileOwners.length > 0) {
+            const superAdminOwner = profileOwners.find(owner => String(owner.id) === "12");
+            if (superAdminOwner) {
+                setFilters((prev) => ({ ...prev, staff: "12" }));
+            }
+        }
+    }, [SuperAdminID, profileOwners]);
 
     const fetchOwners = React.useCallback(async () => {
         setIsOwnersLoading(true);
@@ -262,11 +277,11 @@ const RenewalDashboard = () => {
     }, [filters]);
 
     React.useEffect(() => {
-        if (applyFilters) {
-            fetchData();
-            setApplyFilters(false); // reset
-        }
-    }, [applyFilters, fetchData]);
+        // if (applyFilters) {
+        fetchData();
+        //     setApplyFilters(false); // reset
+        // }
+    }, [fetchData]);
 
     const statCardColors: Record<string, string> = {
         "light-blue": "bg-[#F1F7FF]",
@@ -347,6 +362,7 @@ const RenewalDashboard = () => {
         // Convert array path to a unique string key
         return `${keyPath[0]}:${keyPath[1]}`;
     };
+
 
     // Corrected handleCardClick function
     const handleCardClick = (keyPath: StatKeyPath) => {
@@ -446,9 +462,30 @@ const RenewalDashboard = () => {
         }
     };
 
+    const LoadingSpinner = () => (
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                py: 8,
+                minHeight: '200px',
+                width: '100%',
+            }}
+        >
+            <CircularProgress color="primary" size={30} />
+            <Typography variant="body2" sx={{ mt: 2, color: 'text.secondary' }}>
+                Loading Dashboard Data...
+            </Typography>
+        </Box>
+    );
+
+
     if (loading && !stats) {
-        return <div className="min-h-screen bg-[#F5F7FB] font-inter text-black p-8 text-center text-lg">⏳ Loading Dashboard Data...</div>;
+        return <LoadingSpinner />;
     }
+
 
     if (error) {
         return <div className="min-h-screen bg-[#F5F7FB] font-inter text-red-600 p-8 text-center text-lg"> Error: {error}</div>;
@@ -518,21 +555,38 @@ const RenewalDashboard = () => {
                                 <label className="block text-sm font-semibold text-[#3A3E47] mb-1">Staff</label>
                                 <select
                                     value={filters.staff}
-                                    // Pass the ID (string) to the filters state
                                     onChange={(e) => setFilters({ ...filters, staff: e.target.value })}
-                                    className="w-full h-12 px-3 border border-gray-300 rounded-lg text-sm"
-                                    disabled={isOwnersLoading}
+                                    className="w-full h-12 px-3 cursor-pointer border border-gray-300 rounded-lg text-sm
+               disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
+                                    disabled={isOwnersLoading || SuperAdminID === "12"}  // disable for super admin
                                 >
                                     <option value="">
                                         {isOwnersLoading ? 'Loading Staff...' : 'Select Staff'}
                                     </option>
-                                    {/* Map the fetched owners data */}
                                     {profileOwners.map((owner) => (
                                         <option key={owner.id} value={owner.id}>
                                             {owner.username}
                                         </option>
                                     ))}
                                 </select>
+                                {(isOwnersLoading || SuperAdminID === "12") && (
+                                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none top-6">
+                                        {/* Replace `YourBlockIcon` with an actual icon component */}
+                                        {/* Example: Heroicon's 'No Symbol' icon, sized and colored */}
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 24 24"
+                                            fill="currentColor"
+                                            className="w-5 h-5 text-red-500"
+                                        >
+                                            <path
+                                                fillRule="evenodd"
+                                                d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.68 1.68a.75.75 0 1 0 1.06 1.06L12 13.06l1.68 1.68a.75.75 0 1 0 1.06-1.06L13.06 12l1.68-1.68a.75.75 0 1 0-1.06-1.06L12 10.94l-1.68-1.68Z"
+                                                clipRule="evenodd"
+                                            />
+                                        </svg>
+                                    </div>
+                                )}
                                 {ownersError && <p className="text-red-500 text-xs mt-1">{ownersError}</p>}
                             </div>
 
@@ -541,7 +595,7 @@ const RenewalDashboard = () => {
                                 <select
                                     value={filters.plan}
                                     onChange={(e) => setFilters({ ...filters, plan: e.target.value })}
-                                    className="w-full h-12 px-3 border border-gray-300 rounded-lg text-sm"
+                                    className="w-full h-12 cursor-pointer  px-3 border border-gray-300 rounded-lg text-sm"
                                     disabled={isPlansLoading}
                                 >
                                     <option value="">
@@ -564,7 +618,7 @@ const RenewalDashboard = () => {
                                 <select
                                     value={filters.gender}
                                     onChange={(e) => setFilters({ ...filters, gender: e.target.value })}
-                                    className="w-full h-12 px-3 border border-gray-300 rounded-lg text-sm"
+                                    className="w-full h-12  px-3  cursor-pointer  border border-gray-300 rounded-lg text-sm"
                                 >
                                     <option value="">Select Gender</option>
                                     <option value="all">All</option>
@@ -580,7 +634,7 @@ const RenewalDashboard = () => {
                                         placeholder="Min"
                                         value={filters.minAge}
                                         onChange={(e) => setFilters({ ...filters, minAge: e.target.value })}
-                                        className="w-1/2 h-12 px-3 border border-gray-300 rounded-lg text-sm"
+                                        className="w-1/2 h-12 px-3 cursor-pointer border border-gray-300 rounded-lg text-sm"
                                     />
                                     <input
                                         type="number"
@@ -597,7 +651,7 @@ const RenewalDashboard = () => {
                                 <select
                                     value={filters.engagement}
                                     onChange={(e) => setFilters({ ...filters, engagement: e.target.value })}
-                                    className="w-full h-12 px-3 border border-gray-300 rounded-lg text-sm"
+                                    className="w-full h-12 px-3 cursor-pointer border border-gray-300 rounded-lg text-sm"
                                 >
                                     <option value="">Select Engagement</option>
                                     <option value="all">All</option>
@@ -609,7 +663,7 @@ const RenewalDashboard = () => {
                                 <select
                                     value={filters.status}
                                     onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-                                    className="w-full h-12 px-3 border border-gray-300 rounded-lg text-sm"
+                                    className="w-full h-12 px-3 cursor-pointer border border-gray-300 rounded-lg text-sm"
                                 >
                                     <option value="">Select Status</option>
                                     <option value="all">All</option>
@@ -628,7 +682,7 @@ const RenewalDashboard = () => {
             </section>
 
             {/* STATS CARDS */}
-            <section ref={profileTableRef} className="renewal-stats mt-4">
+            <section className="renewal-stats mt-4">
                 <div className="container-fluid mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-3">
 
@@ -775,9 +829,8 @@ const RenewalDashboard = () => {
                 </div>
             </section>
 
-            {/* RENEWAL PROFILE TABLE */}
             {/* Equivalent to .renewal-profile-section */}
-            <section className="bg-gray-100 py-4">
+            <section ref={profileTableRef} className="bg-gray-100 py-4">
                 <div className="container-fluid mx-auto px-4 sm:px-6 lg:px-8">
                     {/* Equivalent to .profile-box */}
                     <div className="bg-white rounded-xl p-6 border border-[#e6ecf2] shadow-md">
@@ -791,19 +844,30 @@ const RenewalDashboard = () => {
                                     className="w-[250px] sm:w-[200px] h-10 px-4 rounded-full border border-gray-300 text-sm focus:outline-none focus:border-gray-500"
                                     placeholder="Search Profile ID / Name"
                                     value={filters.searchQuery}
-                                    onChange={(e) => setFilters({ ...filters, searchQuery: e.target.value })}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                        setFilters({ ...filters, searchQuery: value });
+
+                                        if (searchTimer) clearTimeout(searchTimer);
+
+                                        const newTimer = setTimeout(() => {
+                                            setApplyFilters(true);   // 👈 Call API after typing stops
+                                        }, 5000); // ⏱ debounce delay
+                                        setSearchTimer(newTimer);
+                                    }}
                                 />
+
                                 {/* Equivalent to .clear-btn */}
-                                <button className="h-10 px-4 rounded-full bg-white border border-gray-300 text-sm font-semibold text-gray-900 hover:bg-gray-50 transition duration-150">Clear</button>
+                                <button className="h-10 px-4 rounded-full bg-white border border-gray-300 text-sm font-semibold text-gray-900 hover:bg-gray-50 transition duration-150"
+                                    onClick={() => {
+                                        setFilters({ ...filters, searchQuery: "" });
+                                        setApplyFilters(true);  // 👈 reload table after clearing
+                                    }}
+                                >Clear</button>
                             </div>
                         </div>
 
                         <div className="overflow-x-auto">
-                            {tableLoading && (
-                                <div className="absolute inset-0 bg-white/70 z-10 flex items-center justify-center rounded-xl">
-                                    <p className="text-lg font-semibold text-[#0A1735]">Loading Profiles...</p>
-                                </div>
-                            )}
                             {/* Equivalent to .profile-table */}
                             <table className="min-w-full profile-table border-separate border-spacing-0">
                                 <thead>
@@ -827,41 +891,58 @@ const RenewalDashboard = () => {
                                         <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0 rounded-tr-xl">Customer Log (+)</th>
                                     </tr>
                                 </thead>
-
-                                <tbody>
-                                    {profiles.map((profile, index) => (
-                                        <tr key={profile.ProfileId || index}>
-                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-[#1d4ed8] font-semibold hover:underline">{profile.ProfileId || 'N/A'}</td>
-                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.Profile_name || 'N/A'}</td>
-                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.age || 'N/A'}</td>
-                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.family_status_name || 'N/A'}</td>
-                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.other_degree || 'N/A'}</td>
-                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.income || 'N/A'}</td>
-                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.Profile_city || 'N/A'}</td>
-                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.plan_name}</td>
-                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.owner_name || 'N/A'}</td>
-                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{new Date(profile.membership_startdate).toLocaleDateString()}</td>
-                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{new Date(profile.membership_enddate).toLocaleDateString()}</td>
-                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{new Date(profile.Last_login_date).toLocaleDateString()}</td>
-                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.idle_days ?? 'N/A'}</td>
-                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">
-                                                <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${getStatusPillClass(profile.call_status)}`}>
-                                                    {profile.call_status || 'N/A'}
-                                                </span>
-                                            </td>
-                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-[#1d4ed8] font-semibold hover:underline cursor-pointer">View</td>
-                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-[#1d4ed8] font-semibold hover:underline cursor-pointer">View</td>
-                                        </tr>
-                                    ))}
-                                    {!tableLoading && profiles.length === 0 && (
+                                {!tableLoading ? (
+                                    <tbody>
+                                        {profiles.map((profile, index) => (
+                                            <tr key={profile.ProfileId || index}>
+                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-[#1d4ed8] font-semibold hover:underline">{profile.ProfileId || 'N/A'}</td>
+                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.Profile_name || 'N/A'}</td>
+                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.age || 'N/A'}</td>
+                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.family_status_name || 'N/A'}</td>
+                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.other_degree || 'N/A'}</td>
+                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.income || 'N/A'}</td>
+                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.Profile_city || 'N/A'}</td>
+                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.plan_name}</td>
+                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.owner_name || 'N/A'}</td>
+                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{new Date(profile.membership_startdate).toLocaleDateString()}</td>
+                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{new Date(profile.membership_enddate).toLocaleDateString()}</td>
+                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{new Date(profile.Last_login_date).toLocaleDateString()}</td>
+                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.idle_days ?? 'N/A'}</td>
+                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">
+                                                    <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${getStatusPillClass(profile.call_status)}`}>
+                                                        {profile.call_status || 'N/A'}
+                                                    </span>
+                                                </td>
+                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-[#1d4ed8] font-semibold hover:underline cursor-pointer">View</td>
+                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-[#1d4ed8] font-semibold hover:underline cursor-pointer">View</td>
+                                            </tr>
+                                        ))}
+                                        {profiles.length === 0 && (
+                                            <tr>
+                                                <td colSpan={16} className="text-center py-8 text-black font-semibold text-sm">
+                                                    No Renewal Profiles found
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                ) : (
+                                    <tbody>
+                                        {/* Single row that spans all columns for the loading state */}
                                         <tr>
-                                            <td colSpan={16} className="text-center py-8 text-black font-semibold text-sm">
-                                                No Renewal Profiles found
+                                            <td colSpan={16} className="py-20">
+                                                <div className="flex flex-col items-center justify-center">
+                                                    {/* Spinner */}
+                                                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1d4ed8] mb-4"></div>
+
+                                                    {/* Loading text */}
+                                                    <p className="text-sm text-gray-600 font-medium">
+                                                        Loading Renewal Profiles...
+                                                    </p>
+                                                </div>
                                             </td>
                                         </tr>
-                                    )}
-                                </tbody>
-
+                                    </tbody>
+                                )}
                             </table>
                         </div>
 
