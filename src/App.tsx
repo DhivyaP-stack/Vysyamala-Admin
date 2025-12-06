@@ -118,6 +118,7 @@ import FeaturedProfiles from './components/ReuseProfileTable/Profiles/FeaturedPr
 import StaffDetails from './components/StaffDetails/StaffDetails';
 import CallManagementPage from './components/CallManagement/CallManagementPage';
 import GeneralCallManagementPage from './components/CallManagement/GeneralCallMangement';
+import RenewalDashboard from './components/RenewalDashboard/RenewalDahboardPage';
 
 
 function App() {
@@ -1136,6 +1137,7 @@ function App() {
                 />
                 <Route path="/CallManagement" element={<CallManagementPage />} />
                 <Route path="/GeneralCallManagement" element={<GeneralCallManagementPage />} />
+                 <Route path="/RenewalDashboard" element={<RenewalDashboard />} />
               </Routes>
             </DefaultLayout>
           }

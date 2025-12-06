@@ -256,10 +256,8 @@ export interface ProfileOwner {
   username: string;
 }
 
-const fetchProfileOwners = async (): Promise<ProfileOwner[]> => {
+export const fetchProfileOwners = async (): Promise<ProfileOwner[]> => {
   const response = await apiAxios.get('api/users/'); // Assuming apiAxios points to https://app.vysyamala.com
-  // The API response might return different structures. Adjust data.users or data accordingly.
-  // Assuming the API returns an array of user objects directly in response.data:
   return response.data;
 };
 

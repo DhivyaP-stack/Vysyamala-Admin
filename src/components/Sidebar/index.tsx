@@ -4,7 +4,7 @@ import SidebarLinkGroup from './SidebarLinkGroup';
 import Logo from '../../../public/Vysyamala.svg';
 import { CgProfile } from 'react-icons/cg';
 import { FaUser, FaUserCog, FaSearch, FaSearchPlus } from 'react-icons/fa';
-import { MdAddLocationAlt } from 'react-icons/md';
+import { MdAddLocationAlt, MdAutorenew } from 'react-icons/md';
 import { FaRegStar } from 'react-icons/fa';
 import { MdFamilyRestroom } from 'react-icons/md';
 import { ImProfile } from 'react-icons/im';
@@ -185,6 +185,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     </li>
                   </ul>
                 )}
+
               </div>
               <SidebarLinkGroup
                 activeCondition={
@@ -1339,7 +1340,26 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   </li>
                 </ul>
               </div>
-
+              <div
+                className={`translate transform overflow-hidden ${!open && 'hidden'
+                  }`}
+              >
+                <ul className="mt-4 mb-5.5 flex flex-col">
+                  {/* Submenu Items */}
+                  <li>
+                    <NavLink
+                      to="/RenewalDashboard"
+                      className={({ isActive }) =>
+                        'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                        (isActive && '!text-PrimaryRed')
+                      }
+                    >
+                      <MdAutorenew />
+                      Renewal Dashboard
+                    </NavLink>
+                  </li>
+                </ul>
+              </div>
               <div
                 className={`translate transform overflow-hidden ${!open && 'hidden'
                   }`}
