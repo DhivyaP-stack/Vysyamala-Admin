@@ -57,6 +57,8 @@ export interface getEditProfileView {
 }
 
 export interface getPrimaryStatus {
+
+  value: number;
   id: number;
   status_code: number;
   sub_status_name: string
@@ -233,10 +235,12 @@ export const getProfilePrimaryStatus = async (status: string | number): Promise<
   // }
 
   try {
+    const ownerID = localStorage.getItem('id') || localStorage.getItem('id');
     const response = await axios.post(
       `https://app.vysyamala.com/api/get_sub_status_master/`,
       {
         primary_status: String(status),
+        admin_user_id: ownerID,
       }
     );
 

@@ -626,6 +626,7 @@ const EditProfile = () => {
             mobile_otp_verify: data.profileView.mobile_otp_verify,
             membership_fromdate: data.profileView.membership_fromdate,
             membership_todate: data.profileView.membership_todate,
+            membership_status: data.profileView.membership_status,
             visit_count: data.profileView.visit_count === null || "" || 0 ? 0 : data.profileView.visit_count,
             exp_int_count: data.profileView.exp_int_count === null || "" || 0 ? 0 : data.profileView.exp_int_count,
             exp_int_lock: data.profileView.exp_int_lock === null || data.profileView.exp_int_lock === 0 ? 0 : data.profileView.exp_int_lock
@@ -634,6 +635,8 @@ const EditProfile = () => {
         console.log("API Payload:", editDataProfileView);
         const Name = "profileView"
         await handleProfileUpdatee(editDataProfileView, Name);
+
+        await refetchEditData();
 
         // notify("Profile updated successfully");
       }
@@ -666,7 +669,7 @@ const EditProfile = () => {
     }
   };
 
-  const { data: EditData } = useQuery({
+  const { data: EditData, refetch: refetchEditData } = useQuery({
     queryKey: [profileId, 'editData'],
     queryFn: () => fetchEditProfileDetails(profileId),
     enabled: !!profileId,
@@ -706,6 +709,7 @@ const EditProfile = () => {
               EditData={EditData}
               handleSubmit={ProfileViwewMethod.handleSubmit(handleProfileView)}
               error={error}
+              refetchProfileData={refetchEditData}
             />
           </div>
         </form>

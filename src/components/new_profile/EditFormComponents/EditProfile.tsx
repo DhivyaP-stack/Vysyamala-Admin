@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import {
   ArrowBack,
+  Autorenew,
   CameraAlt,
   Print,
   Settings,
@@ -11,6 +12,7 @@ import { useQuery } from '@tanstack/react-query';
 import { notify, notifyDelete } from '../../TostNotification';
 import {
   fetchAnnualIncome,
+  fetchEditProfileDetails,
   fetchGetHighestEducation,
   fetchProfessionalPrefe,
   GetDistrict,
@@ -242,6 +244,7 @@ interface pageProps {
   EditData: any;
   isViewDetais: boolean;
   setViewDetail: Dispatch<SetStateAction<boolean>>;
+  refetchProfileData?: () => void; // ADD THIS
 }
 
 export interface AddOnPackage {
@@ -265,7 +268,8 @@ const EditViewProfile: React.FC<pageProps> = ({
   isViewDetais,
   setViewDetail,
   EditData,
-  handleSubmit
+  handleSubmit,
+  refetchProfileData
 }) => {
   // Add state for Past Call Data popup
   const [openPastCallData, setOpenPastCallData] = useState<boolean>(false);
@@ -292,6 +296,7 @@ const EditViewProfile: React.FC<pageProps> = ({
 
 
   const status = watch('profileView.status') ?? ''; // Ensure it doesn't break
+  console.log("edit status", status)
   const primaryStatus = watch('profileView.primary_status') ?? ''; // Prevent undefined errors
   const secondaryStatus = watch('profileView.secondary_status') ?? '';
   const image = watch('profileView.profile_image');
@@ -319,12 +324,26 @@ const EditViewProfile: React.FC<pageProps> = ({
   const payment_date = watch('profileView.payment_date');
   const payment_mode = watch('profileView.payment_mode');
   const add_on_pack_name = watch('profileView.add_on_pack_name');
+  const planStatus = watch("profileView.plan_status");
+  const hideMembershipDates = [6, 7, 8, 9].includes(Number(planStatus));
+  const primaryStatusValue = Number(watch('profileView.primary_status'));
+  console.log("edit primaryStatusValue", primaryStatusValue)
+  const membershipStatus = watch('profileView.membership_status');
+
+  const membershipActivation = Number(localStorage.getItem('membership_activation'));
+  const shouldHideSecondaryStatus = membershipActivation === 3 && [1, 2, 3, 4].includes(status);
+  
+  const shouldAllowOnlyApprovedStatus =
+    membershipActivation === 2 && ["6", "7", "8", "9"].includes(planStatus);
+
 
   // Handler function
   const { data: profileOwnersData, isLoading: isOwnersLoading } = useQuery<ProfileOwner[]>({
     queryKey: ['profileOwners'],
     queryFn: fetchProfileOwners,
   });
+
+
 
   // Handler function (Keep existing handler)
   // const handleOwnerChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -464,7 +483,8 @@ const EditViewProfile: React.FC<pageProps> = ({
       setValue('profileView.add_on_pack_name', data.add_on_pack_name ?? 0);
       setValue('profileView.mobile_otp_verify', data.mobile_otp_verify ?? '');
       setValue('profileView.membership_fromdate', data.membership_fromdate ?? '');
-      setValue('profileView.membership_todate', data.membership_todate ?? '')
+      setValue('profileView.membership_todate', data.membership_todate ?? '');
+      setValue('profileView.membership_status', data.membership_status ?? '');
 
       if (data?.DateOfJoin) {
         const formattedDate = new Date(data.DateOfJoin)
@@ -841,6 +861,15 @@ const EditViewProfile: React.FC<pageProps> = ({
                         </span>
                       </span>
 
+                      {(membershipStatus !== null && membershipStatus !== undefined && membershipStatus === 'Renew') && (
+                        <div className="flex items-center gap-2 bg-red-50 px-4 py-2 rounded-lg border border-red-300 ml-17">
+                          <Autorenew className="text-red-600" fontSize="small" />
+                          <span className="text-red-700 font-bold">
+                            Renew
+                          </span>
+                        </div>
+
+                      )}
                       {/* <button type='button' className="bg-blue-700 text-white px-2 py-1 text-md mt-1 rounded">
                         Update owner
                       </button> */}
@@ -965,35 +994,45 @@ const EditViewProfile: React.FC<pageProps> = ({
                               className="px-2 py-1 border border-[#b5b2b2e6]  text-[#222020e6] rounded   "
                             >
                               <option value="" className=' text-[#000000e6] '>Select your Status</option>
-                              {Status?.map((option) => (
-                                <option
-                                  key={option.status_code}
-                                  value={option.status_code}
-                                  className=' text-[#000000e6] '
-                                >
-                                  {option.status_name}
-                                </option>
-                              ))}
-                            </select>
+                              {Status?.map((option) => {
+                                const isDisabled =
+                                  shouldAllowOnlyApprovedStatus && option.status_code !== 1; // 🔥 Only enable ID 1
 
-
-                            <select
-                              {...register('profileView.primary_status', {
-                                setValueAs: (value) => value === "" ? undefined : Number(value)
+                                return (
+                                  <option
+                                    key={option.status_code}
+                                    value={option.status_code}
+                                    disabled={isDisabled}
+                                    style={isDisabled ? { color: '#ccc', cursor: 'not-allowed' } : {}}
+                                  >
+                                    {option.status_name}
+                                  </option>
+                                );
                               })}
-                              value={watch('profileView.primary_status') || ''}
-                              className="px-2 py-1 border  rounded  border-[#b5b2b2e6]  text-[#222020e6] "
-                            >
-                              <option value="" className=' text-[#000000e6] '>Select Secondary Status</option>
-                              {Primary?.map((option) => (
-                                <option key={option.id} value={option.id} className=' text-[#000000e6] '>
-                                  {option.sub_status_name}
-                                </option>
-                              ))}
+
                             </select>
 
+                            {!shouldHideSecondaryStatus && (
+                              <select
+                                {...register('profileView.primary_status', {
+                                  setValueAs: (value) => value === "" ? undefined : Number(value)
+                                })}
+                                value={watch('profileView.primary_status') || ''}
+                                className="px-2 py-1 border  rounded  border-[#b5b2b2e6]  text-[#222020e6] "
+                              >
+                                <option value="" className=' text-[#000000e6] '>Select Secondary Status</option>
+                                {Primary?.map((option) => (
+                                  <option key={option.id} value={option.id}
+                                    disabled={option.value === 0}  // Add this line
+                                    style={option.value === 0 ? { color: '#ccc', cursor: 'not-allowed' } : {}}
+                                    className=' text-[#000000e6] '>
+                                    {option.sub_status_name}
+                                  </option>
+                                ))}
+                              </select>
+                            )}
 
-                            {Number(watch('profileView.status')) !== 0 &&
+                            {!shouldHideSecondaryStatus && Number(watch('profileView.status')) !== 0 &&
                               watch('profileView.primary_status') &&
                               ![7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22].includes(Number(watch('profileView.primary_status'))) && (
                                 <select
@@ -1023,7 +1062,7 @@ const EditViewProfile: React.FC<pageProps> = ({
                             )}
                           </div>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 mb-2">
                           <label className="font-semibold text-[#5a5959e6]">Profile Owner:</label>
                           <select
                             {...register('profileView.admin_user_id', {
@@ -1044,43 +1083,45 @@ const EditViewProfile: React.FC<pageProps> = ({
                             ))}
                           </select>
                         </div>
-                        <div className="flex gap-2 mt-3 ">
-                          <label className="font-semibold text-[#5a5959e6]">
-                            Membership Date:
-                          </label>
-                          <div className="flex flex-col">
-                            <div className="flex gap-1">
-                              <label className="text-[#5a5959e6] font-medium">From:</label>
-                              <input
-                                {...register('profileView.membership_fromdate')}
-                                type="date"
-                                className='font-medium text-[#5a5959e6] mb-1'
-                                value={watch('profileView.membership_fromdate')?.split('T')[0] || ''}
-                              />
+                        {!hideMembershipDates && (
+                          <div className="flex gap-2 mt-3 mb-2">
+                            <label className="font-semibold text-[#5a5959e6]">
+                              Membership Date:
+                            </label>
+                            <div className="flex flex-col">
+                              <div className="flex gap-1">
+                                <label className="text-[#5a5959e6] font-medium">From:</label>
+                                <input
+                                  {...register('profileView.membership_fromdate')}
+                                  type="date"
+                                  className='font-medium text-[#5a5959e6] mb-1'
+                                  value={watch('profileView.membership_fromdate')?.split('T')[0] || ''}
+                                />
+                              </div>
+                              {errors?.profileView?.membership_fromdate && (
+                                <span className="text-red-500 text-sm">
+                                  {errors.profileView.membership_fromdate.message}
+                                </span>
+                              )}
                             </div>
-                            {errors?.profileView?.membership_fromdate && (
-                              <span className="text-red-500 text-sm">
-                                {errors.profileView.membership_fromdate.message}
-                              </span>
-                            )}
-                          </div>
-                          <div className="flex flex-col">
-                            <div className="flex gap-1">
-                              <label className="text-[#5a5959e6] font-medium">To:</label>
-                              <input
-                                {...register('profileView.membership_todate')}
-                                type="date"
-                                className='font-medium text-[#5a5959e6] mb-1'
-                                value={watch('profileView.membership_todate')?.split('T')[0] || ''}
-                              />
+                            <div className="flex flex-col">
+                              <div className="flex gap-1">
+                                <label className="text-[#5a5959e6] font-medium">To:</label>
+                                <input
+                                  {...register('profileView.membership_todate')}
+                                  type="date"
+                                  className='font-medium text-[#5a5959e6] mb-1'
+                                  value={watch('profileView.membership_todate')?.split('T')[0] || ''}
+                                />
+                              </div>
+                              {errors?.profileView?.membership_todate && (
+                                <span className="text-red-500 text-sm">
+                                  {errors.profileView.membership_todate.message}
+                                </span>
+                              )}
                             </div>
-                            {errors?.profileView?.membership_todate && (
-                              <span className="text-red-500 text-sm">
-                                {errors.profileView.membership_todate.message}
-                              </span>
-                            )}
                           </div>
-                        </div>
+                        )}
 
                         <div className="w-full">
                           <h5 className="text-[18px] text-[#5a5959e6] font-semibold mb-3">

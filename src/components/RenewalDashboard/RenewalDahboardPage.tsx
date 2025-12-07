@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import { apiAxios } from "../../api/apiUrl";
 import { ProfileOwner, fetchProfileOwners } from "../new_profile/EditFormComponents/EditProfile";
 import { Box, CircularProgress, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 interface RenewalStats {
     overall_count: number;
@@ -44,6 +45,7 @@ interface RenewalProfile {
     family_status: string;
     highest_education: string;
     degree: string;
+    degree_name: string;
     other_degree: string | null;
     anual_income: string;
     birthstar_name: string;
@@ -104,6 +106,9 @@ const RenewalDashboard = () => {
     const [tableLoading, setTableLoading] = React.useState(false);
     const [searchTimer, setSearchTimer] = React.useState<NodeJS.Timeout | null>(null);
     const SuperAdminID = localStorage.getItem('id') || sessionStorage.getItem('id');
+    const RoleID = localStorage.getItem('role_id') || sessionStorage.getItem('role_id');
+    const navigate = useNavigate();
+
     // Utility class translations based on your CSS
     const customButtons = {
         // .btn-dark-custom (Navy Filled Button)
@@ -164,9 +169,9 @@ const RenewalDashboard = () => {
 
     useEffect(() => {
         if (SuperAdminID && profileOwners.length > 0) {
-            const superAdminOwner = profileOwners.find(owner => String(owner.id) === "12");
+            const superAdminOwner = profileOwners.find(owner => String(owner.id) === SuperAdminID);
             if (superAdminOwner) {
-                setFilters((prev) => ({ ...prev, staff: "12" }));
+                setFilters((prev) => ({ ...prev, staff: SuperAdminID }));
             }
         }
     }, [SuperAdminID, profileOwners]);
@@ -221,7 +226,14 @@ const RenewalDashboard = () => {
         const params = new URLSearchParams();
         if (filters.fromDate) params.append('from_date', filters.fromDate);
         if (filters.toDate) params.append('to_date', filters.toDate);
-        if (filters.staff) params.append('owner', filters.staff);
+        if (RoleID !== "7") {
+            // Default owner = logged in user when filters.staff is empty
+            params.append("owner", filters.staff || SuperAdminID || "");
+        } else {
+            // Role 7 → send owner only when selected manually
+            if (filters.staff) params.append("owner", filters.staff);
+        }
+
         if (filters.plan) params.append('plan_id', filters.plan);
         if (filters.minAge) params.append('age_from', filters.minAge);
         if (filters.maxAge) params.append('age_to', filters.maxAge);
@@ -276,12 +288,27 @@ const RenewalDashboard = () => {
         }
     }, [filters]);
 
-    React.useEffect(() => {
-        // if (applyFilters) {
+    // React.useEffect(() => {
+    //     // if (applyFilters) {
+    //     fetchData();
+    //     //     setApplyFilters(false); // reset
+    //     // }
+    // }, [fetchData]);
+    // useEffect(() => {
+    //     fetchData();
+    // }, [fetchData]);
+
+    useEffect(() => {
         fetchData();
-        //     setApplyFilters(false); // reset
-        // }
-    }, [fetchData]);
+    }, []);
+
+    useEffect(() => {
+        if (applyFilters) {
+            fetchData();
+            setApplyFilters(false);
+        }
+    }, [applyFilters]);
+
 
     const statCardColors: Record<string, string> = {
         "light-blue": "bg-[#F1F7FF]",
@@ -524,11 +551,8 @@ const RenewalDashboard = () => {
                         </div>
                     </div>
 
-                    {/* FILTERS */}
-                    {/* Equivalent to .filter-box */}
                     <div className="bg-white rounded-xl border border-[#E3E6EE] p-7 shadow-sm">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-
                             {/* Form Input Group */}
                             <div className="col-span-1">
                                 {/* Equivalent to .form-label */}
@@ -550,45 +574,29 @@ const RenewalDashboard = () => {
                                     className="w-full h-12 px-3 border border-gray-300 rounded-lg text-sm"
                                 />
                             </div>
-
-                            <div className="col-span-1">
-                                <label className="block text-sm font-semibold text-[#3A3E47] mb-1">Staff</label>
-                                <select
-                                    value={filters.staff}
-                                    onChange={(e) => setFilters({ ...filters, staff: e.target.value })}
-                                    className="w-full h-12 px-3 cursor-pointer border border-gray-300 rounded-lg text-sm
+                            {RoleID !== "7" && (
+                                <div className="col-span-1">
+                                    <label className="block text-sm font-semibold text-[#3A3E47] mb-1">Staff</label>
+                                    <select
+                                        value={filters.staff}
+                                        onChange={(e) => setFilters({ ...filters, staff: e.target.value })}
+                                        className="w-full h-12 px-3 cursor-pointer border border-gray-300 rounded-lg text-sm
                disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
-                                    disabled={isOwnersLoading || SuperAdminID === "12"}  // disable for super admin
-                                >
-                                    <option value="">
-                                        {isOwnersLoading ? 'Loading Staff...' : 'Select Staff'}
-                                    </option>
-                                    {profileOwners.map((owner) => (
-                                        <option key={owner.id} value={owner.id}>
-                                            {owner.username}
+                                        disabled={isOwnersLoading}  // disable for super admin
+                                    >
+                                        <option value="">
+                                            {isOwnersLoading ? 'Loading Staff...' : 'Select Staff'}
                                         </option>
-                                    ))}
-                                </select>
-                                {(isOwnersLoading || SuperAdminID === "12") && (
-                                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none top-6">
-                                        {/* Replace `YourBlockIcon` with an actual icon component */}
-                                        {/* Example: Heroicon's 'No Symbol' icon, sized and colored */}
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 24 24"
-                                            fill="currentColor"
-                                            className="w-5 h-5 text-red-500"
-                                        >
-                                            <path
-                                                fillRule="evenodd"
-                                                d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.68 1.68a.75.75 0 1 0 1.06 1.06L12 13.06l1.68 1.68a.75.75 0 1 0 1.06-1.06L13.06 12l1.68-1.68a.75.75 0 1 0-1.06-1.06L12 10.94l-1.68-1.68Z"
-                                                clipRule="evenodd"
-                                            />
-                                        </svg>
-                                    </div>
-                                )}
-                                {ownersError && <p className="text-red-500 text-xs mt-1">{ownersError}</p>}
-                            </div>
+                                        {profileOwners.map((owner) => (
+                                            <option key={owner.id} value={owner.id}>
+                                                {owner.username}
+                                            </option>
+                                        ))}
+                                    </select>
+
+                                    {ownersError && <p className="text-red-500 text-xs mt-1">{ownersError}</p>}
+                                </div>
+                            )}
 
                             <div className="col-span-1">
                                 <label className="block text-sm font-semibold text-[#3A3E47] mb-1">Plan</label>
@@ -613,7 +621,7 @@ const RenewalDashboard = () => {
                             </div>
 
 
-                            <div className="col-span-1">
+                            {/* <div className="col-span-1">
                                 <label className="block text-sm font-semibold text-[#3A3E47] mb-1">Gender</label>
                                 <select
                                     value={filters.gender}
@@ -623,7 +631,7 @@ const RenewalDashboard = () => {
                                     <option value="">Select Gender</option>
                                     <option value="all">All</option>
                                 </select>
-                            </div>
+                            </div> */}
 
                             {/* Age Range - Equivalent to .age-range-wrap */}
                             <div className="col-span-1">
@@ -646,7 +654,7 @@ const RenewalDashboard = () => {
                                 </div>
                             </div>
 
-                            <div className="col-span-1">
+                            {/* <div className="col-span-1">
                                 <label className="block text-sm font-semibold text-[#3A3E47] mb-1">Engagement</label>
                                 <select
                                     value={filters.engagement}
@@ -656,9 +664,9 @@ const RenewalDashboard = () => {
                                     <option value="">Select Engagement</option>
                                     <option value="all">All</option>
                                 </select>
-                            </div>
+                            </div> */}
 
-                            <div className="col-span-1">
+                            {/* <div className="col-span-1">
                                 <label className="block text-sm font-semibold text-[#3A3E47] mb-1">Status</label>
                                 <select
                                     value={filters.status}
@@ -668,14 +676,13 @@ const RenewalDashboard = () => {
                                     <option value="">Select Status</option>
                                     <option value="all">All</option>
                                 </select>
-                            </div>
+                            </div> */}
 
                             {/* Buttons - Equivalent to .btn-row */}
                             <div className="col-span-full flex justify-end gap-3 mt-2">
                                 <button className={customButtons.outline} onClick={handleReset}>Reset</button>
                                 <button className={customButtons.dark} onClick={() => setApplyFilters(true)} >Apply Filters</button>
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -747,7 +754,7 @@ const RenewalDashboard = () => {
                             </div>
                         </div>
 
-                        <div className="col-span-1">
+                        {/* <div className="col-span-1">
                             <div className="bg-white rounded-xl p-6 border border-[#e6ecf2] shadow-sm h-full flex flex-col justify-between">
                                 <div>
                                     <h5 className="text-base font-semibold text-gray-900 mb-1">No Photo / Horo</h5>
@@ -755,17 +762,17 @@ const RenewalDashboard = () => {
                                 </div>
                                 <div className="text-3xl font-bold text-[#000c28]">0</div>
                             </div>
-                        </div>
+                        </div> */}
 
                         {/* Performance Report Card - Equivalent to .performance-card */}
-                        <div className="col-span-1">
+                        {/* <div className="col-span-1">
                             <div className="bg-white rounded-xl p-6 border border-[#e6ecf2] shadow-sm h-full">
                                 <div className="flex justify-between items-start">
                                     <h5 className="text-base font-semibold text-gray-900">Performance Report</h5>
-                                    {/* Equivalent to .badge-month */}
+                                   
                                     <span className="bg-[#d1f7e3] px-2 py-0.5 rounded-full text-xs text-[#129f46] font-semibold">This Month</span>
                                 </div>
-                                {/* Equivalent to .perf-list */}
+                                
                                 <ul className="list-none p-0 mt-5 space-y-2">
                                     <li className="flex justify-between text-sm text-gray-700"><span>Calls Attended</span><b className="font-semibold">50</b></li>
                                     <li className="flex justify-between text-sm text-gray-700"><span>Ringing / Switch Off</span><b className="font-semibold">60</b></li>
@@ -773,7 +780,7 @@ const RenewalDashboard = () => {
                                     <li className="flex justify-between text-sm text-gray-700"><span>Joined as Premium</span><b className="font-semibold">20</b></li>
                                 </ul>
                             </div>
-                        </div>
+                        </div> */}
 
                     </div>
                 </div>
@@ -781,22 +788,22 @@ const RenewalDashboard = () => {
 
             {/* STAFF SUMMARY TABLE */}
             {/* Equivalent to .staff-summary-section */}
-            <section className="bg-gray-100 py-4">
+            {/* <section className="bg-gray-100 py-4">
                 <div className="container-fluid mx-auto px-4 sm:px-6 lg:px-8">
-                    {/* Equivalent to .summary-card */}
+                   
                     <div className="bg-white rounded-xl p-6 border border-[#e6ecf2] shadow-md">
 
-                        {/* Equivalent to .summary-header */}
+                        
                         <div className="flex justify-between items-center mb-4">
                             <h5 className="text-lg font-semibold text-gray-900 m-0">Staff Renewal Summary</h5>
                             <span className="text-sm text-gray-500">Grouped by staff owner</span>
                         </div>
 
                         <div className="overflow-x-auto">
-                            {/* Equivalent to .summary-table */}
+                            
                             <table className="min-w-full summary-table border-separate border-spacing-0">
                                 <thead>
-                                    {/* Equivalent to thead styling */}
+                                   
                                     <tr className="bg-gray-50">
                                         <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0 rounded-tl-xl">Staff</th>
                                         <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Total Renewals</th>
@@ -827,7 +834,7 @@ const RenewalDashboard = () => {
 
                     </div>
                 </div>
-            </section>
+            </section> */}
 
             {/* Equivalent to .renewal-profile-section */}
             <section ref={profileTableRef} className="bg-gray-100 py-4">
@@ -852,7 +859,7 @@ const RenewalDashboard = () => {
 
                                         const newTimer = setTimeout(() => {
                                             setApplyFilters(true);   // 👈 Call API after typing stops
-                                        }, 5000); // ⏱ debounce delay
+                                        }, 3000); // ⏱ debounce delay
                                         setSearchTimer(newTimer);
                                     }}
                                 />
@@ -887,19 +894,21 @@ const RenewalDashboard = () => {
                                         <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Last Login</th>
                                         <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Idle Days</th>
                                         <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Status</th>
-                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Call Logs (+)</th>
-                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0 rounded-tr-xl">Customer Log (+)</th>
+                                        {/* <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Call Logs (+)</th>
+                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0 rounded-tr-xl">Customer Log (+)</th> */}
                                     </tr>
                                 </thead>
                                 {!tableLoading ? (
                                     <tbody>
                                         {profiles.map((profile, index) => (
                                             <tr key={profile.ProfileId || index}>
-                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-[#1d4ed8] font-semibold hover:underline">{profile.ProfileId || 'N/A'}</td>
+                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-[#1d4ed8] font-semibold hover:underline"
+                                                    onClick={() => navigate(`/viewProfile?profileId=${profile.ProfileId}`)}
+                                                >{profile.ProfileId || 'N/A'}</td>
                                                 <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.Profile_name || 'N/A'}</td>
                                                 <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.age || 'N/A'}</td>
                                                 <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.family_status_name || 'N/A'}</td>
-                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.other_degree || 'N/A'}</td>
+                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.degree_name || profile.other_degree || 'N/A'}</td>
                                                 <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.income || 'N/A'}</td>
                                                 <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.Profile_city || 'N/A'}</td>
                                                 <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.plan_name}</td>
@@ -913,8 +922,8 @@ const RenewalDashboard = () => {
                                                         {profile.call_status || 'N/A'}
                                                     </span>
                                                 </td>
-                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-[#1d4ed8] font-semibold hover:underline cursor-pointer">View</td>
-                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-[#1d4ed8] font-semibold hover:underline cursor-pointer">View</td>
+                                                {/* <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-[#1d4ed8] font-semibold hover:underline cursor-pointer">View</td>
+                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-[#1d4ed8] font-semibold hover:underline cursor-pointer">View</td> */}
                                             </tr>
                                         ))}
                                         {profiles.length === 0 && (

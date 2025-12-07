@@ -34,6 +34,7 @@ const PastCallDataPopup: React.FC<{
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+
   const fetchCallData = async () => {
     if (!profileId) return;
 
@@ -297,6 +298,9 @@ const ViewProfile: React.FC<pageProps> = ({
   const queryParams = new URLSearchParams(location.search);
   const profileId = queryParams.get('profileId');
   const adminUserID = sessionStorage.getItem('id') || localStorage.getItem('id');
+  const planStatus = Number(profileView?.plan_status);
+  const hideMembershipDates = [6, 7, 8, 9].includes(planStatus);
+  const membershipStatus = profileView?.membership_status;
 
   // Fetch data using useQuery
   const { data: AnnualIncomeData } = useQuery({
@@ -727,6 +731,21 @@ const ViewProfile: React.FC<pageProps> = ({
                 <span className="text-green-600">
                   Profile Completion <span className="text-orange-500">{profileView.profile_completion}%</span>
                 </span>
+
+                {(membershipStatus !== null && membershipStatus !== undefined && membershipStatus === 'Renew') && (
+                  <div className="flex items-center gap-2 bg-red-50 px-4 py-2 rounded-lg border border-red-300">
+                    <svg
+                      className="w-5 h-5 text-red-600"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M12 6v3l4-4-4-4v3c-4.42 0-8 3.58-8 8 0 1.57.46 3.03 1.24 4.26L6.7 14.8c-.45-.83-.7-1.79-.7-2.8 0-3.31 2.69-6 6-6zm6.76 1.74L17.3 9.2c.44.84.7 1.79.7 2.8 0 3.31-2.69 6-6 6v-3l-4 4 4 4v-3c4.42 0 8-3.58 8-8 0-1.57-.46-3.03-1.24-4.26z" />
+                    </svg>
+                    <span className="text-red-700 font-bold">
+                      Renew
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* Action Buttons */}
@@ -812,21 +831,23 @@ const ViewProfile: React.FC<pageProps> = ({
                     <span className="text-[#5a5959e6]">{profileView?.profile_owner || "N/A"}</span>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
-                    <span className="font-semibold text-[#5a5959e6] whitespace-nowrap">Membership Date:</span>
-                    <div className="flex items-center gap-1">
-                      <span className="font-semibold">From:</span>
-                      <span className="text-[#5a5959e6]">
-                        {watch('profileView.membership_fromdate')}
-                      </span>
+                  {!hideMembershipDates && (
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
+                      <span className="font-semibold text-[#5a5959e6] whitespace-nowrap">Membership Date:</span>
+                      <div className="flex items-center gap-1">
+                        <span className="font-semibold">From:</span>
+                        <span className="text-[#5a5959e6]">
+                          {watch('profileView.membership_fromdate')}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <span className="font-semibold">To:</span>
+                        <span className=" text-[#222020e6]">
+                          {watch('profileView.membership_todate')}
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <span className="font-semibold">To:</span>
-                      <span className=" text-[#222020e6]">
-                        {watch('profileView.membership_todate')}
-                      </span>
-                    </div>
-                  </div>
+                  )}
 
                   <div className="flex flex-wrap items-center gap-1 mb-2">
                     <span className="font-semibold text-[#5a5959e6] whitespace-nowrap">AddOn Packages:</span>

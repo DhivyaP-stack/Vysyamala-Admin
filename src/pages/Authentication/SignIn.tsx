@@ -40,6 +40,11 @@ const SignIn: React.FC<SignInProps> = ({ setIsAuthenticated }) => {
 
       console.log(response.data.user.first_name); // Changed from response.data.data.user.first_name
 
+      const extractPermissionValue = (permissions: any[], code: string): number => {
+        const permission = permissions.find(p => p.code === code);
+        return permission?.value || 0;
+      };
+
       if (response.data.message === 'Login successful') {
         setMessage('');
         console.log(response.data.role.permissions); // Changed from response.data.data.permissions
@@ -62,6 +67,12 @@ const SignIn: React.FC<SignInProps> = ({ setIsAuthenticated }) => {
         sessionStorage.setItem('user_permissions', JSON.stringify(response.data.role.permissions));
         localStorage.setItem('user_permissions', JSON.stringify(response.data.role.permissions));
 
+        const membershipActivationValue = extractPermissionValue(
+          response.data.role.permissions,
+          'membership_activation'
+        );
+        sessionStorage.setItem('membership_activation', membershipActivationValue.toString());
+        localStorage.setItem('membership_activation', membershipActivationValue.toString());
         setLoginStatus('success');
         localStorage.setItem('token', response.data.token);
         sessionStorage.setItem('token', response.data.token);
