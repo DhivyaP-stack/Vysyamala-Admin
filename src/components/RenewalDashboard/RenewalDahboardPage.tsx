@@ -574,7 +574,7 @@ const RenewalDashboard = () => {
                                     className="w-full h-12 px-3 border border-gray-300 rounded-lg text-sm"
                                 />
                             </div>
-                            {RoleID !== "7" && (
+                            {RoleID === "7" && (
                                 <div className="col-span-1">
                                     <label className="block text-sm font-semibold text-[#3A3E47] mb-1">Staff</label>
                                     <select
