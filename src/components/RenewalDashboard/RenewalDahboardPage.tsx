@@ -128,20 +128,7 @@ const RenewalDashboard = () => {
     //     }
     // }, [applyFilters]);
 
-    React.useEffect(() => {
-        if (applyFilters && profileTableRef.current && scrollSource === 'card') {
-            profileTableRef.current.scrollIntoView({ behavior: "smooth" });
-            setTimeout(() => {
-                fetchData();
-                setApplyFilters(false);
-                setScrollSource(null);
-            }, 500); // 500ms delay for smooth scroll
-        } else if (applyFilters && scrollSource === 'filter') {
-            fetchData();
-            setApplyFilters(false);
-            setScrollSource(null);
-        }
-    }, [applyFilters, scrollSource]);
+
 
     const statCardsMap: StatCardMapEntry[] = [
         ["overall_count", "TOTAL RENEWALS", "light-blue"],
@@ -234,7 +221,7 @@ const RenewalDashboard = () => {
 
 
     const fetchData = React.useCallback(async () => {
-        setLoading(!stats); // Keep original dashboard loading logic
+        //setLoading(!stats); // Keep original dashboard loading logic
         setTableLoading(true); // 👇 NEW: Set table loading state
         setError(null);
 
@@ -303,6 +290,37 @@ const RenewalDashboard = () => {
             setTableLoading(false); // 👇 NEW: Clear table loading state
         }
     }, [filters]);
+
+    React.useEffect(() => {
+        if (applyFilters) {
+            // Case 1: Triggered by a card click
+            if (profileTableRef.current && scrollSource === 'card') {
+                profileTableRef.current.scrollIntoView({ behavior: "smooth" });
+                // Delay the API call slightly more than the scroll animation to show spinner while scrolling
+                setTimeout(() => {
+                    fetchData();
+                    setApplyFilters(false);
+                    setScrollSource(null);
+                }, 500);
+            }
+            // Case 2: Triggered by Apply Filters or Reset button
+            else if (scrollSource === 'filter') {
+                // Add a minimal delay here to let the browser paint the loading state 
+                // set in handleReset or Apply Filters button handler
+                const minDelay = 50;
+                setTimeout(() => {
+                    fetchData();
+                    setApplyFilters(false);
+                    setScrollSource(null);
+                }, minDelay);
+
+            } else {
+                // Catch-all/other applyFilters case (e.g., initial load if it was handled here)
+                fetchData();
+                setApplyFilters(false);
+            }
+        }
+    }, [applyFilters, scrollSource, fetchData]); // fetchData must be in deps
 
     // React.useEffect(() => {
     //     // if (applyFilters) {
@@ -434,6 +452,8 @@ const RenewalDashboard = () => {
         //     return;
         // }
         if (mapKey === "overall_count") {
+            // setLoading(true); // <-- Set general dashboard loading
+            // setTableLoading(true); // <-- Set dedicated table loading
             // Remove only card-based filters, keep normal filters
             setFilters(prev => ({
                 ...prev,
@@ -445,6 +465,7 @@ const RenewalDashboard = () => {
                 idleDaysFilter: "",
                 genderFilter: "",
             }));
+            
             setScrollSource('card');
             setApplyFilters(true);
             return;
@@ -484,6 +505,8 @@ const RenewalDashboard = () => {
     };
 
     const handleReset = () => {
+        setLoading(true);
+        setTableLoading(true);
         setFilters({
             fromDate: "",
             toDate: "",
@@ -503,8 +526,10 @@ const RenewalDashboard = () => {
             genderFilter: "",
             searchQuery: "",
         });
-        setScrollSource('filter');
-        setApplyFilters(true);
+        setTimeout(() => {
+            setScrollSource('filter');
+            setApplyFilters(true);
+        }, 50); // Small 50ms delay
     };
 
     const getStatusPillClass = (status: string | null) => {
@@ -559,7 +584,29 @@ const RenewalDashboard = () => {
     const profileCount = stats?.filtered_count ?? 0;
     const todayWorkCount = displayStats.action_counts?.today_work ?? 0;
     const pendingWorkCount = displayStats.action_counts?.pending_work ?? 0;
-    
+
+    const FullWidthLoadingSpinner = () => (
+        <Box
+            className="container-fluid mx-auto px-4 sm:px-6 lg:px-8"
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                py: 12, // Increased padding for visibility
+                width: '100%',
+                backgroundColor: '#fff', // White background
+                borderRadius: '1rem',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)',
+                mb: 4, // margin bottom to separate from the table
+            }}
+        >
+            <CircularProgress color="primary" size={40} />
+            <Typography variant="h6" sx={{ mt: 3, color: '#0A1735', fontWeight: 600 }}>
+                Loading...
+            </Typography>
+        </Box>
+    );
 
     return (
         // Equivalent to body { background: #F5F7FB; }
@@ -718,8 +765,12 @@ const RenewalDashboard = () => {
                             <div className="col-span-full flex justify-end gap-3 mt-2">
                                 <button className={customButtons.outline} onClick={handleReset}>Reset</button>
                                 <button className={customButtons.dark} onClick={() => {
-                                    setScrollSource('filter');
-                                    setApplyFilters(true);
+                                    setLoading(true);
+                                    setTableLoading(true);
+                                    setTimeout(() => {
+                                        setScrollSource('filter');
+                                        setApplyFilters(true);
+                                    }, 50);
                                 }} >Apply Filters</button>
                             </div>
                         </div>
@@ -728,72 +779,78 @@ const RenewalDashboard = () => {
             </section>
 
             {/* STATS CARDS */}
-            <section className="renewal-stats mt-4">
-                <div className="container-fluid mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-3">
+            {loading ? (
+                <section className="mt-4">
+                    <FullWidthLoadingSpinner />
+                </section>
+            ) : (
+                <>
+                    <section className="renewal-stats mt-4">
+                        <div className="container-fluid mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-3">
 
-                        {statCardsMap.map(([keyPath, title, color], idx) => {
-                            // Use getMapKey to determine if this card's filter is currently active for styling
-                            const mapKey = getMapKey(keyPath);
-                            const filterChange = cardFilterMap[mapKey];
+                                {statCardsMap.map(([keyPath, title, color], idx) => {
+                                    // Use getMapKey to determine if this card's filter is currently active for styling
+                                    const mapKey = getMapKey(keyPath);
+                                    const filterChange = cardFilterMap[mapKey];
 
-                            // Determine if this card is the currently active filter
-                            let isActive = false;
-                            if (filterChange) {
-                                const [filterKey, filterValue] = filterChange;
-                                isActive = filters[filterKey as keyof typeof filters] === filterValue;
-                            }
+                                    // Determine if this card is the currently active filter
+                                    let isActive = false;
+                                    if (filterChange) {
+                                        const [filterKey, filterValue] = filterChange;
+                                        isActive = filters[filterKey as keyof typeof filters] === filterValue;
+                                    }
 
-                            return (
-                                <div key={idx} className="col-span-1">
-                                    <div
-                                        onClick={() => handleCardClick(keyPath)} // 👈 ADD CLICK HANDLER HERE
-                                        className={`p-5 rounded-2xl min-h-[140px] border flex flex-col justify-center cursor-pointer transition duration-200 hover:translate-y-[-3px] 
+                                    return (
+                                        <div key={idx} className="col-span-1">
+                                            <div
+                                                onClick={() => handleCardClick(keyPath)} // 👈 ADD CLICK HANDLER HERE
+                                                className={`p-5 rounded-2xl min-h-[140px] border flex flex-col justify-center cursor-pointer transition duration-200 hover:translate-y-[-3px] 
                         ${statCardColors[color]}
                         ${isActive ? 'border-4 border-black/50 shadow-lg' : 'border-[#E3E6EE]'} // 👈 Add an active style
                     `}
-                                    >
-                                        <h6 className="text-xs font-bold mb-1 tracking-wider">{title}</h6>
-                                        <h2 className={`text-3xl text-start font-bold mb-1 ${color === 'dark-navy' ? 'text-white' : 'text-gray-900'}`}>
-                                            {getStatCount(displayStats, keyPath)}
-                                        </h2>
-                                        <p className={`text-xs m-0 ${color === 'dark-navy' ? 'text-gray-300' : 'text-gray-600'}`}>{isActive ? 'Click to clear filter' : 'Click to view profiles'}</p>
+                                            >
+                                                <h6 className="text-xs font-bold mb-1 tracking-wider">{title}</h6>
+                                                <h2 className={`text-3xl text-start font-bold mb-1 ${color === 'dark-navy' ? 'text-white' : 'text-gray-900'}`}>
+                                                    {getStatCount(displayStats, keyPath)}
+                                                </h2>
+                                                <p className={`text-xs m-0 ${color === 'dark-navy' ? 'text-gray-300' : 'text-gray-600'}`}>{isActive ? 'Click to clear filter' : 'Click to view profiles'}</p>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* WORK STATS */}
+                    {/* Equivalent to .work-stats-section */}
+                    <section className="bg-gray-50 py-4 mt-4">
+                        <div className="container-fluid mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+
+                                {/* Work Card structure - Equivalent to .work-card */}
+                                <div className="col-span-1">
+                                    <div className="bg-white rounded-xl p-6 border border-[#e6ecf2] shadow-sm h-full flex flex-col justify-between">
+                                        <div>
+                                            <h5 className="text-base font-semibold text-gray-900 mb-1">Today's Work</h5>
+                                            <p className="text-xs text-gray-600 mb-4">Total tasks to be completed today.</p>
+                                        </div>
+                                        <div className="text-3xl font-bold text-[#000c28]">{todayWorkCount}</div>
                                     </div>
                                 </div>
-                            );
-                        })}
-                    </div>
-                </div>
-            </section>
 
-            {/* WORK STATS */}
-            {/* Equivalent to .work-stats-section */}
-            <section className="bg-gray-50 py-4 mt-4">
-                <div className="container-fluid mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-
-                        {/* Work Card structure - Equivalent to .work-card */}
-                        <div className="col-span-1">
-                            <div className="bg-white rounded-xl p-6 border border-[#e6ecf2] shadow-sm h-full flex flex-col justify-between">
-                                <div>
-                                    <h5 className="text-base font-semibold text-gray-900 mb-1">Today's Work</h5>
-                                    <p className="text-xs text-gray-600 mb-4">Total tasks to be completed today.</p>
+                                <div className="col-span-1">
+                                    <div className="bg-white rounded-xl p-6 border border-[#e6ecf2] shadow-sm h-full flex flex-col justify-between">
+                                        <div>
+                                            <h5 className="text-base font-semibold text-gray-900 mb-1">Pending Work</h5>
+                                            <p className="text-xs text-gray-600 mb-4">Carry-forward items not completed.</p>
+                                        </div>
+                                        <div className="text-3xl font-bold text-[#000c28]">{pendingWorkCount}</div>
+                                    </div>
                                 </div>
-                                <div className="text-3xl font-bold text-[#000c28]">{todayWorkCount}</div>
-                            </div>
-                        </div>
 
-                        <div className="col-span-1">
-                            <div className="bg-white rounded-xl p-6 border border-[#e6ecf2] shadow-sm h-full flex flex-col justify-between">
-                                <div>
-                                    <h5 className="text-base font-semibold text-gray-900 mb-1">Pending Work</h5>
-                                    <p className="text-xs text-gray-600 mb-4">Carry-forward items not completed.</p>
-                                </div>
-                                <div className="text-3xl font-bold text-[#000c28]">{pendingWorkCount}</div>
-                            </div>
-                        </div>
-
-                        {/* <div className="col-span-1">
+                                {/* <div className="col-span-1">
                             <div className="bg-white rounded-xl p-6 border border-[#e6ecf2] shadow-sm h-full flex flex-col justify-between">
                                 <div>
                                     <h5 className="text-base font-semibold text-gray-900 mb-1">No Photo / Horo</h5>
@@ -803,8 +860,8 @@ const RenewalDashboard = () => {
                             </div>
                         </div> */}
 
-                        {/* Performance Report Card - Equivalent to .performance-card */}
-                        {/* <div className="col-span-1">
+                                {/* Performance Report Card - Equivalent to .performance-card */}
+                                {/* <div className="col-span-1">
                             <div className="bg-white rounded-xl p-6 border border-[#e6ecf2] shadow-sm h-full">
                                 <div className="flex justify-between items-start">
                                     <h5 className="text-base font-semibold text-gray-900">Performance Report</h5>
@@ -821,13 +878,13 @@ const RenewalDashboard = () => {
                             </div>
                         </div> */}
 
-                    </div>
-                </div>
-            </section>
+                            </div>
+                        </div>
+                    </section>
 
-            {/* STAFF SUMMARY TABLE */}
-            {/* Equivalent to .staff-summary-section */}
-            {/* <section className="bg-gray-100 py-4">
+                    {/* STAFF SUMMARY TABLE */}
+                    {/* Equivalent to .staff-summary-section */}
+                    {/* <section className="bg-gray-100 py-4">
                 <div className="container-fluid mx-auto px-4 sm:px-6 lg:px-8">
                    
                     <div className="bg-white rounded-xl p-6 border border-[#e6ecf2] shadow-md">
@@ -875,131 +932,132 @@ const RenewalDashboard = () => {
                 </div>
             </section> */}
 
-            {/* Equivalent to .renewal-profile-section */}
-            <section ref={profileTableRef} className="bg-gray-100 py-4">
-                <div className="container-fluid mx-auto px-4 sm:px-6 lg:px-8">
-                    {/* Equivalent to .profile-box */}
-                    <div className="bg-white rounded-xl p-6 border border-[#e6ecf2] shadow-md">
+                    {/* Equivalent to .renewal-profile-section */}
+                    <section ref={profileTableRef} className="bg-gray-100 py-4">
+                        <div className="container-fluid mx-auto px-4 sm:px-6 lg:px-8">
+                            {/* Equivalent to .profile-box */}
+                            <div className="bg-white rounded-xl p-6 border border-[#e6ecf2] shadow-md">
 
-                        <div className="flex justify-between items-center mb-4 flex-wrap gap-3">
-                            <h5 className="text-lg font-semibold m-0">Renewal Profile Detail ({profileCount})</h5>
-                            <div className="flex gap-2 items-center">
-                                {/* Equivalent to .search-input */}
-                                <input
-                                    type="text"
-                                    className="w-[250px] sm:w-[200px] h-10 px-4 rounded-full border border-gray-300 text-sm focus:outline-none focus:border-gray-500"
-                                    placeholder="Search Profile ID / Name"
-                                    value={filters.searchQuery}
-                                    onChange={(e) => {
-                                        const value = e.target.value;
-                                        setFilters({ ...filters, searchQuery: value });
+                                <div className="flex justify-between items-center mb-4 flex-wrap gap-3">
+                                    <h5 className="text-lg font-semibold m-0">Renewal Profile Detail ({profileCount})</h5>
+                                    <div className="flex gap-2 items-center">
+                                        {/* Equivalent to .search-input */}
+                                        <input
+                                            type="text"
+                                            className="w-[250px] sm:w-[200px] h-10 px-4 rounded-full border border-gray-300 text-sm focus:outline-none focus:border-gray-500"
+                                            placeholder="Search Profile ID / Name"
+                                            value={filters.searchQuery}
+                                            onChange={(e) => {
+                                                const value = e.target.value;
+                                                setFilters({ ...filters, searchQuery: value });
 
-                                        if (searchTimer) clearTimeout(searchTimer);
+                                                if (searchTimer) clearTimeout(searchTimer);
 
-                                        const newTimer = setTimeout(() => {
-                                            setScrollSource('filter');
-                                            setApplyFilters(true);   // 👈 Call API after typing stops
-                                        }, 2000); // ⏱ debounce delay
-                                        setSearchTimer(newTimer);
-                                    }}
-                                />
+                                                const newTimer = setTimeout(() => {
+                                                    setScrollSource('filter');
+                                                    setApplyFilters(true);   // 👈 Call API after typing stops
+                                                }, 2000); // ⏱ debounce delay
+                                                setSearchTimer(newTimer);
+                                            }}
+                                        />
 
-                                {/* Equivalent to .clear-btn */}
-                                <button className="h-10 px-4 rounded-full bg-white border border-gray-300 text-sm font-semibold text-gray-900 hover:bg-gray-50 transition duration-150"
-                                    onClick={() => {
-                                        setFilters({ ...filters, searchQuery: "" });
-                                        setScrollSource('filter');
-                                        setApplyFilters(true);  // 👈 reload table after clearing
-                                    }}
-                                >Clear</button>
+                                        {/* Equivalent to .clear-btn */}
+                                        <button className="h-10 px-4 rounded-full bg-white border border-gray-300 text-sm font-semibold text-gray-900 hover:bg-gray-50 transition duration-150"
+                                            onClick={() => {
+                                                setFilters({ ...filters, searchQuery: "" });
+                                                setScrollSource('filter');
+                                                setApplyFilters(true);  // 👈 reload table after clearing
+                                            }}
+                                        >Clear</button>
+                                    </div>
+                                </div>
+
+                                <div className="overflow-x-auto">
+                                    {/* Equivalent to .profile-table */}
+                                    <table className="min-w-full profile-table border-separate border-spacing-0">
+                                        <thead>
+                                            <tr className="bg-gray-50">
+                                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0 rounded-tl-xl">Profile ID</th>
+                                                {/* ... other ths ... */}
+                                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Name</th>
+                                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Age</th>
+                                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Family Status</th>
+                                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Education Details</th>
+                                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Annual Income</th>
+                                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">City</th>
+                                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Mode</th>
+                                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Owner</th>
+                                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">From Date</th>
+                                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">To Date</th>
+                                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Last Login</th>
+                                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Idle Days</th>
+                                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Status</th>
+                                                {/* <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Call Logs (+)</th>
+                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0 rounded-tr-xl">Customer Log (+)</th> */}
+                                            </tr>
+                                        </thead>
+                                        {!tableLoading ? (
+                                            <tbody>
+                                                {profiles.map((profile, index) => (
+                                                    <tr key={profile.ProfileId || index}>
+                                                        <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-[#1d4ed8] font-semibold hover:underline"
+                                                            onClick={() => navigate(`/viewProfile?profileId=${profile.ProfileId}`)}
+                                                        >{profile.ProfileId || 'N/A'}</td>
+                                                        <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.Profile_name || 'N/A'}</td>
+                                                        <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.age || 'N/A'}</td>
+                                                        <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.family_status_name || 'N/A'}</td>
+                                                        <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.degree_name || profile.other_degree || 'N/A'}</td>
+                                                        <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.income || 'N/A'}</td>
+                                                        <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.Profile_city || 'N/A'}</td>
+                                                        <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.plan_name}</td>
+                                                        <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.owner_name || 'N/A'}</td>
+                                                        <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{new Date(profile.membership_startdate).toLocaleDateString()}</td>
+                                                        <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{new Date(profile.membership_enddate).toLocaleDateString()}</td>
+                                                        <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{new Date(profile.Last_login_date).toLocaleDateString()}</td>
+                                                        <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.idle_days ?? 'N/A'}</td>
+                                                        <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">
+                                                            <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${getStatusPillClass(profile.call_status)}`}>
+                                                                {profile.call_status || 'N/A'}
+                                                            </span>
+                                                        </td>
+                                                        {/* <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-[#1d4ed8] font-semibold hover:underline cursor-pointer">View</td>
+                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-[#1d4ed8] font-semibold hover:underline cursor-pointer">View</td> */}
+                                                    </tr>
+                                                ))}
+                                                {profiles.length === 0 && (
+                                                    <tr>
+                                                        <td colSpan={16} className="text-center py-8 text-black font-semibold text-sm">
+                                                            No Renewal Profiles found
+                                                        </td>
+                                                    </tr>
+                                                )}
+                                            </tbody>
+                                        ) : (
+                                            <tbody>
+                                                {/* Single row that spans all columns for the loading state */}
+                                                <tr>
+                                                    <td colSpan={16} className="py-20">
+                                                        <div className="flex flex-col items-center justify-center">
+                                                            {/* Spinner */}
+                                                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1d4ed8] mb-4"></div>
+
+                                                            {/* Loading text */}
+                                                            <p className="text-sm text-gray-600 font-medium">
+                                                                Loading Renewal Profiles...
+                                                            </p>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        )}
+                                    </table>
+                                </div>
+
                             </div>
                         </div>
-
-                        <div className="overflow-x-auto">
-                            {/* Equivalent to .profile-table */}
-                            <table className="min-w-full profile-table border-separate border-spacing-0">
-                                <thead>
-                                    <tr className="bg-gray-50">
-                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0 rounded-tl-xl">Profile ID</th>
-                                        {/* ... other ths ... */}
-                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Name</th>
-                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Age</th>
-                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Family Status</th>
-                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Education Details</th>
-                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Annual Income</th>
-                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">City</th>
-                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Mode</th>
-                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Owner</th>
-                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">From Date</th>
-                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">To Date</th>
-                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Last Login</th>
-                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Idle Days</th>
-                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Status</th>
-                                        {/* <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Call Logs (+)</th>
-                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0 rounded-tr-xl">Customer Log (+)</th> */}
-                                    </tr>
-                                </thead>
-                                {!tableLoading ? (
-                                    <tbody>
-                                        {profiles.map((profile, index) => (
-                                            <tr key={profile.ProfileId || index}>
-                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-[#1d4ed8] font-semibold hover:underline"
-                                                    onClick={() => navigate(`/viewProfile?profileId=${profile.ProfileId}`)}
-                                                >{profile.ProfileId || 'N/A'}</td>
-                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.Profile_name || 'N/A'}</td>
-                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.age || 'N/A'}</td>
-                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.family_status_name || 'N/A'}</td>
-                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.degree_name || profile.other_degree || 'N/A'}</td>
-                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.income || 'N/A'}</td>
-                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.Profile_city || 'N/A'}</td>
-                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.plan_name}</td>
-                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.owner_name || 'N/A'}</td>
-                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{new Date(profile.membership_startdate).toLocaleDateString()}</td>
-                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{new Date(profile.membership_enddate).toLocaleDateString()}</td>
-                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{new Date(profile.Last_login_date).toLocaleDateString()}</td>
-                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.idle_days ?? 'N/A'}</td>
-                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">
-                                                    <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${getStatusPillClass(profile.call_status)}`}>
-                                                        {profile.call_status || 'N/A'}
-                                                    </span>
-                                                </td>
-                                                {/* <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-[#1d4ed8] font-semibold hover:underline cursor-pointer">View</td>
-                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-[#1d4ed8] font-semibold hover:underline cursor-pointer">View</td> */}
-                                            </tr>
-                                        ))}
-                                        {profiles.length === 0 && (
-                                            <tr>
-                                                <td colSpan={16} className="text-center py-8 text-black font-semibold text-sm">
-                                                    No Renewal Profiles found
-                                                </td>
-                                            </tr>
-                                        )}
-                                    </tbody>
-                                ) : (
-                                    <tbody>
-                                        {/* Single row that spans all columns for the loading state */}
-                                        <tr>
-                                            <td colSpan={16} className="py-20">
-                                                <div className="flex flex-col items-center justify-center">
-                                                    {/* Spinner */}
-                                                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1d4ed8] mb-4"></div>
-
-                                                    {/* Loading text */}
-                                                    <p className="text-sm text-gray-600 font-medium">
-                                                        Loading Renewal Profiles...
-                                                    </p>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                )}
-                            </table>
-                        </div>
-
-                    </div>
-                </div>
-            </section>
-
+                    </section>
+                </>
+            )}
         </div>
     );
 };
