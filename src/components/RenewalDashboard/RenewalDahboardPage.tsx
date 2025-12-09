@@ -105,6 +105,7 @@ const RenewalDashboard = () => {
     const profileTableRef = React.useRef<HTMLDivElement | null>(null);
     const [tableLoading, setTableLoading] = React.useState(false);
     const [searchTimer, setSearchTimer] = React.useState<NodeJS.Timeout | null>(null);
+    const [scrollSource, setScrollSource] = React.useState<'card' | 'filter' | null>(null);
     const SuperAdminID = localStorage.getItem('id') || sessionStorage.getItem('id');
     const RoleID = localStorage.getItem('role_id') || sessionStorage.getItem('role_id');
     const navigate = useNavigate();
@@ -117,15 +118,30 @@ const RenewalDashboard = () => {
         outline: "bg-white border border-gray-300 text-[#0A1735] px-6 py-2 rounded-full font-semibold text-sm shadow-sm hover:bg-gray-50 transition duration-150",
     };
 
+    // React.useEffect(() => {
+    //     if (applyFilters && profileTableRef.current) {
+    //         profileTableRef.current.scrollIntoView({ behavior: "smooth" });
+    //         setTimeout(() => {
+    //             fetchData();
+    //             setApplyFilters(false);
+    //         }, 500); // 500ms delay for smooth scroll
+    //     }
+    // }, [applyFilters]);
+
     React.useEffect(() => {
-        if (applyFilters && profileTableRef.current) {
+        if (applyFilters && profileTableRef.current && scrollSource === 'card') {
             profileTableRef.current.scrollIntoView({ behavior: "smooth" });
             setTimeout(() => {
                 fetchData();
                 setApplyFilters(false);
+                setScrollSource(null);
             }, 500); // 500ms delay for smooth scroll
+        } else if (applyFilters && scrollSource === 'filter') {
+            fetchData();
+            setApplyFilters(false);
+            setScrollSource(null);
         }
-    }, [applyFilters]);
+    }, [applyFilters, scrollSource]);
 
     const statCardsMap: StatCardMapEntry[] = [
         ["overall_count", "TOTAL RENEWALS", "light-blue"],
@@ -429,6 +445,7 @@ const RenewalDashboard = () => {
                 idleDaysFilter: "",
                 genderFilter: "",
             }));
+            setScrollSource('card');
             setApplyFilters(true);
             return;
         }
@@ -462,6 +479,7 @@ const RenewalDashboard = () => {
         }
 
         setFilters(newFilters);
+        setScrollSource('card');
         setApplyFilters(true); // Trigger a new API fetch
     };
 
@@ -485,6 +503,7 @@ const RenewalDashboard = () => {
             genderFilter: "",
             searchQuery: "",
         });
+        setScrollSource('filter');
         setApplyFilters(true);
     };
 
@@ -540,6 +559,7 @@ const RenewalDashboard = () => {
     const profileCount = stats?.filtered_count ?? 0;
     const todayWorkCount = displayStats.action_counts?.today_work ?? 0;
     const pendingWorkCount = displayStats.action_counts?.pending_work ?? 0;
+    
 
     return (
         // Equivalent to body { background: #F5F7FB; }
@@ -697,7 +717,10 @@ const RenewalDashboard = () => {
                             {/* Buttons - Equivalent to .btn-row */}
                             <div className="col-span-full flex justify-end gap-3 mt-2">
                                 <button className={customButtons.outline} onClick={handleReset}>Reset</button>
-                                <button className={customButtons.dark} onClick={() => setApplyFilters(true)} >Apply Filters</button>
+                                <button className={customButtons.dark} onClick={() => {
+                                    setScrollSource('filter');
+                                    setApplyFilters(true);
+                                }} >Apply Filters</button>
                             </div>
                         </div>
                     </div>
@@ -874,8 +897,9 @@ const RenewalDashboard = () => {
                                         if (searchTimer) clearTimeout(searchTimer);
 
                                         const newTimer = setTimeout(() => {
+                                            setScrollSource('filter');
                                             setApplyFilters(true);   // 👈 Call API after typing stops
-                                        }, 3000); // ⏱ debounce delay
+                                        }, 2000); // ⏱ debounce delay
                                         setSearchTimer(newTimer);
                                     }}
                                 />
@@ -884,6 +908,7 @@ const RenewalDashboard = () => {
                                 <button className="h-10 px-4 rounded-full bg-white border border-gray-300 text-sm font-semibold text-gray-900 hover:bg-gray-50 transition duration-150"
                                     onClick={() => {
                                         setFilters({ ...filters, searchQuery: "" });
+                                        setScrollSource('filter');
                                         setApplyFilters(true);  // 👈 reload table after clearing
                                     }}
                                 >Clear</button>
