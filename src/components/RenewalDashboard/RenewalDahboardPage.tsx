@@ -394,17 +394,33 @@ const RenewalDashboard = () => {
     // Corrected handleCardClick function
     const handleCardClick = (keyPath: StatKeyPath) => {
         const mapKey = getMapKey(keyPath);
+        // if (mapKey === "overall_count") {
+        //     setFilters({
+        //         fromDate: "",
+        //         toDate: "",
+        //         staff: "",
+        //         plan: "",
+        //         gender: "",
+        //         minAge: "",
+        //         maxAge: "",
+        //         engagement: "",
+        //         status: "",
+        //         ageFilter: "",
+        //         loginFilter: "",
+        //         expiringFilter: "",
+        //         callStatusFilter: "",
+        //         familyFilter: "",
+        //         idleDaysFilter: "",
+        //         genderFilter: "",
+        //         searchQuery: "",
+        //     });
+        //     setApplyFilters(true);
+        //     return;
+        // }
         if (mapKey === "overall_count") {
-            setFilters({
-                fromDate: "",
-                toDate: "",
-                staff: "",
-                plan: "",
-                gender: "",
-                minAge: "",
-                maxAge: "",
-                engagement: "",
-                status: "",
+            // Remove only card-based filters, keep normal filters
+            setFilters(prev => ({
+                ...prev,
                 ageFilter: "",
                 loginFilter: "",
                 expiringFilter: "",
@@ -412,11 +428,11 @@ const RenewalDashboard = () => {
                 familyFilter: "",
                 idleDaysFilter: "",
                 genderFilter: "",
-                searchQuery: "",
-            });
+            }));
             setApplyFilters(true);
             return;
         }
+
 
         const filterChange = cardFilterMap[mapKey];
 
