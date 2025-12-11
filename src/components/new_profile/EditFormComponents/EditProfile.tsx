@@ -332,6 +332,9 @@ const EditViewProfile: React.FC<pageProps> = ({
   const primaryStatusValue = Number(watch('profileView.primary_status'));
   console.log("edit primaryStatusValue", primaryStatusValue)
   const membershipStatus = watch('profileView.membership_status');
+  const RoleID = localStorage.getItem('role_id') || sessionStorage.getItem('role_id');
+  const shouldShowProfileOwner = RoleID === "7";
+
 
   const membershipActivation = Number(localStorage.getItem('membership_activation'));
 
@@ -340,7 +343,7 @@ const EditViewProfile: React.FC<pageProps> = ({
   console.log("initialApiStatus", initialApiStatus)
   const shouldHideSecondaryStatus = membershipActivation === 3 && [1, 2, 3, 4].includes(status);
 
-  const isPreApprovedAndProtected = membershipActivation === 3 && status === 1;
+  const isPreApprovedAndProtected = membershipActivation === 3 && initialApiStatus === 1;
 
 
   const isMembershipActive3 = membershipActivation === 3;
@@ -364,6 +367,13 @@ const EditViewProfile: React.FC<pageProps> = ({
     const initialStatusWasZero = initialApiStatus === 0;
     const isCurrentStatus1to4 = [0, 1, 2, 3, 4].includes(currentStatus);
 
+    if (membershipActivation === 1) {
+      return true;
+    }
+
+    // if (membershipActivation === 2) {
+    //   return true;
+    // }
     // 1. Hide if initial API status was 1 (first new requirement)
     if (initialStatusWasOne) {
       return false;
@@ -383,6 +393,11 @@ const EditViewProfile: React.FC<pageProps> = ({
       return true;
     }
 
+    const isMembershipActive2 = membershipActivation === 2;
+    if (isMembershipActive2 && isCurrentStatus1to4) {
+      return true;
+    }
+
     // Default: Hide
     return false;
   }, [status, initialApiStatus, membershipActivation]);
@@ -397,14 +412,24 @@ const EditViewProfile: React.FC<pageProps> = ({
   // Displaying membership date condition
   const shouldShowMembershipDates = useMemo(() => {
     // Condition 2: Check if the currently selected primaryStatus is between 26 and 30 (inclusive).
-    const isPrimaryStatusInOverrideRange = primaryStatusValue === 30 ;
+    const isPrimaryStatusInOverrideRange = primaryStatusValue === 30 || primaryStatusValue === 5 || primaryStatusValue === 6 || primaryStatusValue === 7 || primaryStatusValue === 8;
 
     // Condition 1: Check if planStatus is NOT one of the hiding values (6, 7, 8, 9).
-    const isPlanStatusNotHiding = ![6, 7, 8, 9].includes(Number(planStatus));
+    // const isPlanStatusNotHiding = ![6, 7, 8, 9].includes(Number(planStatus));
 
     // Show if plan status is NOT in the hiding list OR if the primary status is in the override range.
-    return isPlanStatusNotHiding || isPrimaryStatusInOverrideRange;
+    // return isPlanStatusNotHiding || isPrimaryStatusInOverrideRange;
+    return isPrimaryStatusInOverrideRange;
   }, [planStatus, primaryStatusValue]);
+
+  //membership activation Role value 2
+  const numericPlanStatus = Number(planStatus);
+  const isPlanStatusNotFinalized = ![6, 7, 8, 9].includes(numericPlanStatus);
+
+  const shouldDisableSpecificStatuses =
+    membershipActivation === 2 &&
+    isPlanStatusNotFinalized &&
+    initialApiStatus === 1;
 
   // Handler function
   const { data: profileOwnersData, isLoading: isOwnersLoading } = useQuery<ProfileOwner[]>({
@@ -1066,11 +1091,23 @@ const EditViewProfile: React.FC<pageProps> = ({
                               >
                                 <option value="" className=' text-[#000000e6] '>Select your Status</option>
                                 {Status?.map((option) => {
-                                  const isDisabled =
-                                    // Existing logic: only allow Approved (1) if conditions met
-                                    shouldAllowOnlyApprovedStatus && option.status_code !== 1 ||
-                                    // 🔥 NEW LOGIC: If pre-approved and protected, disable everything except Approved (1)
+                                  // const isDisabled =
+                                  //   // Existing logic: only allow Approved (1) if conditions met
+                                  //   // shouldAllowOnlyApprovedStatus && option.status_code !== 1 ||
+                                  //   // 🔥 NEW LOGIC: If pre-approved and protected, disable everything except Approved (1)
+                                  //   // isPreApprovedAndProtected && option.status_code !== 1;
+                                  //   isPreApprovedAndProtected && option.status_code !== 1;
+
+                                  //Role value 3 condition
+                                  const isDisabledByExistingLogic =
                                     isPreApprovedAndProtected && option.status_code !== 1;
+
+                                  //Role value 2 condition(membership activation)
+                                  const isStatusToDisableByNewLogic = [0, 2, 3, 4].includes(option.status_code);
+                                  const isDisabledByNewLogic = shouldDisableSpecificStatuses && isStatusToDisableByNewLogic;
+
+                                  // Combine all disable conditions
+                                  const isDisabled = isDisabledByExistingLogic || isDisabledByNewLogic;
 
                                   return (
                                     <option
@@ -1142,27 +1179,30 @@ const EditViewProfile: React.FC<pageProps> = ({
                           </div>
                         )}
 
-                        <div className="flex items-center gap-2 mb-2">
-                          <label className="font-semibold text-[#5a5959e6]">Profile Owner:</label>
-                          <select
-                            {...register('profileView.admin_user_id', {
-                              setValueAs: (value) => value === "" ? undefined : Number(value)
-                            })}
-                            value={watch('profileView.admin_user_id') || ''}
-                            onChange={handleOwnerChange}
-                            className="px-2 py-1 border rounded border-[#b5b2b2e6] text-[#222020e6]"
-                            disabled={isOwnersLoading}
-                          >
-                            <option value="">
-                              {isOwnersLoading ? 'Loading Owners...' : 'Select Owner'}
-                            </option>
-                            {profileOwnersData?.map((owner) => (
-                              <option key={owner.id} value={owner.id}>
-                                {owner.username}
+                        {shouldShowProfileOwner && (
+                          <div className="flex items-center gap-2 mb-2">
+                            <label className="font-semibold text-[#5a5959e6]">Profile Owner:</label>
+                            <select
+                              {...register('profileView.admin_user_id', {
+                                setValueAs: (value) => value === "" ? undefined : Number(value)
+                              })}
+                              value={watch('profileView.admin_user_id') || ''}
+                              onChange={handleOwnerChange}
+                              className="px-2 py-1 border rounded border-[#b5b2b2e6] text-[#222020e6]"
+                              disabled={isOwnersLoading}
+                            >
+                              <option value="">
+                                {isOwnersLoading ? 'Loading Owners...' : 'Select Owner'}
                               </option>
-                            ))}
-                          </select>
-                        </div>
+                              {profileOwnersData?.map((owner) => (
+                                <option key={owner.id} value={owner.id}>
+                                  {owner.username}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        )}
+
                         {shouldShowMembershipDates && (
                           <div className="flex gap-2 mt-3 mb-2">
                             <label className="font-semibold text-[#5a5959e6]">
