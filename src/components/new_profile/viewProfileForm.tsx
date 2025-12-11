@@ -108,9 +108,9 @@ const ViewProfileForm: React.FC = () => {
   const [isViewDetais, setViewDetail] = useState(true);
   const [isViewDetai, setViewDetails] = useState(true);
   const viewProfileViewRef = useRef<HTMLDivElement | null>(null)
-  useEffect(() => {
-    getProfileListMatch(profileId);
-  }, []);
+  // useEffect(() => {
+  //   getProfileListMatch(profileId);
+  // }, []);
 
   const handlePrintProfile = () => {
     if (profileId) {
