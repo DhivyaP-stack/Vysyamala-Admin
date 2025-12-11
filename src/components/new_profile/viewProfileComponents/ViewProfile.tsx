@@ -23,6 +23,7 @@ import PaymentPopup from '../EditFormComponents/PaymentInfo/PaymentInfoPopup';
 import { District } from '../profile_form_components/EducationalDetails';
 import { apiAxios } from '../../../api/apiUrl';
 import { toast } from 'react-toastify';
+import { hasPermission } from '../../utils/auth';
 
 // Past Call Data Popup Component
 const PastCallDataPopup: React.FC<{
@@ -301,7 +302,7 @@ const ViewProfile: React.FC<pageProps> = ({
   const planStatus = Number(profileView?.plan_status);
   const hideMembershipDates = [6, 7, 8, 9].includes(planStatus);
   const membershipStatus = profileView?.membership_status;
-
+  const membershipActivation = Number(localStorage.getItem('membership_activation'));
   // Fetch data using useQuery
   const { data: AnnualIncomeData } = useQuery({
     queryKey: ['AnnualIncome'],
@@ -822,14 +823,15 @@ const ViewProfile: React.FC<pageProps> = ({
                     </p>
                   </div>
 
-
-                  <div className="flex flex-wrap items-center gap-2 mb-2">
-                    <span className="font-semibold text-[#5a5959e6]">Profile Status:</span>
-                    <span className="text-[#5a5959e6]">{profileView?.profile_status || "N/A"}</span>
-                    <div className="h-4 border-l-2 border-gray-400 mx-1"></div>
-                    <span className="font-semibold text-[#5a5959e6]">Profile Owner:</span>
-                    <span className="text-[#5a5959e6]">{profileView?.profile_owner || "N/A"}</span>
-                  </div>
+                  {/* {membershipActivation !== 0 && ( */}
+                    <div className="flex flex-wrap items-center gap-2 mb-2">
+                      <span className="font-semibold text-[#5a5959e6]">Profile Status:</span>
+                      <span className="text-[#5a5959e6]">{profileView?.profile_status || "N/A"}</span>
+                      <div className="h-4 border-l-2 border-gray-400 mx-1"></div>
+                      <span className="font-semibold text-[#5a5959e6]">Profile Owner:</span>
+                      <span className="text-[#5a5959e6]">{profileView?.profile_owner || "N/A"}</span>
+                    </div>
+                  {/* )} */}
 
                   {!hideMembershipDates && (
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">

@@ -8,7 +8,7 @@ export interface Permission {
 
 export const hasPermission = (permissionCode: string): boolean => {
   const permissionsJson = localStorage.getItem('user_permissions') || sessionStorage.getItem('user_permissions');
-  console.log('permissionsJson', permissionsJson)
+  // console.log('permissionsJson', permissionsJson)
   if (!permissionsJson) return false;
 
   try {

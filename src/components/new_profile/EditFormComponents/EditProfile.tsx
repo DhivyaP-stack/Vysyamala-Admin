@@ -298,6 +298,7 @@ const EditViewProfile: React.FC<pageProps> = ({
   const status = watch('profileView.status') ?? ''; // Ensure it doesn't break
   console.log("edit status", status)
   const primaryStatus = watch('profileView.primary_status') ?? ''; // Prevent undefined errors
+  console.log("primaryStatus", primaryStatus)
   const secondaryStatus = watch('profileView.secondary_status') ?? '';
   const image = watch('profileView.profile_image');
   const navigate = useNavigate();
@@ -325,17 +326,85 @@ const EditViewProfile: React.FC<pageProps> = ({
   const payment_mode = watch('profileView.payment_mode');
   const add_on_pack_name = watch('profileView.add_on_pack_name');
   const planStatus = watch("profileView.plan_status");
+  console.log("edit planStatus", planStatus)
   const hideMembershipDates = [6, 7, 8, 9].includes(Number(planStatus));
+  console.log("hideMembershipDates", hideMembershipDates)
   const primaryStatusValue = Number(watch('profileView.primary_status'));
   console.log("edit primaryStatusValue", primaryStatusValue)
   const membershipStatus = watch('profileView.membership_status');
 
   const membershipActivation = Number(localStorage.getItem('membership_activation'));
-  const shouldHideSecondaryStatus = membershipActivation === 3 && [1, 2, 3, 4].includes(status);
-  
-  const shouldAllowOnlyApprovedStatus =
-    membershipActivation === 2 && ["6", "7", "8", "9"].includes(planStatus);
 
+  //Role value 3
+  const [initialApiStatus, setInitialApiStatus] = useState<number | null>(null);
+  console.log("initialApiStatus", initialApiStatus)
+  const shouldHideSecondaryStatus = membershipActivation === 3 && [1, 2, 3, 4].includes(status);
+
+  const isPreApprovedAndProtected = membershipActivation === 3 && status === 1;
+
+
+  const isMembershipActive3 = membershipActivation === 3;
+  const isStatus1to4 = [0, 1, 2, 3, 4].includes(Number(status));
+  const isStatus1 = Number(status) === 1;
+
+  // const shouldShowSecondaryStatusControls = useMemo(() => {
+  //   // Show if membership is 3 AND status is 1, 2, 3, or 4 (your requirement)
+  //   if (isMembershipActive3 && isStatus1to4) {
+  //     return true;
+  //   }
+
+
+  //   return isMembershipActive3 && isStatus1to4;
+
+  // }, [isMembershipActive3, isStatus1to4, membershipActivation, status]);
+
+  const shouldShowSecondaryStatusControls = useMemo(() => {
+    const currentStatus = Number(status);
+    const initialStatusWasOne = initialApiStatus === 1;
+    const initialStatusWasZero = initialApiStatus === 0;
+    const isCurrentStatus1to4 = [0, 1, 2, 3, 4].includes(currentStatus);
+
+    // 1. Hide if initial API status was 1 (first new requirement)
+    if (initialStatusWasOne) {
+      return false;
+    }
+
+    // 2. Show if original status was 0 and current status is now 1, 2, 3, or 4 (second new requirement)
+    if (initialStatusWasZero && isCurrentStatus1to4) {
+      return true;
+    }
+
+    // 3. Keep existing logic (Show if membership is 3 AND current status is 1, 2, 3, or 4)
+    // Note: The logic in the component was: `return isMembershipActive3 && isStatus1to4;`
+    // I will include this for completeness with the existing code's intent,
+    // although the 'initial status was 0 and changed' case covers most of this.
+    const isMembershipActive3 = membershipActivation === 3;
+    if (isMembershipActive3 && isCurrentStatus1to4) {
+      return true;
+    }
+
+    // Default: Hide
+    return false;
+  }, [status, initialApiStatus, membershipActivation]);
+
+
+
+  const shouldAllowOnlyApprovedStatus = membershipActivation === 2 && ["6", "7", "8", "9"].includes(planStatus);
+
+  const shouldHideSecondarySelects = isPreApprovedAndProtected;
+
+
+  // Displaying membership date condition
+  const shouldShowMembershipDates = useMemo(() => {
+    // Condition 2: Check if the currently selected primaryStatus is between 26 and 30 (inclusive).
+    const isPrimaryStatusInOverrideRange = primaryStatusValue === 30 ;
+
+    // Condition 1: Check if planStatus is NOT one of the hiding values (6, 7, 8, 9).
+    const isPlanStatusNotHiding = ![6, 7, 8, 9].includes(Number(planStatus));
+
+    // Show if plan status is NOT in the hiding list OR if the primary status is in the override range.
+    return isPlanStatusNotHiding || isPrimaryStatusInOverrideRange;
+  }, [planStatus, primaryStatusValue]);
 
   // Handler function
   const { data: profileOwnersData, isLoading: isOwnersLoading } = useQuery<ProfileOwner[]>({
@@ -441,6 +510,7 @@ const EditViewProfile: React.FC<pageProps> = ({
     if (EditData?.[6]) {
       const data = EditData[6];
       setValue('profileView.status', data.status ?? 0);
+      setInitialApiStatus(Number(status));
       setValue('profileView.primary_status', data.secondary_status ?? '');
       setValue('profileView.secondary_status', data.plan_status ?? '');
       setValue('profileView.plan_status', data.plan_status ?? '');
@@ -502,7 +572,7 @@ const EditViewProfile: React.FC<pageProps> = ({
         setValue('profileView.admin_user_id', ownerId as any);
       }
     }
-  }, [EditData]);
+  }, [EditData, initialApiStatus]);
 
 
   useLayoutEffect(() => {
@@ -984,84 +1054,94 @@ const EditViewProfile: React.FC<pageProps> = ({
                             </span>
                           </p>
                         </div>
-                        <div>
-                          <div className="flex mt-3 gap-2">
-                            <label className="font-semibold text-[#5a5959e6]">Profile Status:</label>
-                            <select
-                              {...register('profileView.status', {
-                                setValueAs: (value) => value === "" ? undefined : Number(value)
-                              })}
-                              className="px-2 py-1 border border-[#b5b2b2e6]  text-[#222020e6] rounded   "
-                            >
-                              <option value="" className=' text-[#000000e6] '>Select your Status</option>
-                              {Status?.map((option) => {
-                                const isDisabled =
-                                  shouldAllowOnlyApprovedStatus && option.status_code !== 1; // 🔥 Only enable ID 1
-
-                                return (
-                                  <option
-                                    key={option.status_code}
-                                    value={option.status_code}
-                                    disabled={isDisabled}
-                                    style={isDisabled ? { color: '#ccc', cursor: 'not-allowed' } : {}}
-                                  >
-                                    {option.status_name}
-                                  </option>
-                                );
-                              })}
-
-                            </select>
-
-                            {!shouldHideSecondaryStatus && (
+                        {membershipActivation !== 0 && (
+                          <div>
+                            <div className="flex mt-3 gap-2">
+                              <label className="font-semibold text-[#5a5959e6]">Profile Status:</label>
                               <select
-                                {...register('profileView.primary_status', {
+                                {...register('profileView.status', {
                                   setValueAs: (value) => value === "" ? undefined : Number(value)
                                 })}
-                                value={watch('profileView.primary_status') || ''}
-                                className="px-2 py-1 border  rounded  border-[#b5b2b2e6]  text-[#222020e6] "
+                                className="px-2 py-1 border border-[#b5b2b2e6]  text-[#222020e6] rounded   "
                               >
-                                <option value="" className=' text-[#000000e6] '>Select Secondary Status</option>
-                                {Primary?.map((option) => (
-                                  <option key={option.id} value={option.id}
-                                    disabled={option.value === 0}  // Add this line
-                                    style={option.value === 0 ? { color: '#ccc', cursor: 'not-allowed' } : {}}
-                                    className=' text-[#000000e6] '>
-                                    {option.sub_status_name}
-                                  </option>
-                                ))}
-                              </select>
-                            )}
+                                <option value="" className=' text-[#000000e6] '>Select your Status</option>
+                                {Status?.map((option) => {
+                                  const isDisabled =
+                                    // Existing logic: only allow Approved (1) if conditions met
+                                    shouldAllowOnlyApprovedStatus && option.status_code !== 1 ||
+                                    // 🔥 NEW LOGIC: If pre-approved and protected, disable everything except Approved (1)
+                                    isPreApprovedAndProtected && option.status_code !== 1;
 
-                            {!shouldHideSecondaryStatus && Number(watch('profileView.status')) !== 0 &&
-                              watch('profileView.primary_status') &&
-                              ![7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22].includes(Number(watch('profileView.primary_status'))) && (
+                                  return (
+                                    <option
+                                      key={option.status_code}
+                                      value={option.status_code}
+                                      disabled={isDisabled}
+                                      style={isDisabled ? { color: '#ccc', cursor: 'not-allowed' } : {}}
+                                    >
+                                      {option.status_name}
+                                    </option>
+                                  );
+                                })}
+
+                              </select>
+
+                              {/* {(!shouldHideSecondaryStatus || (membershipActivation === 3 && status === 1)) && ( */}
+                              {/* {(!shouldHideSecondaryStatus || isPreApprovedAndProtected) && !shouldHideSecondarySelects && ( */}
+                              {shouldShowSecondaryStatusControls && (
                                 <select
-                                  {...register('profileView.secondary_status', {
+                                  {...register('profileView.primary_status', {
                                     setValueAs: (value) => value === "" ? undefined : Number(value)
                                   })}
-                                  value={watch('profileView.secondary_status') || ''}
-                                  className="px-2 py-1 border rounded  border-[#b5b2b2e6]  text-[#222020e6] "
+                                  value={watch('profileView.primary_status') || ''}
+                                  className="px-2 py-1 border  rounded  border-[#b5b2b2e6]  text-[#222020e6] "
                                 >
-                                  <option value="">Select Plan Status</option>
-                                  {secondary?.map((option) => (
-                                    <option key={option.id} value={option.id} className=' text-[#000000e6] '>
-                                      {option.plan_name}
+                                  <option value="" className=' text-[#000000e6] '>Select Secondary Status</option>
+                                  {Primary?.map((option) => (
+                                    <option key={option.id} value={option.id}
+                                      disabled={option.value === 0}  // Add this line
+                                      style={option.value === 0 ? { color: '#ccc', cursor: 'not-allowed' } : {}}
+                                      className=' text-[#000000e6] '>
+                                      {option.sub_status_name}
                                     </option>
                                   ))}
                                 </select>
                               )}
-                          </div>
 
-                          <div className="flex mt-5 justify-center">
-                            {[12, 17, 22].includes(Number(primaryStatus)) && (
-                              <input
-                                type="text"
-                                placeholder="Enter your reasons"
-                                className="w-70 h-10 border-2 border-blue-500 rounded-lg px-4 focus:outline-none focus:border-blue-700 transition duration-300"
-                              />
-                            )}
+                              {/* {(!shouldHideSecondaryStatus || (membershipActivation === 3 && status === 1)) && Number(watch('profileView.status')) !== 0 && */}
+                              {/* {(!shouldHideSecondaryStatus || isPreApprovedAndProtected) && !isPreApprovedAndProtected && Number(watch('profileView.status')) !== 0 && */}
+                              {shouldShowSecondaryStatusControls && Number(watch('profileView.status')) !== 0 &&
+                                watch('profileView.primary_status') &&
+                                ![7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22].includes(Number(watch('profileView.primary_status'))) && (
+                                  <select
+                                    {...register('profileView.secondary_status', {
+                                      setValueAs: (value) => value === "" ? undefined : Number(value)
+                                    })}
+                                    value={watch('profileView.secondary_status') || ''}
+                                    className="px-2 py-1 border rounded  border-[#b5b2b2e6]  text-[#222020e6] "
+                                  >
+                                    <option value="">Select Plan Status</option>
+                                    {secondary?.map((option) => (
+                                      <option key={option.id} value={option.id} className=' text-[#000000e6] '>
+                                        {option.plan_name}
+                                      </option>
+                                    ))}
+                                  </select>
+                                )}
+                            </div>
+
+                            <div className="flex mt-5 justify-center">
+                              {[12, 17, 22].includes(Number(primaryStatus)) && (
+                                <input
+                                  type="text"
+                                  placeholder="Enter your reasons"
+                                  className="w-70 h-10 border-2 border-blue-500 rounded-lg px-4 focus:outline-none focus:border-blue-700 transition duration-300"
+                                />
+                              )}
+                            </div>
                           </div>
-                        </div>
+                        )}
+
                         <div className="flex items-center gap-2 mb-2">
                           <label className="font-semibold text-[#5a5959e6]">Profile Owner:</label>
                           <select
@@ -1083,7 +1163,7 @@ const EditViewProfile: React.FC<pageProps> = ({
                             ))}
                           </select>
                         </div>
-                        {!hideMembershipDates && (
+                        {shouldShowMembershipDates && (
                           <div className="flex gap-2 mt-3 mb-2">
                             <label className="font-semibold text-[#5a5959e6]">
                               Membership Date:
