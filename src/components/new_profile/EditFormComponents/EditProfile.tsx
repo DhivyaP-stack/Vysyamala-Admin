@@ -415,11 +415,11 @@ const EditViewProfile: React.FC<pageProps> = ({
     const isPrimaryStatusInOverrideRange = primaryStatusValue === 30 || primaryStatusValue === 5 || primaryStatusValue === 6 || primaryStatusValue === 7 || primaryStatusValue === 8;
 
     // Condition 1: Check if planStatus is NOT one of the hiding values (6, 7, 8, 9).
-    // const isPlanStatusNotHiding = ![6, 7, 8, 9].includes(Number(planStatus));
+     const isPlanStatusNotHiding = ![6, 7, 8, 9].includes(Number(planStatus));
 
     // Show if plan status is NOT in the hiding list OR if the primary status is in the override range.
-    // return isPlanStatusNotHiding || isPrimaryStatusInOverrideRange;
-    return isPrimaryStatusInOverrideRange;
+    return isPlanStatusNotHiding || isPrimaryStatusInOverrideRange;
+    //return isPrimaryStatusInOverrideRange;
   }, [planStatus, primaryStatusValue]);
 
   //membership activation Role value 2

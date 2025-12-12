@@ -332,9 +332,16 @@ const RenewalDashboard = () => {
     //     fetchData();
     // }, [fetchData]);
 
+    // useEffect(() => {
+    //     fetchData();
+    // }, []);
+
     useEffect(() => {
+        setLoading(true);
+        setTableLoading(true);
         fetchData();
     }, []);
+
 
     useEffect(() => {
         if (applyFilters) {
@@ -465,7 +472,7 @@ const RenewalDashboard = () => {
                 idleDaysFilter: "",
                 genderFilter: "",
             }));
-            
+
             setScrollSource('card');
             setApplyFilters(true);
             return;
@@ -767,6 +774,16 @@ const RenewalDashboard = () => {
                                 <button className={customButtons.dark} onClick={() => {
                                     setLoading(true);
                                     setTableLoading(true);
+                                    setFilters(prev => ({
+                                        ...prev,
+                                        ageFilter: "",
+                                        loginFilter: "",
+                                        expiringFilter: "",
+                                        callStatusFilter: "",
+                                        familyFilter: "",
+                                        idleDaysFilter: "",
+                                        genderFilter: "",
+                                    }));
                                     setTimeout(() => {
                                         setScrollSource('filter');
                                         setApplyFilters(true);
@@ -974,83 +991,85 @@ const RenewalDashboard = () => {
 
                                 <div className="overflow-x-auto">
                                     {/* Equivalent to .profile-table */}
-                                    <table className="min-w-full profile-table border-separate border-spacing-0">
-                                        <thead>
-                                            <tr className="bg-gray-50">
-                                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0 rounded-tl-xl">Profile ID</th>
-                                                {/* ... other ths ... */}
-                                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Name</th>
-                                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Age</th>
-                                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Family Status</th>
-                                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Education Details</th>
-                                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Annual Income</th>
-                                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">City</th>
-                                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Mode</th>
-                                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Owner</th>
-                                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">From Date</th>
-                                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">To Date</th>
-                                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Last Login</th>
-                                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Idle Days</th>
-                                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Status</th>
-                                                {/* <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Call Logs (+)</th>
+                                    <div className="max-h-[500px] overflow-y-scroll">
+                                        <table className="min-w-full profile-table border-separate border-spacing-0">
+                                            <thead>
+                                                <tr className="bg-gray-50">
+                                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0 rounded-tl-xl">Profile ID</th>
+                                                    {/* ... other ths ... */}
+                                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Name</th>
+                                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Age</th>
+                                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Family Status</th>
+                                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Education Details</th>
+                                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Annual Income</th>
+                                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">City</th>
+                                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Mode</th>
+                                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Owner</th>
+                                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">From Date</th>
+                                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">To Date</th>
+                                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Last Login</th>
+                                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Idle Days</th>
+                                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Status</th>
+                                                    {/* <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Call Logs (+)</th>
                                         <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0 rounded-tr-xl">Customer Log (+)</th> */}
-                                            </tr>
-                                        </thead>
-                                        {!tableLoading ? (
-                                            <tbody>
-                                                {profiles.map((profile, index) => (
-                                                    <tr key={profile.ProfileId || index}>
-                                                        <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-[#1d4ed8] font-semibold hover:underline"
-                                                            onClick={() => navigate(`/viewProfile?profileId=${profile.ProfileId}`)}
-                                                        >{profile.ProfileId || 'N/A'}</td>
-                                                        <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.Profile_name || 'N/A'}</td>
-                                                        <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.age || 'N/A'}</td>
-                                                        <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.family_status_name || 'N/A'}</td>
-                                                        <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.degree_name || profile.other_degree || 'N/A'}</td>
-                                                        <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.income || 'N/A'}</td>
-                                                        <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.Profile_city || 'N/A'}</td>
-                                                        <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.plan_name}</td>
-                                                        <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.owner_name || 'N/A'}</td>
-                                                        <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{new Date(profile.membership_startdate).toLocaleDateString()}</td>
-                                                        <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{new Date(profile.membership_enddate).toLocaleDateString()}</td>
-                                                        <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{new Date(profile.Last_login_date).toLocaleDateString()}</td>
-                                                        <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.idle_days ?? 'N/A'}</td>
-                                                        <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">
-                                                            <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${getStatusPillClass(profile.call_status)}`}>
-                                                                {profile.call_status || 'N/A'}
-                                                            </span>
-                                                        </td>
-                                                        {/* <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-[#1d4ed8] font-semibold hover:underline cursor-pointer">View</td>
-                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-[#1d4ed8] font-semibold hover:underline cursor-pointer">View</td> */}
-                                                    </tr>
-                                                ))}
-                                                {profiles.length === 0 && (
-                                                    <tr>
-                                                        <td colSpan={16} className="text-center py-8 text-black font-semibold text-sm">
-                                                            No Renewal Profiles found
-                                                        </td>
-                                                    </tr>
-                                                )}
-                                            </tbody>
-                                        ) : (
-                                            <tbody>
-                                                {/* Single row that spans all columns for the loading state */}
-                                                <tr>
-                                                    <td colSpan={16} className="py-20">
-                                                        <div className="flex flex-col items-center justify-center">
-                                                            {/* Spinner */}
-                                                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1d4ed8] mb-4"></div>
-
-                                                            {/* Loading text */}
-                                                            <p className="text-sm text-gray-600 font-medium">
-                                                                Loading Renewal Profiles...
-                                                            </p>
-                                                        </div>
-                                                    </td>
                                                 </tr>
-                                            </tbody>
-                                        )}
-                                    </table>
+                                            </thead>
+                                            {!tableLoading ? (
+                                                <tbody>
+                                                    {profiles.map((profile, index) => (
+                                                        <tr key={profile.ProfileId || index}>
+                                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-[#1d4ed8] font-semibold hover:underline"
+                                                                onClick={() => navigate(`/viewProfile?profileId=${profile.ProfileId}`)}
+                                                            >{profile.ProfileId || 'N/A'}</td>
+                                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.Profile_name || 'N/A'}</td>
+                                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.age || 'N/A'}</td>
+                                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.family_status_name || 'N/A'}</td>
+                                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.degree_name || profile.other_degree || 'N/A'}</td>
+                                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.income || 'N/A'}</td>
+                                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.Profile_city || 'N/A'}</td>
+                                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.plan_name}</td>
+                                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.owner_name || 'N/A'}</td>
+                                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{new Date(profile.membership_startdate).toLocaleDateString()}</td>
+                                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{new Date(profile.membership_enddate).toLocaleDateString()}</td>
+                                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{new Date(profile.Last_login_date).toLocaleDateString()}</td>
+                                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.idle_days ?? 'N/A'}</td>
+                                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">
+                                                                <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${getStatusPillClass(profile.call_status)}`}>
+                                                                    {profile.call_status || 'N/A'}
+                                                                </span>
+                                                            </td>
+                                                            {/* <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-[#1d4ed8] font-semibold hover:underline cursor-pointer">View</td>
+                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-[#1d4ed8] font-semibold hover:underline cursor-pointer">View</td> */}
+                                                        </tr>
+                                                    ))}
+                                                    {profiles.length === 0 && (
+                                                        <tr>
+                                                            <td colSpan={16} className="text-center py-8 text-black font-semibold text-sm">
+                                                                No Renewal Profiles found
+                                                            </td>
+                                                        </tr>
+                                                    )}
+                                                </tbody>
+                                            ) : (
+                                                <tbody>
+                                                    {/* Single row that spans all columns for the loading state */}
+                                                    <tr>
+                                                        <td colSpan={16} className="py-20">
+                                                            <div className="flex flex-col items-center justify-center">
+                                                                {/* Spinner */}
+                                                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1d4ed8] mb-4"></div>
+
+                                                                {/* Loading text */}
+                                                                <p className="text-sm text-gray-600 font-medium">
+                                                                    Loading Renewal Profiles...
+                                                                </p>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            )}
+                                        </table>
+                                    </div>
                                 </div>
 
                             </div>
