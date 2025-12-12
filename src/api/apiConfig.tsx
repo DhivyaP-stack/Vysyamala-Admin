@@ -1029,6 +1029,33 @@ export const uploadProofFiles = async (
 };
 
 
+export const deleteFile = async (profileId, modelType, fieldName) => {
+    const url = 'https://app.vysyamala.com/api/delete-file/';
+    const body = {
+        model_type: modelType,
+        profile_id: profileId,
+        field_name: fieldName,
+    };
+
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            // Add any necessary authorization headers here (e.g., Authorization: `Bearer ${token}`)
+        },
+        body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+        // You might want to get more details from the response body for the error
+        throw new Error(`Failed to delete file: ${response.statusText}`);
+    }
+
+    // Assuming the API returns a success message or JSON
+    return response.json();
+};
+
+
 export const uploadNewProfileImages = async (profileId: string, newFiles: File[]) => {
     // FormData is required for sending files
     const formData = new FormData();

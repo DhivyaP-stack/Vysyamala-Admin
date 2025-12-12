@@ -293,7 +293,10 @@ const EditProfile = () => {
         Profile_pincode: data.BasicDetail.pincode,
         status: data.BasicDetail.status,
         Notifcation_enabled: alretSettings,
-        Profile_height: data.BasicDetail.Profile_height
+        Profile_height: data.BasicDetail.Profile_height,
+        linkedin: data.BasicDetail.linkedin,
+        facebook: data.BasicDetail.facebook,
+        Video_url: data.BasicDetail.Video_url,
         // Addon_package: addOnPackageDetails.join(','),
       },
     };

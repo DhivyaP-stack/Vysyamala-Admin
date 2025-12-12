@@ -469,6 +469,18 @@ const ViewProfile: React.FC<pageProps> = ({
     fetchAddOnPackages();
   }, []);
 
+  const handleWhatsAppShare = () => {
+    if (!profileId) {
+      toast.error("Profile ID not found");
+      return;
+    }
+
+    const url = `https://app.vysyamala.com/api/whatsapp-share/${profileId}/`;
+
+    window.open(url, "_blank"); // open in new tab
+  };
+
+
   // Memoized computed values for profile data
   const annualIncomeName = useMemo(() => {
     const id = profileView2?.anual_income;
@@ -582,7 +594,8 @@ const ViewProfile: React.FC<pageProps> = ({
                 <CameraAlt fontSize="small" />
                 <span>Photo Update</span>
               </div>
-              <div className="flex items-center gap-2 cursor-pointer hover:text-green-600" onClick={toggleShareVisibility} >
+              {/* <div className="flex items-center gap-2 cursor-pointer hover:text-green-600" onClick={toggleShareVisibility} > */}
+              <div className="flex items-center gap-2 cursor-pointer hover:text-green-600" onClick={handleWhatsAppShare} >
                 <WhatsApp fontSize="small" className=" text-green-700" />
                 <span>WhatsApp</span>
 
@@ -824,13 +837,13 @@ const ViewProfile: React.FC<pageProps> = ({
                   </div>
 
                   {/* {membershipActivation !== 0 && ( */}
-                    <div className="flex flex-wrap items-center gap-2 mb-2">
-                      <span className="font-semibold text-[#5a5959e6]">Profile Status:</span>
-                      <span className="text-[#5a5959e6]">{profileView?.profile_status || "N/A"}</span>
-                      <div className="h-4 border-l-2 border-gray-400 mx-1"></div>
-                      <span className="font-semibold text-[#5a5959e6]">Profile Owner:</span>
-                      <span className="text-[#5a5959e6]">{profileView?.profile_owner || "N/A"}</span>
-                    </div>
+                  <div className="flex flex-wrap items-center gap-2 mb-2">
+                    <span className="font-semibold text-[#5a5959e6]">Profile Status:</span>
+                    <span className="text-[#5a5959e6]">{profileView?.profile_status || "N/A"}</span>
+                    <div className="h-4 border-l-2 border-gray-400 mx-1"></div>
+                    <span className="font-semibold text-[#5a5959e6]">Profile Owner:</span>
+                    <span className="text-[#5a5959e6]">{profileView?.profile_owner || "N/A"}</span>
+                  </div>
                   {/* )} */}
 
                   {!hideMembershipDates && (

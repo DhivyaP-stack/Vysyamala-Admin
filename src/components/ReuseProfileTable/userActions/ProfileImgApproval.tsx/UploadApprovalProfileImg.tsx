@@ -1,8 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Box, CircularProgress, Typography } from '@mui/material';
+import {
+    Box, Button, CircularProgress, Typography, Dialog as ConfirmationDialog,
+    DialogTitle as ConfirmationDialogTitle,
+    DialogContent as ConfirmationDialogContent,
+    DialogActions as ConfirmationDialogActions,
+    IconButton,
+} from '@mui/material';
+import CloseIcon from "@mui/icons-material/Close";
 import profileImg from "../../../../assets/images/defaultprofileImg.jpg"
-import { fetchPhotoProofDetails, getPhotoProofDetails, getProfileDetails, uploadNewProfileImages, uploadProofFiles } from '../../../../api/apiConfig';
+import { fetchPhotoProofDetails, getPhotoProofDetails, getProfileDetails, uploadNewProfileImages, uploadProofFiles, deleteFile } from '../../../../api/apiConfig';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,6 +17,7 @@ import { NotifyError, NotifySuccess } from '../../../../common/Toast/ToastMessag
 import { IoEye, IoEyeOff } from "react-icons/io5";
 import { FileInput } from '../../../ReusableFile/FileInput';
 import { hasPermission } from '../../../utils/auth';
+import { FaTrashAlt } from 'react-icons/fa';
 
 interface ProfileImage {
     id: number;
@@ -62,6 +70,14 @@ export const UploadApprovalProfileImg = () => {
     const [divorceProofFiles, setDivorceProofFiles] = useState<File[]>([]);
     const [horoscopeAdminFiles, setHoroscopeAdminFiles] = useState<File[]>([]);
     const [photoProtection, setPhotoProtection] = useState<boolean>(false);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [deleteLoading, setDeleteLoading] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState<{
+        modelType: string;
+        fieldName: string;
+    } | null>(null);
+
+
     const {
         register,
         setValue,
@@ -105,6 +121,43 @@ export const UploadApprovalProfileImg = () => {
         fetchPhotoProof();
     }, [profileId, setValue]);
 
+    const getFileNameFromUrl = (url: string) => {
+        if (!url) return "";
+        return url.substring(url.lastIndexOf('/') + 1);
+    };
+
+    const handleDeleteConfirm = async () => {
+        if (!profileId || !itemToDelete) return;
+
+        setDeleteLoading(true);
+
+        try {
+            await deleteFile(profileId, itemToDelete.modelType, itemToDelete.fieldName);
+            NotifySuccess(`${itemToDelete.fieldName} deleted successfully!`);
+
+            // Refresh UI
+            await fetchPhotoProof();
+
+        } catch (error) {
+            NotifyError("Error deleting file");
+            console.error(error);
+        } finally {
+            setDeleteLoading(false);
+            setDeleteDialogOpen(false);
+            setItemToDelete(null);
+        }
+    };
+
+
+    const openDeleteDialog = (modelType: string, fieldName: string) => {
+        setItemToDelete({ modelType, fieldName });
+        setDeleteDialogOpen(true);
+    };
+
+    const handleDeleteCancel = () => {
+        setDeleteDialogOpen(false);
+        setItemToDelete(null);
+    };
 
     const ImageStatusSubmit = async () => {
         if (!profileId || !photoProofDetails) {
@@ -451,20 +504,33 @@ export const UploadApprovalProfileImg = () => {
                     )}
                     {/* Horoscope upload */}
                     {photoProofDetails?.horoscope_file && (
-                        <div className="flex">
+                        <div className="grid grid-cols-3 items-center gap-4">
                             <span className="w-50 font-semibold text-black">Original Horoscope File</span>
-                            <a
-                                href="#"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    handleDownloadHoroscopeFile(photoProofDetails.horoscope_file);
-                                }}
-                                className="text-blue-500 underline ml-2"
+                            <div>
+                                <a
+                                    href="#"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        handleDownloadHoroscopeFile(photoProofDetails.horoscope_file);
+                                    }}
+                                    className="text-blue-500 underline  mr-5"
+                                >
+                                    View File
+                                </a>
+                                (<span className="text-gray-700">
+                                    {getFileNameFromUrl(photoProofDetails.horoscope_file)}
+                                </span>)
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => openDeleteDialog('horoscope', 'horoscope_file')}
+                                className="text-red-500 hover:text-red-700 flex justify-center"
                             >
-                                View File
-                            </a>
+                                <FaTrashAlt size={18} />
+                            </button>
                         </div>
                     )}
+
                     {hasPermission('edit_horo_photo') && (
                         <div className="flex">
                             <FileInput
@@ -479,22 +545,35 @@ export const UploadApprovalProfileImg = () => {
                     )}
                     {/* Horoscope upload */}
                     {photoProofDetails?.horoscope_file_admin && (
-                        <div className="flex">
+                        <div className="grid grid-cols-3 items-center gap-4">
                             <span className="w-50 font-semibold text-black">Horoscope Admin File</span>
                             {/* <input
                             type="file"
                             accept="image/*"
                         /> */}
-                            <a
-                                href="#"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    handleDownloadHoroscopeFile(photoProofDetails.horoscope_file_admin);
-                                }}
-                                className="text-blue-500 underline ml-2"
+                            <div>
+                                <a
+                                    href="#"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        handleDownloadHoroscopeFile(photoProofDetails.horoscope_file_admin);
+                                    }}
+                                    className="text-blue-500 underline mr-5"
+                                >
+                                    View File
+                                </a>
+                                (<span className="text-gray-700">
+                                    {getFileNameFromUrl(photoProofDetails.horoscope_file_admin)}
+                                </span>)
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => openDeleteDialog('horoscope', 'horoscope_file_admin')}
+                                className="text-red-500 hover:text-red-700 flex justify-center"
+                                aria-label="Delete Original Horoscope"
                             >
-                                View File
-                            </a>
+                                <FaTrashAlt size={16} />
+                            </button>
                         </div>
                     )}
 
@@ -510,22 +589,35 @@ export const UploadApprovalProfileImg = () => {
                         />
                     </div>
                     {photoProofDetails?.id_proof && (
-                        <div className="flex">
+                        <div className="grid grid-cols-3 items-center gap-4">
                             <span className="w-50 font-semibold text-black">ID Proof</span>
                             {/* <input
                             type="file"
                             accept="image/*"
                         /> */}
-                            <a
-                                href="#"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    handleDownloadIDProof(photoProofDetails.id_proof);
-                                }}
-                                className="text-blue-500 underline ml-2"
+                            <div>
+                                <a
+                                    href="#"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        handleDownloadIDProof(photoProofDetails.id_proof);
+                                    }}
+                                    className="text-blue-500 underline  mr-5"
+                                >
+                                    View File
+                                </a>
+                                (<span className="text-gray-700">
+                                    {getFileNameFromUrl(photoProofDetails.id_proof)}
+                                </span>)
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => openDeleteDialog('registration', 'Profile_idproof')}
+                                className="text-red-500 hover:text-red-700 flex justify-center"
+                                aria-label="Delete Original Horoscope"
                             >
-                                View File
-                            </a>
+                                <FaTrashAlt size={16} />
+                            </button>
                         </div>
                     )}
                     {['2', '4', '5'].includes(photoProofDetails?.profile_martial_status) && (
@@ -542,22 +634,35 @@ export const UploadApprovalProfileImg = () => {
                         </>
                     )}
                     {photoProofDetails?.divorce_certificate && (
-                        <div className="flex">
+                        <div className="grid grid-cols-3 items-center gap-4">
                             <span className="w-50 font-semibold text-black">Divorce Proof</span>
                             {/* <input
                             type="file"
                             accept="image/*"
                         /> */}
-                            <a
-                                href="#"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    handleDownloadDivorceProof(photoProofDetails.divorce_certificate);
-                                }}
-                                className="text-blue-500 underline ml-2"
+                            <div className="flex items-center">
+                                <a
+                                    href="#"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        handleDownloadDivorceProof(photoProofDetails.divorce_certificate);
+                                    }}
+                                    className="text-blue-500 underline mr-5"
+                                >
+                                    View File
+                                </a>
+                                (<span className="text-gray-700">
+                                    {getFileNameFromUrl(photoProofDetails.divorce_certificate)}
+                                </span>)
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => openDeleteDialog('registration', 'Profile_divorceproof')}
+                                className="text-red-500 hover:text-red-700 flex justify-center"
+                                aria-label="Delete Original Horoscope"
                             >
-                                View File
-                            </a>
+                                <FaTrashAlt size={16} />
+                            </button>
                         </div>
                     )}
                 </div>
@@ -573,7 +678,52 @@ export const UploadApprovalProfileImg = () => {
                     Submit
                 </button>
             </div>
+            <ConfirmationDialog
+                open={deleteDialogOpen}
+                onClose={handleDeleteCancel}
+                maxWidth="sm"
+                fullWidth
+            >
+                <ConfirmationDialogTitle>
+                    Confirm Delete
+                    <IconButton
+                        aria-label="close"
+                        onClick={handleDeleteCancel}
+                        sx={{
+                            position: 'absolute',
+                            right: 8,
+                            top: 8,
+                            color: (theme) => theme.palette.grey[500],
+                        }}
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                </ConfirmationDialogTitle>
 
+                <ConfirmationDialogContent>
+                    <Typography>
+                        Are you sure you want to delete{" "}
+                        <strong>{itemToDelete?.fieldName}</strong>
+                    </Typography>
+                </ConfirmationDialogContent>
+
+                <ConfirmationDialogActions>
+                    <Button onClick={handleDeleteCancel} disabled={deleteLoading}>
+                        Cancel
+                    </Button>
+
+                    <Button
+                        onClick={handleDeleteConfirm}
+                        color="error"
+                        variant="contained"
+                        disabled={deleteLoading}
+                        startIcon={deleteLoading ? <CircularProgress size={16} /> : null}
+                    >
+                        {deleteLoading ? "Deleting..." : "Delete"}
+                    </Button>
+                </ConfirmationDialogActions>
+            </ConfirmationDialog>
         </Box>
+
     );
 };

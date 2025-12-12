@@ -37,6 +37,7 @@ import { MyProfileShare } from '../WhatsUpShare/MyProfileShare';
 import PaymentPopup from './PaymentInfo/PaymentInfoPopup';
 import { District } from './EducationalDetails';
 import { hasPermission } from '../../utils/auth';
+import { toast } from 'react-toastify';
 
 // Past Call Data Popup Component
 const PastCallDataPopup: React.FC<{
@@ -415,7 +416,7 @@ const EditViewProfile: React.FC<pageProps> = ({
     const isPrimaryStatusInOverrideRange = primaryStatusValue === 30 || primaryStatusValue === 5 || primaryStatusValue === 6 || primaryStatusValue === 7 || primaryStatusValue === 8;
 
     // Condition 1: Check if planStatus is NOT one of the hiding values (6, 7, 8, 9).
-     const isPlanStatusNotHiding = ![6, 7, 8, 9].includes(Number(planStatus));
+    const isPlanStatusNotHiding = ![6, 7, 8, 9].includes(Number(planStatus));
 
     // Show if plan status is NOT in the hiding list OR if the primary status is in the override range.
     return isPlanStatusNotHiding || isPrimaryStatusInOverrideRange;
@@ -703,6 +704,17 @@ const EditViewProfile: React.FC<pageProps> = ({
     }
   };
 
+  const handleWhatsAppShare = () => {
+    if (!profileId) {
+      toast.error("Profile ID not found");
+      return;
+    }
+
+    const url = `https://app.vysyamala.com/api/whatsapp-share/${profileId}/`;
+
+    window.open(url, "_blank"); // open in new tab
+  };
+
   const [isShareVisible, setIsShareVisible] = useState(false);
   const [isPdfOptionsVisible, setIsPdfOptionsVisible] = useState(false);
 
@@ -767,7 +779,8 @@ const EditViewProfile: React.FC<pageProps> = ({
                     <span>Photo Update</span>
                   </div>
 
-                  <div className="flex items-center gap-2 cursor-pointer hover:text-green-600" onClick={toggleShareVisibility} >
+                  {/* <div className="flex items-center gap-2 cursor-pointer hover:text-green-600" onClick={toggleShareVisibility} > */}
+                  <div className="flex items-center gap-2 cursor-pointer hover:text-green-600" onClick={handleWhatsAppShare} >
                     <WhatsApp fontSize="small" className=" text-green-700" />
                     <span>WhatsApp</span>
 

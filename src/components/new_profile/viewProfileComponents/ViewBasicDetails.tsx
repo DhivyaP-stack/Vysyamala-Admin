@@ -471,30 +471,67 @@ const ViewBasicDetails: React.FC<pageProps> = ({ profile, setGennder }) => {
               />
             </div>
           </div>
-          <div className="w-1/3">
-            <label className='block text-[#5a5959e6] font-medium mb-1'>
-              Profile Height
-              {/* <span className="text-red-500">*</span> */}
-            </label>
-            <select
-              id="height"
-              className={`text-ash font-medium block w-full px-3 py-2 border-[1px] border-[#b5b2b2e6]  text-[#222020e6] border-footer-text-gray rounded-[4px] focus-visible:outline-none`}
-              // {...register("BasicDetail.Profile_height")}
-              value={basicDetails.Profile_height}
-              disabled
-            >
-              <option value="" selected disabled>
-                Select Height
-              </option>
-              {heightOptions.map((option) => (
-                <option key={option.height_id} value={option.height_id}>
-                  {option.height_description}
+          <div className="flex w-full flex-row gap-4">
+            <div className="w-1/3">
+              <label className='block text-[#5a5959e6] font-medium mb-1'>
+                Profile Height
+                {/* <span className="text-red-500">*</span> */}
+              </label>
+              <select
+                id="height"
+                className={`text-ash font-medium block w-full px-3 py-2 border-[1px] border-[#b5b2b2e6]  text-[#222020e6] border-footer-text-gray rounded-[4px] focus-visible:outline-none`}
+                // {...register("BasicDetail.Profile_height")}
+                value={basicDetails.Profile_height}
+                disabled
+              >
+                <option value="" selected disabled>
+                  Select Height
                 </option>
-              ))}
-            </select>
-            {/* {errors?.BasicDetail?.Profile_height && (
+                {heightOptions.map((option) => (
+                  <option key={option.height_id} value={option.height_id}>
+                    {option.height_description}
+                  </option>
+                ))}
+              </select>
+              {/* {errors?.BasicDetail?.Profile_height && (
                 <p className="text-red-600">{errors.BasicDetail.Profile_height.message?.toString()}</p>
               )} */}
+            </div>
+
+            <div className="w-1/3">
+              <label className="block text-[#5a5959e6] font-semibold mb-1">
+                Facebook
+              </label>
+
+              <Input
+                value={basicDetails.facebook || "N/A"}
+                readOnly
+                label={""}
+              />
+            </div>
+
+            <div className="w-1/3">
+              <label className="block text-[#5a5959e6] font-semibold mb-1">
+                LinkedIn
+              </label>
+
+              <Input
+                value={basicDetails.linkedin || "N/A"}
+                readOnly
+                label={""}
+              />
+            </div>
+          </div>
+          <div className="w-1/3">
+            <label className="block text-[#5a5959e6] font-semibold mb-1">
+              Video url
+            </label>
+
+            <Input
+              value={basicDetails.Video_url || "N/A"}
+              readOnly
+              label={""}
+            />
           </div>
         </div>
       )}

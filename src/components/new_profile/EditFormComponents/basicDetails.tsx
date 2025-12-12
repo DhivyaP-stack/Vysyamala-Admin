@@ -925,6 +925,47 @@ const BasicDetails: React.FC<formProps> = ({
                 <p className="text-red-600">{errors.BasicDetail.Profile_height.message?.toString()}</p>
               )}
             </div>
+
+            <div className="w-1/3">
+              <Input
+                required
+                {...register('BasicDetail.facebook')}
+                label={'Facebook'}
+              />
+              {errors?.BasicDetail?.facebook && (
+                <p className="text-red-600">
+                  {errors.BasicDetail.facebook.message?.toString()}
+
+                </p>
+              )}
+            </div>
+            <div className="w-1/3">
+              <Input
+                required
+                {...register('BasicDetail.linkedin')}
+                label={'LinkedIn'}
+              />
+              {errors?.BasicDetail?.linkedin && (
+                <p className="text-red-600">
+                  {errors.BasicDetail.linkedin.message?.toString()}
+
+                </p>
+              )}
+            </div>
+
+          </div>
+          <div className="w-1/3">
+            <Input
+              required
+              {...register('BasicDetail.Video_url')}
+              label={'Video url'}
+            />
+            {errors?.BasicDetail?.Video_url && (
+              <p className="text-red-600">
+                {errors.BasicDetail.Video_url.message?.toString()}
+
+              </p>
+            )}
           </div>
         </div>
 

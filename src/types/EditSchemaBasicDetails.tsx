@@ -64,6 +64,9 @@ export const EditScheemaBasicDetails = z.object({
     complexion: z.string().optional(),
     status: z.string().min(1, 'Status is required'),
     WhatsAppNumber: z.string().optional(),
+    linkedin: z.string().optional(),
+    facebook: z.string().optional(),
+    Video_url: z.string().optional(),
   })
     .refine(
       (data) => {
@@ -113,6 +116,9 @@ export interface BasicDetailss {
     status: string;
     AddOnPackage?: string | null;
     Profile_height: string
+    facebook: string;
+    linkedin: string;
+    Video_url: string;
   };
 }
 
