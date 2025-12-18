@@ -53,20 +53,20 @@ interface MasterApiResponse {
 
 interface ApiCallLog {
     [x: string]: string;
-    id: number;
-    call_management_id: number;
+    // id: number;
+    // call_management_id: number;
     call_date: string;
     comments: string;
     created_at: string;
-    call_type_id: number;
-    particulars_id: number;
-    call_status_id: number;
+    // call_type_id: number;
+    // particulars_id: number;
+    // call_status_id: number;
     call_type_name: string;
     particulars_name: string;
     call_status_name: string;
     next_call_date: string;
     call_owner: string;
-    profile_owner: String;
+    // profile_owner: String;
     call_owner_name: string;
 }
 
@@ -87,6 +87,9 @@ interface ApiActionLog {
     next_action_name: string;
     action_owner: string;
     next_action_date: string;
+    action_owner_name: string;
+    call_management__profile_id: string;
+    call_management__mobile_no: string;
 }
 
 interface ActionLogApiResponse {
@@ -107,6 +110,8 @@ interface ApiAssignLog {
     assign_owner: string;
     assign_too_previous: string;
     assign_too_current: string;
+    profile_id: string;
+    mobile_no: string;
 }
 
 interface AssignLogApiResponse {
@@ -317,6 +322,57 @@ const GeneralCallManagementPage: React.FC = () => {
     const [actionphoneNumber, setActionPhoneNumber] = useState<string>('');
     const [assignprofileIdInForm, setAssignProfileIdInForm] = useState<string>('');
     const [assignphoneNumber, setAssignPhoneNumber] = useState<string>('');
+
+    const getRailwayDateTime = () => {
+        const now = new Date();
+
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+
+        // Returns "2025-12-18 14:58:25" (No 'Z' at the end)
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    };
+
+    const formatTo12Hr = (dateString: string | null) => {
+        const date = dateString ? new Date(dateString) : new Date();
+        if (isNaN(date.getTime())) return "";
+
+        return new Intl.DateTimeFormat('en-GB', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        }).format(date).toUpperCase();
+    };
+
+    const formatAPIDateAndTime = (dateString: string): string => {
+        if (!dateString || dateString === 'N/A') return 'N/A';
+        try {
+            // Replace space with 'T' if necessary to help Safari/older browsers parse
+            const normalizedDate = dateString.includes(' ') ? dateString.replace(' ', 'T') : dateString;
+            const date = new Date(normalizedDate);
+
+            if (isNaN(date.getTime())) return 'N/A';
+
+            return new Intl.DateTimeFormat('en-GB', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            }).format(date); // Will show "18 DEC 2025 02:00 PM"
+        } catch (error) {
+            return 'N/A';
+        }
+    };
+    
     // Date formatting functions
     const formatAPIDate = (dateString: string): string => {
         if (!dateString) return 'N/A';
@@ -420,7 +476,9 @@ const GeneralCallManagementPage: React.FC = () => {
         console.log('Session storage contents:');
         for (let i = 0; i < sessionStorage.length; i++) {
             const key = sessionStorage.key(i);
-            console.log(`${key}:`, sessionStorage.getItem(key));
+            if (key) {
+                console.log(`${key}:`, sessionStorage.getItem(key));
+            }
         }
     }, []);
 
@@ -497,11 +555,11 @@ const GeneralCallManagementPage: React.FC = () => {
 
             // Debug logs to check what we're getting from FIRST records
             console.log('=== FIRST RECORDS DEBUG ===');
-            console.log('All Call Logs:', callLogs.map(log => ({ id: log.id, date: log.call_date })));
+            console.log('All Call Logs:', callLogs.map((log: { id: any; call_date: any; }) => ({ id: log.id, date: log.call_date })));
             console.log('First Call (Last):', lastCall);
-            console.log('All Action Logs:', actionLogs.map(log => ({ id: log.id, date: log.action_date })));
+            console.log('All Action Logs:', actionLogs.map((log: { id: any; action_date: any; }) => ({ id: log.id, date: log.action_date })));
             console.log('First Action (Last):', lastAction);
-            console.log('All Assign Logs:', assignLogs.map(log => ({ id: log.id, date: log.assigned_date })));
+            console.log('All Assign Logs:', assignLogs.map((log: { id: any; assigned_date: any; }) => ({ id: log.id, date: log.assigned_date })));
             console.log('First Assignment (Last):', lastAssignment);
             console.log('API Response owner_name:', response.data.owner_name);
             console.log('API Response status_name:', response.data.status_name);
@@ -641,7 +699,7 @@ const GeneralCallManagementPage: React.FC = () => {
         }
 
         if (formType === "call") {
-            const log = data.call_logs.find(x => x.id === logId);
+            const log = data.call_logs.find(x => Number(x.id) === logId);
             if (!log) return;
 
             console.log('Call log raw dates:', {
@@ -698,8 +756,8 @@ const GeneralCallManagementPage: React.FC = () => {
             return;
         }
         handleEditOpen({
-            callManagementId: log.call_management_id,
-            logId: log.id,
+            callManagementId: Number(log.call_management_id),
+            logId: Number(log.id),
             formType: "call"
         });
     };
@@ -736,7 +794,7 @@ const GeneralCallManagementPage: React.FC = () => {
         description?: string
     ) => {
         const log = module === 'call_logs'
-            ? callLogs.find(x => x.id === id)
+            ? callLogs.find(x => Number(x.id) === id)
             : module === 'action_logs'
                 ? actionLogs.find(x => x.id === id)
                 : assignLogs.find(x => x.id === id);
@@ -1067,6 +1125,7 @@ const GeneralCallManagementPage: React.FC = () => {
         console.log('=== DATE FORMAT VERIFICATION ===');
         console.log('Active form:', activeForm);
         console.log('Is edit mode:', isEditMode);
+        const currentRailwayTime = getRailwayDateTime();
 
         switch (activeForm) {
             case "call":
@@ -1087,7 +1146,7 @@ const GeneralCallManagementPage: React.FC = () => {
                     call_logs: [
                         {
                             ...(isEditMode && { id: editLogId }),
-                            call_date: isEditMode ? formatDateForAPI(callDate) : getApiDate(),
+                            call_date: currentRailwayTime,
                             next_call_date: formatDateForAPI(nextCallDate),
                             call_type_id: Number(callTypeId) || "",
                             particulars_id: Number(particularsId) || "",
@@ -1118,7 +1177,7 @@ const GeneralCallManagementPage: React.FC = () => {
                     action_logs: [
                         {
                             ...(isEditMode && { id: editLogId }),
-                            action_date: isEditMode ? formatDateForAPI(actionDate) : getApiDate(),
+                            action_date: currentRailwayTime,
                             action_point_id: Number(actionTodayId) || "",
 
                             next_action_id: nextActionCommentId === "null" ? "" : nextActionCommentId || "",
@@ -1144,7 +1203,7 @@ const GeneralCallManagementPage: React.FC = () => {
                     assign_logs: [
                         {
                             ...(isEditMode && { id: editLogId }),
-                            assigned_date: isEditMode ? formatDateForAPI(assignDate) : getApiDate(),
+                            assigned_date: currentRailwayTime,
                             assigned_to: assignTooId || 0,
                             assigned_by: assignById,
                             notes: commentAssignText,
@@ -1221,12 +1280,13 @@ const GeneralCallManagementPage: React.FC = () => {
                         />
                         <Grid container spacing={2} alignItems="flex-end">
                             <Grid item xs={12} sm={6} md={4}>
-                                <Typography sx={labelSx}>Date</Typography>
+                                <Typography sx={labelSx}>Date & Time</Typography>
                                 <TextField
                                     fullWidth
                                     type="text"
                                     disabled={true}
-                                    value={isEditMode ? formatAPIDate(callDate) : currentDateString}
+                                    // value={isEditMode ? formatAPIDate(callDate) : currentDateString}
+                                    value={isEditMode ? formatTo12Hr(callDate) : formatTo12Hr(null)}
                                     {...baseInputProps}
                                 />
                             </Grid>
@@ -1358,12 +1418,12 @@ const GeneralCallManagementPage: React.FC = () => {
                         />
                         <Grid container spacing={2} alignItems="flex-end">
                             <Grid item xs={12} sm={6} md={4}>
-                                <Typography sx={labelSx}>Date</Typography>
+                                <Typography sx={labelSx}>Date & Time</Typography>
                                 <TextField
                                     fullWidth
                                     type="text"
                                     disabled={true}
-                                    value={isEditMode ? formatAPIDate(actionDate) : currentDateString}
+                                    value={isEditMode ? formatTo12Hr(actionDate) : formatTo12Hr(null)}
                                     {...baseInputProps}
                                 />
                             </Grid>
@@ -1483,12 +1543,12 @@ const GeneralCallManagementPage: React.FC = () => {
                         />
                         <Grid container spacing={2} alignItems="flex-end">
                             <Grid item xs={12} sm={6} md={4}>
-                                <Typography sx={labelSx}>Date</Typography>
+                                <Typography sx={labelSx}>Date & Time</Typography>
                                 <TextField
                                     fullWidth
                                     type="text"
                                     disabled={true}
-                                    value={isEditMode ? formatAPIDate(assignDate) : currentDateString}
+                                    value={isEditMode ? formatTo12Hr(assignDate) : formatTo12Hr(null)}
                                     {...baseInputProps}
                                 />
                             </Grid>
@@ -1798,22 +1858,30 @@ const GeneralCallManagementPage: React.FC = () => {
                                     <Table size="small">
                                         <TableHead>
                                             <TableRow>
-                                                <TableCell sx={{ backgroundColor: '#FFF9C9', borderBottom: '1px solid #E0E0E0', fontWeight: 700, color: '#DC2626' }}>Date</TableCell>
+                                                <TableCell sx={{ backgroundColor: '#FFF9C9', borderBottom: '1px solid #E0E0E0', fontWeight: 700, color: '#DC2626' }}>Date & Time</TableCell>
                                                 <TableCell sx={{ backgroundColor: '#FFF9C9', borderBottom: '1px solid #E0E0E0', fontWeight: 700, color: '#DC2626' }}>Comments</TableCell>
+                                                <TableCell sx={{ backgroundColor: '#FFF9C9', borderBottom: '1px solid #E0E0E0', fontWeight: 700, color: '#DC2626' }}>Call Type</TableCell>
                                                 <TableCell sx={{ backgroundColor: '#FFF9C9', borderBottom: '1px solid #E0E0E0', fontWeight: 700, color: '#DC2626' }}>Call Status</TableCell>
                                                 <TableCell sx={{ backgroundColor: '#FFF9C9', borderBottom: '1px solid #E0E0E0', fontWeight: 700, color: '#DC2626' }}>Next Call Date</TableCell>
+                                                <TableCell sx={{ backgroundColor: '#FFF9C9', borderBottom: '1px solid #E0E0E0', fontWeight: 700, color: '#DC2626' }}>Particulars</TableCell>
                                                 <TableCell sx={{ backgroundColor: '#FFF9C9', borderBottom: '1px solid #E0E0E0', fontWeight: 700, color: '#DC2626' }}>Call Owner</TableCell>
+                                                <TableCell sx={{ backgroundColor: '#FFF9C9', borderBottom: '1px solid #E0E0E0', fontWeight: 700, color: '#DC2626' }}>Profile ID</TableCell>
+                                                <TableCell sx={{ backgroundColor: '#FFF9C9', borderBottom: '1px solid #E0E0E0', fontWeight: 700, color: '#DC2626' }}>Phone No</TableCell>
                                                 <TableCell sx={{ backgroundColor: '#FFF9C9', borderBottom: '1px solid #E0E0E0', fontWeight: 700, color: '#DC2626', textAlign: 'center' }}>Actions</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
                                             {callLogs.map((log) => (
                                                 <TableRow key={log.id} hover sx={{ '& td': { padding: "12px 16px" } }}>
-                                                    <TableCell>{formatAPIDate(log.call_date)}</TableCell>
+                                                    <TableCell> {formatAPIDateAndTime(log.call_date)}</TableCell>
                                                     <TableCell>{log.comments || "N/A"}</TableCell>
+                                                    <TableCell>{log.call_type_name || "N/A"}</TableCell>
                                                     <TableCell>{log.call_status_name || "N/A"}</TableCell>
                                                     <TableCell>{formatAPIDate(log.next_call_date) || "N/A"}</TableCell>
+                                                    <TableCell>{log.particulars_name || "N/A"}</TableCell>
                                                     <TableCell>{log.call_owner_name || "N/A"}</TableCell>
+                                                    <TableCell>{log.call_management__profile_id || "N/A"}</TableCell>
+                                                    <TableCell>{log.call_management__mobile_no || "N/A"}</TableCell>
                                                     <TableCell sx={{ textAlign: 'center' }}>
                                                         {isActionAllowed(log.created_at, log.call_date, "call") && (
                                                             <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 1 }}>
@@ -1833,7 +1901,7 @@ const GeneralCallManagementPage: React.FC = () => {
                                                                         color: "#d32f2f",
                                                                         cursor: "pointer"
                                                                     }}
-                                                                    onClick={() => handleDeleteClick(log.id, log.call_management_id, 'call_logs', `Call from ${formatAPIDate(log.call_date)}`)}
+                                                                    onClick={() => handleDeleteClick(Number(log.id), Number(log.call_management_id), 'call_logs', `Call from ${formatAPIDate(log.call_date)}`)}
                                                                 >
                                                                     <MdDeleteOutline />
                                                                 </Typography>
@@ -1856,22 +1924,28 @@ const GeneralCallManagementPage: React.FC = () => {
                                     <Table size="small">
                                         <TableHead>
                                             <TableRow>
-                                                <TableCell sx={{ backgroundColor: '#FFF9C9', borderBottom: '1px solid #E0E0E0', fontWeight: 700, color: '#DC2626' }}>Date</TableCell>
+                                                <TableCell sx={{ backgroundColor: '#FFF9C9', borderBottom: '1px solid #E0E0E0', fontWeight: 700, color: '#DC2626' }}>Date & Time</TableCell>
                                                 <TableCell sx={{ backgroundColor: '#FFF9C9', borderBottom: '1px solid #E0E0E0', fontWeight: 700, color: '#DC2626' }}>Comments</TableCell>
                                                 <TableCell sx={{ backgroundColor: '#FFF9C9', borderBottom: '1px solid #E0E0E0', fontWeight: 700, color: '#DC2626' }}>Call Action Today</TableCell>
                                                 <TableCell sx={{ backgroundColor: '#FFF9C9', borderBottom: '1px solid #E0E0E0', fontWeight: 700, color: '#DC2626' }}>Future Action</TableCell>
                                                 <TableCell sx={{ backgroundColor: '#FFF9C9', borderBottom: '1px solid #E0E0E0', fontWeight: 700, color: '#DC2626' }}>Next Action Date</TableCell>
+                                                <TableCell sx={{ backgroundColor: '#FFF9C9', borderBottom: '1px solid #E0E0E0', fontWeight: 700, color: '#DC2626' }}>Action Owner</TableCell>
+                                                <TableCell sx={{ backgroundColor: '#FFF9C9', borderBottom: '1px solid #E0E0E0', fontWeight: 700, color: '#DC2626' }}>Profile ID</TableCell>
+                                                <TableCell sx={{ backgroundColor: '#FFF9C9', borderBottom: '1px solid #E0E0E0', fontWeight: 700, color: '#DC2626' }}>Phone No</TableCell>
                                                 <TableCell sx={{ backgroundColor: '#FFF9C9', borderBottom: '1px solid #E0E0E0', fontWeight: 700, color: '#DC2626', textAlign: 'center' }}>Actions</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
                                             {actionLogs.map((log) => (
                                                 <TableRow key={log.id} hover sx={{ '& td': { padding: "12px 16px" } }}>
-                                                    <TableCell>{formatAPIDate(log.action_date)}</TableCell>
+                                                    <TableCell> {formatAPIDateAndTime(log.action_date)}</TableCell>
                                                     <TableCell>{log.comments || "N/A"}</TableCell>
                                                     <TableCell>{log.action_point_name || "N/A"}</TableCell>
                                                     <TableCell>{log.next_action_name || "N/A"}</TableCell>
                                                     <TableCell>{formatAPIDate(log.next_action_date) || "N/A"}</TableCell>
+                                                    <TableCell>{log.action_owner_name || "N/A"}</TableCell>
+                                                    <TableCell>{log.call_management__profile_id || "N/A"}</TableCell>
+                                                    <TableCell>{log.call_management__mobile_no || "N/A"}</TableCell>
                                                     <TableCell sx={{ textAlign: 'center' }}>
                                                         {isActionAllowed(log.created_at, log.action_date, "action") && (
                                                             <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 1 }}>
@@ -1914,9 +1988,11 @@ const GeneralCallManagementPage: React.FC = () => {
                                     <Table size="small">
                                         <TableHead>
                                             <TableRow>
-                                                <TableCell sx={{ backgroundColor: '#FFF9C9', borderBottom: '1px solid #E0E0E0', fontWeight: 700, color: '#DC2626' }}>Date</TableCell>
+                                                <TableCell sx={{ backgroundColor: '#FFF9C9', borderBottom: '1px solid #E0E0E0', fontWeight: 700, color: '#DC2626' }}>Date & Time</TableCell>
                                                 <TableCell sx={{ backgroundColor: '#FFF9C9', borderBottom: '1px solid #E0E0E0', fontWeight: 700, color: '#DC2626' }}>Comments</TableCell>
                                                 <TableCell sx={{ backgroundColor: '#FFF9C9', borderBottom: '1px solid #E0E0E0', fontWeight: 700, color: '#DC2626' }}>Assigning Owner</TableCell>
+                                                <TableCell sx={{ backgroundColor: '#FFF9C9', borderBottom: '1px solid #E0E0E0', fontWeight: 700, color: '#DC2626' }}>Profile ID</TableCell>
+                                                <TableCell sx={{ backgroundColor: '#FFF9C9', borderBottom: '1px solid #E0E0E0', fontWeight: 700, color: '#DC2626' }}>Phone No</TableCell>
                                                 <TableCell sx={{ backgroundColor: '#FFF9C9', borderBottom: '1px solid #E0E0E0', fontWeight: 700, color: '#DC2626', textAlign: 'center' }}>Actions</TableCell>
                                             </TableRow>
                                         </TableHead>
@@ -1924,11 +2000,13 @@ const GeneralCallManagementPage: React.FC = () => {
                                             {assignLogs.map((log) => {
                                                 return (
                                                     <TableRow key={log.id} hover sx={{ '& td': { padding: "12px 16px" } }}>
-                                                        <TableCell>{formatAPIDate(log.assigned_date)}</TableCell>
+                                                        <TableCell> {formatAPIDateAndTime(log.assigned_date)}</TableCell>
                                                         <TableCell>{log.notes || "N/A"}</TableCell>
                                                         <TableCell>
                                                             {log.assigned_by_name || "N/A"} → {log.assigned_to_name || "N/A"}
                                                         </TableCell>
+                                                        <TableCell>{log.profile_id || "N/A"}</TableCell>
+                                                        <TableCell>{log.mobile_no || "N/A"}</TableCell>
                                                         <TableCell sx={{ textAlign: 'center' }}>
                                                             {isActionAllowed(log.created_at, log.assigned_date, "assign") && (
                                                                 <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 1 }}>
