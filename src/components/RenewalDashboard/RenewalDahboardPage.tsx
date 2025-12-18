@@ -20,6 +20,8 @@ interface RenewalStats {
     last_action_counts: Record<string, number>;
     action_counts: Record<string, number>;
     data: RenewalProfile[];
+    no_photo: number;
+    no_horo: number;
 }
 
 interface RenewalProfile {
@@ -591,6 +593,8 @@ const RenewalDashboard = () => {
     const profileCount = stats?.filtered_count ?? 0;
     const todayWorkCount = displayStats.action_counts?.today_work ?? 0;
     const pendingWorkCount = displayStats.action_counts?.pending_work ?? 0;
+    const NoPhotoCount = displayStats.no_photo ?? 0;
+    const NoHoroCount = displayStats.no_horo ?? 0;
 
     const FullWidthLoadingSpinner = () => (
         <Box
@@ -867,33 +871,42 @@ const RenewalDashboard = () => {
                                     </div>
                                 </div>
 
-                                {/* <div className="col-span-1">
-                            <div className="bg-white rounded-xl p-6 border border-[#e6ecf2] shadow-sm h-full flex flex-col justify-between">
-                                <div>
-                                    <h5 className="text-base font-semibold text-gray-900 mb-1">No Photo / Horo</h5>
-                                    <p className="text-xs text-gray-600 mb-4">Profiles missing photo or horoscope.</p>
+                                <div className="col-span-1">
+                                    <div className="bg-white rounded-xl p-6 border border-[#e6ecf2] shadow-sm h-full flex flex-col justify-between">
+                                        <div>
+                                            <h5 className="text-base font-semibold text-gray-900 mb-1">No Photo</h5>
+                                            <p className="text-xs text-gray-600 mb-4">Profiles missing photo.</p>
+                                        </div>
+                                        <div className="text-3xl font-bold text-[#000c28]">{NoPhotoCount}</div>
+                                    </div>
                                 </div>
-                                <div className="text-3xl font-bold text-[#000c28]">0</div>
-                            </div>
-                        </div> */}
+                                <div className="col-span-1">
+                                    <div className="bg-white rounded-xl p-6 border border-[#e6ecf2] shadow-sm h-full flex flex-col justify-between">
+                                        <div>
+                                            <h5 className="text-base font-semibold text-gray-900 mb-1">No Horo</h5>
+                                            <p className="text-xs text-gray-600 mb-4">Profiles missing horoscope.</p>
+                                        </div>
+                                        <div className="text-3xl font-bold text-[#000c28]">{NoHoroCount}</div>
+                                    </div>
+                                </div>
 
                                 {/* Performance Report Card - Equivalent to .performance-card */}
                                 {/* <div className="col-span-1">
-                            <div className="bg-white rounded-xl p-6 border border-[#e6ecf2] shadow-sm h-full">
-                                <div className="flex justify-between items-start">
-                                    <h5 className="text-base font-semibold text-gray-900">Performance Report</h5>
-                                   
-                                    <span className="bg-[#d1f7e3] px-2 py-0.5 rounded-full text-xs text-[#129f46] font-semibold">This Month</span>
-                                </div>
-                                
-                                <ul className="list-none p-0 mt-5 space-y-2">
-                                    <li className="flex justify-between text-sm text-gray-700"><span>Calls Attended</span><b className="font-semibold">50</b></li>
-                                    <li className="flex justify-between text-sm text-gray-700"><span>Ringing / Switch Off</span><b className="font-semibold">60</b></li>
-                                    <li className="flex justify-between text-sm text-gray-700"><span>Action Taken</span><b className="font-semibold">30</b></li>
-                                    <li className="flex justify-between text-sm text-gray-700"><span>Joined as Premium</span><b className="font-semibold">20</b></li>
-                                </ul>
-                            </div>
-                        </div> */}
+                                    <div className="bg-white rounded-xl p-6 border border-[#e6ecf2] shadow-sm h-full">
+                                        <div className="flex justify-between items-start">
+                                            <h5 className="text-base font-semibold text-gray-900">Performance Report</h5>
+
+                                            <span className="bg-[#d1f7e3] px-2 py-0.5 rounded-full text-xs text-[#129f46] font-semibold">This Month</span>
+                                        </div>
+
+                                        <ul className="list-none p-0 mt-5 space-y-2">
+                                            <li className="flex justify-between text-sm text-gray-700"><span>Calls Attended</span><b className="font-semibold">50</b></li>
+                                            <li className="flex justify-between text-sm text-gray-700"><span>Ringing / Switch Off</span><b className="font-semibold">60</b></li>
+                                            <li className="flex justify-between text-sm text-gray-700"><span>Action Taken</span><b className="font-semibold">30</b></li>
+                                            <li className="flex justify-between text-sm text-gray-700"><span>Joined as Premium</span><b className="font-semibold">20</b></li>
+                                        </ul>
+                                    </div>
+                                </div> */}
 
                             </div>
                         </div>
@@ -1010,8 +1023,8 @@ const RenewalDashboard = () => {
                                                     <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Last Login</th>
                                                     <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Idle Days</th>
                                                     <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Status</th>
-                                                    {/* <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Call Logs (+)</th>
-                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0 rounded-tr-xl">Customer Log (+)</th> */}
+                                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Call Logs (+)</th>
+                                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0 rounded-tr-xl">Customer Log (+)</th>
                                                 </tr>
                                             </thead>
                                             {!tableLoading ? (
@@ -1038,8 +1051,8 @@ const RenewalDashboard = () => {
                                                                     {profile.call_status || 'N/A'}
                                                                 </span>
                                                             </td>
-                                                            {/* <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-[#1d4ed8] font-semibold hover:underline cursor-pointer">View</td>
-                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-[#1d4ed8] font-semibold hover:underline cursor-pointer">View</td> */}
+                                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-[#1d4ed8] font-semibold hover:underline cursor-pointer">View</td>
+                                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-[#1d4ed8] font-semibold hover:underline cursor-pointer">View</td>
                                                         </tr>
                                                     ))}
                                                     {profiles.length === 0 && (
