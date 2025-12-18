@@ -1,9 +1,11 @@
 import axios from "axios";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { apiAxios } from "../../api/apiUrl";
 import { ProfileOwner, fetchProfileOwners } from "../new_profile/EditFormComponents/EditProfile";
 import { Box, CircularProgress, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { Dialog, DialogContent, DialogTitle, IconButton, Grid, Divider } from "@mui/material";
+import CloseIcon from '@mui/icons-material/Close';
 
 interface RenewalStats {
     overall_count: number;
@@ -22,6 +24,8 @@ interface RenewalStats {
     data: RenewalProfile[];
     no_photo: number;
     no_horo: number;
+    today_task: number;
+    pending_task: number;
 }
 
 interface RenewalProfile {
@@ -64,6 +68,52 @@ interface RenewalProfile {
     age: number;
     idle_days: number | null;
 }
+
+export interface CallLog {
+    id: number;
+    call_management_id: number;
+    call_date: string;
+    comments: string;
+    next_call_date: string;
+    call_owner: number;
+    created_at: string;
+    call_type_id: number;
+    particulars_id: number;
+    call_status_id: number;
+    call_type_name: string;
+    particulars_name: string;
+    call_status_name: string;
+    call_owner_name: string;
+}
+
+export interface ActionLog {
+    id: number;
+    call_management_id: number;
+    action_date: string;
+    comments: string;
+    created_at: string;
+    action_point_id: number;
+    next_action_date: string;
+    next_action_id: number;
+    action_owner: number;
+    action_point_name: string;
+    next_action_name: string;
+    action_owner_name: string;
+}
+
+interface ProfileActionCount {
+    interest_sent: number;
+    interest_received: number;
+    interest_accepted: number;
+    interest_rejected: number;
+    bookmarked: number;
+    bookmark_received: number;
+    photo_request_sent: number;
+    photo_request_received: number;
+    visited_count: number;
+    viewed_count: number;
+}
+
 
 type StatKeyPath = keyof RenewalStats |
 [`family_status_counts`, string] |
@@ -111,6 +161,57 @@ const RenewalDashboard = () => {
     const SuperAdminID = localStorage.getItem('id') || sessionStorage.getItem('id');
     const RoleID = localStorage.getItem('role_id') || sessionStorage.getItem('role_id');
     const navigate = useNavigate();
+    // Add these state variables near your other state declarations
+    const [expandedCallLogId, setExpandedCallLogId] = React.useState<string | null>(null);
+    const [expandedCustomerLogId, setExpandedCustomerLogId] = React.useState<string | null>(null);
+    const [callLogDetails, setCallLogDetails] = React.useState<any[]>([]);
+    const [actionLogDetails, setActionLogDetails] = React.useState<any[]>([]);
+    const [logLoading, setLogLoading] = React.useState<boolean>(false);
+
+    // Inside RenewalDashboard component
+    const [openModal, setOpenModal] = React.useState(false);
+    const [modalType, setModalType] = React.useState<'call' | 'customer' | null>(null);
+    const [selectedProfile, setSelectedProfile] = React.useState<RenewalProfile | null>(null);
+    const [callLog, setCallLog] = useState<CallLog | null>(null);
+    const [actionLog, setActionLog] = useState<ActionLog | null>(null);
+    const [actionCount, setActionCount] = useState<ProfileActionCount | null>(null);
+
+
+
+
+    const handleOpenModal = async (profile, type) => {
+        setLogLoading(true);
+        setSelectedProfile(profile);
+        setModalType(type);
+        setOpenModal(true);
+
+        try {
+            if (type === 'call' && profile.last_call_id) {
+                const res = await apiAxios.get(`api/call-log-details/${profile.last_call_id}/`);
+                setCallLog(res.data.call_logs?.[0] as CallLog);
+            }
+            if (type === 'call' && profile.last_action_id) {
+                const res = await apiAxios.get(`api/action-log-details/${profile.last_action_id}/`);
+                setActionLog(res.data.action_logs?.[0] as ActionLog);
+            }
+            if (type === 'customer') {
+                if (profile.ProfileId) {
+                    const response = await apiAxios.get(`api/get_profile_action_count/${profile.ProfileId}/`);
+                    setActionCount(response.data as ProfileActionCount);
+                }
+            }
+
+        } finally {
+            setLogLoading(false);
+        }
+    };
+
+    const handleCloseModal = () => {
+        setOpenModal(false);
+        setSelectedProfile(null);
+        setModalType(null);
+    };
+
 
     // Utility class translations based on your CSS
     const customButtons = {
@@ -144,7 +245,7 @@ const RenewalDashboard = () => {
         ["yesterday_login_count", "YESTERDAY LOGIN", "blue-soft"],
         ["today_login_count", "TODAY LOGIN", "blue-soft"],
         [["last_action_counts", "over_90_days"], "3 MONTH NON-TOUCH (Idle > 90)", "very-light-pink"],
-        [["last_action_counts", "over_45_days"], "IDLE DAYS > 45 (Idle > 45)", "very-light-pink"],
+        [["last_action_counts", "over_45_days"], "ACTION DAYS > 45 (Idle > 45)", "very-light-pink"],
         ["expired_this_month_count", "THIS MONTH RENEWAL", "mint"],
         [["call_status_counts", "hot"], "HOT", "warm-pink"],
         [["call_status_counts", "warm"], "WARM", "pale-yellow"],
@@ -380,7 +481,7 @@ const RenewalDashboard = () => {
         ["YESTERDAY LOGIN", "blue-soft"],
         ["TODAY LOGIN", "blue-soft"],
         ["3 MONTH NON-TOUCH", "very-light-pink"],
-        ["IDLE DAYS > 45", "very-light-pink"],
+        ["ACTION DAYS > 45", "very-light-pink"],
         ["THIS MONTH RENEWAL", "mint"],
         ["HOT", "warm-pink"],
         ["WARM", "pale-yellow"],
@@ -595,6 +696,156 @@ const RenewalDashboard = () => {
     const pendingWorkCount = displayStats.action_counts?.pending_work ?? 0;
     const NoPhotoCount = displayStats.no_photo ?? 0;
     const NoHoroCount = displayStats.no_horo ?? 0;
+    const TodayTaskCount = displayStats.today_task ?? 0;
+    const pendingTaskCount = displayStats.pending_task ?? 0;
+
+    const CallLogPopup = ({ profile }: { profile: RenewalProfile }) => {
+        // Style definitions to match the UI in the image
+        const labelStyle = {
+            fontSize: '0.85rem',
+            color: '#4A5568',
+            fontWeight: 500,
+            width: '160px' // Ensures labels align vertically
+        };
+
+        const valueStyle = {
+            fontSize: '0.9rem',
+            fontWeight: 700,
+            color: '#0A1735'
+        };
+
+        const statusPill = {
+            bgcolor: '#D1FAE5',
+            color: '#065F46',
+            px: 1.5,
+            py: 0.2,
+            borderRadius: '12px',
+            fontSize: '0.75rem',
+            fontWeight: 700,
+            display: 'inline-block'
+        };
+
+        const call = callLog;
+        const action = actionLog;
+
+
+        return (
+            <Box sx={{ p: 1 }}>
+                <Typography variant="subtitle2" sx={{ color: "#64748b", mb: 3, fontWeight: 600 }}>
+                    Call Logs & Service Details
+                </Typography>
+
+                <Grid container spacing={4}>
+
+                    {/* LEFT COLUMN - Call Logs */}
+                    <Grid item xs={12} md={6}>
+                        <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
+
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <Typography sx={labelStyle}>LCD</Typography>
+                                <Typography sx={valueStyle}>
+                                    {call?.call_date
+                                        ? new Date(call.call_date).toLocaleDateString("en-GB").replace(/\//g, "-")
+                                        : "N/A"}
+                                </Typography>
+                            </Box>
+
+                            <Box sx={{ display: "flex", alignItems: "flex-start" }}>
+                                <Typography sx={labelStyle}>LCD Comments</Typography>
+                                <Typography sx={valueStyle}>{call?.comments || "N/A"}</Typography>
+                            </Box>
+
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <Typography sx={labelStyle}>Call Status</Typography>
+                                <Box sx={statusPill}>{call?.call_status_name || "N/A"}</Box>
+                            </Box>
+
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <Typography sx={labelStyle}>NCD</Typography>
+                                <Typography sx={valueStyle}>
+                                    {call?.next_call_date?.replace(/T.*/, "") || "N/A"}
+                                </Typography>
+                            </Box>
+
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <Typography sx={labelStyle}>Idle Days</Typography>
+                                <Typography sx={valueStyle}>{profile.idle_days ?? 0}</Typography>
+                            </Box>
+                        </Box>
+                    </Grid>
+
+                    {/* RIGHT COLUMN - Action Logs */}
+                    <Grid item xs={12} md={6}>
+                        <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
+
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <Typography sx={labelStyle}>LAD</Typography>
+                                <Typography sx={valueStyle}>
+                                    {action?.action_date
+                                        ? new Date(action.action_date).toLocaleDateString("en-GB").replace(/\//g, "-")
+                                        : "N/A"}
+                                </Typography>
+                            </Box>
+
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <Typography sx={labelStyle}>LAP</Typography>
+                                <Typography sx={valueStyle}>{action?.action_point_name || "N/A"}</Typography>
+                            </Box>
+
+                            <Box sx={{ display: "flex", alignItems: "flex-start" }}>
+                                <Typography sx={labelStyle}>LAP Comments</Typography>
+                                <Typography sx={valueStyle}>{action?.comments || "N/A"}</Typography>
+                            </Box>
+
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <Typography sx={labelStyle}>NAD</Typography>
+                                <Typography sx={valueStyle}>
+                                    {action?.next_action_date?.replace(/T.*/, "") || "N/A"}
+                                </Typography>
+                            </Box>
+
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <Typography sx={labelStyle}>Renewal Date</Typography>
+                                <Typography sx={valueStyle}>
+                                    {profile.membership_enddate
+                                        ? new Date(profile.membership_enddate).toLocaleDateString("en-GB").replace(/\//g, "-")
+                                        : "N/A"}
+                                </Typography>
+                            </Box>
+                        </Box>
+                    </Grid>
+                </Grid>
+            </Box>
+        );
+
+    };
+
+    const CustomerLogPopup = ({ profile }: { profile: RenewalProfile }) => (
+        <Box sx={{ py: 1 }}>
+            <Grid container spacing={2}>
+                {[
+                    { label: 'Profiles Viewed', val: actionCount?.viewed_count ?? 0 },
+                    { label: 'Profile Visitors', val: actionCount?.visited_count ?? 0 },
+                    { label: 'Bookmarks', val: actionCount?.bookmarked ?? 0 },
+                    { label: 'Exp. Int Sent', val: actionCount?.interest_sent ?? 0 },
+                    { label: 'Interest Received', val: actionCount?.interest_received ?? 0 },
+                    // { label: 'Accepted', val: actionCount?.interest_accepted ?? 0 },
+                    // { label: 'Rejected', val: actionCount?.interest_rejected ?? 0 },
+                    // { label: 'Bookmark Received', val: actionCount?.bookmark_received ?? 0 },
+                    // { label: 'Photo Req Sent', val: actionCount?.photo_request_sent ?? 0 },
+                    // { label: 'Photo Req Received', val: actionCount?.photo_request_received ?? 0 },
+                ].map((stat, i) => (
+                    <Grid item xs={6} md={2.4} key={i}>
+                        <Box sx={{ textAlign: 'center', p: 2, bgcolor: '#F1F7FF', borderRadius: '12px', border: '1px solid #E3E6EE' }}>
+                            <Typography sx={{ fontSize: '0.7rem', fontWeight: 700, color: '#475569', mb: 1 }}>{stat.label}</Typography>
+                            <Typography sx={{ fontSize: '1.5rem', fontWeight: 800, color: '#0A1735' }}>{stat.val}</Typography>
+                        </Box>
+                    </Grid>
+                ))}
+            </Grid>
+        </Box>
+    );
+
 
     const FullWidthLoadingSpinner = () => (
         <Box
@@ -874,6 +1125,26 @@ const RenewalDashboard = () => {
                                 <div className="col-span-1">
                                     <div className="bg-white rounded-xl p-6 border border-[#e6ecf2] shadow-sm h-full flex flex-col justify-between">
                                         <div>
+                                            <h5 className="text-base font-semibold text-gray-900 mb-1">Today Task</h5>
+                                            {/* <p className="text-xs text-gray-600 mb-4">Carry-forward items not completed.</p> */}
+                                        </div>
+                                        <div className="text-3xl font-bold text-[#000c28]">{TodayTaskCount}</div>
+                                    </div>
+                                </div>
+
+                                <div className="col-span-1">
+                                    <div className="bg-white rounded-xl p-6 border border-[#e6ecf2] shadow-sm h-full flex flex-col justify-between">
+                                        <div>
+                                            <h5 className="text-base font-semibold text-gray-900 mb-1">Pending Task</h5>
+                                            {/* <p className="text-xs text-gray-600 mb-4">Carry-forward items not completed.</p> */}
+                                        </div>
+                                        <div className="text-3xl font-bold text-[#000c28]">{pendingTaskCount}</div>
+                                    </div>
+                                </div>
+
+                                <div className="col-span-1">
+                                    <div className="bg-white rounded-xl p-6 border border-[#e6ecf2] shadow-sm h-full flex flex-col justify-between">
+                                        <div>
                                             <h5 className="text-base font-semibold text-gray-900 mb-1">No Photo</h5>
                                             <p className="text-xs text-gray-600 mb-4">Profiles missing photo.</p>
                                         </div>
@@ -1051,8 +1322,25 @@ const RenewalDashboard = () => {
                                                                     {profile.call_status || 'N/A'}
                                                                 </span>
                                                             </td>
-                                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-[#1d4ed8] font-semibold hover:underline cursor-pointer">View</td>
-                                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-[#1d4ed8] font-semibold hover:underline cursor-pointer">View</td>
+                                                            {/* Call Logs Button */}
+                                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1]">
+                                                                <button
+                                                                    className="text-[#1d4ed8] font-semibold hover:underline cursor-pointer"
+                                                                    onClick={() => handleOpenModal(profile, 'call')}
+                                                                >
+                                                                    View
+                                                                </button>
+                                                            </td>
+
+                                                            {/* Customer Log Button */}
+                                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1]">
+                                                                <button
+                                                                    className="text-[#1d4ed8] font-semibold hover:underline cursor-pointer"
+                                                                    onClick={() => handleOpenModal(profile, 'customer')}
+                                                                >
+                                                                    View
+                                                                </button>
+                                                            </td>
                                                         </tr>
                                                     ))}
                                                     {profiles.length === 0 && (
@@ -1063,6 +1351,7 @@ const RenewalDashboard = () => {
                                                         </tr>
                                                     )}
                                                 </tbody>
+
                                             ) : (
                                                 <tbody>
                                                     {/* Single row that spans all columns for the loading state */}
@@ -1088,6 +1377,57 @@ const RenewalDashboard = () => {
                             </div>
                         </div>
                     </section>
+                    <Dialog
+                        open={openModal}
+                        onClose={handleCloseModal}
+                        maxWidth="md"
+                        fullWidth
+                        PaperProps={{
+                            sx: { borderRadius: '20px', p: 1, boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' }
+                        }}
+                    >
+                        <DialogTitle
+                            sx={{
+                                m: 0,
+                                p: 3,
+                                textAlign: 'center',
+                                fontWeight: 800,
+                                color: '#0A1735',
+                            }}
+                        >
+                            {modalType === 'call' ? 'Call & Service Logs' : 'Customer Log'}
+
+                            {/* <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 500, display: 'block', mt: 1 }}>
+                                Profile: {selectedProfile?.Profile_name} | ID: {selectedProfile?.ProfileId}
+                            </Typography> */}
+
+                            <IconButton
+                                onClick={handleCloseModal}
+                                sx={{
+                                    position: 'absolute',
+                                    top: 12,
+                                    right: 12,
+                                    bgcolor: '#F1F5F9',
+                                    '&:hover': { bgcolor: '#E2E8F0' }
+                                }}
+                            >
+                                <CloseIcon />
+                            </IconButton>
+                        </DialogTitle>
+
+
+                        <Divider />
+
+                        <DialogContent sx={{ p: 3 }}>
+                            {selectedProfile && (
+                                modalType === 'call' ? (
+                                    <CallLogPopup profile={selectedProfile} />
+                                ) : (
+                                    <CustomerLogPopup profile={selectedProfile} />
+                                )
+                            )}
+                        </DialogContent>
+                    </Dialog>
                 </>
             )}
         </div>
