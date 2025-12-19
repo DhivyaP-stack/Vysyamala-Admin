@@ -176,10 +176,7 @@ const RenewalDashboard = () => {
     const [actionLog, setActionLog] = useState<ActionLog | null>(null);
     const [actionCount, setActionCount] = useState<ProfileActionCount | null>(null);
 
-
-
-
-    const handleOpenModal = async (profile, type) => {
+    const handleOpenModal = async (profile: RenewalProfile, type: "call" | "customer") => {
         setLogLoading(true);
         setSelectedProfile(profile);
         setModalType(type);
@@ -763,14 +760,16 @@ const RenewalDashboard = () => {
                             <Box sx={{ display: "flex", alignItems: "center" }}>
                                 <Typography sx={labelStyle}>NCD</Typography>
                                 <Typography sx={valueStyle}>
-                                    {call?.next_call_date?.replace(/T.*/, "") || "N/A"}
+                                    {call?.next_call_date
+                                        ? new Date(call.next_call_date).toLocaleDateString("en-GB").replace(/\//g, "-")
+                                        : "N/A"}
                                 </Typography>
                             </Box>
 
-                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                            {/* <Box sx={{ display: "flex", alignItems: "center" }}>
                                 <Typography sx={labelStyle}>Idle Days</Typography>
                                 <Typography sx={valueStyle}>{profile.idle_days ?? 0}</Typography>
-                            </Box>
+                            </Box> */}
                         </Box>
                     </Grid>
 
@@ -800,18 +799,20 @@ const RenewalDashboard = () => {
                             <Box sx={{ display: "flex", alignItems: "center" }}>
                                 <Typography sx={labelStyle}>NAD</Typography>
                                 <Typography sx={valueStyle}>
-                                    {action?.next_action_date?.replace(/T.*/, "") || "N/A"}
+                                    {action?.next_action_date
+                                        ? new Date(action.next_action_date).toLocaleDateString("en-GB").replace(/\//g, "-")
+                                        : "N/A"}
                                 </Typography>
                             </Box>
 
-                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                            {/* <Box sx={{ display: "flex", alignItems: "center" }}>
                                 <Typography sx={labelStyle}>Renewal Date</Typography>
                                 <Typography sx={valueStyle}>
                                     {profile.membership_enddate
                                         ? new Date(profile.membership_enddate).toLocaleDateString("en-GB").replace(/\//g, "-")
                                         : "N/A"}
                                 </Typography>
-                            </Box>
+                            </Box> */}
                         </Box>
                     </Grid>
                 </Grid>
@@ -1324,12 +1325,16 @@ const RenewalDashboard = () => {
                                                             </td>
                                                             {/* Call Logs Button */}
                                                             <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1]">
-                                                                <button
-                                                                    className="text-[#1d4ed8] font-semibold hover:underline cursor-pointer"
-                                                                    onClick={() => handleOpenModal(profile, 'call')}
-                                                                >
-                                                                    View
-                                                                </button>
+                                                                {(profile.last_call_id || profile.last_action_id) ? (
+                                                                    <button
+                                                                        className="text-[#1d4ed8] font-semibold hover:underline cursor-pointer"
+                                                                        onClick={() => handleOpenModal(profile, 'call')}
+                                                                    >
+                                                                        View
+                                                                    </button>
+                                                                ) : (
+                                                                    <span className="text-gray-400 cursor-not-allowed"> No call logs</span>
+                                                                )}
                                                             </td>
 
                                                             {/* Customer Log Button */}
@@ -1419,14 +1424,23 @@ const RenewalDashboard = () => {
                         <Divider />
 
                         <DialogContent sx={{ p: 3 }}>
-                            {selectedProfile && (
-                                modalType === 'call' ? (
+                            {logLoading ? (
+                                <Box sx={{ textAlign: "center", py: 6 }}>
+                                    <CircularProgress size={32} />
+                                    <Typography sx={{ mt: 2, fontSize: "0.9rem", color: "#475569" }}>
+                                        Loading...
+                                    </Typography>
+                                </Box>
+                            ) : (
+                                selectedProfile &&
+                                (modalType === "call" ? (
                                     <CallLogPopup profile={selectedProfile} />
                                 ) : (
                                     <CustomerLogPopup profile={selectedProfile} />
-                                )
+                                ))
                             )}
                         </DialogContent>
+
                     </Dialog>
                 </>
             )}
