@@ -142,6 +142,9 @@ const RenewalDashboard = () => {
         idleDaysFilter: "",
         genderFilter: "",
         searchQuery: "",
+        actionFilter: "",
+        photoFilter: "",
+        horoFilter: "",
     });
 
     const [stats, setStats] = React.useState<RenewalStats | null>(null);
@@ -175,6 +178,7 @@ const RenewalDashboard = () => {
     const [callLog, setCallLog] = useState<CallLog | null>(null);
     const [actionLog, setActionLog] = useState<ActionLog | null>(null);
     const [actionCount, setActionCount] = useState<ProfileActionCount | null>(null);
+    const [isDownloading, setIsDownloading] = React.useState(false);
 
     const handleOpenModal = async (profile: RenewalProfile, type: "call" | "customer") => {
         setLogLoading(true);
@@ -276,6 +280,26 @@ const RenewalDashboard = () => {
         return 0;
     };
 
+    const handleWorkCardClick = (filterKey: "actionFilter" | "photoFilter" | "horoFilter", value: string) => {
+        // 1. Create a clean base by clearing ALL exclusive card filters
+        let newFilters = { ...filters };
+        EXCLUSIVE_CARD_KEYS.forEach(key => {
+            newFilters[key as keyof typeof newFilters] = "";
+        });
+
+        // 2. Toggle Logic
+        // If the user clicks the same work card again, it clears it (since we already cleared all above)
+        // If it's a new selection, apply it
+        if (filters[filterKey] !== value) {
+            newFilters[filterKey] = value;
+        }
+
+        setFilters(newFilters);
+        setScrollSource('card');
+        setApplyFilters(true);
+    };
+
+
     useEffect(() => {
         if (SuperAdminID && profileOwners.length > 0) {
             const superAdminOwner = profileOwners.find(owner => String(owner.id) === SuperAdminID);
@@ -365,6 +389,9 @@ const RenewalDashboard = () => {
         if (filters.searchQuery) {
             params.append('search', filters.searchQuery);
         }
+        if (filters.actionFilter) params.append('actionFilter', filters.actionFilter);
+        if (filters.photoFilter) params.append('photoFilter', filters.photoFilter);
+        if (filters.horoFilter) params.append('horoFilter', filters.horoFilter)
 
         try {
             // Using axios.get instead of fetch
@@ -396,6 +423,71 @@ const RenewalDashboard = () => {
             setTableLoading(false); // 👇 NEW: Clear table loading state
         }
     }, [filters]);
+
+    const handleDownloadReport = async () => {
+        setIsDownloading(true);
+        try {
+            // 1. Build the params using your current filters
+            const params = new URLSearchParams();
+
+            if (filters.fromDate) params.append('from_date', filters.fromDate);
+            if (filters.toDate) params.append('to_date', filters.toDate);
+
+            if (RoleID !== "7") {
+                params.append("owner", filters.staff || SuperAdminID || "");
+            } else {
+                if (filters.staff) params.append("owner", filters.staff);
+            }
+
+            if (filters.plan) params.append('plan_id', filters.plan);
+            if (filters.minAge) params.append('age_from', filters.minAge);
+            if (filters.maxAge) params.append('age_to', filters.maxAge);
+            if (filters.ageFilter) params.append('ageFilter', filters.ageFilter);
+            if (filters.loginFilter) params.append('loginFilter', filters.loginFilter);
+            if (filters.expiringFilter) params.append('expiringFilter', filters.expiringFilter);
+            if (filters.callStatusFilter) params.append('callStatusFilter', filters.callStatusFilter);
+            if (filters.familyFilter) params.append('familyFilter', filters.familyFilter);
+            if (filters.idleDaysFilter) params.append('idleDaysFilter', filters.idleDaysFilter);
+            if (filters.genderFilter) params.append('genderFilter', filters.genderFilter);
+            if (filters.searchQuery) params.append('search', filters.searchQuery);
+            if (filters.actionFilter) params.append('actionFilter', filters.actionFilter);
+            if (filters.photoFilter) params.append('photoFilter', filters.photoFilter);
+            if (filters.horoFilter) params.append('horoFilter', filters.horoFilter);
+
+            // Add the export flag
+            params.append('export', 'excel');
+
+            // 2. Fetch using axios with blob response type
+            const response = await apiAxios.get(`api/renewal-report/`, {
+                params: Object.fromEntries(params.entries()),
+                responseType: 'blob', // This prevents the browser from opening a new page
+            });
+
+            // 3. Create a temporary URL for the downloaded file
+            const blob = new Blob([response.data], {
+                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            });
+            const downloadUrl = window.URL.createObjectURL(blob);
+
+            // 4. Create a hidden link and click it programmatically
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.setAttribute('download', `Renewal_Report_${new Date().toISOString().slice(0, 10)}.xlsx`);
+            document.body.appendChild(link);
+            link.click();
+
+            // 5. Cleanup
+            link.parentNode?.removeChild(link);
+            window.URL.revokeObjectURL(downloadUrl);
+
+        } catch (e) {
+            console.error("Excel download failed:", e);
+            alert("Failed to download the report. Please try again.");
+        } finally {
+            // 2. Stop Loading
+            setIsDownloading(false);
+        }
+    };
 
     React.useEffect(() => {
         if (applyFilters) {
@@ -538,83 +630,128 @@ const RenewalDashboard = () => {
     };
 
 
+    // Add this list of "exclusive" keys outside your component or at the top
+    const EXCLUSIVE_CARD_KEYS = [
+        "ageFilter", "loginFilter", "expiringFilter", "callStatusFilter",
+        "familyFilter", "idleDaysFilter", "genderFilter",
+        "actionFilter", "photoFilter", "horoFilter"
+    ];
+
     // Corrected handleCardClick function
+    // const handleCardClick = (keyPath: StatKeyPath) => {
+    //     const mapKey = getMapKey(keyPath);
+    //     // if (mapKey === "overall_count") {
+    //     //     setFilters({
+    //     //         fromDate: "",
+    //     //         toDate: "",
+    //     //         staff: "",
+    //     //         plan: "",
+    //     //         gender: "",
+    //     //         minAge: "",
+    //     //         maxAge: "",
+    //     //         engagement: "",
+    //     //         status: "",
+    //     //         ageFilter: "",
+    //     //         loginFilter: "",
+    //     //         expiringFilter: "",
+    //     //         callStatusFilter: "",
+    //     //         familyFilter: "",
+    //     //         idleDaysFilter: "",
+    //     //         genderFilter: "",
+    //     //         searchQuery: "",
+    //     //     });
+    //     //     setApplyFilters(true);
+    //     //     return;
+    //     // }
+    //     if (mapKey === "overall_count") {
+    //         // setLoading(true); // <-- Set general dashboard loading
+    //         // setTableLoading(true); // <-- Set dedicated table loading
+    //         // Remove only card-based filters, keep normal filters
+    //         setFilters(prev => ({
+    //             ...prev,
+    //             ageFilter: "",
+    //             loginFilter: "",
+    //             expiringFilter: "",
+    //             callStatusFilter: "",
+    //             familyFilter: "",
+    //             idleDaysFilter: "",
+    //             genderFilter: "",
+    //             actionFilter: "",
+    //             photoFilter: "",
+    //             horoFilter: "",
+    //         }));
+
+    //         setScrollSource('card');
+    //         setApplyFilters(true);
+    //         return;
+    //     }
+
+
+    //     const filterChange = cardFilterMap[mapKey];
+
+    //     if (!filterChange) {
+    //         console.warn(`No filter mapping found for keyPath: ${mapKey}`);
+    //         return;
+    //     }
+
+    //     const [filterKey, filterValue] = filterChange;
+
+    //     // Use the correct Type assertion for accessing the filter
+    //     const currentFilterValue = filters[filterKey];
+
+    //     let newFilters = { ...filters };
+
+    //     if (currentFilterValue === filterValue) {
+    //         newFilters = { ...newFilters, [filterKey]: "" };
+    //     } else {
+    //         newFilters.ageFilter = "";
+    //         newFilters.loginFilter = "";
+    //         newFilters.expiringFilter = "";
+    //         newFilters.callStatusFilter = "";
+    //         newFilters.familyFilter = "";
+    //         newFilters.idleDaysFilter = "";
+    //         newFilters.genderFilter = "";
+    //         newFilters.actionFilter = "";
+    //         newFilters.photoFilter = "";
+    //         newFilters.horoFilter = "";
+    //         newFilters = { ...newFilters, [filterKey]: filterValue };
+    //     }
+
+    //     setFilters(newFilters);
+    //     setScrollSource('card');
+    //     setApplyFilters(true); // Trigger a new API fetch
+    // };
+
     const handleCardClick = (keyPath: StatKeyPath) => {
         const mapKey = getMapKey(keyPath);
-        // if (mapKey === "overall_count") {
-        //     setFilters({
-        //         fromDate: "",
-        //         toDate: "",
-        //         staff: "",
-        //         plan: "",
-        //         gender: "",
-        //         minAge: "",
-        //         maxAge: "",
-        //         engagement: "",
-        //         status: "",
-        //         ageFilter: "",
-        //         loginFilter: "",
-        //         expiringFilter: "",
-        //         callStatusFilter: "",
-        //         familyFilter: "",
-        //         idleDaysFilter: "",
-        //         genderFilter: "",
-        //         searchQuery: "",
-        //     });
-        //     setApplyFilters(true);
-        //     return;
-        // }
-        if (mapKey === "overall_count") {
-            // setLoading(true); // <-- Set general dashboard loading
-            // setTableLoading(true); // <-- Set dedicated table loading
-            // Remove only card-based filters, keep normal filters
-            setFilters(prev => ({
-                ...prev,
-                ageFilter: "",
-                loginFilter: "",
-                expiringFilter: "",
-                callStatusFilter: "",
-                familyFilter: "",
-                idleDaysFilter: "",
-                genderFilter: "",
-            }));
 
+        // 1. Create a clean base by clearing ALL exclusive card filters
+        let newFilters = { ...filters };
+        EXCLUSIVE_CARD_KEYS.forEach(key => {
+            newFilters[key as keyof typeof newFilters] = "";
+        });
+
+        if (mapKey === "overall_count") {
+            setFilters(newFilters);
             setScrollSource('card');
             setApplyFilters(true);
             return;
         }
 
+        const filterMapping = cardFilterMap[mapKey];
+        if (!filterMapping) return;
 
-        const filterChange = cardFilterMap[mapKey];
+        const [filterKey, filterValue] = filterMapping;
 
-        if (!filterChange) {
-            console.warn(`No filter mapping found for keyPath: ${mapKey}`);
-            return;
-        }
-
-        const [filterKey, filterValue] = filterChange;
-
-        // Use the correct Type assertion for accessing the filter
-        const currentFilterValue = filters[filterKey];
-
-        let newFilters = { ...filters };
-
-        if (currentFilterValue === filterValue) {
-            newFilters = { ...newFilters, [filterKey]: "" };
-        } else {
-            newFilters.ageFilter = "";
-            newFilters.loginFilter = "";
-            newFilters.expiringFilter = "";
-            newFilters.callStatusFilter = "";
-            newFilters.familyFilter = "";
-            newFilters.idleDaysFilter = "";
-            newFilters.genderFilter = "";
-            newFilters = { ...newFilters, [filterKey]: filterValue };
+        // Toggle Logic: If clicking the same card, leave it empty. 
+        // Otherwise, set the new value.
+        if (filters[filterKey] !== filterValue) {
+            newFilters[filterKey] = filterValue;
         }
 
         setFilters(newFilters);
         setScrollSource('card');
-        setApplyFilters(true); // Trigger a new API fetch
+        setApplyFilters(true);
     };
 
     const handleReset = () => {
@@ -638,6 +775,9 @@ const RenewalDashboard = () => {
             idleDaysFilter: "",
             genderFilter: "",
             searchQuery: "",
+            actionFilter: "",
+            photoFilter: "",
+            horoFilter: "",
         });
         setTimeout(() => {
             setScrollSource('filter');
@@ -718,8 +858,6 @@ const RenewalDashboard = () => {
         };
 
         const statusPill = {
-            bgcolor: '#D1FAE5',
-            color: '#065F46',
             px: 1.5,
             py: 0.2,
             borderRadius: '12px',
@@ -753,14 +891,17 @@ const RenewalDashboard = () => {
                                 </Typography>
                             </Box>
 
-                            <Box sx={{ display: "flex", alignItems: "flex-start" }}>
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
                                 <Typography sx={labelStyle}>LCD Comments</Typography>
                                 <Typography sx={valueStyle}>{call?.comments || "N/A"}</Typography>
                             </Box>
 
                             <Box sx={{ display: "flex", alignItems: "center" }}>
                                 <Typography sx={labelStyle}>Call Status</Typography>
-                                <Box sx={statusPill}>{call?.call_status_name || "N/A"}</Box>
+                                <Box
+                                    className={getStatusPillClass(call?.call_status_name || null)}
+                                    sx={statusPill}
+                                >{call?.call_status_name || "N/A"}</Box>
                             </Box>
 
                             <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -797,7 +938,7 @@ const RenewalDashboard = () => {
                                 <Typography sx={valueStyle}>{action?.action_point_name || "N/A"}</Typography>
                             </Box>
 
-                            <Box sx={{ display: "flex", alignItems: "flex-start" }}>
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
                                 <Typography sx={labelStyle}>LAP Comments</Typography>
                                 <Typography sx={valueStyle}>{action?.comments || "N/A"}</Typography>
                             </Box>
@@ -898,8 +1039,21 @@ const RenewalDashboard = () => {
                         </div>
                         {/* Equivalent to .action-buttons */}
                         <div className="flex gap-2">
-                            <button className={customButtons.outline}>Export</button>
-                            <button className={customButtons.dark}>Download Report</button>
+                            {/* <button className={customButtons.outline}>Export</button> */}
+                            <button
+                                onClick={handleDownloadReport}
+                                className={`${customButtons.dark} flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed`}
+                                disabled={isDownloading}
+                            >
+                                {isDownloading ? (
+                                    <>
+                                        <CircularProgress size={16} color="inherit" />
+                                        <span>Downloading...</span>
+                                    </>
+                                ) : (
+                                    "Download Report"
+                                )}
+                            </button>
                         </div>
                     </div>
 
@@ -1110,7 +1264,10 @@ const RenewalDashboard = () => {
 
                                 {/* Work Card structure - Equivalent to .work-card */}
                                 <div className="col-span-1">
-                                    <div className="bg-white rounded-xl p-6 border border-[#e6ecf2] shadow-sm h-full flex flex-col justify-between">
+                                    <div
+                                        onClick={() => handleWorkCardClick('actionFilter', 'today_work')}
+                                        className={`bg-white rounded-xl p-6 border transition duration-200 cursor-pointer hover:translate-y-[-3px] h-full flex flex-col justify-between 
+                    ${filters.actionFilter === 'today_work' ? 'border-4 border-black/50 shadow-lg' : 'border-[#e6ecf2] shadow-sm'}`}>
                                         <div>
                                             <h5 className="text-base font-semibold text-gray-900 mb-1">Today's Work</h5>
                                             <p className="text-xs text-gray-600 mb-4">Total tasks to be completed today.</p>
@@ -1120,7 +1277,10 @@ const RenewalDashboard = () => {
                                 </div>
 
                                 <div className="col-span-1">
-                                    <div className="bg-white rounded-xl p-6 border border-[#e6ecf2] shadow-sm h-full flex flex-col justify-between">
+                                    <div
+                                        onClick={() => handleWorkCardClick('actionFilter', 'pending_work')}
+                                        className={`bg-white rounded-xl p-6 border transition duration-200 cursor-pointer hover:translate-y-[-3px] h-full flex flex-col justify-between 
+                    ${filters.actionFilter === 'pending_work' ? 'border-4 border-black/50 shadow-lg' : 'border-[#e6ecf2] shadow-sm'}`}>
                                         <div>
                                             <h5 className="text-base font-semibold text-gray-900 mb-1">Pending Work</h5>
                                             <p className="text-xs text-gray-600 mb-4">Carry-forward items not completed.</p>
@@ -1130,7 +1290,10 @@ const RenewalDashboard = () => {
                                 </div>
 
                                 <div className="col-span-1">
-                                    <div className="bg-white rounded-xl p-6 border border-[#e6ecf2] shadow-sm h-full flex flex-col justify-between">
+                                    <div
+                                        onClick={() => handleWorkCardClick('actionFilter', 'today_task')}
+                                        className={`bg-white rounded-xl p-6 border transition duration-200 cursor-pointer hover:translate-y-[-3px] h-full flex flex-col justify-between 
+                    ${filters.actionFilter === 'today_task' ? 'border-4 border-black/50 shadow-lg' : 'border-[#e6ecf2] shadow-sm'}`}>
                                         <div>
                                             <h5 className="text-base font-semibold text-gray-900 mb-1">Today Task</h5>
                                             {/* <p className="text-xs text-gray-600 mb-4">Carry-forward items not completed.</p> */}
@@ -1140,7 +1303,10 @@ const RenewalDashboard = () => {
                                 </div>
 
                                 <div className="col-span-1">
-                                    <div className="bg-white rounded-xl p-6 border border-[#e6ecf2] shadow-sm h-full flex flex-col justify-between">
+                                    <div
+                                        onClick={() => handleWorkCardClick('actionFilter', 'pending_task')}
+                                        className={`bg-white rounded-xl p-6 border transition duration-200 cursor-pointer hover:translate-y-[-3px] h-full flex flex-col justify-between 
+                    ${filters.actionFilter === 'pending_task' ? 'border-4 border-black/50 shadow-lg' : 'border-[#e6ecf2] shadow-sm'}`}>
                                         <div>
                                             <h5 className="text-base font-semibold text-gray-900 mb-1">Pending Task</h5>
                                             {/* <p className="text-xs text-gray-600 mb-4">Carry-forward items not completed.</p> */}
@@ -1150,7 +1316,9 @@ const RenewalDashboard = () => {
                                 </div>
 
                                 <div className="col-span-1">
-                                    <div className="bg-white rounded-xl p-6 border border-[#e6ecf2] shadow-sm h-full flex flex-col justify-between">
+                                    <div
+                                        onClick={() => handleWorkCardClick('photoFilter', 'no_photo')}
+                                        className="bg-white rounded-xl p-6 border border-[#e6ecf2] shadow-sm h-full flex flex-col justify-between">
                                         <div>
                                             <h5 className="text-base font-semibold text-gray-900 mb-1">No Photo</h5>
                                             <p className="text-xs text-gray-600 mb-4">Profiles missing photo.</p>
@@ -1159,7 +1327,9 @@ const RenewalDashboard = () => {
                                     </div>
                                 </div>
                                 <div className="col-span-1">
-                                    <div className="bg-white rounded-xl p-6 border border-[#e6ecf2] shadow-sm h-full flex flex-col justify-between">
+                                    <div
+                                        onClick={() => handleWorkCardClick('horoFilter', 'no_horo')}
+                                        className="bg-white rounded-xl p-6 border border-[#e6ecf2] shadow-sm h-full flex flex-col justify-between">
                                         <div>
                                             <h5 className="text-base font-semibold text-gray-900 mb-1">No Horo</h5>
                                             <p className="text-xs text-gray-600 mb-4">Profiles missing horoscope.</p>
@@ -1310,8 +1480,15 @@ const RenewalDashboard = () => {
                                                     {profiles.map((profile, index) => (
                                                         <tr key={profile.ProfileId || index}>
                                                             <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-[#1d4ed8] font-semibold hover:underline"
-                                                                onClick={() => navigate(`/viewProfile?profileId=${profile.ProfileId}`)}
-                                                            >{profile.ProfileId || 'N/A'}</td>
+                                                            // onClick={() => navigate(`/viewProfile?profileId=${profile.ProfileId}`)}
+                                                            >  <a
+                                                                href={`/viewProfile?profileId=${profile.ProfileId}`}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                            >
+                                                                    {profile.ProfileId || 'N/A'}
+                                                                </a>
+                                                            </td>
                                                             <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.Profile_name || 'N/A'}</td>
                                                             <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.age || 'N/A'}</td>
                                                             <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.family_status_name || 'N/A'}</td>
