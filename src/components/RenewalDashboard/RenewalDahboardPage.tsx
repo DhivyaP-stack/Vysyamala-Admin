@@ -1295,7 +1295,7 @@ const RenewalDashboard = () => {
                                         className={`bg-white rounded-xl p-6 border transition duration-200 cursor-pointer hover:translate-y-[-3px] h-full flex flex-col justify-between 
                     ${filters.actionFilter === 'today_task' ? 'border-4 border-black/50 shadow-lg' : 'border-[#e6ecf2] shadow-sm'}`}>
                                         <div>
-                                            <h5 className="text-base font-semibold text-gray-900 mb-1">Today Task</h5>
+                                            <h5 className="text-base font-semibold text-gray-900 mb-1">Today's Action</h5>
                                             {/* <p className="text-xs text-gray-600 mb-4">Carry-forward items not completed.</p> */}
                                         </div>
                                         <div className="text-3xl font-bold text-[#000c28]">{TodayTaskCount}</div>
@@ -1308,7 +1308,7 @@ const RenewalDashboard = () => {
                                         className={`bg-white rounded-xl p-6 border transition duration-200 cursor-pointer hover:translate-y-[-3px] h-full flex flex-col justify-between 
                     ${filters.actionFilter === 'pending_task' ? 'border-4 border-black/50 shadow-lg' : 'border-[#e6ecf2] shadow-sm'}`}>
                                         <div>
-                                            <h5 className="text-base font-semibold text-gray-900 mb-1">Pending Task</h5>
+                                            <h5 className="text-base font-semibold text-gray-900 mb-1">Pending Action</h5>
                                             {/* <p className="text-xs text-gray-600 mb-4">Carry-forward items not completed.</p> */}
                                         </div>
                                         <div className="text-3xl font-bold text-[#000c28]">{pendingTaskCount}</div>
@@ -1318,7 +1318,8 @@ const RenewalDashboard = () => {
                                 <div className="col-span-1">
                                     <div
                                         onClick={() => handleWorkCardClick('photoFilter', 'no_photo')}
-                                        className="bg-white rounded-xl p-6 border border-[#e6ecf2] shadow-sm h-full flex flex-col justify-between">
+                                        className={`bg-white rounded-xl p-6 border transition duration-200 cursor-pointer hover:translate-y-[-3px] h-full flex flex-col justify-between 
+                    ${filters.photoFilter === 'no_photo' ? 'border-4 border-black/50 shadow-lg' : 'border-[#e6ecf2] shadow-sm'}`}>
                                         <div>
                                             <h5 className="text-base font-semibold text-gray-900 mb-1">No Photo</h5>
                                             <p className="text-xs text-gray-600 mb-4">Profiles missing photo.</p>
@@ -1329,7 +1330,8 @@ const RenewalDashboard = () => {
                                 <div className="col-span-1">
                                     <div
                                         onClick={() => handleWorkCardClick('horoFilter', 'no_horo')}
-                                        className="bg-white rounded-xl p-6 border border-[#e6ecf2] shadow-sm h-full flex flex-col justify-between">
+                                        className={`bg-white rounded-xl p-6 border transition duration-200 cursor-pointer hover:translate-y-[-3px] h-full flex flex-col justify-between 
+                    ${filters.horoFilter === 'no_horo' ? 'border-4 border-black/50 shadow-lg' : 'border-[#e6ecf2] shadow-sm'}`}>
                                         <div>
                                             <h5 className="text-base font-semibold text-gray-900 mb-1">No Horo</h5>
                                             <p className="text-xs text-gray-600 mb-4">Profiles missing horoscope.</p>
