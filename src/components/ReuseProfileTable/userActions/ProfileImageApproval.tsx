@@ -73,6 +73,8 @@ const ProfileImageApproval: React.FC = () => {
   const [search, setSearch] = useState<string>('');
   const [fromDate, setFromDate] = useState<string>('');
   const [toDate, setToDate] = useState<string>('');
+  const [fromDateInput, setFromDateInput] = useState<string>('');
+  const [toDateInput, setToDateInput] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
   const [hoveredProfileId, setHoveredProfileId] = useState<string | null>(null);
@@ -138,8 +140,10 @@ const ProfileImageApproval: React.FC = () => {
   };
 
   const handleSubmit = () => {
+    setFromDate(fromDateInput);
+    setToDate(toDateInput);
     setPage(0); // Reset to first page
-    fetchData(); // This will trigger because of the useEffect dependency on 'page'
+
   };
 
   const handleChangePage = (_event: unknown, newPage: number) => {
@@ -265,8 +269,8 @@ const ProfileImageApproval: React.FC = () => {
                 label="From Date"
                 type="date"
                 name="fromDate"
-                value={fromDate}
-                onChange={handleDateChange}
+                value={fromDateInput}
+                onChange={(e) => setFromDateInput(e.target.value)}
                 InputLabelProps={{ shrink: true }}
                 size="small"
                 inputProps={{
@@ -277,8 +281,8 @@ const ProfileImageApproval: React.FC = () => {
                 label="To Date"
                 type="date"
                 name="toDate"
-                value={toDate}
-                onChange={handleDateChange}
+                value={toDateInput}
+                onChange={(e) => setToDateInput(e.target.value)}
                 InputLabelProps={{ shrink: true }}
                 size="small"
                 inputProps={{
