@@ -48,6 +48,7 @@ interface RegistrationProfile {
 
 // --- Configuration ---
 const KPI_CONFIG = [
+    { label: "TODAY REGISTRATION", color: "bg-white" },
     { label: "APPROVED", color: "bg-white" },
     { label: "UNAPPROVED", color: "bg-white" },
     { label: "NON LOGGED IN", color: "bg-white" },
@@ -56,6 +57,7 @@ const KPI_CONFIG = [
     { label: "ADMIN APPROVED - TN/KAT", color: "bg-white" },
     { label: "ONLINE UNAPPROVED - TN/KAT", color: "bg-white" },
     { label: "ADMIN UNAPPROVED - TN/KAT", color: "bg-white" },
+    { label: "TODAY LOGIN", color: "bg-white" },
     { label: "TODAY WORK", color: "bg-white" },
     { label: "PENDING WORK", color: "bg-white" },
     { label: "TODAY ACTION", color: "bg-white" },
