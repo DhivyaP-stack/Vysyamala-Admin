@@ -1360,6 +1360,26 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   </li>
                 </ul>
               </div>
+               <div
+                className={`translate transform overflow-hidden ${!open && 'hidden'
+                  }`}
+              >
+                <ul className="mt-4 mb-5.5 flex flex-col">
+                  {/* Submenu Items */}
+                  <li>
+                    <NavLink
+                      to="/RegistrationDashboard"
+                      className={({ isActive }) =>
+                        'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                        (isActive && '!text-PrimaryRed')
+                      }
+                    >
+                      <MdAutorenew />
+                      Registration Dashboard
+                    </NavLink>
+                  </li>
+                </ul>
+              </div>
               <div
                 className={`translate transform overflow-hidden ${!open && 'hidden'
                   }`}

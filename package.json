@@ -26,6 +26,7 @@
     "currency-symbol-map": "^5.1.0",
     "feather-icons": "^4.29.2",
     "flatpickr": "^4.6.13",
+    "framer-motion": "^12.23.26",
     "headlessui": "^0.0.0",
     "jsonwebtoken": "^9.0.2",
     "jsvectormap": "^1.5.3",

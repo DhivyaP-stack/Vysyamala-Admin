@@ -119,7 +119,7 @@ import StaffDetails from './components/StaffDetails/StaffDetails';
 import CallManagementPage from './components/CallManagement/CallManagementPage';
 import GeneralCallManagementPage from './components/CallManagement/GeneralCallMangement';
 import RenewalDashboard from './components/RenewalDashboard/RenewalDahboardPage';
-
+import RegistrationDashboard from './components/RegistrationDashboard/RegistrationDashboard';
 
 function App() {
   const { pathname } = useLocation();
@@ -1138,6 +1138,7 @@ function App() {
                 <Route path="/CallManagement" element={<CallManagementPage />} />
                 <Route path="/GeneralCallManagement" element={<GeneralCallManagementPage />} />
                  <Route path="/RenewalDashboard" element={<RenewalDashboard />} />
+                 <Route path="/RegistrationDashboard" element={<RegistrationDashboard />} />
               </Routes>
             </DefaultLayout>
           }
