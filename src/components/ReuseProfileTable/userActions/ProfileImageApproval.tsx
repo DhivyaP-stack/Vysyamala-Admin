@@ -49,7 +49,7 @@ interface ProfileData {
   images: ProfileImage[];
 }
 
-const getProfileImageApproval = async (page: number, rowsPerPage: number, fromDate?: string, toDate?: string) => {
+const getProfileImageApproval = async (page: number, rowsPerPage: number, fromDate?: string, toDate?: string, search?: string) => {
   const params = new URLSearchParams({
     page: (page + 1).toString(), // API is 1-indexed
     page_size: rowsPerPage.toString(),
@@ -58,6 +58,7 @@ const getProfileImageApproval = async (page: number, rowsPerPage: number, fromDa
   // Only append if values exist
   if (fromDate) params.append("from_date", fromDate);
   if (toDate) params.append("to_date", toDate);
+  if (search) params.append("search", search);
 
   const url = `${profileImgApproval}?${params.toString()}`;
   const response = await axios.get(url);
@@ -94,12 +95,12 @@ const ProfileImageApproval: React.FC = () => {
 
   useEffect(() => {
     fetchData();
-  }, [page, rowsPerPage, fromDate, toDate]);
+  }, [page, rowsPerPage, fromDate, toDate, search]);
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await getProfileImageApproval(page, rowsPerPage, fromDate, toDate);
+      const response = await getProfileImageApproval(page, rowsPerPage, fromDate, toDate, search);
 
       // Check if the response contains results
       if (response && response.results) {
