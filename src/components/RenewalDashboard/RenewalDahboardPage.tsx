@@ -178,6 +178,12 @@ const RenewalDashboard = () => {
 
     const handleOpenModal = async (profile: RenewalProfile, type: "call" | "customer") => {
         setLogLoading(true);
+
+        // Reset previous stored values 👇 IMPORTANT
+        setCallLog(null);
+        setActionLog(null);
+        setActionCount(null);
+
         setSelectedProfile(profile);
         setModalType(type);
         setOpenModal(true);
@@ -187,15 +193,15 @@ const RenewalDashboard = () => {
                 const res = await apiAxios.get(`api/call-log-details/${profile.last_call_id}/`);
                 setCallLog(res.data.call_logs?.[0] as CallLog);
             }
+
             if (type === 'call' && profile.last_action_id) {
                 const res = await apiAxios.get(`api/action-log-details/${profile.last_action_id}/`);
                 setActionLog(res.data.action_logs?.[0] as ActionLog);
             }
-            if (type === 'customer') {
-                if (profile.ProfileId) {
-                    const response = await apiAxios.get(`api/get_profile_action_count/${profile.ProfileId}/`);
-                    setActionCount(response.data as ProfileActionCount);
-                }
+
+            if (type === 'customer' && profile.ProfileId) {
+                const response = await apiAxios.get(`api/get_profile_action_count/${profile.ProfileId}/`);
+                setActionCount(response.data as ProfileActionCount);
             }
 
         } finally {
