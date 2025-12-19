@@ -50,17 +50,16 @@ interface ProfileData {
 }
 
 const getProfileImageApproval = async (page: number, rowsPerPage: number, fromDate?: string, toDate?: string) => {
-
   const params = new URLSearchParams({
-    page: (page + 1).toString(),
+    page: (page + 1).toString(), // API is 1-indexed
     page_size: rowsPerPage.toString(),
   });
 
+  // Only append if values exist
   if (fromDate) params.append("from_date", fromDate);
   if (toDate) params.append("to_date", toDate);
 
   const url = `${profileImgApproval}?${params.toString()}`;
-
   const response = await axios.get(url);
   return response.data;
 };
@@ -99,10 +98,20 @@ const ProfileImageApproval: React.FC = () => {
     setLoading(true);
     try {
       const response = await getProfileImageApproval(page, rowsPerPage, fromDate, toDate);
-      setData(response);
-      setTotalCount(response.count);
+
+      // Check if the response contains results
+      if (response && response.results) {
+        setData(response);
+        setTotalCount(response.count);
+      } else {
+        // If the API returns {"message": "No images found."} or similar
+        setData({ results: [], count: 0 });
+        setTotalCount(0);
+      }
     } catch (error) {
       console.error('Error fetching data:', error);
+      setData({ results: [], count: 0 });
+      setTotalCount(0);
     } finally {
       setLoading(false);
     }
@@ -129,7 +138,8 @@ const ProfileImageApproval: React.FC = () => {
   };
 
   const handleSubmit = () => {
-    fetchData(); // Call the API with the selected filters
+    setPage(0); // Reset to first page
+    fetchData(); // This will trigger because of the useEffect dependency on 'page'
   };
 
   const handleChangePage = (_event: unknown, newPage: number) => {
@@ -259,6 +269,9 @@ const ProfileImageApproval: React.FC = () => {
                 onChange={handleDateChange}
                 InputLabelProps={{ shrink: true }}
                 size="small"
+                inputProps={{
+                  max: new Date().toISOString().split('T')[0] // This disables future dates
+                }}
               />
               <TextField
                 label="To Date"
@@ -309,19 +322,27 @@ const ProfileImageApproval: React.FC = () => {
                     <CircularProgress />
                   </TableCell>
                 </TableRow>
-              ) : (
-                filteredResults.map((row: ProfileData, index: number) => (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={index}>
+              ) : data.results.length > 0 ? (
+                data.results.map((row: ProfileData, index: number) => (
+                  <TableRow hover role="checkbox" tabIndex={-1} key={row.profile_id || index}>
                     {columns.map((column) => (
                       <TableCell key={column.id} align={column.align}>
                         {column.format
                           ? column.format(row[column.id as keyof ProfileData], row)
-                          : row[column.id as keyof ProfileData]
-                        }
+                          : row[column.id as keyof ProfileData]}
                       </TableCell>
                     ))}
                   </TableRow>
                 ))
+              ) : (
+                /* This section handles the "No records found" case */
+                <TableRow>
+                  <TableCell colSpan={columns.length} align="center" sx={{ py: 3 }}>
+                    <Typography variant="h6" color="textSecondary">
+                      No Profiles found
+                    </Typography>
+                  </TableCell>
+                </TableRow>
               )}
             </TableBody>
           </Table>
