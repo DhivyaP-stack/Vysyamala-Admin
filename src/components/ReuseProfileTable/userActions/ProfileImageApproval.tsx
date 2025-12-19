@@ -13,6 +13,7 @@ import {
   CircularProgress,
   Box,
   Chip,
+  Typography,
 } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -48,8 +49,18 @@ interface ProfileData {
   images: ProfileImage[];
 }
 
-const getProfileImageApproval = async () => {
-  const url = `${profileImgApproval}`;
+const getProfileImageApproval = async (page: number, rowsPerPage: number, fromDate?: string, toDate?: string) => {
+
+  const params = new URLSearchParams({
+    page: (page + 1).toString(),
+    page_size: rowsPerPage.toString(),
+  });
+
+  if (fromDate) params.append("from_date", fromDate);
+  if (toDate) params.append("to_date", toDate);
+
+  const url = `${profileImgApproval}?${params.toString()}`;
+
   const response = await axios.get(url);
   return response.data;
 };
@@ -67,15 +78,27 @@ const ProfileImageApproval: React.FC = () => {
   const navigate = useNavigate();
   const [hoveredProfileId, setHoveredProfileId] = useState<string | null>(null);
   const [totalCount, setTotalCount] = useState<number>(0);
+  const [goToPageInput, setGoToPageInput] = useState('');
+
+  const handleGoToPage = () => {
+    const num = parseInt(goToPageInput);
+    if (!isNaN(num)) {
+      const last = Math.ceil(data.count / rowsPerPage) - 1;
+      const newPage = Math.max(0, Math.min(num - 1, last));
+      setPage(newPage);
+    }
+    setGoToPageInput('');
+  };
+
 
   useEffect(() => {
     fetchData();
-  }, [fromDate, toDate]);
+  }, [page, rowsPerPage, fromDate, toDate]);
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await getProfileImageApproval();
+      const response = await getProfileImageApproval(page, rowsPerPage, fromDate, toDate);
       setData(response);
       setTotalCount(response.count);
     } catch (error) {
@@ -212,6 +235,7 @@ const ProfileImageApproval: React.FC = () => {
     getComparator(order, orderBy)
   );
 
+
   return (
     <>
       <h1 className="text-2xl font-bold mb-4 text-black">Profile Image Approval <span className="text-lg font-normal">({totalCount})</span></h1>
@@ -286,26 +310,24 @@ const ProfileImageApproval: React.FC = () => {
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredResults
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row: ProfileData, index) => (
-                    <TableRow hover role="checkbox" tabIndex={-1} key={index}>
-                      {columns.map((column) => (
-                        <TableCell key={column.id} align={column.align}>
-                          {column.format
-                            ? column.format(row[column.id as keyof ProfileData], row)
-                            : row[column.id as keyof ProfileData]
-                          }
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))
+                filteredResults.map((row: ProfileData, index: number) => (
+                  <TableRow hover role="checkbox" tabIndex={-1} key={index}>
+                    {columns.map((column) => (
+                      <TableCell key={column.id} align={column.align}>
+                        {column.format
+                          ? column.format(row[column.id as keyof ProfileData], row)
+                          : row[column.id as keyof ProfileData]
+                        }
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
               )}
             </TableBody>
           </Table>
         </TableContainer>
 
-        <TablePagination
+        {/* <TablePagination
           rowsPerPageOptions={[10, 25, 100]}
           component="div"
           count={filteredResults.length}
@@ -313,7 +335,120 @@ const ProfileImageApproval: React.FC = () => {
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
-        />
+        /> */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px' }}>
+
+          {/* Page indicator */}
+          <span>
+            Page <strong>{page + 1}</strong> of <strong>{Math.ceil(data.count / rowsPerPage)}</strong>
+          </span>
+
+          {/* Pagination controls */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Typography variant="body2">Go to page:</Typography>
+            {/* Go to page */}
+            <TextField
+              size="small"
+              type="number"
+              value={goToPageInput}
+              onChange={(e) => setGoToPageInput(e.target.value)}
+              inputProps={{ min: 1, max: Math.ceil(data.count / rowsPerPage) }}
+              style={{ width: '80px' }}
+            />
+            <Button variant="contained" size="small" onClick={handleGoToPage}>
+              Go
+            </Button>
+
+            {/* First */}
+            <Button
+              variant="outlined"
+              size="small"
+              disabled={page === 0}
+              onClick={() => setPage(0)}
+            >
+              {'<<'}
+            </Button>
+
+            {/* Prev */}
+            <Button
+              variant="outlined"
+              size="small"
+              disabled={page === 0}
+              onClick={() => setPage(page - 1)}
+            >
+              Prev
+            </Button>
+
+            {/* Page numbers */}
+            {(() => {
+              const totalPages = Math.ceil(data.count / rowsPerPage);
+              const currentPage = page + 1;
+              const pages = [];
+
+              pages.push(
+                <Button key={1}
+                  variant={currentPage === 1 ? 'contained' : 'outlined'}
+                  size="small"
+                  onClick={() => setPage(0)}
+                >
+                  1
+                </Button>
+              );
+
+              if (currentPage > 3) pages.push(<span key="dots1">...</span>);
+
+              const start = Math.max(2, currentPage - 1);
+              const end = Math.min(totalPages - 1, currentPage + 1);
+
+              for (let i = start; i <= end; i++) {
+                pages.push(
+                  <Button key={i}
+                    variant={currentPage === i ? 'contained' : 'outlined'}
+                    size="small"
+                    onClick={() => setPage(i - 1)}
+                  >
+                    {i}
+                  </Button>
+                );
+              }
+
+              if (currentPage < totalPages - 2) pages.push(<span key="dots2">...</span>);
+
+              if (totalPages > 1)
+                pages.push(
+                  <Button key={totalPages}
+                    variant={currentPage === totalPages ? 'contained' : 'outlined'}
+                    size="small"
+                    onClick={() => setPage(totalPages - 1)}
+                  >
+                    {totalPages}
+                  </Button>
+                );
+
+              return pages;
+            })()}
+
+            {/* Next */}
+            <Button
+              variant="outlined"
+              size="small"
+              disabled={page >= Math.ceil(data.count / rowsPerPage) - 1}
+              onClick={() => setPage(page + 1)}
+            >
+              Next
+            </Button>
+
+            {/* Last */}
+            <Button
+              variant="outlined"
+              size="small"
+              disabled={page >= Math.ceil(data.count / rowsPerPage) - 1}
+              onClick={() => setPage(Math.ceil(data.count / rowsPerPage) - 1)}
+            >
+              {'>>'}
+            </Button>
+          </div>
+        </div>
       </Box>
     </>
   );

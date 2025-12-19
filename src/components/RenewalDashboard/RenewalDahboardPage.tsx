@@ -1587,9 +1587,10 @@ const RenewalDashboard = () => {
                         >
                             {modalType === 'call' ? 'Call & Service Logs' : 'Customer Log'}
 
-                            {/* <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 500, display: 'block', mt: 1 }}>
-                                Profile: {selectedProfile?.Profile_name} | ID: {selectedProfile?.ProfileId}
-                            </Typography> */}
+                            <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 500, display: 'block', mt: 1 }}>
+                                {/* Profile: {selectedProfile?.Profile_name} | ID: {selectedProfile?.ProfileId} */}
+                                  Profile ID: {selectedProfile?.ProfileId}
+                            </Typography>
 
                             <IconButton
                                 onClick={handleCloseModal}
