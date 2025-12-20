@@ -422,6 +422,18 @@ const EditViewProfile: React.FC<pageProps> = ({
     return isPlanStatusNotHiding || isPrimaryStatusInOverrideRange;
     //return isPrimaryStatusInOverrideRange;
   }, [planStatus, primaryStatusValue]);
+  
+  useEffect(() => {
+    // Convert boolean to string for storage
+    const value = shouldShowMembershipDates ? "true" : "false";
+
+    // store in sessionStorage
+    sessionStorage.setItem("shouldShowMembershipDates", value);
+
+    // store in localStorage
+    localStorage.setItem("shouldShowMembershipDates", value);
+
+  }, [shouldShowMembershipDates]);
 
   //membership activation Role value 2
   const numericPlanStatus = Number(planStatus);

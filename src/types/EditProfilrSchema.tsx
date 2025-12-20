@@ -1,6 +1,11 @@
 import { z } from "zod";
 
+const shouldShowMembershipDates =
+    (localStorage.getItem("shouldShowMembershipDates") === "true") ||
+    (sessionStorage.getItem("shouldShowMembershipDates") === "true");
+
 export const EditSchemaProfileView = z.object({
+
 
     profileView: z.object({
         // Addon_package: z.boolean().refine((val) => val === true, {
@@ -32,22 +37,32 @@ export const EditSchemaProfileView = z.object({
         secondary_status: z.number().optional(), // ✅ Change from `string` to `number`
         primary_status: z.number().optional(),
         profile_image: z.string().optional(),
-        membership_fromdate: z.string().refine((val) => {
-            if (!val || val.trim() === '') {
-                return false;
-            }
-            return true;
-        }, {
-            message: "Membership from date is required"
-        }),
-        membership_todate: z.string().refine((val) => {
-            if (!val || val.trim() === '') {
-                return false;
-            }
-            return true;
-        }, {
-            message: "Membership to date is required"
-        }),
+        // membership_fromdate: z.string().refine((val) => {
+        //     if (!val || val.trim() === '') {
+        //         return false;
+        //     }
+        //     return true;
+        // }, {
+        //     message: "Membership from date is required"
+        // }),
+        // membership_todate: z.string().refine((val) => {
+        //     if (!val || val.trim() === '') {
+        //         return false;
+        //     }
+        //     return true;
+        // }, {
+        //     message: "Membership to date is required"
+        // }),
+        membership_fromdate: shouldShowMembershipDates
+            ? z.string().min(1, "Membership from date is required")
+            : z.string().optional(),
+
+        membership_todate: shouldShowMembershipDates
+            ? z.string().min(1, "Membership to date is required")
+            : z.string().optional(),
+
+        // membership_fromdate: z.string().optional(),
+        // membership_todate: z.string().optional(),
         membership_status: z.string().optional(),
         visit_count: z.number().optional(),
         exp_int_count: z.number().optional(),
