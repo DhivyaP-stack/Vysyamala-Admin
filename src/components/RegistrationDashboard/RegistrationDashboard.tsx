@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
     Box,
     Typography,
@@ -12,43 +12,46 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { motion } from 'framer-motion';
+import { apiAxios } from '../../api/apiUrl';
+import { RiArrowDropDownLine } from 'react-icons/ri';
 
 // --- Types & Interfaces ---
 interface RegistrationProfile {
-    id: string;
-    name: string;
+    ProfileId: string;
+    Profile_name: string;
+    Profile_dob: string;
+    Gender: string;
+    Profile_city: string;
+    state: string | null;
+    owner_name: string | null;
+    plan_name: string;
+    status_name: string;
+    call_status: string | null;
+    DateOfJoin: string;
+    Last_login_date: string | null;
+    next_call_date: string | null;
+    has_photo: number;
+    has_horo: number;
+    family_status_name: string | null;
+    degree_name: string | null;
+    other_degree: string | null;
+    income: string | null;
     age: number;
-    familyStatus: string;
-    education: string;
-    income: string;
-    city: string;
-    mode: string;
-    owner: string;
-    fromDate: string;
-    toDate: string;
-    lastLogin: string;
-    idleDays: number;
-    status: string;
-    // Stats for Customer Log
-    viewed: number;
-    visitors: number;
-    bookmark: number;
-    expSent: number;
-    expRec: number;
-    // Logs for Call Log
-    lcd: string;
-    lcdComments: string;
-    callStatus: string;
-    ncd: string;
-    lad: string;
-    lap: string;
-    lapComments: string;
-    nad: string;
+}
+
+interface ProfileOwner {
+    id: string;
+    username: string; // or name, adjust based on your API response
+}
+
+interface Plan {
+    id: string;
+    plan_name: string; // adjust based on your API response
 }
 
 // --- Configuration ---
 const KPI_CONFIG = [
-    { label: "TODAY REGISTRATION", color: "bg-white" },
+    { label: "TODAY'S REGISTRATION", color: "bg-white" },
     { label: "APPROVED", color: "bg-white" },
     { label: "UNAPPROVED", color: "bg-white" },
     { label: "NON LOGGED IN", color: "bg-white" },
@@ -57,16 +60,19 @@ const KPI_CONFIG = [
     { label: "ADMIN APPROVED - TN/KAT", color: "bg-white" },
     { label: "ONLINE UNAPPROVED - TN/KAT", color: "bg-white" },
     { label: "ADMIN UNAPPROVED - TN/KAT", color: "bg-white" },
-    { label: "TODAY LOGIN", color: "bg-white" },
-    { label: "TODAY WORK", color: "bg-white" },
+    { label: "TODAY'S LOGIN", color: "bg-white" },
+    { label: "TODAY'S WORK", color: "bg-white" },
     { label: "PENDING WORK", color: "bg-white" },
-    { label: "TODAY ACTION", color: "bg-white" },
+    { label: "TODAY'S ACTION", color: "bg-white" },
     { label: "PENDING ACTION", color: "bg-white" },
-    { label: "NO PHOTO/HORO/ID", color: "bg-white" },
+    { label: "NO PHOTO", color: "bg-white" },
+    { label: "NO HORO", color: "bg-white" },
+    { label: "NO ID", color: "bg-white" },
     { label: "HOT", color: "bg-white" },
     { label: "WARM", color: "bg-white" },
     { label: "COLD", color: "bg-white" },
     { label: "NOT INTERESTED", color: "bg-white" },
+    { label: "TODAY'S BIRTHDAY", color: "bg-white" },
 ];
 
 // const WORK_CARDS = [
@@ -82,10 +88,98 @@ const RegistrationDashboard: React.FC = () => {
     const [modalType, setModalType] = useState<'call' | 'customer' | null>(null);
     const [selectedProfile, setSelectedProfile] = useState<RegistrationProfile | null>(null);
     const [loading, setLoading] = useState(false);
+    const [profileOwners, setProfileOwners] = useState<ProfileOwner[]>([]);
+    const [plans, setPlans] = useState<Plan[]>([]);
+    const [ownersLoading, setOwnersLoading] = useState(false);
+    const [plansLoading, setPlansLoading] = useState(false);
+    const [tableData, setTableData] = useState<RegistrationProfile[]>([]);
+    const [stats, setStats] = useState<any>(null);
+    const RoleID = localStorage.getItem('role_id') || sessionStorage.getItem('role_id');
+    const SuperAdminID = localStorage.getItem('id') || sessionStorage.getItem('id');
+    const [filters, setFilters] = useState({
+        staffId: SuperAdminID || '',
+        planId: '',
+        fromDate: '',
+        toDate: '',
+        minAge: '',
+        maxAge: ''
+    });
+    
 
     // --- Styles ---
     const btnDark = "bg-[#0A1735] text-white px-6 py-2 rounded-full font-semibold text-sm hover:bg-[#1f2d50] transition shadow-sm border-none cursor-pointer";
     const btnOutline = "bg-white border border-gray-300 text-[#0A1735] px-6 py-2 rounded-full font-semibold text-sm hover:bg-gray-50 transition shadow-sm cursor-pointer";
+
+    const fetchProfileOwners = useCallback(async () => {
+        setOwnersLoading(true);
+        try {
+            const response = await apiAxios.get('api/users/');
+            // Adjust "response.data" based on your actual API structure
+            setProfileOwners(Array.isArray(response.data) ? response.data : []);
+        } catch (e) {
+            console.error("Error fetching staff:", e);
+        } finally {
+            setOwnersLoading(false);
+        }
+    }, []);
+
+    const fetchPlans = useCallback(async () => {
+        setPlansLoading(true);
+        try {
+            const res = await apiAxios.get("api/get-plans/");
+            if (res.data.status) {
+                setPlans(res.data.plans);
+            }
+        } catch (e) {
+            console.error("Error fetching plans:", e);
+        } finally {
+            setPlansLoading(false);
+        }
+    }, []);
+
+    // --- Load Data on Mount ---
+    useEffect(() => {
+        if (RoleID === "7") {
+            fetchProfileOwners();
+        }
+        fetchPlans();
+    }, [RoleID, fetchProfileOwners, fetchPlans]);
+
+    // --- Form Handlers ---
+    const handleFilterChange = (field: string, value: string) => {
+        setFilters(prev => ({ ...prev, [field]: value }));
+    };
+
+    const fetchDashboardData = useCallback(async () => {
+        setLoading(true);
+        try {
+            // Construct params from filters state
+            const params = {
+                staff_id: filters.staffId,
+                plan_id: filters.planId,
+                from_date: filters.fromDate,
+                to_date: filters.toDate,
+                min_age: filters.minAge,
+                max_age: filters.maxAge,
+            };
+
+            const response = await apiAxios.get('api/registration-report/', { params });
+
+            if (response.data.status) {
+                setTableData(response.data.data); // Profiles array
+                setStats(response.data); // Full response for KPIs
+            }
+        } catch (e) {
+            console.error("Error fetching dashboard data:", e);
+        } finally {
+            setLoading(false);
+        }
+    }, [filters]);
+
+    // Trigger fetch on mount or when filters are applied
+    useEffect(() => {
+        fetchDashboardData();
+    }, [fetchDashboardData]);
 
     const getStatusPillClass = (status: string) => {
         switch (status?.toUpperCase()) {
@@ -107,55 +201,6 @@ const RegistrationDashboard: React.FC = () => {
         setOpenModal(false);
         setSelectedProfile(null);
     };
-
-    // --- Sub-Components ---
-    const CallLogPopup = ({ profile }: { profile: RegistrationProfile }) => (
-        <Box sx={{ p: 1 }}>
-            <Typography variant="subtitle2" sx={{ color: "#64748b", mb: 3, fontWeight: 600 }}>
-                Call Logs & Service Details
-            </Typography>
-            <Grid container spacing={4}>
-                <Grid item xs={12} md={6}>
-                    <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
-                        <div className="flex justify-between"><span className="text-sm text-gray-600 font-medium">LCD</span><b className="text-sm text-[#0A1735]">{profile.lcd}</b></div>
-                        <div className="flex justify-between"><span className="text-sm text-gray-600 font-medium">LCD Comments</span><b className="text-sm text-[#0A1735]">{profile.lcdComments}</b></div>
-                        <div className="flex justify-between">
-                            <span className="text-sm text-gray-600 font-medium">Call Status</span>
-                            <span className={`px-3 py-0.5 rounded-full text-[10px] font-bold ${getStatusPillClass(profile.callStatus)}`}>{profile.callStatus}</span>
-                        </div>
-                    </Box>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                    <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
-                        <div className="flex justify-between"><span className="text-sm text-gray-600 font-medium">LAD</span><b className="text-sm text-[#0A1735]">{profile.lad}</b></div>
-                        <div className="flex justify-between"><span className="text-sm text-gray-600 font-medium">LAP</span><b className="text-sm text-[#0A1735]">{profile.lap}</b></div>
-                        <div className="flex justify-between"><span className="text-sm text-gray-600 font-medium">NAD</span><b className="text-sm text-[#0A1735]">{profile.nad}</b></div>
-                    </Box>
-                </Grid>
-            </Grid>
-        </Box>
-    );
-
-    const CustomerLogPopup = ({ profile }: { profile: RegistrationProfile }) => (
-        <Box sx={{ py: 1 }}>
-            <Grid container spacing={2}>
-                {[
-                    { label: 'Profiles Viewed', val: profile.viewed },
-                    { label: 'Profile Visitors', val: profile.visitors },
-                    { label: 'Bookmarks', val: profile.bookmark },
-                    { label: 'Exp. Int Sent', val: profile.expSent },
-                    { label: 'Interest Received', val: profile.expRec },
-                ].map((stat, i) => (
-                    <Grid item xs={6} md={2.4} key={i}>
-                        <Box sx={{ textAlign: 'center', p: 2, bgcolor: '#F1F7FF', borderRadius: '12px', border: '1px solid #E3E6EE' }}>
-                            <Typography sx={{ fontSize: '0.7rem', fontWeight: 700, color: '#475569', mb: 1 }}>{stat.label}</Typography>
-                            <Typography sx={{ fontSize: '1.5rem', fontWeight: 800, color: '#0A1735' }}>{stat.val}</Typography>
-                        </Box>
-                    </Grid>
-                ))}
-            </Grid>
-        </Box>
-    );
 
     return (
         <div className="min-h-screen bg-[#F5F7FB] font-inter text-black p-4 md:p-8">
@@ -183,17 +228,44 @@ const RegistrationDashboard: React.FC = () => {
                             <label className="block text-sm font-semibold text-[#3A3E47] mb-1">To Date</label>
                             <input type="date" className="w-full h-12 px-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500" />
                         </div>
-                        <div className="text-start">
-                            <label className="block text-sm font-semibold text-[#3A3E47] mb-1">Staff</label>
-                            <select className="w-full h-12 px-3 border border-gray-300 rounded-lg text-sm cursor-pointer appearance-none bg-white focus:outline-none">
-                                <option>Select Staff</option>
-                            </select>
-                        </div>
+                        {RoleID === "7" && (
+                            <div className="text-start">
+                                <label className="block text-sm font-semibold text-[#3A3E47] mb-1">Staff</label>
+                                <div className="relative">
+                                    <select
+                                        className="w-full h-12 px-3 pr-10 border border-gray-300 rounded-lg text-sm cursor-pointer appearance-none bg-white focus:outline-none focus:ring-1 focus:ring-black"
+                                        value={filters.staffId}
+                                        onChange={(e) => handleFilterChange('staffId', e.target.value)}
+                                    >
+                                        <option value="">Select Staff</option>
+                                        {profileOwners.map(owner => (
+                                            <option key={owner.id} value={owner.id}>{owner.username}</option>
+                                        ))}
+                                    </select>
+                                    {/* Icon positioned to the right */}
+                                    <div className="absolute inset-y-0 right-2 flex items-center pointer-events-none">
+                                        <RiArrowDropDownLine size={30} className="text-gray-500" />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                         <div className="text-start">
                             <label className="block text-sm font-semibold text-[#3A3E47] mb-1">Plan</label>
-                            <select className="w-full h-12 px-3 border border-gray-300 rounded-lg text-sm cursor-pointer appearance-none bg-white focus:outline-none">
-                                <option>Select Plan</option>
-                            </select>
+                            <div className="relative">
+                                <select
+                                    className="w-full h-12 px-3 pr-10 border border-gray-300 rounded-lg text-sm cursor-pointer appearance-none bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                    value={filters.planId}
+                                    onChange={(e) => handleFilterChange('planId', e.target.value)}
+                                >
+                                    <option value="">Select Plan</option>
+                                    {plans.map(plan => (
+                                        <option key={plan.id} value={plan.id}>{plan.plan_name}</option>
+                                    ))}
+                                </select>
+                                <div className="absolute inset-y-0 right-2 flex items-center pointer-events-none">
+                                    <RiArrowDropDownLine size={30} className="text-gray-500" />
+                                </div>
+                            </div>
                         </div>
                         <div className="col-span-1">
                             <label className="block text-sm font-semibold text-[#3A3E47] mb-1">Age Range</label>
@@ -260,76 +332,117 @@ const RegistrationDashboard: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="overflow-x-auto max-h-[500px]">
-                    <table className="min-w-full border-separate border-spacing-0 table-auto">
-                        <thead>
-                            <tr className="bg-gray-50">
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0 rounded-tl-xl">Profile ID</th>
-                                {/* ... other ths ... */}
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Name</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Age</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">DOR</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Family Status</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Education Details</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Annual Income</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">City</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">State</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Mode</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Owner</th>
-                                {/* <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">From Date</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">To Date</th> */}
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Mode Last Login</th>
-                                {/* <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Idle Days</th> */}
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Profile Status</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Call Status</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Call Comments</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Next Call Date</th>
-                                {/* <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Call Logs (+)</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0 rounded-tr-xl">Customer Log (+)</th> */}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {/* This is where you map your API data. Using a placeholder row below: */}
-                            <tr>
-                                <td colSpan={16} className="py-20 text-center">
-                                    {loading ? (
-                                        <CircularProgress size={40} />
-                                    ) : (
-                                        <div className="flex flex-col items-center">
-                                            <Typography variant="body2" className="text-gray-500 font-medium">No Registration Profiles found</Typography>
-                                        </div>
-                                    )}
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div className="overflow-x-auto">
+                    {/* This inner div enables vertical scrolling while keeping headers potentially visible if you add 'sticky' later */}
+                    <div className="max-h-[500px] overflow-y-auto">
+                        <table className="min-w-full border-separate border-spacing-0 table-auto">
+                            <thead>
+                                <tr className="bg-gray-50">
+                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0 rounded-tl-xl">
+                                        Profile ID
+                                    </th>
+                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
+                                        Name
+                                    </th>
+                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
+                                        Age
+                                    </th>
+                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
+                                        DOR
+                                    </th>
+                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
+                                        Family Status
+                                    </th>
+                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
+                                        Education Details
+                                    </th>
+                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
+                                        Annual Income
+                                    </th>
+                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
+                                        City
+                                    </th>
+                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
+                                        State
+                                    </th>
+                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
+                                        Mode
+                                    </th>
+                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
+                                        Owner
+                                    </th>
+                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
+                                        Mode Last Login
+                                    </th>
+                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
+                                        Profile Status
+                                    </th>
+                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
+                                        Call Status
+                                    </th>
+                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
+                                        Call Comments
+                                    </th>
+                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0 rounded-tr-xl">
+                                        Next Call Date
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {loading ? (
+                                    <tr>
+                                        <td colSpan={16} className="py-20">
+                                            <div className="flex flex-col items-center justify-center">
+                                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1d4ed8] mb-4"></div>
+                                                <p className="text-sm text-gray-600 font-medium">Loading Profiles...</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ) : tableData.length > 0 ? (
+                                    tableData.map((row) => (
+                                        <tr key={row.ProfileId} className="hover:bg-gray-50">
+                                            <td className="px-3 py-3 text-sm font-bold text-blue-600 border border-[#e5ebf1] whitespace-nowrap">
+                                                <a href={`/viewProfile?profileId=${row.ProfileId}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                                                    {row.ProfileId}
+                                                </a>
+                                            </td>
+                                            <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.Profile_name}</td>
+                                            <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.age}</td>
+                                            <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">
+                                                {row.DateOfJoin ? new Date(row.DateOfJoin).toLocaleDateString() : 'N/A'}
+                                            </td>
+                                            <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.family_status_name || 'N/A'}</td>
+                                            <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.degree_name || row.other_degree || 'N/A'}</td>
+                                            <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.income || 'N/A'}</td>
+                                            <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.Profile_city || 'N/A'}</td>
+                                            <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.state || 'N/A'}</td>
+                                            <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.plan_name || 'N/A'}</td>
+                                            <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.owner_name || 'N/A'}</td>
+                                            <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">
+                                                {row.Last_login_date ? new Date(row.Last_login_date).toLocaleDateString() : 'N/A'}
+                                            </td>
+                                            <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.status_name}</td>
+                                            <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">
+                                                <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${getStatusPillClass(row.call_status || 'COLD')}`}>
+                                                    {row.call_status || 'N/A'}
+                                                </span>
+                                            </td>
+                                            <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">N/A</td>
+                                            <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.next_call_date || 'N/A'}</td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan={16} className="text-center py-8 text-black font-semibold text-sm border border-[#e5ebf1]">
+                                            No Profiles found
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
-
-            {/* --- Modal Popups --- */}
-            <Dialog
-                open={openModal}
-                onClose={handleCloseModal}
-                maxWidth="md"
-                fullWidth
-                PaperProps={{ sx: { borderRadius: '20px', p: 1 } }}
-            >
-                <DialogTitle sx={{ m: 0, p: 3, textAlign: 'center', fontWeight: 800, color: '#0A1735' }}>
-                    {modalType === 'call' ? 'Call & Service Logs' : 'Customer Activity Log'}
-                    <Typography variant="caption" sx={{ color: '#64748b', display: 'block', mt: 1 }}>
-                        Profile ID: {selectedProfile?.id || 'N/A'}
-                    </Typography>
-                    <IconButton onClick={handleCloseModal} sx={{ position: 'absolute', right: 12, top: 12, bgcolor: '#F1F5F9' }}>
-                        <CloseIcon />
-                    </IconButton>
-                </DialogTitle>
-                <Divider />
-                <DialogContent sx={{ p: 3 }}>
-                    {selectedProfile && (
-                        modalType === 'call' ? <CallLogPopup profile={selectedProfile} /> : <CustomerLogPopup profile={selectedProfile} />
-                    )}
-                </DialogContent>
-            </Dialog>
         </div>
     );
 };
