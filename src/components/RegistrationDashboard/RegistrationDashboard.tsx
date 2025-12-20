@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     Box,
     Typography,
@@ -51,28 +51,28 @@ interface Plan {
 
 // // --- Configuration ---
 const KPI_CONFIG = [
-    { label: "TODAY'S REGISTRATION", color: "bg-white" },
-    { label: "APPROVED", color: "bg-white" },
-    { label: "UNAPPROVED", color: "bg-white" },
-    { label: "NON LOGGED IN", color: "bg-white" },
-    { label: "PREMIUM", color: "bg-white" },
-    { label: "ONLINE APPROVED - TN/KAT", color: "bg-white" },
-    { label: "ADMIN APPROVED - TN/KAT", color: "bg-white" },
-    { label: "ONLINE UNAPPROVED - TN/KAT", color: "bg-white" },
-    { label: "ADMIN UNAPPROVED - TN/KAT", color: "bg-white" },
-    { label: "TODAY'S LOGIN", color: "bg-white" },
-    { label: "TODAY'S WORK", color: "bg-white" },
-    { label: "PENDING WORK", color: "bg-white" },
-    { label: "TODAY'S ACTION", color: "bg-white" },
-    { label: "PENDING ACTION", color: "bg-white" },
-    { label: "NO PHOTO", color: "bg-white" },
-    { label: "NO HORO", color: "bg-white" },
-    { label: "NO ID", color: "bg-white" },
-    { label: "HOT", color: "bg-white" },
-    { label: "WARM", color: "bg-white" },
-    { label: "COLD", color: "bg-white" },
-    { label: "NOT INTERESTED", color: "bg-white" },
-    { label: "TODAY'S BIRTHDAY", color: "bg-white" },
+    { label: "TODAY'S REGISTRATION", key: "", color: "bg-white" },
+    { label: "APPROVED", key: "approved", color: "bg-white" },
+    { label: "UNAPPROVED", key: "unapproved", color: "bg-white" },
+    { label: "NON LOGGED IN", key: "non_login", color: "bg-white" },
+    { label: "PREMIUM", key: "premium", color: "bg-white" },
+    { label: "ONLINE APPROVED - TN/KAT", key: "online_approved", color: "bg-white" },
+    { label: "ADMIN APPROVED - TN/KAT", key: "admin_approved", color: "bg-white" },
+    { label: "ONLINE UNAPPROVED - TN/KAT", key: "online_unapproved", color: "bg-white" },
+    { label: "ADMIN UNAPPROVED - TN/KAT", key: "admin_unapproved", color: "bg-white" },
+    { label: "TODAY'S LOGIN", key: "today_login", color: "bg-white" },
+    { label: "TODAY'S WORK", key: "today_work", color: "bg-white" },
+    { label: "PENDING WORK", key: "pending_work", color: "bg-white" },
+    { label: "TODAY'S ACTION", key: "today_task", color: "bg-white" },
+    { label: "PENDING ACTION", key: "pending_task", color: "bg-white" },
+    { label: "NO PHOTO", key: "no_photo", color: "bg-white" },
+    { label: "NO HORO", key: "no_horo", color: "bg-white" },
+    { label: "NO ID", key: "no_id", color: "bg-white" },
+    { label: "HOT", key: "hot", color: "bg-white" },
+    { label: "WARM", key: "warm", color: "bg-white" },
+    { label: "COLD", key: "cold", color: "bg-white" },
+    { label: "NOT INTERESTED", key: "not_interested", color: "bg-white" },
+    { label: "TODAY'S BIRTHDAY", key: "today_birthday", color: "bg-white" },
 ];
 
 // const WORK_CARDS = [
@@ -104,9 +104,12 @@ const RegistrationDashboard: React.FC = () => {
         minAge: "", // age_from
         maxAge: "", // age_to
         searchQuery: "", // search
+        countFilter: "",
     });
     const [searchTimer, setSearchTimer] = useState<NodeJS.Timeout | null>(null);
     const [applyFilters, setApplyFilters] = useState(false);
+    const tableRef = useRef<HTMLDivElement>(null);
+    
 
     // --- Styles ---
     const btnDark = "bg-[#0A1735] text-white px-6 py-2 rounded-full font-semibold text-sm hover:bg-[#1f2d50] transition shadow-sm border-none cursor-pointer";
@@ -181,6 +184,19 @@ const RegistrationDashboard: React.FC = () => {
         setFilters(prev => ({ ...prev, [field]: value }));
     };
 
+    const handleCardClick = (key: string) => {
+        // 1. Set the specific filter
+        setFilters(prev => ({ ...prev, countFilter: key }));
+
+        // 2. Trigger API call
+        setApplyFilters(true);
+
+        // 3. Scroll to table
+        if (tableRef.current) {
+            tableRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    };
+
     // 1. Update the Fetch function to be called only when applyFilters is true
     const fetchDashboardData = useCallback(async () => {
         setLoading(true);
@@ -193,7 +209,7 @@ const RegistrationDashboard: React.FC = () => {
         if (filters.maxAge) params.append('age_to', filters.maxAge);
         if (filters.plan) params.append('plan_id', filters.plan);
         if (filters.searchQuery) params.append('search', filters.searchQuery);
-
+        if (filters.countFilter) params.append('countFilter', filters.countFilter);
         // Logic for Owner
         const ownerId = (RoleID === "7") ? filters.staff : (SuperAdminID || "");
         if (ownerId) params.append("owner", ownerId);
@@ -366,7 +382,8 @@ const RegistrationDashboard: React.FC = () => {
                                     plan: "",
                                     minAge: "",
                                     maxAge: "",
-                                    searchQuery: ""
+                                    searchQuery: "",
+                                    countFilter: "",
                                 });
                                 // 2. Trigger the loading and fetch process
                                 setApplyFilters(true);
@@ -390,6 +407,7 @@ const RegistrationDashboard: React.FC = () => {
                             <motion.div
                                 key={i}
                                 whileHover={{ y: -5 }}
+                                onClick={() => handleCardClick(kpi.key)}
                                 className={`${kpi.color} p-5 rounded-2xl min-h-[140px] border border-[#E3E6EE] flex flex-col justify-center cursor-pointer transition shadow-sm`}
                             >
                                 <h6 className="text-[10px] font-bold mb-1 tracking-wider uppercase opacity-80 text-start">{kpi.label}</h6>
@@ -413,7 +431,7 @@ const RegistrationDashboard: React.FC = () => {
             </section> */}
 
                     {/* --- Profile Detail Table --- */}
-                    <section className="bg-white rounded-xl border border-[#e6ecf2] shadow-md p-6">
+                    <section ref={tableRef} className="bg-white rounded-xl border border-[#e6ecf2] shadow-md p-6">
                         <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
                             <h5 className="text-lg font-semibold m-0">Registration Profile Detail ({stats?.filtered_count || 0})</h5>
                             <div className="flex gap-2">
