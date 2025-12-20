@@ -49,7 +49,7 @@ interface Plan {
     plan_name: string; // adjust based on your API response
 }
 
-// --- Configuration ---
+// // --- Configuration ---
 const KPI_CONFIG = [
     { label: "TODAY'S REGISTRATION", color: "bg-white" },
     { label: "APPROVED", color: "bg-white" },
@@ -97,18 +97,49 @@ const RegistrationDashboard: React.FC = () => {
     const RoleID = localStorage.getItem('role_id') || sessionStorage.getItem('role_id');
     const SuperAdminID = localStorage.getItem('id') || sessionStorage.getItem('id');
     const [filters, setFilters] = useState({
-        staffId: SuperAdminID || '',
-        planId: '',
-        fromDate: '',
-        toDate: '',
-        minAge: '',
-        maxAge: ''
+        fromDate: "",
+        toDate: "",
+        staff: SuperAdminID || "", // owner
+        plan: "", // plan_id
+        minAge: "", // age_from
+        maxAge: "", // age_to
+        searchQuery: "", // search
     });
-    
+    const [searchTimer, setSearchTimer] = useState<NodeJS.Timeout | null>(null);
+    const [applyFilters, setApplyFilters] = useState(false);
 
     // --- Styles ---
     const btnDark = "bg-[#0A1735] text-white px-6 py-2 rounded-full font-semibold text-sm hover:bg-[#1f2d50] transition shadow-sm border-none cursor-pointer";
     const btnOutline = "bg-white border border-gray-300 text-[#0A1735] px-6 py-2 rounded-full font-semibold text-sm hover:bg-gray-50 transition shadow-sm cursor-pointer";
+
+    const getKpiCount = (stats: any, label: string): number => {
+        if (!stats) return 0;
+        switch (label) {
+            case "TODAY'S REGISTRATION": return stats.total_registration || 0;
+            case "APPROVED": return stats.approved || 0;
+            case "UNAPPROVED": return stats.unapproved || 0;
+            case "NON LOGGED IN": return stats.non_logged_in || 0;
+            case "PREMIUM": return stats.premium || 0;
+            case "ONLINE APPROVED - TN/KAT": return stats.online?.total_approved || 0;
+            case "ADMIN APPROVED - TN/KAT": return stats.admin?.total_approved || 0;
+            case "ONLINE UNAPPROVED - TN/KAT": return stats.online?.total_unapproved || 0;
+            case "ADMIN UNAPPROVED - TN/KAT": return stats.admin?.total_unapproved || 0;
+            case "TODAY'S LOGIN": return stats.today_login || 0;
+            case "TODAY'S WORK": return stats.work_counts?.today_work || 0;
+            case "PENDING WORK": return stats.work_counts?.pending_work || 0;
+            case "TODAY'S ACTION": return stats.task_counts?.today_task || 0;
+            case "PENDING ACTION": return stats.task_counts?.pending_task || 0;
+            case "NO PHOTO": return stats.no_photo || 0;
+            case "NO HORO": return stats.no_horo || 0;
+            case "NO ID": return stats.no_id || 0;
+            case "HOT": return stats.interest?.hot || 0;
+            case "WARM": return stats.interest?.warm || 0;
+            case "COLD": return stats.interest?.cold || 0;
+            case "NOT INTERESTED": return stats.interest?.not_interested || 0;
+            case "TODAY'S BIRTHDAY": return stats.today_birthday || 0;
+            default: return 0;
+        }
+    };
 
     const fetchProfileOwners = useCallback(async () => {
         setOwnersLoading(true);
@@ -150,36 +181,51 @@ const RegistrationDashboard: React.FC = () => {
         setFilters(prev => ({ ...prev, [field]: value }));
     };
 
+    // 1. Update the Fetch function to be called only when applyFilters is true
     const fetchDashboardData = useCallback(async () => {
         setLoading(true);
-        try {
-            // Construct params from filters state
-            const params = {
-                staff_id: filters.staffId,
-                plan_id: filters.planId,
-                from_date: filters.fromDate,
-                to_date: filters.toDate,
-                min_age: filters.minAge,
-                max_age: filters.maxAge,
-            };
+        const params = new URLSearchParams();
 
-            const response = await apiAxios.get('api/registration-report/', { params });
+        // Map your local state to API parameters
+        if (filters.fromDate) params.append('from_date', filters.fromDate);
+        if (filters.toDate) params.append('to_date', filters.toDate);
+        if (filters.minAge) params.append('age_from', filters.minAge);
+        if (filters.maxAge) params.append('age_to', filters.maxAge);
+        if (filters.plan) params.append('plan_id', filters.plan);
+        if (filters.searchQuery) params.append('search', filters.searchQuery);
+
+        // Logic for Owner
+        const ownerId = (RoleID === "7") ? filters.staff : (SuperAdminID || "");
+        if (ownerId) params.append("owner", ownerId);
+
+        try {
+            const response = await apiAxios.get('api/registration-report/', {
+                params: Object.fromEntries(params.entries())
+            });
 
             if (response.data.status) {
-                setTableData(response.data.data); // Profiles array
-                setStats(response.data); // Full response for KPIs
+                setTableData(response.data.data);
+                setStats(response.data);
             }
         } catch (e) {
-            console.error("Error fetching dashboard data:", e);
+            console.error("Error:", e);
         } finally {
             setLoading(false);
+            setApplyFilters(false); // Reset the trigger
         }
-    }, [filters]);
+    }, [filters, RoleID, SuperAdminID]); // These are fine as dependencies because the useEffect handles the "when"
 
-    // Trigger fetch on mount or when filters are applied
+    // 2. Control the trigger
     useEffect(() => {
-        fetchDashboardData();
-    }, [fetchDashboardData]);
+        if (applyFilters) {
+            fetchDashboardData();
+        }
+    }, [applyFilters, fetchDashboardData]);
+
+    // 3. Initial Load
+    useEffect(() => {
+        fetchDashboardData(); // Run once on mount
+    }, []);
 
     const getStatusPillClass = (status: string) => {
         switch (status?.toUpperCase()) {
@@ -190,17 +236,28 @@ const RegistrationDashboard: React.FC = () => {
         }
     };
 
-    // --- Handlers ---
-    const handleOpenModal = (profile: RegistrationProfile, type: 'call' | 'customer') => {
-        setSelectedProfile(profile);
-        setModalType(type);
-        setOpenModal(true);
-    };
-
-    const handleCloseModal = () => {
-        setOpenModal(false);
-        setSelectedProfile(null);
-    };
+    const FullWidthLoadingSpinner = () => (
+        <Box
+            className="container-fluid mx-auto px-4 sm:px-6 lg:px-8"
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                py: 12, // Increased padding for visibility
+                width: '100%',
+                backgroundColor: '#fff', // White background
+                borderRadius: '1rem',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)',
+                mb: 4, // margin bottom to separate from the table
+            }}
+        >
+            <CircularProgress color="primary" size={40} />
+            <Typography variant="h6" sx={{ mt: 3, color: '#0A1735', fontWeight: 600 }}>
+                Loading...
+            </Typography>
+        </Box>
+    );
 
     return (
         <div className="min-h-screen bg-[#F5F7FB] font-inter text-black p-4 md:p-8">
@@ -222,11 +279,21 @@ const RegistrationDashboard: React.FC = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         <div className="text-start">
                             <label className="block text-sm font-semibold text-[#3A3E47] mb-1">From Date</label>
-                            <input type="date" className="w-full h-12 px-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500" />
+                            <input
+                                type="date"
+                                value={filters.fromDate}
+                                onChange={(e) => setFilters({ ...filters, fromDate: e.target.value })}
+                                className="w-full h-12 px-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            />
                         </div>
                         <div className="text-start">
                             <label className="block text-sm font-semibold text-[#3A3E47] mb-1">To Date</label>
-                            <input type="date" className="w-full h-12 px-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500" />
+                            <input
+                                type="date"
+                                value={filters.toDate}
+                                onChange={(e) => setFilters({ ...filters, toDate: e.target.value })}
+                                className="w-full h-12 px-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            />
                         </div>
                         {RoleID === "7" && (
                             <div className="text-start">
@@ -234,8 +301,8 @@ const RegistrationDashboard: React.FC = () => {
                                 <div className="relative">
                                     <select
                                         className="w-full h-12 px-3 pr-10 border border-gray-300 rounded-lg text-sm cursor-pointer appearance-none bg-white focus:outline-none focus:ring-1 focus:ring-black"
-                                        value={filters.staffId}
-                                        onChange={(e) => handleFilterChange('staffId', e.target.value)}
+                                        value={filters.staff}
+                                        onChange={(e) => handleFilterChange('staff', e.target.value)}
                                     >
                                         <option value="">Select Staff</option>
                                         {profileOwners.map(owner => (
@@ -254,8 +321,8 @@ const RegistrationDashboard: React.FC = () => {
                             <div className="relative">
                                 <select
                                     className="w-full h-12 px-3 pr-10 border border-gray-300 rounded-lg text-sm cursor-pointer appearance-none bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                    value={filters.planId}
-                                    onChange={(e) => handleFilterChange('planId', e.target.value)}
+                                    value={filters.plan}
+                                    onChange={(e) => handleFilterChange('plan', e.target.value)}
                                 >
                                     <option value="">Select Plan</option>
                                     {plans.map(plan => (
@@ -273,40 +340,67 @@ const RegistrationDashboard: React.FC = () => {
                                 <input
                                     type="number"
                                     placeholder="Min"
-                                    className="w-1/2 h-12 px-3 cursor-pointer border border-gray-300 rounded-lg text-sm"
+                                    value={filters.minAge}
+                                    onChange={(e) => setFilters({ ...filters, minAge: e.target.value })}
+                                    className="w-1/2 h-12 px-3 border border-gray-300 rounded-lg text-sm"
                                 />
                                 <input
                                     type="number"
                                     placeholder="Max"
+                                    value={filters.maxAge}
+                                    onChange={(e) => setFilters({ ...filters, maxAge: e.target.value })}
                                     className="w-1/2 h-12 px-3 border border-gray-300 rounded-lg text-sm"
                                 />
                             </div>
                         </div>
                     </div>
                     <div className="flex justify-end gap-3 mt-6">
-                        <button className={btnOutline}>Reset</button>
-                        <button className={btnDark}>Apply Filters</button>
+                        <button
+                            className={btnOutline}
+                            onClick={() => {
+                                // 1. Clear the filter state
+                                setFilters({
+                                    fromDate: "",
+                                    toDate: "",
+                                    staff: RoleID === "7" ? "" : (SuperAdminID || ""),
+                                    plan: "",
+                                    minAge: "",
+                                    maxAge: "",
+                                    searchQuery: ""
+                                });
+                                // 2. Trigger the loading and fetch process
+                                setApplyFilters(true);
+                            }}
+                        >
+                            Reset
+                        </button>
+                        <button className={btnDark} onClick={() => setApplyFilters(true)}>Apply Filters</button>
                     </div>
                 </div>
             </section>
+            {loading ? (
+                <section className="mt-4">
+                    <FullWidthLoadingSpinner />
+                </section>
+            ) : (
+                <>
+                    {/* --- KPI Grid --- */}
+                    <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-8">
+                        {KPI_CONFIG.map((kpi, i) => (
+                            <motion.div
+                                key={i}
+                                whileHover={{ y: -5 }}
+                                className={`${kpi.color} p-5 rounded-2xl min-h-[140px] border border-[#E3E6EE] flex flex-col justify-center cursor-pointer transition shadow-sm`}
+                            >
+                                <h6 className="text-[10px] font-bold mb-1 tracking-wider uppercase opacity-80 text-start">{kpi.label}</h6>
+                                <h2 className="text-3xl text-start font-bold mb-1">{loading ? <CircularProgress size={20} /> : getKpiCount(stats, kpi.label)}</h2>
+                                <p className="text-[10px] opacity-70 text-start">Click to view profiles</p>
+                            </motion.div>
+                        ))}
+                    </section>
 
-            {/* --- KPI Grid --- */}
-            <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-8">
-                {KPI_CONFIG.map((kpi, i) => (
-                    <motion.div
-                        key={i}
-                        whileHover={{ y: -5 }}
-                        className={`${kpi.color} p-5 rounded-2xl min-h-[140px] border border-[#E3E6EE] flex flex-col justify-center cursor-pointer transition shadow-sm`}
-                    >
-                        <h6 className="text-[10px] font-bold mb-1 tracking-wider uppercase opacity-80 text-start">{kpi.label}</h6>
-                        <h2 className="text-3xl text-start font-bold mb-1">0</h2>
-                        <p className="text-[10px] opacity-70 text-start">Click to view profiles</p>
-                    </motion.div>
-                ))}
-            </section>
-
-            {/* --- Work Stats Section --- */}
-            {/* <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                    {/* --- Work Stats Section --- */}
+                    {/* <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                 {WORK_CARDS.map((card, i) => (
                     <div key={i} className="bg-white rounded-xl p-6 border border-[#e6ecf2] shadow-sm flex flex-col justify-between h-full transition hover:-translate-y-1 cursor-pointer">
                         <div className="text-start">
@@ -318,132 +412,147 @@ const RegistrationDashboard: React.FC = () => {
                 ))}
             </section> */}
 
-            {/* --- Profile Detail Table --- */}
-            <section className="bg-white rounded-xl border border-[#e6ecf2] shadow-md p-6">
-                <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                    <h5 className="text-lg font-semibold m-0">Registration Profile Detail (0)</h5>
-                    <div className="flex gap-2">
-                        <input
-                            type="text"
-                            placeholder="Search Profile ID / Name"
-                            className="w-[250px] h-10 px-4 rounded-full border border-gray-300 text-sm focus:outline-none focus:border-gray-500 transition"
-                        />
-                        <button className="h-10 px-4 rounded-full bg-white border border-gray-300 text-sm font-semibold hover:bg-gray-50 transition">Clear</button>
-                    </div>
-                </div>
+                    {/* --- Profile Detail Table --- */}
+                    <section className="bg-white rounded-xl border border-[#e6ecf2] shadow-md p-6">
+                        <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                            <h5 className="text-lg font-semibold m-0">Registration Profile Detail ({stats?.filtered_count || 0})</h5>
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    placeholder="Search Profile ID / Name"
+                                    value={filters.searchQuery}
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        setFilters({ ...filters, searchQuery: val });
+                                        if (searchTimer) clearTimeout(searchTimer);
+                                        setSearchTimer(setTimeout(() => setApplyFilters(true), 1500));
+                                    }}
+                                    className="w-[250px] h-10 px-4 rounded-full border border-gray-300 text-sm focus:outline-none focus:border-gray-500 transition"
+                                />
+                                <button
+                                    onClick={() => {
+                                        setFilters({ ...filters, searchQuery: "" });
+                                        setApplyFilters(true);
+                                    }}
+                                    className="h-10 px-4 rounded-full bg-white border border-gray-300 text-sm font-semibold hover:bg-gray-50 transition">Clear</button>
+                            </div>
+                        </div>
 
-                <div className="overflow-x-auto">
-                    {/* This inner div enables vertical scrolling while keeping headers potentially visible if you add 'sticky' later */}
-                    <div className="max-h-[500px] overflow-y-auto">
-                        <table className="min-w-full border-separate border-spacing-0 table-auto">
-                            <thead>
-                                <tr className="bg-gray-50">
-                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0 rounded-tl-xl">
-                                        Profile ID
-                                    </th>
-                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
-                                        Name
-                                    </th>
-                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
-                                        Age
-                                    </th>
-                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
-                                        DOR
-                                    </th>
-                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
-                                        Family Status
-                                    </th>
-                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
-                                        Education Details
-                                    </th>
-                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
-                                        Annual Income
-                                    </th>
-                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
-                                        City
-                                    </th>
-                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
-                                        State
-                                    </th>
-                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
-                                        Mode
-                                    </th>
-                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
-                                        Owner
-                                    </th>
-                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
-                                        Mode Last Login
-                                    </th>
-                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
-                                        Profile Status
-                                    </th>
-                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
-                                        Call Status
-                                    </th>
-                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
-                                        Call Comments
-                                    </th>
-                                    <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0 rounded-tr-xl">
-                                        Next Call Date
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {loading ? (
-                                    <tr>
-                                        <td colSpan={16} className="py-20">
-                                            <div className="flex flex-col items-center justify-center">
-                                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1d4ed8] mb-4"></div>
-                                                <p className="text-sm text-gray-600 font-medium">Loading Profiles...</p>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ) : tableData.length > 0 ? (
-                                    tableData.map((row) => (
-                                        <tr key={row.ProfileId} className="hover:bg-gray-50">
-                                            <td className="px-3 py-3 text-sm font-bold text-blue-600 border border-[#e5ebf1] whitespace-nowrap">
-                                                <a href={`/viewProfile?profileId=${row.ProfileId}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
-                                                    {row.ProfileId}
-                                                </a>
-                                            </td>
-                                            <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.Profile_name}</td>
-                                            <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.age}</td>
-                                            <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">
-                                                {row.DateOfJoin ? new Date(row.DateOfJoin).toLocaleDateString() : 'N/A'}
-                                            </td>
-                                            <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.family_status_name || 'N/A'}</td>
-                                            <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.degree_name || row.other_degree || 'N/A'}</td>
-                                            <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.income || 'N/A'}</td>
-                                            <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.Profile_city || 'N/A'}</td>
-                                            <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.state || 'N/A'}</td>
-                                            <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.plan_name || 'N/A'}</td>
-                                            <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.owner_name || 'N/A'}</td>
-                                            <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">
-                                                {row.Last_login_date ? new Date(row.Last_login_date).toLocaleDateString() : 'N/A'}
-                                            </td>
-                                            <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.status_name}</td>
-                                            <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">
-                                                <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${getStatusPillClass(row.call_status || 'COLD')}`}>
-                                                    {row.call_status || 'N/A'}
-                                                </span>
-                                            </td>
-                                            <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">N/A</td>
-                                            <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.next_call_date || 'N/A'}</td>
+                        <div className="overflow-x-auto">
+                            {/* This inner div enables vertical scrolling while keeping headers potentially visible if you add 'sticky' later */}
+                            <div className="max-h-[500px] overflow-y-auto">
+                                <table className="min-w-full border-separate border-spacing-0 table-auto">
+                                    <thead>
+                                        <tr className="bg-gray-50">
+                                            <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0 rounded-tl-xl">
+                                                Profile ID
+                                            </th>
+                                            <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
+                                                Name
+                                            </th>
+                                            <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
+                                                Age
+                                            </th>
+                                            <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
+                                                DOR
+                                            </th>
+                                            <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
+                                                Family Status
+                                            </th>
+                                            <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
+                                                Education Details
+                                            </th>
+                                            <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
+                                                Annual Income
+                                            </th>
+                                            <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
+                                                City
+                                            </th>
+                                            <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
+                                                State
+                                            </th>
+                                            <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
+                                                Mode
+                                            </th>
+                                            <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
+                                                Owner
+                                            </th>
+                                            <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
+                                                Mode Last Login
+                                            </th>
+                                            <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
+                                                Profile Status
+                                            </th>
+                                            <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
+                                                Call Status
+                                            </th>
+                                            <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
+                                                Call Comments
+                                            </th>
+                                            <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0 rounded-tr-xl">
+                                                Next Call Date
+                                            </th>
                                         </tr>
-                                    ))
-                                ) : (
-                                    <tr>
-                                        <td colSpan={16} className="text-center py-8 text-black font-semibold text-sm border border-[#e5ebf1]">
-                                            No Profiles found
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-        </div>
+                                    </thead>
+                                    <tbody>
+                                        {loading ? (
+                                            <tr>
+                                                <td colSpan={16} className="py-20">
+                                                    <div className="flex flex-col items-center justify-center">
+                                                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1d4ed8] mb-4"></div>
+                                                        <p className="text-sm text-gray-600 font-medium">Loading Profiles...</p>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ) : tableData.length > 0 ? (
+                                            tableData.map((row) => (
+                                                <tr key={row.ProfileId} className="hover:bg-gray-50">
+                                                    <td className="px-3 py-3 text-sm font-bold text-blue-600 border border-[#e5ebf1] whitespace-nowrap">
+                                                        <a href={`/viewProfile?profileId=${row.ProfileId}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                                                            {row.ProfileId}
+                                                        </a>
+                                                    </td>
+                                                    <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.Profile_name}</td>
+                                                    <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.age}</td>
+                                                    <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">
+                                                        {row.DateOfJoin ? new Date(row.DateOfJoin).toLocaleDateString() : 'N/A'}
+                                                    </td>
+                                                    <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.family_status_name || 'N/A'}</td>
+                                                    <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.degree_name || row.other_degree || 'N/A'}</td>
+                                                    <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.income || 'N/A'}</td>
+                                                    <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.Profile_city || 'N/A'}</td>
+                                                    <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.state || 'N/A'}</td>
+                                                    <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.plan_name || 'N/A'}</td>
+                                                    <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.owner_name || 'N/A'}</td>
+                                                    <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">
+                                                        {row.Last_login_date ? new Date(row.Last_login_date).toLocaleDateString() : 'N/A'}
+                                                    </td>
+                                                    <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.status_name}</td>
+                                                    <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">
+                                                        <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${getStatusPillClass(row.call_status || 'COLD')}`}>
+                                                            {row.call_status || 'N/A'}
+                                                        </span>
+                                                    </td>
+                                                    <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">N/A</td>
+                                                    <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.next_call_date || 'N/A'}</td>
+                                                </tr>
+                                            ))
+                                        ) : (
+                                            <tr>
+                                                <td colSpan={16} className="text-center py-8 text-black font-semibold text-sm border border-[#e5ebf1]">
+                                                    No Profiles found
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+                </>
+            )
+            }
+        </div >
     );
 };
 
