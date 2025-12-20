@@ -460,34 +460,68 @@ const RegistrationDashboard: React.FC = () => {
                     {/* --- KPI Grid --- */}
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-8">
                         {KPI_CONFIG.map((kpi, i) => {
-                            const data = getKpiData(stats, kpi.label); // Use the new helper
+                            const data = getKpiData(stats, kpi.label);
                             const isLocationCard = kpi.label.includes("TN/KAT");
+
+                            // Check if the current filter belongs to THIS card
+                            // This will be true if countFilter is 'online_approved' OR 'online_approved_tn' etc.
+                            const isActiveCard = filters.countFilter.startsWith(kpi.key) && kpi.key !== "";
+
+                            // Specific checks for sub-items
+                            const isTnActive = filters.countFilter === `${kpi.key}_tn`;
+                            const isKatActive = filters.countFilter === `${kpi.key}_kat`;
+                            const isTotalActive = filters.countFilter === kpi.key;
 
                             return (
                                 <motion.div
                                     key={i}
-                                    whileHover={{ y: -5 }}
+                                    whileHover={{ y: -2 }}
                                     onClick={() => handleCardClick(kpi.key)}
-                                    className={`${kpi.color} p-5 rounded-2xl min-h-[140px] border border-[#E3E6EE] flex flex-col justify-center cursor-pointer transition shadow-sm relative`}
+                                    className={`${kpi.color} p-5 rounded-2xl min-h-[140px] border transition shadow-sm relative cursor-pointer
+                    ${isActiveCard ? 'border-4 border-black/50 shadow-lg' : 'border-[#E3E6EE]'}
+                `}
                                 >
                                     <h6 className="text-[10px] font-bold mb-1 tracking-wider uppercase opacity-80 text-start">
                                         {kpi.label}
                                     </h6>
 
                                     <div className="flex items-baseline gap-2">
-                                        <h2 className="text-3xl text-start font-bold mb-1">
-                                            {loading ? <CircularProgress size={20} /> : typeof data === 'number' ? data : data.total}
+                                        {/* Main Total Number - Underlined if specifically selected */}
+                                        <h2 className={`text-3xl text-start font-bold mb-1 transition-all
+                        ${isTotalActive ? 'decoration-gray-600' : ''}
+                    `}>
+                                            {loading ? <CircularProgress size={16} /> : typeof data === 'number' ? data : data.total}
                                         </h2>
 
                                         {/* Dynamic Sub-counts for TN/KAT */}
                                         {isLocationCard && !loading && typeof data === 'object' && (
-                                            <span className="text-sm font-semibold text-gray-500">
-                                                {data.tn} <span className="text-[10px] opacity-40">/</span> {data.kat}
-                                            </span>
+                                            <div className="flex gap-2 text-sm font-semibold text-gray-500">
+                                                <span
+                                                    onClick={(e) => {
+                                                        e.stopPropagation(); // Prevent parent card click
+                                                        handleCardClick(`${kpi.key}_tn`);
+                                                    }}
+                                                    className={`hover:text-black transition-all ${isTnActive ? 'underline decoration-2 underline-offset-4 text-black font-bold' : ''}`}
+                                                >
+                                                    {data.tn}
+                                                </span>
+                                                <span className="text-[10px] opacity-40">/</span>
+                                                <span
+                                                    onClick={(e) => {
+                                                        e.stopPropagation(); // Prevent parent card click
+                                                        handleCardClick(`${kpi.key}_kat`);
+                                                    }}
+                                                    className={`hover:text-black transition-all ${isKatActive ? 'underline decoration-2 underline-offset-4 text-black font-bold' : ''}`}
+                                                >
+                                                    {data.kat}
+                                                </span>
+                                            </div>
                                         )}
                                     </div>
 
-                                    <p className="text-[10px] opacity-70 text-start">Click to view profiles</p>
+                                    <p className="text-[10px] opacity-70 text-start mt-1">
+                                        {isActiveCard ? "Currently filtering" : "Click to view profiles"}
+                                    </p>
                                 </motion.div>
                             );
                         })}
@@ -610,7 +644,9 @@ const RegistrationDashboard: React.FC = () => {
                                                     <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.Profile_name}</td>
                                                     <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.age}</td>
                                                     <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">
-                                                        {row.DateOfJoin ? new Date(row.DateOfJoin).toLocaleDateString() : 'N/A'}
+                                                        {row.DateOfJoin
+                                                            ? new Date(row.DateOfJoin).toISOString().split('T')[0]
+                                                            : 'N/A'}
                                                     </td>
                                                     <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.family_status_name || 'N/A'}</td>
                                                     <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.degree_name || row.other_degree || 'N/A'}</td>
@@ -620,7 +656,9 @@ const RegistrationDashboard: React.FC = () => {
                                                     <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.plan_name || 'N/A'}</td>
                                                     <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.owner_name || 'N/A'}</td>
                                                     <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">
-                                                        {row.Last_login_date ? new Date(row.Last_login_date).toLocaleDateString() : 'N/A'}
+                                                        {row.Last_login_date
+                                                            ? new Date(row.Last_login_date).toISOString().split('T')[0]
+                                                            : 'N/A'}
                                                     </td>
                                                     <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.status_name}</td>
                                                     <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">
