@@ -51,7 +51,7 @@ interface Plan {
 
 // // --- Configuration ---
 const KPI_CONFIG = [
-    { label: "TODAY'S REGISTRATION", key: "", color: "bg-white" },
+    { label: "TOTAL REGISTRATION", key: "", color: "bg-white" },
     { label: "APPROVED", key: "approved", color: "bg-white" },
     { label: "UNAPPROVED", key: "unapproved", color: "bg-white" },
     { label: "NON LOGGED IN", key: "non_login", color: "bg-white" },
@@ -573,7 +573,6 @@ const RegistrationDashboard: React.FC = () => {
                                     <h6 className="text-[10px] font-bold mb-1 tracking-wider uppercase opacity-80 text-start">
                                         {kpi.label}
                                     </h6>
-
                                     <div className="flex items-baseline gap-2">
                                         {/* Main Total Number - Underlined if specifically selected */}
                                         <h2 className={`text-3xl text-start font-bold mb-1 transition-all
@@ -585,6 +584,7 @@ const RegistrationDashboard: React.FC = () => {
                                         {/* Dynamic Sub-counts for TN/KAT */}
                                         {isLocationCard && !loading && typeof data === 'object' && (
                                             <div className="flex gap-2 text-sm font-semibold text-gray-500">
+                                                <p>-</p>
                                                 <span
                                                     onClick={(e) => {
                                                         e.stopPropagation(); // Prevent parent card click
