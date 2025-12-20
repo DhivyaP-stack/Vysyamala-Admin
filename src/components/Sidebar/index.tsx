@@ -4,7 +4,7 @@ import SidebarLinkGroup from './SidebarLinkGroup';
 import Logo from '../../../public/Vysyamala.svg';
 import { CgProfile } from 'react-icons/cg';
 import { FaUser, FaUserCog, FaSearch, FaSearchPlus } from 'react-icons/fa';
-import { MdAddLocationAlt, MdAutorenew } from 'react-icons/md';
+import { MdAddLocationAlt, MdAppRegistration, MdAutorenew } from 'react-icons/md';
 import { FaRegStar } from 'react-icons/fa';
 import { MdFamilyRestroom } from 'react-icons/md';
 import { ImProfile } from 'react-icons/im';
@@ -1344,7 +1344,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 className={`translate transform overflow-hidden ${!open && 'hidden'
                   }`}
               >
-                <ul className="mt-4 mb-5.5 flex flex-col">
+                <ul className="mt-3 mb-5 flex flex-col">
                   {/* Submenu Items */}
                   <li>
                     <NavLink
@@ -1364,7 +1364,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 className={`translate transform overflow-hidden ${!open && 'hidden'
                   }`}
               >
-                <ul className="mt-4 mb-5.5 flex flex-col">
+                <ul className=" mb-5 flex flex-col">
                   {/* Submenu Items */}
                   <li>
                     <NavLink
@@ -1374,7 +1374,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                         (isActive && '!text-PrimaryRed')
                       }
                     >
-                      <MdAutorenew />
+                      <MdAppRegistration />
                       Registration Dashboard
                     </NavLink>
                   </li>

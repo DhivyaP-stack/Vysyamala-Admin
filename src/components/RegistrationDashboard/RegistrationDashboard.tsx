@@ -111,7 +111,7 @@ const RegistrationDashboard: React.FC = () => {
     const tableRef = useRef<HTMLDivElement>(null);
     const [scrollSource, setScrollSource] = useState<'card' | 'filter' | null>(null);
     const [tableLoading, setTableLoading] = useState(false);
-
+    const [isDownloading, setIsDownloading] = useState(false);
 
     // --- Styles ---
     const btnDark = "bg-[#0A1735] text-white px-6 py-2 rounded-full font-semibold text-sm hover:bg-[#1f2d50] transition shadow-sm border-none cursor-pointer";
@@ -292,8 +292,11 @@ const RegistrationDashboard: React.FC = () => {
     }, [applyFilters, fetchDashboardData]);
 
     // 3. Initial Load
+
     useEffect(() => {
-        fetchDashboardData(); // Run once on mount
+        setLoading(true);       // This triggers the FullWidthLoadingSpinner
+        setTableLoading(true);
+        fetchDashboardData();
     }, []);
 
     useEffect(() => {
@@ -322,6 +325,54 @@ const RegistrationDashboard: React.FC = () => {
         }
     };
 
+    const handleDownloadReport = async () => {
+        setIsDownloading(true);
+        try {
+            const params = new URLSearchParams();
+
+            // Map current filters to params (matching your fetchDashboardData logic)
+            if (filters.fromDate) params.append('from_date', filters.fromDate);
+            if (filters.toDate) params.append('to_date', filters.toDate);
+            if (filters.minAge) params.append('age_from', filters.minAge);
+            if (filters.maxAge) params.append('age_to', filters.maxAge);
+            if (filters.plan) params.append('plan_id', filters.plan);
+            if (filters.searchQuery) params.append('search', filters.searchQuery);
+            if (filters.countFilter) params.append('countFilter', filters.countFilter);
+
+            const ownerId = (RoleID === "7") ? filters.staff : (SuperAdminID || "");
+            if (ownerId) params.append("owner", ownerId);
+
+            // Add the export flag required by your backend
+            params.append('export', 'excel');
+
+            const response = await apiAxios.get(`api/registration-report/`, {
+                params: Object.fromEntries(params.entries()),
+                responseType: 'blob',
+            });
+
+            // Create download link
+            const blob = new Blob([response.data], {
+                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            });
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.setAttribute('download', `Registration_Report_${new Date().toISOString().slice(0, 10)}.xlsx`);
+            document.body.appendChild(link);
+            link.click();
+
+            // Cleanup
+            link.parentNode?.removeChild(link);
+            window.URL.revokeObjectURL(downloadUrl);
+
+        } catch (e) {
+            console.error("Excel download failed:", e);
+            alert("Failed to download the report. Please try again.");
+        } finally {
+            setIsDownloading(false);
+        }
+    };
+
     const FullWidthLoadingSpinner = () => (
         <Box
             className="container-fluid mx-auto px-4 sm:px-6 lg:px-8"
@@ -345,6 +396,31 @@ const RegistrationDashboard: React.FC = () => {
         </Box>
     );
 
+    const LoadingSpinner = () => (
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                py: 8,
+                minHeight: '200px',
+                width: '100%',
+            }}
+        >
+            <CircularProgress color="primary" size={30} />
+            <Typography variant="body2" sx={{ mt: 2, color: 'text.secondary' }}>
+                Loading Dashboard Data...
+            </Typography>
+        </Box>
+    );
+
+
+    if (loading && !stats) {
+        return <LoadingSpinner />;
+    }
+
+
     return (
         <div className="min-h-screen bg-[#F5F7FB] font-inter text-black p-4 md:p-8">
 
@@ -355,7 +431,20 @@ const RegistrationDashboard: React.FC = () => {
                     {/* <p className="text-gray-500 m-0 text-base">Overview of registration profiles, engagement and staff performance.</p> */}
                 </div>
                 <div className="flex gap-3">
-                    <button className={btnDark}>Download Report</button>
+                    <button
+                        className={`${btnDark} flex items-center gap-2 disabled:opacity-70`}
+                        onClick={handleDownloadReport}
+                        disabled={isDownloading}
+                    >
+                        {isDownloading ? (
+                            <>
+                                <CircularProgress size={16} color="inherit" />
+                                <span>Downloading...</span>
+                            </>
+                        ) : (
+                            "Download Report"
+                        )}
+                    </button>
                 </div>
             </header>
 
