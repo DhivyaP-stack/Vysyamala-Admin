@@ -116,19 +116,44 @@ const RegistrationDashboard: React.FC = () => {
     // --- Styles ---
     const btnDark = "bg-[#0A1735] text-white px-6 py-2 rounded-full font-semibold text-sm hover:bg-[#1f2d50] transition shadow-sm border-none cursor-pointer";
     const btnOutline = "bg-white border border-gray-300 text-[#0A1735] px-6 py-2 rounded-full font-semibold text-sm hover:bg-gray-50 transition shadow-sm cursor-pointer";
-
-    const getKpiCount = (stats: any, label: string): number => {
-        if (!stats) return 0;
+    type KpiResult = number | { total: number; tn: number; kat: number };
+    const getKpiData = (stats: any, label: string): KpiResult => {
+        // 2. Consistent return for null/empty stats
+        if (!stats) return { total: 0, tn: 0, kat: 0 };
         switch (label) {
             case "TODAY'S REGISTRATION": return stats.total_registration || 0;
             case "APPROVED": return stats.approved || 0;
             case "UNAPPROVED": return stats.unapproved || 0;
             case "NON LOGGED IN": return stats.non_logged_in || 0;
             case "PREMIUM": return stats.premium || 0;
-            case "ONLINE APPROVED - TN/KAT": return stats.online?.total_approved || 0;
-            case "ADMIN APPROVED - TN/KAT": return stats.admin?.total_approved || 0;
-            case "ONLINE UNAPPROVED - TN/KAT": return stats.online?.total_unapproved || 0;
-            case "ADMIN UNAPPROVED - TN/KAT": return stats.admin?.total_unapproved || 0;
+            // case "ONLINE APPROVED - TN/KAT": return stats.online?.total_approved || 0;
+            // case "ADMIN APPROVED - TN/KAT": return stats.admin?.total_approved || 0;
+            // case "ONLINE UNAPPROVED - TN/KAT": return stats.online?.total_unapproved || 0;
+            // case "ADMIN UNAPPROVED - TN/KAT": return stats.admin?.total_unapproved || 0;
+            case "ONLINE APPROVED - TN/KAT":
+                return {
+                    total: stats.online?.total_approved || 0,
+                    tn: stats.online?.approved?.TN || 0,
+                    kat: stats.online?.approved?.KAT || 0
+                };
+            case "ADMIN APPROVED - TN/KAT":
+                return {
+                    total: stats.admin?.total_approved || 0,
+                    tn: stats.admin?.approved?.TN || 0,
+                    kat: stats.admin?.approved?.KAT || 0
+                };
+            case "ONLINE UNAPPROVED - TN/KAT":
+                return {
+                    total: stats.online?.total_unapproved || 0,
+                    tn: stats.online?.unapproved?.TN || 0,
+                    kat: stats.online?.unapproved?.KAT || 0
+                };
+            case "ADMIN UNAPPROVED - TN/KAT":
+                return {
+                    total: stats.admin?.total_unapproved || 0,
+                    tn: stats.admin?.unapproved?.TN || 0,
+                    kat: stats.admin?.unapproved?.KAT || 0
+                };
             case "TODAY'S LOGIN": return stats.today_login || 0;
             case "TODAY'S WORK": return stats.work_counts?.today_work || 0;
             case "PENDING WORK": return stats.work_counts?.pending_work || 0;
@@ -142,7 +167,7 @@ const RegistrationDashboard: React.FC = () => {
             case "COLD": return stats.interest?.cold || 0;
             case "NOT INTERESTED": return stats.interest?.not_interested || 0;
             case "TODAY'S BIRTHDAY": return stats.today_birthday || 0;
-            default: return 0;
+            default: return { total: 0, tn: 0, kat: 0 };
         }
     };
 
@@ -433,20 +458,40 @@ const RegistrationDashboard: React.FC = () => {
             ) : (
                 <>
                     {/* --- KPI Grid --- */}
-                    <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-8">
-                        {KPI_CONFIG.map((kpi, i) => (
-                            <motion.div
-                                key={i}
-                                whileHover={{ y: -5 }}
-                                onClick={() => handleCardClick(kpi.key)}
-                                className={`${kpi.color} p-5 rounded-2xl min-h-[140px] border border-[#E3E6EE] flex flex-col justify-center cursor-pointer transition shadow-sm`}
-                            >
-                                <h6 className="text-[10px] font-bold mb-1 tracking-wider uppercase opacity-80 text-start">{kpi.label}</h6>
-                                <h2 className="text-3xl text-start font-bold mb-1">{loading ? <CircularProgress size={20} /> : getKpiCount(stats, kpi.label)}</h2>
-                                <p className="text-[10px] opacity-70 text-start">Click to view profiles</p>
-                            </motion.div>
-                        ))}
-                    </section>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-8">
+                        {KPI_CONFIG.map((kpi, i) => {
+                            const data = getKpiData(stats, kpi.label); // Use the new helper
+                            const isLocationCard = kpi.label.includes("TN/KAT");
+
+                            return (
+                                <motion.div
+                                    key={i}
+                                    whileHover={{ y: -5 }}
+                                    onClick={() => handleCardClick(kpi.key)}
+                                    className={`${kpi.color} p-5 rounded-2xl min-h-[140px] border border-[#E3E6EE] flex flex-col justify-center cursor-pointer transition shadow-sm relative`}
+                                >
+                                    <h6 className="text-[10px] font-bold mb-1 tracking-wider uppercase opacity-80 text-start">
+                                        {kpi.label}
+                                    </h6>
+
+                                    <div className="flex items-baseline gap-2">
+                                        <h2 className="text-3xl text-start font-bold mb-1">
+                                            {loading ? <CircularProgress size={20} /> : typeof data === 'number' ? data : data.total}
+                                        </h2>
+
+                                        {/* Dynamic Sub-counts for TN/KAT */}
+                                        {isLocationCard && !loading && typeof data === 'object' && (
+                                            <span className="text-sm font-semibold text-gray-500">
+                                                {data.tn} <span className="text-[10px] opacity-40">/</span> {data.kat}
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    <p className="text-[10px] opacity-70 text-start">Click to view profiles</p>
+                                </motion.div>
+                            );
+                        })}
+                    </div>
 
                     {/* --- Work Stats Section --- */}
                     {/* <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -490,7 +535,7 @@ const RegistrationDashboard: React.FC = () => {
                         <div className="overflow-x-auto">
                             {/* This inner div enables vertical scrolling while keeping headers potentially visible if you add 'sticky' later */}
                             <div className="max-h-[500px] overflow-y-auto">
-                                
+
                                 <table className="min-w-full border-separate border-spacing-0 table-auto">
                                     <thead>
                                         <tr className="bg-gray-50">
