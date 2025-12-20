@@ -109,7 +109,9 @@ const RegistrationDashboard: React.FC = () => {
     const [searchTimer, setSearchTimer] = useState<NodeJS.Timeout | null>(null);
     const [applyFilters, setApplyFilters] = useState(false);
     const tableRef = useRef<HTMLDivElement>(null);
-    
+    const [scrollSource, setScrollSource] = useState<'card' | 'filter' | null>(null);
+    const [tableLoading, setTableLoading] = useState(false);
+
 
     // --- Styles ---
     const btnDark = "bg-[#0A1735] text-white px-6 py-2 rounded-full font-semibold text-sm hover:bg-[#1f2d50] transition shadow-sm border-none cursor-pointer";
@@ -185,21 +187,45 @@ const RegistrationDashboard: React.FC = () => {
     };
 
     const handleCardClick = (key: string) => {
-        // 1. Set the specific filter
+        // Show loading on table immediately
+        setTableLoading(true);
+
         setFilters(prev => ({ ...prev, countFilter: key }));
-
-        // 2. Trigger API call
+        setScrollSource('card'); // Mark that we need to scroll
         setApplyFilters(true);
-
-        // 3. Scroll to table
-        if (tableRef.current) {
-            tableRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
     };
+
+    const handleReset = () => {
+        // Show loading on both sections
+        setLoading(true);
+        setTableLoading(true);
+
+        setFilters({
+            fromDate: "",
+            toDate: "",
+            staff: RoleID === "7" ? "" : (SuperAdminID || ""),
+            plan: "",
+            minAge: "",
+            maxAge: "",
+            searchQuery: "",
+            countFilter: "",
+        });
+
+        setScrollSource('filter');
+        setApplyFilters(true);
+    };
+
+    const handleApplyFilters = () => {
+        setLoading(true);
+        setTableLoading(true);
+        setScrollSource('filter');
+        setApplyFilters(true);
+    };
+
 
     // 1. Update the Fetch function to be called only when applyFilters is true
     const fetchDashboardData = useCallback(async () => {
-        setLoading(true);
+        setTableLoading(true);
         const params = new URLSearchParams();
 
         // Map your local state to API parameters
@@ -227,7 +253,9 @@ const RegistrationDashboard: React.FC = () => {
             console.error("Error:", e);
         } finally {
             setLoading(false);
-            setApplyFilters(false); // Reset the trigger
+            setTableLoading(false); // Stop the spinner
+            setApplyFilters(false);
+            setScrollSource(null);
         }
     }, [filters, RoleID, SuperAdminID]); // These are fine as dependencies because the useEffect handles the "when"
 
@@ -242,6 +270,23 @@ const RegistrationDashboard: React.FC = () => {
     useEffect(() => {
         fetchDashboardData(); // Run once on mount
     }, []);
+
+    useEffect(() => {
+        if (applyFilters) {
+            // If it was a card click, scroll first, then fetch
+            if (scrollSource === 'card' && tableRef.current) {
+                tableRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+                // Small delay to let the scroll animation start before the heavy API call
+                setTimeout(() => {
+                    fetchDashboardData();
+                }, 400);
+            } else {
+                // Filter/Reset click: just fetch
+                fetchDashboardData();
+            }
+        }
+    }, [applyFilters, scrollSource, fetchDashboardData]);
 
     const getStatusPillClass = (status: string) => {
         switch (status?.toUpperCase()) {
@@ -373,25 +418,11 @@ const RegistrationDashboard: React.FC = () => {
                     <div className="flex justify-end gap-3 mt-6">
                         <button
                             className={btnOutline}
-                            onClick={() => {
-                                // 1. Clear the filter state
-                                setFilters({
-                                    fromDate: "",
-                                    toDate: "",
-                                    staff: RoleID === "7" ? "" : (SuperAdminID || ""),
-                                    plan: "",
-                                    minAge: "",
-                                    maxAge: "",
-                                    searchQuery: "",
-                                    countFilter: "",
-                                });
-                                // 2. Trigger the loading and fetch process
-                                setApplyFilters(true);
-                            }}
+                            onClick={handleReset}
                         >
                             Reset
                         </button>
-                        <button className={btnDark} onClick={() => setApplyFilters(true)}>Apply Filters</button>
+                        <button className={btnDark} onClick={handleApplyFilters}>Apply Filters</button>
                     </div>
                 </div>
             </section>
@@ -459,6 +490,7 @@ const RegistrationDashboard: React.FC = () => {
                         <div className="overflow-x-auto">
                             {/* This inner div enables vertical scrolling while keeping headers potentially visible if you add 'sticky' later */}
                             <div className="max-h-[500px] overflow-y-auto">
+                                
                                 <table className="min-w-full border-separate border-spacing-0 table-auto">
                                     <thead>
                                         <tr className="bg-gray-50">
@@ -513,12 +545,12 @@ const RegistrationDashboard: React.FC = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {loading ? (
+                                        {tableLoading ? (
                                             <tr>
                                                 <td colSpan={16} className="py-20">
                                                     <div className="flex flex-col items-center justify-center">
                                                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1d4ed8] mb-4"></div>
-                                                        <p className="text-sm text-gray-600 font-medium">Loading Profiles...</p>
+                                                        <p className="text-sm text-gray-600 font-medium">Loading Registration Profiles...</p>
                                                     </div>
                                                 </td>
                                             </tr>
