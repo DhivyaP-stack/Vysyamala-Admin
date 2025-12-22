@@ -179,7 +179,7 @@ const RenewalDashboard = () => {
     const [actionLog, setActionLog] = useState<ActionLog | null>(null);
     const [actionCount, setActionCount] = useState<ProfileActionCount | null>(null);
     const [isDownloading, setIsDownloading] = React.useState(false);
-    
+
 
     const handleOpenModal = async (profile: RenewalProfile, type: "call" | "customer") => {
         setLogLoading(true);
@@ -425,21 +425,21 @@ const RenewalDashboard = () => {
         }
     }, [filters]);
 
-    useEffect(() => {
-        // Clear existing timer
-        if (searchTimer) clearTimeout(searchTimer);
+    // useEffect(() => {
+    //     // Clear existing timer
+    //     if (searchTimer) clearTimeout(searchTimer);
 
-        // Set a new timer to fetch data after 500ms of inactivity
-        const timer = setTimeout(() => {
-            if (filters.searchQuery !== "") {
-                // setTableLoading(true);
-                fetchData();
-            }
-        }, 500);
+    //     // Set a new timer to fetch data after 500ms of inactivity
+    //     const timer = setTimeout(() => {
+    //         if (filters.searchQuery !== "") {
+    //             // setTableLoading(true);
+    //             fetchData();
+    //         }
+    //     }, 500);
 
-        setSearchTimer(timer);
-        return () => clearTimeout(timer);
-    }, [filters.searchQuery]); // Trigger when searchQuery changes
+    //     setSearchTimer(timer);
+    //     return () => clearTimeout(timer);
+    // }, [filters.searchQuery]); // Trigger when searchQuery changes
 
     const handleDownloadReport = async () => {
         setIsDownloading(true);
@@ -1521,9 +1521,18 @@ const RenewalDashboard = () => {
                                                             <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.Profile_city || 'N/A'}</td>
                                                             <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.plan_name}</td>
                                                             <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.owner_name || 'N/A'}</td>
-                                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{new Date(profile.membership_startdate).toLocaleDateString()}</td>
+                                                            {/* <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{new Date(profile.membership_startdate).toLocaleDateString()}</td>
                                                             <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{new Date(profile.membership_enddate).toLocaleDateString()}</td>
-                                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{new Date(profile.Last_login_date).toLocaleDateString()}</td>
+                                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{new Date(profile.Last_login_date).toLocaleDateString()}</td> */}
+                                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.membership_startdate
+                                                                ? new Date(profile.membership_startdate.replace("T", " ")).toLocaleDateString('en-CA')
+                                                                : "N/A"}</td>
+                                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.membership_enddate
+                                                                ? new Date(profile.membership_enddate.replace("T", " ")).toLocaleDateString('en-CA')
+                                                                : "N/A"}</td>
+                                                            <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.Last_login_date
+                                                                ? new Date(profile.Last_login_date.replace("T", " ")).toLocaleDateString('en-CA')
+                                                                : "N/A"}</td>
                                                             <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">{profile.idle_days ?? 'N/A'}</td>
                                                             <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-gray-800">
                                                                 <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${getStatusPillClass(profile.call_status)}`}>

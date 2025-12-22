@@ -51,15 +51,15 @@ interface Plan {
 
 // // --- Configuration ---
 const KPI_CONFIG = [
-    { label: "TOTAL REGISTRATION", key: "total_registration", color: "bg-white" },
+    { label: "TOTAL REGISTRATION", key: "", color: "bg-white" },
     { label: "APPROVED", key: "approved", color: "bg-white" },
     { label: "UNAPPROVED", key: "unapproved", color: "bg-white" },
     { label: "NON LOGGED IN", key: "non_login", color: "bg-white" },
     { label: "PREMIUM", key: "premium", color: "bg-white" },
-    { label: "ONLINE APPROVED - TN/KAT", key: "online_approved", color: "bg-white" },
-    { label: "ADMIN APPROVED - TN/KAT", key: "admin_approved", color: "bg-white" },
-    { label: "ONLINE UNAPPROVED - TN/KAT", key: "online_unapproved", color: "bg-white" },
-    { label: "ADMIN UNAPPROVED - TN/KAT", key: "admin_unapproved", color: "bg-white" },
+    { label: "ONLINE APPROVED - TN/OTH", key: "online_approved", color: "bg-white" },
+    { label: "ADMIN APPROVED - TN/OTH", key: "admin_approved", color: "bg-white" },
+    { label: "ONLINE UNAPPROVED - TN/OTH", key: "online_unapproved", color: "bg-white" },
+    { label: "ADMIN UNAPPROVED - TN/OTH", key: "admin_unapproved", color: "bg-white" },
     { label: "TODAY'S LOGIN", key: "today_login", color: "bg-white" },
     { label: "TODAY'S WORK", key: "today_work", color: "bg-white" },
     { label: "PENDING WORK", key: "pending_work", color: "bg-white" },
@@ -122,7 +122,7 @@ const RegistrationDashboard: React.FC = () => {
         // 2. Consistent return for null/empty stats
         if (!stats) return { total: 0, tn: 0, kat: 0 };
         switch (label) {
-            case "TODAY'S REGISTRATION": return stats.total_registration || 0;
+            case "TOTAL REGISTRATION": return stats.total_registration || 0;
             case "APPROVED": return stats.approved || 0;
             case "UNAPPROVED": return stats.unapproved || 0;
             case "NON LOGGED IN": return stats.non_logged_in || 0;
@@ -131,25 +131,25 @@ const RegistrationDashboard: React.FC = () => {
             // case "ADMIN APPROVED - TN/KAT": return stats.admin?.total_approved || 0;
             // case "ONLINE UNAPPROVED - TN/KAT": return stats.online?.total_unapproved || 0;
             // case "ADMIN UNAPPROVED - TN/KAT": return stats.admin?.total_unapproved || 0;
-            case "ONLINE APPROVED - TN/KAT":
+            case "ONLINE APPROVED - TN/OTH":
                 return {
                     total: stats.online?.total_approved || 0,
                     tn: stats.online?.approved?.TN || 0,
                     kat: stats.online?.approved?.KAT || 0
                 };
-            case "ADMIN APPROVED - TN/KAT":
+            case "ADMIN APPROVED - TN/OTH":
                 return {
                     total: stats.admin?.total_approved || 0,
                     tn: stats.admin?.approved?.TN || 0,
                     kat: stats.admin?.approved?.KAT || 0
                 };
-            case "ONLINE UNAPPROVED - TN/KAT":
+            case "ONLINE UNAPPROVED - TN/OTH":
                 return {
                     total: stats.online?.total_unapproved || 0,
                     tn: stats.online?.unapproved?.TN || 0,
                     kat: stats.online?.unapproved?.KAT || 0
                 };
-            case "ADMIN UNAPPROVED - TN/KAT":
+            case "ADMIN UNAPPROVED - TN/OTH":
                 return {
                     total: stats.admin?.total_unapproved || 0,
                     tn: stats.admin?.unapproved?.TN || 0,
@@ -581,7 +581,7 @@ const RegistrationDashboard: React.FC = () => {
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-8">
                         {KPI_CONFIG.map((kpi, i) => {
                             const data = getKpiData(stats, kpi.label);
-                            const isLocationCard = kpi.label.includes("TN/KAT");
+                            const isLocationCard = kpi.label.includes("TN/OTH");
 
                             // Check if the current filter belongs to THIS card
                             // This will be true if countFilter is 'online_approved' OR 'online_approved_tn' etc.
@@ -769,9 +769,13 @@ const RegistrationDashboard: React.FC = () => {
                                                     <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.Profile_name}</td>
                                                     <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.age}</td>
                                                     <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">
-                                                        {row.DateOfJoin
+                                                        {/* {row.DateOfJoin
                                                             ? new Date(row.DateOfJoin).toISOString().split('T')[0]
-                                                            : 'N/A'}
+                                                            : 'N/A'} */}
+
+                                                        {row.DateOfJoin
+                                                            ? new Date(row.DateOfJoin.replace("T", " ")).toLocaleDateString('en-CA')
+                                                            : "N/A"}
                                                     </td>
                                                     <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.family_status_name || 'N/A'}</td>
                                                     <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.degree_name || row.other_degree || 'N/A'}</td>
@@ -781,9 +785,12 @@ const RegistrationDashboard: React.FC = () => {
                                                     <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.plan_name || 'N/A'}</td>
                                                     <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.owner_name || 'N/A'}</td>
                                                     <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">
-                                                        {row.Last_login_date
+                                                        {/* {row.Last_login_date
                                                             ? new Date(row.Last_login_date).toISOString().split('T')[0]
-                                                            : 'N/A'}
+                                                            : 'N/A'} */}
+                                                        {row.Last_login_date
+                                                            ? new Date(row.Last_login_date.replace("T", " ")).toLocaleDateString('en-CA')
+                                                            : "N/A"}
                                                     </td>
                                                     <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.status_name}</td>
                                                     <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">
