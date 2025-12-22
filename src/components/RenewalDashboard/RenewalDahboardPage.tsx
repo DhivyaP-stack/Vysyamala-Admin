@@ -179,6 +179,7 @@ const RenewalDashboard = () => {
     const [actionLog, setActionLog] = useState<ActionLog | null>(null);
     const [actionCount, setActionCount] = useState<ProfileActionCount | null>(null);
     const [isDownloading, setIsDownloading] = React.useState(false);
+    
 
     const handleOpenModal = async (profile: RenewalProfile, type: "call" | "customer") => {
         setLogLoading(true);
@@ -282,7 +283,7 @@ const RenewalDashboard = () => {
 
     const handleWorkCardClick = (filterKey: "actionFilter" | "photoFilter" | "horoFilter", value: string) => {
         // 1. Create a clean base by clearing ALL exclusive card filters
-        let newFilters = { ...filters };
+        let newFilters = { ...filters, searchQuery: "" };
         EXCLUSIVE_CARD_KEYS.forEach(key => {
             newFilters[key as keyof typeof newFilters] = "";
         });
@@ -386,9 +387,9 @@ const RenewalDashboard = () => {
         if (filters.genderFilter) {
             params.append('genderFilter', filters.genderFilter);
         }
-        if (filters.searchQuery) {
-            params.append('search', filters.searchQuery);
-        }
+        // if (filters.searchQuery) {
+        //     params.append('search', filters.searchQuery);
+        // }
         if (filters.actionFilter) params.append('actionFilter', filters.actionFilter);
         if (filters.photoFilter) params.append('photoFilter', filters.photoFilter);
         if (filters.horoFilter) params.append('horoFilter', filters.horoFilter)
@@ -423,6 +424,22 @@ const RenewalDashboard = () => {
             setTableLoading(false); // 👇 NEW: Clear table loading state
         }
     }, [filters]);
+
+    useEffect(() => {
+        // Clear existing timer
+        if (searchTimer) clearTimeout(searchTimer);
+
+        // Set a new timer to fetch data after 500ms of inactivity
+        const timer = setTimeout(() => {
+            if (filters.searchQuery !== "") {
+                // setTableLoading(true);
+                fetchData();
+            }
+        }, 500);
+
+        setSearchTimer(timer);
+        return () => clearTimeout(timer);
+    }, [filters.searchQuery]); // Trigger when searchQuery changes
 
     const handleDownloadReport = async () => {
         setIsDownloading(true);
@@ -726,7 +743,7 @@ const RenewalDashboard = () => {
         const mapKey = getMapKey(keyPath);
 
         // 1. Create a clean base by clearing ALL exclusive card filters
-        let newFilters = { ...filters };
+        let newFilters = { ...filters, searchQuery: "" };
         EXCLUSIVE_CARD_KEYS.forEach(key => {
             newFilters[key as keyof typeof newFilters] = "";
         });
@@ -835,6 +852,17 @@ const RenewalDashboard = () => {
     const displayStats = stats || ({} as RenewalStats);
     const profiles = stats?.data || [];
     const profileCount = stats?.filtered_count ?? 0;
+    // 1. Filter the profiles based on ID or Name
+    const filteredProfiles = profiles.filter((p) => {
+        const query = filters.searchQuery.toLowerCase();
+        return (
+            p.ProfileId?.toLowerCase().includes(query) ||
+            p.Profile_name?.toLowerCase().includes(query)
+        );
+    });
+
+    // 2. Derive the count from the filtered list
+    const displayCount = filters.searchQuery ? filteredProfiles.length : profileCount;
     const todayWorkCount = displayStats.action_counts?.today_work ?? 0;
     const pendingWorkCount = displayStats.action_counts?.pending_work ?? 0;
     const NoPhotoCount = displayStats.no_photo ?? 0;
@@ -1419,7 +1447,7 @@ const RenewalDashboard = () => {
                             <div className="bg-white rounded-xl p-6 border border-[#e6ecf2] shadow-md">
 
                                 <div className="flex justify-between items-center mb-4 flex-wrap gap-3">
-                                    <h5 className="text-lg font-semibold m-0">Renewal Profile Detail ({profileCount})</h5>
+                                    <h5 className="text-lg font-semibold m-0">Renewal Profile Detail ({displayCount})</h5>
                                     <div className="flex gap-2 items-center">
                                         {/* Equivalent to .search-input */}
                                         <input
@@ -1428,16 +1456,8 @@ const RenewalDashboard = () => {
                                             placeholder="Search Profile ID / Name"
                                             value={filters.searchQuery}
                                             onChange={(e) => {
-                                                const value = e.target.value;
-                                                setFilters({ ...filters, searchQuery: value });
-
-                                                if (searchTimer) clearTimeout(searchTimer);
-
-                                                const newTimer = setTimeout(() => {
-                                                    setScrollSource('filter');
-                                                    setApplyFilters(true);   // 👈 Call API after typing stops
-                                                }, 2000); // ⏱ debounce delay
-                                                setSearchTimer(newTimer);
+                                                // Just update state, no API trigger needed
+                                                setFilters({ ...filters, searchQuery: e.target.value });
                                             }}
                                         />
 
@@ -1479,7 +1499,9 @@ const RenewalDashboard = () => {
                                             </thead>
                                             {!tableLoading ? (
                                                 <tbody>
-                                                    {profiles.map((profile, index) => (
+                                                    {/* {profiles.map((profile, index) => ( */}
+                                                    {/* {filteredProfiles.map((profile, index) => ( */}
+                                                    {Array.from(new Map(filteredProfiles.map(item => [item.ProfileId, item])).values()).map((profile, index) => (
                                                         <tr key={profile.ProfileId || index}>
                                                             <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1] text-[#1d4ed8] font-semibold hover:underline"
                                                             // onClick={() => navigate(`/viewProfile?profileId=${profile.ProfileId}`)}
@@ -1533,7 +1555,8 @@ const RenewalDashboard = () => {
                                                             </td>
                                                         </tr>
                                                     ))}
-                                                    {profiles.length === 0 && (
+                                                    {/* {profiles.length === 0 && ( */}
+                                                    {filteredProfiles.length === 0 && (
                                                         <tr>
                                                             <td colSpan={16} className="text-center py-8 text-black font-semibold text-sm">
                                                                 No Renewal Profiles found
@@ -1589,7 +1612,7 @@ const RenewalDashboard = () => {
 
                             <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 500, display: 'block', mt: 1 }}>
                                 {/* Profile: {selectedProfile?.Profile_name} | ID: {selectedProfile?.ProfileId} */}
-                                  Profile ID: {selectedProfile?.ProfileId}
+                                Profile ID: {selectedProfile?.ProfileId}
                             </Typography>
 
                             <IconButton

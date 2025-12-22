@@ -51,7 +51,7 @@ interface Plan {
 
 // // --- Configuration ---
 const KPI_CONFIG = [
-    { label: "TOTAL REGISTRATION", key: "", color: "bg-white" },
+    { label: "TOTAL REGISTRATION", key: "total_registration", color: "bg-white" },
     { label: "APPROVED", key: "approved", color: "bg-white" },
     { label: "UNAPPROVED", key: "unapproved", color: "bg-white" },
     { label: "NON LOGGED IN", key: "non_login", color: "bg-white" },
@@ -112,6 +112,7 @@ const RegistrationDashboard: React.FC = () => {
     const [scrollSource, setScrollSource] = useState<'card' | 'filter' | null>(null);
     const [tableLoading, setTableLoading] = useState(false);
     const [isDownloading, setIsDownloading] = useState(false);
+    const [originalTableData, setOriginalTableData] = useState<RegistrationProfile[]>([]);
 
     // --- Styles ---
     const btnDark = "bg-[#0A1735] text-white px-6 py-2 rounded-full font-semibold text-sm hover:bg-[#1f2d50] transition shadow-sm border-none cursor-pointer";
@@ -211,12 +212,20 @@ const RegistrationDashboard: React.FC = () => {
         setFilters(prev => ({ ...prev, [field]: value }));
     };
 
-    const handleCardClick = (key: string) => {
-        // Show loading on table immediately
-        setTableLoading(true);
+    // const handleCardClick = (key: string) => {
+    //     // Show loading on table immediately
+    //     setTableLoading(true);
 
-        setFilters(prev => ({ ...prev, countFilter: key }));
-        setScrollSource('card'); // Mark that we need to scroll
+    //     setFilters(prev => ({ ...prev, countFilter: key }));
+    //     setScrollSource('card'); // Mark that we need to scroll
+    //     setApplyFilters(true);
+    // };
+
+    const handleCardClick = (key: string) => {
+        setTableLoading(true);
+        // Clear the search query so the new category isn't hidden by an old search
+        setFilters(prev => ({ ...prev, countFilter: key, searchQuery: "" }));
+        setScrollSource('card');
         setApplyFilters(true);
     };
 
@@ -259,7 +268,7 @@ const RegistrationDashboard: React.FC = () => {
         if (filters.minAge) params.append('age_from', filters.minAge);
         if (filters.maxAge) params.append('age_to', filters.maxAge);
         if (filters.plan) params.append('plan_id', filters.plan);
-        if (filters.searchQuery) params.append('search', filters.searchQuery);
+        //if (filters.searchQuery) params.append('search', filters.searchQuery);
         if (filters.countFilter) params.append('countFilter', filters.countFilter);
         // Logic for Owner
         const ownerId = (RoleID === "7") ? filters.staff : (SuperAdminID || "");
@@ -271,6 +280,7 @@ const RegistrationDashboard: React.FC = () => {
             });
 
             if (response.data.status) {
+                setOriginalTableData(response.data.data);
                 setTableData(response.data.data);
                 setStats(response.data);
             }
@@ -316,6 +326,27 @@ const RegistrationDashboard: React.FC = () => {
         }
     }, [applyFilters, scrollSource, fetchDashboardData]);
 
+
+
+    // Frontend search - searches both Profile ID and Profile Name
+    useEffect(() => {
+        if (tableLoading) return; // Don't filter while the API is fetching new data
+
+        if (!filters.searchQuery || filters.searchQuery.trim() === '') {
+            setTableData(originalTableData);
+            return;
+        }
+
+        const searchTerm = filters.searchQuery.toLowerCase().trim();
+        const filtered = originalTableData.filter((profile) => {
+            const profileId = (profile.ProfileId || '').toString().toLowerCase();
+            const profileName = (profile.Profile_name || '').toString().toLowerCase();
+            return profileId.includes(searchTerm) || profileName.includes(searchTerm);
+        });
+
+        setTableData(filtered);
+    }, [filters.searchQuery, originalTableData, tableLoading]); // Added tableLoading dependency
+
     const getStatusPillClass = (status: string) => {
         switch (status?.toUpperCase()) {
             case 'HOT': return "bg-[#ffe4e4] text-[#d70000]";
@@ -336,7 +367,7 @@ const RegistrationDashboard: React.FC = () => {
             if (filters.minAge) params.append('age_from', filters.minAge);
             if (filters.maxAge) params.append('age_to', filters.maxAge);
             if (filters.plan) params.append('plan_id', filters.plan);
-            if (filters.searchQuery) params.append('search', filters.searchQuery);
+            //if (filters.searchQuery) params.append('search', filters.searchQuery);
             if (filters.countFilter) params.append('countFilter', filters.countFilter);
 
             const ownerId = (RoleID === "7") ? filters.staff : (SuperAdminID || "");
@@ -632,24 +663,29 @@ const RegistrationDashboard: React.FC = () => {
                     {/* --- Profile Detail Table --- */}
                     <section ref={tableRef} className="bg-white rounded-xl border border-[#e6ecf2] shadow-md p-6">
                         <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                            <h5 className="text-lg font-semibold m-0">Registration Profile Detail ({stats?.filtered_count || 0})</h5>
+                            <h5 className="text-lg font-semibold m-0">Registration Profile Detail ({tableData.length || stats?.filtered_count || 0})</h5>
                             <div className="flex gap-2">
                                 <input
                                     type="text"
                                     placeholder="Search Profile ID / Name"
                                     value={filters.searchQuery}
+                                    // onChange={(e) => {
+                                    //     const val = e.target.value;
+                                    //     setFilters({ ...filters, searchQuery: val });
+                                    //     if (searchTimer) clearTimeout(searchTimer);
+                                    //     setSearchTimer(setTimeout(() => setApplyFilters(true), 1500));
+                                    // }}
                                     onChange={(e) => {
                                         const val = e.target.value;
                                         setFilters({ ...filters, searchQuery: val });
-                                        if (searchTimer) clearTimeout(searchTimer);
-                                        setSearchTimer(setTimeout(() => setApplyFilters(true), 1500));
+                                        // REMOVED: Timer logic - filtering happens instantly via useEffect
                                     }}
                                     className="w-[250px] h-10 px-4 rounded-full border border-gray-300 text-sm focus:outline-none focus:border-gray-500 transition"
                                 />
                                 <button
                                     onClick={() => {
                                         setFilters({ ...filters, searchQuery: "" });
-                                        setApplyFilters(true);
+                                        // REMOVED: setApplyFilters(true) - useEffect handles it
                                     }}
                                     className="h-10 px-4 rounded-full bg-white border border-gray-300 text-sm font-semibold hover:bg-gray-50 transition">Clear</button>
                             </div>
