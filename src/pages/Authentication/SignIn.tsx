@@ -79,7 +79,7 @@ const SignIn: React.FC<SignInProps> = ({ setIsAuthenticated }) => {
         localStorage.setItem('isAuthenticated', 'true');
         sessionStorage.setItem('isAuthenticated', 'true');
         setIsAuthenticated(true);
-        navigate('/');
+        navigate('/DashBoard');
       } else {
         setMessage('Sign in failed');
         setLoginStatus('failed');
@@ -106,7 +106,7 @@ const SignIn: React.FC<SignInProps> = ({ setIsAuthenticated }) => {
 
   useEffect(() => {
     if (id) {
-      navigate('/');
+      navigate('/DashBoard');
     }
   }, []);
   return (

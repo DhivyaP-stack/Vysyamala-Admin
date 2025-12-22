@@ -162,8 +162,8 @@ function App() {
     return <Loader />;
   }
 
-  if (!isAuthenticated && pathname !== '/signin') {
-    return <Navigate to="/signin" />;
+  if (!isAuthenticated && pathname !== '/') {
+    return <Navigate to="/" />;
   }
 
   const queryClient = new QueryClient();
@@ -172,7 +172,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <Routes>
         <Route
-          path="/signin"
+          path="/"
           element={<SignIn setIsAuthenticated={setIsAuthenticated} />}
         />
         <Route
@@ -372,7 +372,7 @@ function App() {
                     }
                   />
                   <Route
-                    path="/"
+                    path="/DashBoard"
                     element={
                       <>
                         <PageTitle title="DashBoard" />

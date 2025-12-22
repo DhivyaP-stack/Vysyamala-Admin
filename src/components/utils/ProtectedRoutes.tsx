@@ -67,7 +67,7 @@ const ProtectedRoutes = () => {
     return () => window.removeEventListener("storage", checkAuthStatus);
   }, []);
 
-  return user ? <Outlet /> : <Navigate to="/signin" replace />;
+  return user ? <Outlet /> : <Navigate to="/" replace />;
 };
 
 export default ProtectedRoutes;

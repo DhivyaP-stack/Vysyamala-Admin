@@ -69,7 +69,7 @@ const DropdownUser = () => {
   const handleLogout = () => {
     sessionStorage.clear();
     localStorage.clear();
-    navigate('/signin');
+    navigate('/');
   };
 
   return (
