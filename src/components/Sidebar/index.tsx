@@ -11,6 +11,7 @@ import { ImProfile } from 'react-icons/im';
 import { GoDot } from 'react-icons/go';
 import { IoCall, IoDocumentTextOutline, IoSettings } from 'react-icons/io5';
 import { FaClipboardUser } from "react-icons/fa6";
+import { RxDashboard } from 'react-icons/rx';
 import { hasPermission } from '../utils/auth';
 
 interface SidebarProps {
@@ -1360,7 +1361,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   </li>
                 </ul>
               </div>
-               <div
+              <div
                 className={`translate transform overflow-hidden ${!open && 'hidden'
                   }`}
               >
@@ -1376,6 +1377,26 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     >
                       <MdAppRegistration />
                       Registration Dashboard
+                    </NavLink>
+                  </li>
+                </ul>
+              </div>
+              <div
+                className={`translate transform overflow-hidden ${!open && 'hidden'
+                  }`}
+              >
+                <ul className=" mb-5 flex flex-col">
+                  {/* Submenu Items */}
+                  <li>
+                    <NavLink
+                      to="/ProspectDashboard"
+                      className={({ isActive }) =>
+                        'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-black hover:text-PrimaryRed duration-300 ease-in-out hover:text-PrimaryRed ' +
+                        (isActive && '!text-PrimaryRed')
+                      }
+                    >
+                      <RxDashboard />
+                      Prospect Dashboard
                     </NavLink>
                   </li>
                 </ul>
