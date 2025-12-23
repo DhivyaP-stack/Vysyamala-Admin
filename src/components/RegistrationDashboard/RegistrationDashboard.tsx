@@ -78,6 +78,61 @@ const KPI_CONFIG = [
     { label: "TODAY'S BIRTHDAY", key: "today_birthday", color: "bg-white" },
 ];
 
+export const CARD_COLOR_CLASSES: Record<string, string> = {
+    primary: "bg-[#EAF2FF]",        // Total / default
+    success: "bg-[#E6F7F1]",        // Approved / Premium
+    danger: "bg-[#FFECEC]",         // Unapproved / No Photo / No ID
+    warning: "bg-[#FFF6E5]",        // Pending / Work
+    info: "bg-[#EEF4FF]",           // Login / Activity
+    muted: "bg-[#F7F7F7]",          // Cold / Non-login
+    hot: "bg-[#FFE4E4]",            // HOT
+    warm: "bg-[#FFF6E4]",           // WARM
+    cold: "bg-[#F7F7F7]",           // COLD
+    birthday: "bg-[#FFF0F5]",       // Birthday
+    admin: "bg-[#0A1735] text-white", // Admin Approved
+};
+
+export const getRegistrationCardColor = (label: string) => {
+    const map: Record<string, string> = {
+        "TOTAL REGISTRATION": "primary",
+
+        "APPROVED": "success",
+        "UNAPPROVED": "danger",
+
+        "NON LOGGED IN": "muted",
+
+        "PREMIUM": "success",
+
+        "ONLINE APPROVED - TN/OTH": "info",
+        "ADMIN APPROVED - TN/OTH": "admin",
+
+        "ONLINE UNAPPROVED - TN/OTH": "warning",
+        "ADMIN UNAPPROVED - TN/OTH": "danger",
+
+        "TODAY'S LOGIN": "info",
+
+        "TODAY'S WORK": "warning",
+        "PENDING WORK": "warning",
+
+        "TODAY'S ACTION": "warning",
+        "PENDING ACTION": "warning",
+
+        "NO PHOTO": "danger",
+        "NO HORO": "danger",
+        "NO ID": "danger",
+
+        "HOT": "hot",
+        "WARM": "warm",
+        "COLD": "cold",
+        "NOT INTERESTED": "danger",
+
+        "TODAY'S BIRTHDAY": "birthday",
+    };
+
+    const key = map[label] || "primary";
+    return CARD_COLOR_CLASSES[key];
+};
+
 // const WORK_CARDS = [
 //     { label: "Today's Work", sub: "Total tasks to be completed today.", key: "today_work" },
 //     { label: "Pending Work", sub: "Carry-forward items not completed.", key: "pending_work" },
@@ -231,7 +286,15 @@ const RegistrationDashboard: React.FC = () => {
     const handleCardClick = (key: string) => {
         setTableLoading(true);
         // Clear the search query so the new category isn't hidden by an old search
-        setFilters(prev => ({ ...prev, countFilter: key, searchQuery: "" }));
+        // setFilters(prev => ({ ...prev, countFilter: key, searchQuery: "" }));
+        setFilters(prev => {
+            const isSameFilter = prev.countFilter === key;
+            return {
+                ...prev,
+                countFilter: isSameFilter ? "" : key,
+                searchQuery: "" // clear search when card is clicked
+            };
+        });
         setScrollSource('card');
         setApplyFilters(true);
     };
@@ -811,9 +874,10 @@ const RegistrationDashboard: React.FC = () => {
                                     key={i}
                                     whileHover={{ y: -2 }}
                                     onClick={() => handleCardClick(kpi.key)}
-                                    className={`${kpi.color} p-5 rounded-2xl min-h-[140px] border transition shadow-sm relative cursor-pointer
-                    ${isActiveCard ? 'border-4 border-black/50 shadow-lg' : 'border-[#E3E6EE]'}
-                `}
+                                    //                     className={`${kpi.color} p-5 rounded-2xl min-h-[140px] border transition shadow-sm relative cursor-pointer
+                                    //     ${isActiveCard ? 'border-4 border-black/50 shadow-lg' : 'border-[#E3E6EE]'}
+                                    // `}
+                                    className={`${getRegistrationCardColor(kpi.label)} p-5 rounded-2xl min-h-[140px] border border-[#E3E6EE] flex flex-col justify-center cursor-pointer transition-all shadow-sm hover:shadow-md ${filters.countFilter === kpi.key ? 'border-4 border-black/40 shadow-lg' : ''}`}
                                 >
                                     <h6 className="text-[10px] font-bold mb-1 tracking-wider uppercase opacity-80 text-start">
                                         {kpi.label}

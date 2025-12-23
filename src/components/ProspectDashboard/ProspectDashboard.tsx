@@ -683,7 +683,7 @@ const ProspectDashboard: React.FC = () => {
                                 className="w-full h-12 px-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                             />
                         </div>
-                        {RoleID === "7" && (
+                        {/* {RoleID === "7" && (
                             <div className="text-start">
                                 <label className="block text-sm font-semibold text-[#3A3E47] mb-1">Staff</label>
                                 <div className="relative">
@@ -697,13 +697,13 @@ const ProspectDashboard: React.FC = () => {
                                             <option key={owner.id} value={owner.id}>{owner.username}</option>
                                         ))}
                                     </select>
-                                    {/* Icon positioned to the right */}
+
                                     <div className="absolute inset-y-0 right-2 flex items-center pointer-events-none">
                                         <RiArrowDropDownLine size={30} className="text-gray-500" />
                                     </div>
                                 </div>
                             </div>
-                        )}
+                        )} */}
                         <div className="text-start">
                             <label className="block text-sm font-semibold text-[#3A3E47] mb-1">Plan</label>
                             <div className="relative">
