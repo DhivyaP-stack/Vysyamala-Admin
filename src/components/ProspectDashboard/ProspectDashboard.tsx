@@ -798,7 +798,13 @@ const ProspectDashboard: React.FC = () => {
                                     onChange={(e) => setFilters({ ...filters, searchQuery: e.target.value })}
                                     className="w-[250px] h-10 px-4 rounded-full border border-gray-300 text-sm focus:outline-none focus:border-gray-500 transition"
                                 />
-                                <button className="h-10 px-4 rounded-full bg-white border border-gray-300 text-sm font-semibold hover:bg-gray-50 transition">Clear</button>
+                                <button
+                                    onClick={() => {
+                                        setFilters({ ...filters, searchQuery: "" });
+                                        setScrollSource('filter');
+                                        setApplyFilters(true);  // 👈 reload table after clearing
+                                    }}
+                                    className="h-10 px-4 rounded-full bg-white border border-gray-300 text-sm font-semibold hover:bg-gray-50 transition">Clear</button>
                             </div>
                         </div>
 

@@ -995,7 +995,8 @@ export const uploadProofFiles = async (
     horoscopeFile: File | null,
     idProofFile: File | null,
     divorceFile: File | null, // Assuming the API parameter is 'divorce_file'
-    horoscopeAdminFile: File | null // 1. Add this new parameter
+    horoscopeAdminFile: File | null, // 1. Add this new parameter
+    photoProtection: boolean
 ) => {
     const formData = new FormData();
     formData.append('profile_id', profileId);
@@ -1014,6 +1015,8 @@ export const uploadProofFiles = async (
     if (horoscopeAdminFile) {
         formData.append('horoscope_file_admin', horoscopeAdminFile);
     }
+
+    formData.append('photo_protection', photoProtection ? "1" : "0");
 
     try {
         const response = await apiAxios.post(`auth/Photo_Id_Settings/`, formData, {

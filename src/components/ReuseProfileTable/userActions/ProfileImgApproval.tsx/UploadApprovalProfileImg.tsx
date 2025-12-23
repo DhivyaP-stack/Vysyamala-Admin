@@ -191,7 +191,8 @@ export const UploadApprovalProfileImg = () => {
                         horoscopeFiles[0] || null,
                         idProofFiles[0] || null,
                         divorceProofFiles[0] || null,
-                        horoscopeAdminFiles[0] || null
+                        horoscopeAdminFiles[0] || null,
+                        photoProtection
                     )
                 );
             }
