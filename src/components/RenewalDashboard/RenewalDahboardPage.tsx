@@ -101,7 +101,7 @@ export interface ActionLog {
     action_owner_name: string;
 }
 
-interface ProfileActionCount {
+export interface ProfileActionCount {
     interest_sent: number;
     interest_received: number;
     interest_accepted: number;
@@ -941,6 +941,11 @@ const RenewalDashboard = () => {
                                 </Typography>
                             </Box>
 
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <Typography sx={labelStyle}>Call Particulars</Typography>
+                                <Typography sx={valueStyle}>{call?.particulars_name || "N/A"}</Typography>
+                            </Box>
+
                             {/* <Box sx={{ display: "flex", alignItems: "center" }}>
                                 <Typography sx={labelStyle}>Idle Days</Typography>
                                 <Typography sx={valueStyle}>{profile.idle_days ?? 0}</Typography>
@@ -1619,11 +1624,9 @@ const RenewalDashboard = () => {
                         >
                             {modalType === 'call' ? 'Call & Service Logs' : 'Customer Log'}
 
-                            <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 500, display: 'block', mt: 1 }}>
-                                {/* Profile: {selectedProfile?.Profile_name} | ID: {selectedProfile?.ProfileId} */}
-                                Profile ID: {selectedProfile?.ProfileId}
+                            <Typography variant="caption" sx={{ color: '#64748b', display: 'block', mt: 1 }}>
+                                Profile ID: {selectedProfile?.ProfileId || 'N/A'}
                             </Typography>
-
                             <IconButton
                                 onClick={handleCloseModal}
                                 sx={{

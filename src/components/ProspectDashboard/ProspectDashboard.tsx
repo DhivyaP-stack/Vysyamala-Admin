@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     Box,
     Typography,
@@ -12,10 +12,17 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { motion } from 'framer-motion';
+import { apiAxios } from '../../api/apiUrl';
+import { RiArrowDropDownLine } from 'react-icons/ri';
+import { Plan, ProfileOwner } from '../RegistrationDashboard/RegistrationDashboard';
+import { ActionLog, CallLog, ProfileActionCount } from '../RenewalDashboard/RenewalDahboardPage';
 
 // --- Types & Interfaces ---
-interface RegistrationProfile {
+interface ProspectProfile {
     id: string;
+    ProfileId: string;
+    Profile_name: string;
+    DOR: string;
     name: string;
     age: number;
     familyStatus: string;
@@ -44,37 +51,38 @@ interface RegistrationProfile {
     lap: string;
     lapComments: string;
     nad: string;
+    last_call_id: string;
+    last_action_id: string;
 }
 
 // --- Configuration ---
 const KPI_CONFIG = [
-    { label: "TOTAL PROFILE", color: "bg-white" },
-    { label: "PROSPECT", color: "bg-white" },
-    { label: "FREE", color: "bg-white" },
-    { label: "OFFER", color: "bg-white" },
-    { label: "BASIC", color: "bg-white" },
-    { label: "AGE > 35", color: "bg-white" },
-    { label: "AGE < 35", color: "bg-white" },
-    { label: "NO HORO", color: "bg-white" },
-    { label: "NO PHOTO", color: "bg-white" },
-    { label: "NO ID", color: "bg-white" },
-    { label: "TODAY'S BIRTHDAY", color: "bg-white" },
-    { label: "CURRENT LOGIN", color: "bg-white" },
-    { label: "YESTERDAY'S LOGIN", color: "bg-white" },
-    { label: "CURRENT MONTH REGISTRATION", color: "bg-white" },
-    { label: "PAYMENT FAILURE", color: "bg-white" },
-    { label: "PAYMENT SUCCESS", color: "bg-white" },
-    { label: "HOT", color: "bg-white" },
-    { label: "WARM", color: "bg-white" },
-    { label: "COLD", color: "bg-white" },
-    { label: "NOT INTERESTED", color: "bg-white" },
-    { label: "VALIDATION > 3 MONTHS", color: "bg-white" },
-    { label: "> 20 EXPRESS INTEREST", color: "bg-white" },
-    { label: "ASSIGNED ACTION/CALL", color: "bg-white" },
-    { label: "TODAY FOLLOW UP", color: "bg-white" },
-    { label: "PENDING FOLLOW UP", color: "bg-white" },
-    { label: "TODAY ACTION", color: "bg-white" },
-    { label: "PENDING ACTION", color: "bg-white" },
+    { label: "TOTAL PROFILE", key: "", color: "bg-white" },
+    { label: "PROSPECT", key: "Prospect", color: "bg-white" },
+    { label: "FREE", key: "Free", color: "bg-white" },
+    { label: "OFFER", key: "Offer", color: "bg-white" },
+    { label: "BASIC", key: "Basic", color: "bg-white" },
+    { label: "AGE > 35", key: "age_above_30", color: "bg-white" },
+    { label: "AGE < 35", key: "age_under_30", color: "bg-white" },
+    { label: "NO HORO", key: "no_horo", color: "bg-white" },
+    { label: "NO PHOTO", key: "no_photo", color: "bg-white" },
+    { label: "NO ID", key: "no_id", color: "bg-white" },
+    { label: "TODAY'S BIRTHDAY", key: "today_birthday", color: "bg-white" },
+    { label: "CURRENT LOGIN", key: "today_login", color: "bg-white" },
+    { label: "YESTERDAY'S LOGIN", key: "yesterday_login", color: "bg-white" },
+    { label: "CURRENT MONTH REGISTRATION", key: "current_month_registration", color: "bg-white" },
+    { label: "PAYMENT FAILURE", key: "payment_failed", color: "bg-white" },
+    { label: "PAYMENT SUCCESS", key: "payment_success", color: "bg-white" },
+    { label: "HOT", key: "Hot", color: "bg-white" },
+    { label: "WARM", key: "Warm", color: "bg-white" },
+    { label: "COLD", key: "Cold", color: "bg-white" },
+    { label: "NOT INTERESTED", key: "not_interested", color: "bg-white" },
+    { label: "VALIDATION > 3 MONTHS", key: "idle_90_count", color: "bg-white" },
+    { label: "> 20 EXPRESS INTEREST", key: "express_interest_20", color: "bg-white" },
+    { label: "TODAY FOLLOW UP", key: "today_work", color: "bg-white" },
+    { label: "PENDING FOLLOW UP", key: "pending_work", color: "bg-white" },
+    { label: "TODAY ACTION", key: "today_task", color: "bg-white" },
+    { label: "PENDING ACTION", key: "pending_task", color: "bg-white" },
 ];
 
 // const WORK_CARDS = [
@@ -88,71 +96,483 @@ const ProspectDashboard: React.FC = () => {
     // --- State ---
     const [openModal, setOpenModal] = useState(false);
     const [modalType, setModalType] = useState<'call' | 'customer' | null>(null);
-    const [selectedProfile, setSelectedProfile] = useState<RegistrationProfile | null>(null);
-    const [loading, setLoading] = useState(false);
+    const [selectedProfile, setSelectedProfile] = useState<ProspectProfile | null>(null);
+    const [stats, setStats] = useState<any>(null);
+    const [tableData, setTableData] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const SuperAdminID = localStorage.getItem('id') || sessionStorage.getItem('id');
+    const RoleID = localStorage.getItem('role_id') || sessionStorage.getItem('role_id');
+    const [tableLoading, setTableLoading] = React.useState(false);
+    const [applyFilters, setApplyFilters] = useState(false);
+    const [originalTableData, setOriginalTableData] = useState<ProspectProfile[]>([]);
+    const [scrollSource, setScrollSource] = useState<'card' | 'filter' | null>(null);
+    const tableRef = useRef<HTMLDivElement>(null);
+    const [profileOwners, setProfileOwners] = useState<ProfileOwner[]>([]);
+    const [plans, setPlans] = useState<Plan[]>([]);
+    const [ownersLoading, setOwnersLoading] = useState(false);
+    const [plansLoading, setPlansLoading] = useState(false);
+    const [logLoading, setLogLoading] = React.useState<boolean>(false);
+    const [callLog, setCallLog] = useState<CallLog | null>(null);
+    const [actionLog, setActionLog] = useState<ActionLog | null>(null);
+    const [actionCount, setActionCount] = useState<ProfileActionCount | null>(null);
+    const [isDownloading, setIsDownloading] = useState(false);
+    const [filters, setFilters] = useState({
+        fromDate: "",
+        toDate: "",
+        staff: SuperAdminID || "",
+        plan: "",
+        minAge: "",
+        maxAge: "",
+        searchQuery: "", // search
+        countFilter: "",
+    });
 
-    // --- Styles ---
     const btnDark = "bg-[#0A1735] text-white px-6 py-2 rounded-full font-semibold text-sm hover:bg-[#1f2d50] transition shadow-sm border-none cursor-pointer";
     const btnOutline = "bg-white border border-gray-300 text-[#0A1735] px-6 py-2 rounded-full font-semibold text-sm hover:bg-gray-50 transition shadow-sm cursor-pointer";
 
-    const getStatusPillClass = (status: string) => {
-        switch (status?.toUpperCase()) {
-            case 'HOT': return "bg-[#ffe4e4] text-[#d70000]";
-            case 'WARM': return "bg-[#FFF6E4] text-[#ff8c00]";
-            case 'COLD': return "bg-[#F7F7F7] text-[#6b7280]";
-            default: return "bg-gray-100 text-gray-800";
+    const getStatusPillClass = (status: string | null) => {
+        switch (status?.toLowerCase().split(' ')[0]) {
+            case 'hot':
+                return "bg-[#ffe4e4] text-[#d70000]";
+            case 'warm':
+                return "bg-[#FFF6E4] text-[#ff8c00]";
+            case 'cold':
+                return "bg-[#F7F7F7] text-[#6b7280]";
+            case 'not': // "Not interested"
+                return "bg-[#FFECEC] text-[#ef4444]";
+            case 'completed':
+                return "bg-[#d1f7e3] text-[#129f46]";
+            default:
+                return "bg-gray-100 text-gray-800";
         }
     };
 
-    // --- Handlers ---
-    const handleOpenModal = (profile: RegistrationProfile, type: 'call' | 'customer') => {
+    const getKpiValue = (label: string) => {
+        if (!stats) return 0;
+        switch (label) {
+            case "TOTAL PROFILE": return stats.total_profiles;
+            case "PROSPECT": return stats.plan_counts?.prospect;
+            case "FREE": return stats.plan_counts?.free;
+            case "OFFER": return stats.plan_counts?.offer;
+            case "BASIC": return stats.plan_counts?.basic;
+            case "AGE > 35": return stats.age_above_30; // mapping based on your JSON
+            case "AGE < 35": return stats.age_under_30;
+            case "NO HORO": return stats.no_horo;
+            case "NO PHOTO": return stats.no_photo;
+            case "NO ID": return stats.no_id;
+            case "TODAY'S BIRTHDAY": return stats.today_birthday;
+            case "CURRENT LOGIN": return stats.today_login;
+            case "YESTERDAY'S LOGIN": return stats.yesterday_login;
+            case "CURRENT MONTH REGISTRATION": return stats.cur_month_registrations;
+            case "PAYMENT SUCCESS": return stats.payment_counts?.success;
+            case "PAYMENT FAILURE": return stats.payment_counts?.failed;
+            case "HOT": return stats.interest?.hot;
+            case "WARM": return stats.interest?.warm;
+            case "COLD": return stats.interest?.cold;
+            case "NOT INTERESTED": return stats.interest?.not_interested;
+
+            case "VALIDATION > 3 MONTHS": return stats.idle_90_count;
+            case "> 20 EXPRESS INTEREST": return stats.express_interest?.above_20;
+
+            // case "ASSIGNED ACTION/CALL": return stats.interest?.cold;
+            case "TODAY FOLLOW UP": return stats.work_counts?.today_work;
+            case "PENDING FOLLOW UP": return stats.work_counts?.pending_work;
+            case "TODAY ACTION": return stats.task_counts?.today_task;
+            case "PENDING ACTION": return stats.task_counts?.pending_task;
+            default: return 0;
+        }
+    };
+
+    const fetchProfileOwners = useCallback(async () => {
+        setOwnersLoading(true);
+        try {
+            const response = await apiAxios.get('api/users/');
+            // Adjust "response.data" based on your actual API structure
+            setProfileOwners(Array.isArray(response.data) ? response.data : []);
+        } catch (e) {
+            console.error("Error fetching staff:", e);
+        } finally {
+            setOwnersLoading(false);
+        }
+    }, []);
+
+    const fetchPlans = useCallback(async () => {
+        setPlansLoading(true);
+        try {
+            const res = await apiAxios.get("api/get-plans/");
+            if (res.data.status) {
+                setPlans(res.data.plans);
+            }
+        } catch (e) {
+            console.error("Error fetching plans:", e);
+        } finally {
+            setPlansLoading(false);
+        }
+    }, []);
+
+    // --- Load Data on Mount ---
+    useEffect(() => {
+        if (RoleID === "7") {
+            fetchProfileOwners();
+        }
+        fetchPlans();
+    }, [RoleID, fetchProfileOwners, fetchPlans]);
+
+    const handleFilterChange = (field: string, value: string) => {
+        setFilters(prev => ({ ...prev, [field]: value }));
+    };
+
+    const fetchDashboardData = useCallback(async () => {
+        setTableLoading(true);
+        const params = new URLSearchParams();
+
+        // Map filters to API expected query params
+        if (filters.fromDate) params.append('from_date', filters.fromDate);
+        if (filters.toDate) params.append('to_date', filters.toDate);
+        if (filters.minAge) params.append('age_from', filters.minAge);
+        if (filters.maxAge) params.append('age_to', filters.maxAge);
+        if (filters.plan) params.append('plan_id', filters.plan);
+        if (filters.countFilter) params.append('countFilter', filters.countFilter);
+
+        // Logic for Owner (similar to your registration dashboard)
+        const ownerId = (RoleID === "7") ? filters.staff : (SuperAdminID || "");
+        if (ownerId) params.append("owner", ownerId);
+
+        try {
+            const response = await apiAxios.get('api/prospect-report/', {
+                params: Object.fromEntries(params.entries())
+            });
+
+            if (response.data.status) {
+                setOriginalTableData(response.data.data);
+                setTableData(response.data.data);
+                setStats(response.data); // Stores the whole object for KPI access
+            }
+        } catch (e) {
+            console.error("Error fetching prospect data:", e);
+        } finally {
+            setLoading(false);
+            setTableLoading(false);
+            setApplyFilters(false);
+            setScrollSource(null);
+        }
+    }, [filters, RoleID, SuperAdminID]);
+
+    useEffect(() => {
+        if (applyFilters) {
+            fetchDashboardData();
+        }
+    }, [applyFilters, fetchDashboardData]);
+
+    // 3. Initial Load
+
+    useEffect(() => {
+        setLoading(true);       // This triggers the FullWidthLoadingSpinner
+        setTableLoading(true);
+        fetchDashboardData();
+    }, []);
+
+    const handleCardClick = (key: string) => {
+        setTableLoading(true);
+        // 1. Update filters with the clicked card's key
+        // 2. Clear search so the table isn't empty due to previous search terms
+        setFilters(prev => ({ ...prev, countFilter: key, searchQuery: "" }));
+        setScrollSource('card');
+        setApplyFilters(true); // Triggers the useEffect that calls fetchDashboardData
+    };
+
+    const handleReset = () => {
+        // Show loading on both sections
+        setLoading(true);
+        setTableLoading(true);
+
+        setFilters({
+            fromDate: "",
+            toDate: "",
+            staff: RoleID === "7" ? "" : (SuperAdminID || ""),
+            plan: "",
+            minAge: "",
+            maxAge: "",
+            searchQuery: "",
+            countFilter: "",
+        });
+
+        setScrollSource('filter');
+        setApplyFilters(true);
+    };
+
+    const handleApplyFilters = () => {
+        setLoading(true);
+        setTableLoading(true);
+        setScrollSource('filter');
+        setApplyFilters(true);
+    };
+
+
+    useEffect(() => {
+        if (applyFilters) {
+            // If it was a card click, scroll first, then fetch
+            if (scrollSource === 'card' && tableRef.current) {
+                tableRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+                // Small delay to let the scroll animation start before the heavy API call
+                setTimeout(() => {
+                    fetchDashboardData();
+                }, 400);
+            } else {
+                // Filter/Reset click: just fetch
+                fetchDashboardData();
+            }
+        }
+    }, [applyFilters, scrollSource, fetchDashboardData]);
+
+    useEffect(() => {
+        if (tableLoading) return; // Don't filter while the API is fetching new data
+
+        if (!filters.searchQuery || filters.searchQuery.trim() === '') {
+            setTableData(originalTableData);
+            return;
+        }
+
+        const searchTerm = filters.searchQuery.toLowerCase().trim();
+        const filtered = originalTableData.filter((profile) => {
+            const profileId = (profile.ProfileId || '').toString().toLowerCase();
+            const profileName = (profile.Profile_name || '').toString().toLowerCase();
+            return profileId.includes(searchTerm) || profileName.includes(searchTerm);
+        });
+
+        setTableData(filtered);
+    }, [filters.searchQuery, originalTableData, tableLoading]);
+
+    const handleDownloadReport = async () => {
+        setIsDownloading(true);
+        try {
+            const params = new URLSearchParams();
+
+            // Same params as fetchDashboardData
+            if (filters.fromDate) params.append('from_date', filters.fromDate);
+            if (filters.toDate) params.append('to_date', filters.toDate);
+            if (filters.minAge) params.append('age_from', filters.minAge);
+            if (filters.maxAge) params.append('age_to', filters.maxAge);
+            if (filters.plan) params.append('plan_id', filters.plan);
+            if (filters.countFilter) params.append('countFilter', filters.countFilter);
+
+            const ownerId = (RoleID === "7") ? filters.staff : (SuperAdminID || "");
+            if (ownerId) params.append("owner", ownerId);
+
+            // 🔑 IMPORTANT: export flag
+            params.append('export', 'excel');
+
+            const response = await apiAxios.get('api/prospect-report/', {
+                params: Object.fromEntries(params.entries()),
+                responseType: 'blob',
+            });
+
+            const blob = new Blob([response.data], {
+                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            });
+
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.setAttribute(
+                'download',
+                `Prospect_Report_${new Date().toISOString().slice(0, 10)}.xlsx`
+            );
+
+            document.body.appendChild(link);
+            link.click();
+
+            link.remove();
+            window.URL.revokeObjectURL(downloadUrl);
+        } catch (error) {
+            console.error("Prospect Excel download failed:", error);
+            alert("Failed to download the report. Please try again.");
+        } finally {
+            setIsDownloading(false);
+        }
+    };
+
+    const handleOpenModal = async (profile: ProspectProfile, type: "call" | "customer") => {
+        setLogLoading(true);
+
+        // Reset previous stored values 👇 IMPORTANT
+        setCallLog(null);
+        setActionLog(null);
+        setActionCount(null);
+
         setSelectedProfile(profile);
         setModalType(type);
         setOpenModal(true);
+
+        try {
+            if (type === 'call' && profile.last_call_id) {
+                const res = await apiAxios.get(`api/call-log-details/${profile.last_call_id}/`);
+                setCallLog(res.data.call_logs?.[0] as CallLog);
+            }
+
+            if (type === 'call' && profile.last_action_id) {
+                const res = await apiAxios.get(`api/action-log-details/${profile.last_action_id}/`);
+                setActionLog(res.data.action_logs?.[0] as ActionLog);
+            }
+
+            if (type === 'customer' && profile.ProfileId) {
+                const response = await apiAxios.get(`api/get_profile_action_count/${profile.ProfileId}/`);
+                setActionCount(response.data as ProfileActionCount);
+            }
+
+        } finally {
+            setLogLoading(false);
+        }
     };
 
     const handleCloseModal = () => {
         setOpenModal(false);
         setSelectedProfile(null);
+        setModalType(null);
     };
 
-    // --- Sub-Components ---
-    const CallLogPopup = ({ profile }: { profile: RegistrationProfile }) => (
-        <Box sx={{ p: 1 }}>
-            <Typography variant="subtitle2" sx={{ color: "#64748b", mb: 3, fontWeight: 600 }}>
-                Call Logs & Service Details
-            </Typography>
-            <Grid container spacing={4}>
-                <Grid item xs={12} md={6}>
-                    <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
-                        <div className="flex justify-between"><span className="text-sm text-gray-600 font-medium">LCD</span><b className="text-sm text-[#0A1735]">{profile.lcd}</b></div>
-                        <div className="flex justify-between"><span className="text-sm text-gray-600 font-medium">LCD Comments</span><b className="text-sm text-[#0A1735]">{profile.lcdComments}</b></div>
-                        <div className="flex justify-between">
-                            <span className="text-sm text-gray-600 font-medium">Call Status</span>
-                            <span className={`px-3 py-0.5 rounded-full text-[10px] font-bold ${getStatusPillClass(profile.callStatus)}`}>{profile.callStatus}</span>
-                        </div>
-                    </Box>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                    <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
-                        <div className="flex justify-between"><span className="text-sm text-gray-600 font-medium">LAD</span><b className="text-sm text-[#0A1735]">{profile.lad}</b></div>
-                        <div className="flex justify-between"><span className="text-sm text-gray-600 font-medium">LAP</span><b className="text-sm text-[#0A1735]">{profile.lap}</b></div>
-                        <div className="flex justify-between"><span className="text-sm text-gray-600 font-medium">NAD</span><b className="text-sm text-[#0A1735]">{profile.nad}</b></div>
-                    </Box>
-                </Grid>
-            </Grid>
-        </Box>
-    );
 
-    const CustomerLogPopup = ({ profile }: { profile: RegistrationProfile }) => (
+    const CallLogPopup = ({ profile }: { profile: ProspectProfile }) => {
+        // Style definitions to match the UI in the image
+        const labelStyle = {
+            fontSize: '0.85rem',
+            color: '#4A5568',
+            fontWeight: 500,
+            width: '160px' // Ensures labels align vertically
+        };
+
+        const valueStyle = {
+            fontSize: '0.9rem',
+            fontWeight: 700,
+            color: '#0A1735'
+        };
+
+        const statusPill = {
+            px: 1.5,
+            py: 0.2,
+            borderRadius: '12px',
+            fontSize: '0.75rem',
+            fontWeight: 700,
+            display: 'inline-block'
+        };
+
+        const call = callLog;
+        const action = actionLog;
+
+
+        return (
+            <Box sx={{ p: 1 }}>
+                <Typography variant="subtitle2" sx={{ color: "#64748b", mb: 3, fontWeight: 600 }}>
+                    Call Logs & Service Details
+                </Typography>
+
+                <Grid container spacing={4}>
+
+                    {/* LEFT COLUMN - Call Logs */}
+                    <Grid item xs={12} md={6}>
+                        <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
+
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <Typography sx={labelStyle}>LCD</Typography>
+                                <Typography sx={valueStyle}>
+                                    {call?.call_date
+                                        ? new Date(call.call_date).toLocaleDateString("en-GB").replace(/\//g, "-")
+                                        : "N/A"}
+                                </Typography>
+                            </Box>
+
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <Typography sx={labelStyle}>LCD Comments</Typography>
+                                <Typography sx={valueStyle}>{call?.comments || "N/A"}</Typography>
+                            </Box>
+
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <Typography sx={labelStyle}>Call Status</Typography>
+                                <Box
+                                    className={getStatusPillClass(call?.call_status_name || null)}
+                                    sx={statusPill}
+                                >{call?.call_status_name || "N/A"}</Box>
+                            </Box>
+
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <Typography sx={labelStyle}>NCD</Typography>
+                                <Typography sx={valueStyle}>
+                                    {call?.next_call_date
+                                        ? new Date(call.next_call_date).toLocaleDateString("en-GB").replace(/\//g, "-")
+                                        : "N/A"}
+                                </Typography>
+                            </Box>
+
+                            {/* <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <Typography sx={labelStyle}>Idle Days</Typography>
+                                <Typography sx={valueStyle}>{profile.idle_days ?? 0}</Typography>
+                            </Box> */}
+                        </Box>
+                    </Grid>
+
+                    {/* RIGHT COLUMN - Action Logs */}
+                    <Grid item xs={12} md={6}>
+                        <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
+
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <Typography sx={labelStyle}>LAD</Typography>
+                                <Typography sx={valueStyle}>
+                                    {action?.action_date
+                                        ? new Date(action.action_date).toLocaleDateString("en-GB").replace(/\//g, "-")
+                                        : "N/A"}
+                                </Typography>
+                            </Box>
+
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <Typography sx={labelStyle}>LAP</Typography>
+                                <Typography sx={valueStyle}>{action?.action_point_name || "N/A"}</Typography>
+                            </Box>
+
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <Typography sx={labelStyle}>LAP Comments</Typography>
+                                <Typography sx={valueStyle}>{action?.comments || "N/A"}</Typography>
+                            </Box>
+
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <Typography sx={labelStyle}>NAD</Typography>
+                                <Typography sx={valueStyle}>
+                                    {action?.next_action_date
+                                        ? new Date(action.next_action_date).toLocaleDateString("en-GB").replace(/\//g, "-")
+                                        : "N/A"}
+                                </Typography>
+                            </Box>
+
+                            {/* <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <Typography sx={labelStyle}>Renewal Date</Typography>
+                                <Typography sx={valueStyle}>
+                                    {profile.membership_enddate
+                                        ? new Date(profile.membership_enddate).toLocaleDateString("en-GB").replace(/\//g, "-")
+                                        : "N/A"}
+                                </Typography>
+                            </Box> */}
+                        </Box>
+                    </Grid>
+                </Grid>
+            </Box>
+        );
+
+    };
+
+    const CustomerLogPopup = ({ profile }: { profile: ProspectProfile }) => (
         <Box sx={{ py: 1 }}>
             <Grid container spacing={2}>
                 {[
-                    { label: 'Profiles Viewed', val: profile.viewed },
-                    { label: 'Profile Visitors', val: profile.visitors },
-                    { label: 'Bookmarks', val: profile.bookmark },
-                    { label: 'Exp. Int Sent', val: profile.expSent },
-                    { label: 'Interest Received', val: profile.expRec },
+                    { label: 'Profiles Viewed', val: actionCount?.viewed_count ?? 0 },
+                    { label: 'Profile Visitors', val: actionCount?.visited_count ?? 0 },
+                    { label: 'Bookmarks', val: actionCount?.bookmarked ?? 0 },
+                    { label: 'Exp. Int Sent', val: actionCount?.interest_sent ?? 0 },
+                    { label: 'Interest Received', val: actionCount?.interest_received ?? 0 },
+                    // { label: 'Accepted', val: actionCount?.interest_accepted ?? 0 },
+                    // { label: 'Rejected', val: actionCount?.interest_rejected ?? 0 },
+                    // { label: 'Bookmark Received', val: actionCount?.bookmark_received ?? 0 },
+                    // { label: 'Photo Req Sent', val: actionCount?.photo_request_sent ?? 0 },
+                    // { label: 'Photo Req Received', val: actionCount?.photo_request_received ?? 0 },
                 ].map((stat, i) => (
                     <Grid item xs={6} md={2.4} key={i}>
                         <Box sx={{ textAlign: 'center', p: 2, bgcolor: '#F1F7FF', borderRadius: '12px', border: '1px solid #E3E6EE' }}>
@@ -165,6 +585,54 @@ const ProspectDashboard: React.FC = () => {
         </Box>
     );
 
+
+    const FullWidthLoadingSpinner = () => (
+        <Box
+            className="container-fluid mx-auto px-4 sm:px-6 lg:px-8"
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                py: 12, // Increased padding for visibility
+                width: '100%',
+                backgroundColor: '#fff', // White background
+                borderRadius: '1rem',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)',
+                mb: 4, // margin bottom to separate from the table
+            }}
+        >
+            <CircularProgress color="primary" size={40} />
+            <Typography variant="h6" sx={{ mt: 3, color: '#0A1735', fontWeight: 600 }}>
+                Loading...
+            </Typography>
+        </Box>
+    );
+
+    const LoadingSpinner = () => (
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                py: 8,
+                minHeight: '200px',
+                width: '100%',
+            }}
+        >
+            <CircularProgress color="primary" size={30} />
+            <Typography variant="body2" sx={{ mt: 2, color: 'text.secondary' }}>
+                Loading Dashboard Data...
+            </Typography>
+        </Box>
+    );
+
+
+    if (loading && !stats) {
+        return <LoadingSpinner />;
+    }
+
     return (
         <div className="min-h-screen bg-[#F5F7FB] font-inter text-black p-4 md:p-8">
 
@@ -175,7 +643,21 @@ const ProspectDashboard: React.FC = () => {
                     {/* <p className="text-gray-500 m-0 text-base">Overview of registration profiles, engagement and staff performance.</p> */}
                 </div>
                 <div className="flex gap-3">
-                    <button className={btnDark}>Download Report</button>
+                    <button
+                        className={`${btnDark} flex items-center gap-2 disabled:opacity-70`}
+                        onClick={handleDownloadReport}
+                        disabled={isDownloading}
+                    >
+                        {isDownloading ? (
+                            <>
+                                <CircularProgress size={16} color="inherit" />
+                                <span>Downloading...</span>
+                            </>
+                        ) : (
+                            "Download Report"
+                        )}
+                    </button>
+
                 </div>
             </header>
 
@@ -185,23 +667,60 @@ const ProspectDashboard: React.FC = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         <div className="text-start">
                             <label className="block text-sm font-semibold text-[#3A3E47] mb-1">From Date</label>
-                            <input type="date" className="w-full h-12 px-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500" />
+                            <input
+                                type="date"
+                                value={filters.fromDate}
+                                onChange={(e) => setFilters({ ...filters, fromDate: e.target.value })}
+                                className="w-full h-12 px-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            />
                         </div>
                         <div className="text-start">
                             <label className="block text-sm font-semibold text-[#3A3E47] mb-1">To Date</label>
-                            <input type="date" className="w-full h-12 px-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500" />
+                            <input
+                                type="date"
+                                value={filters.toDate}
+                                onChange={(e) => setFilters({ ...filters, toDate: e.target.value })}
+                                className="w-full h-12 px-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            />
                         </div>
-                        <div className="text-start">
-                            <label className="block text-sm font-semibold text-[#3A3E47] mb-1">Staff</label>
-                            <select className="w-full h-12 px-3 border border-gray-300 rounded-lg text-sm cursor-pointer appearance-none bg-white focus:outline-none">
-                                <option>Select Staff</option>
-                            </select>
-                        </div>
+                        {RoleID === "7" && (
+                            <div className="text-start">
+                                <label className="block text-sm font-semibold text-[#3A3E47] mb-1">Staff</label>
+                                <div className="relative">
+                                    <select
+                                        className="w-full h-12 px-3 pr-10 border border-gray-300 rounded-lg text-sm cursor-pointer appearance-none bg-white focus:outline-none focus:ring-1 focus:ring-black"
+                                        value={filters.staff}
+                                        onChange={(e) => handleFilterChange('staff', e.target.value)}
+                                    >
+                                        <option value="">Select Staff</option>
+                                        {profileOwners.map(owner => (
+                                            <option key={owner.id} value={owner.id}>{owner.username}</option>
+                                        ))}
+                                    </select>
+                                    {/* Icon positioned to the right */}
+                                    <div className="absolute inset-y-0 right-2 flex items-center pointer-events-none">
+                                        <RiArrowDropDownLine size={30} className="text-gray-500" />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                         <div className="text-start">
                             <label className="block text-sm font-semibold text-[#3A3E47] mb-1">Plan</label>
-                            <select className="w-full h-12 px-3 border border-gray-300 rounded-lg text-sm cursor-pointer appearance-none bg-white focus:outline-none">
-                                <option>Select Plan</option>
-                            </select>
+                            <div className="relative">
+                                <select
+                                    className="w-full h-12 px-3 pr-10 border border-gray-300 rounded-lg text-sm cursor-pointer appearance-none bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                    value={filters.plan}
+                                    onChange={(e) => handleFilterChange('plan', e.target.value)}
+                                >
+                                    <option value="">Select Plan</option>
+                                    {plans.map(plan => (
+                                        <option key={plan.id} value={plan.id}>{plan.plan_name}</option>
+                                    ))}
+                                </select>
+                                <div className="absolute inset-y-0 right-2 flex items-center pointer-events-none">
+                                    <RiArrowDropDownLine size={30} className="text-gray-500" />
+                                </div>
+                            </div>
                         </div>
                         <div className="col-span-1">
                             <label className="block text-sm font-semibold text-[#3A3E47] mb-1">Age Range</label>
@@ -209,40 +728,53 @@ const ProspectDashboard: React.FC = () => {
                                 <input
                                     type="number"
                                     placeholder="Min"
-                                    className="w-1/2 h-12 px-3 cursor-pointer border border-gray-300 rounded-lg text-sm"
+                                    value={filters.minAge}
+                                    onChange={(e) => setFilters({ ...filters, minAge: e.target.value })}
+                                    className="w-1/2 h-12 px-3 border border-gray-300 rounded-lg text-sm"
                                 />
                                 <input
                                     type="number"
                                     placeholder="Max"
+                                    value={filters.maxAge}
+                                    onChange={(e) => setFilters({ ...filters, maxAge: e.target.value })}
                                     className="w-1/2 h-12 px-3 border border-gray-300 rounded-lg text-sm"
                                 />
                             </div>
                         </div>
                     </div>
                     <div className="flex justify-end gap-3 mt-6">
-                        <button className={btnOutline}>Reset</button>
-                        <button className={btnDark}>Apply Filters</button>
+                        <button className={btnOutline} onClick={handleReset}>Reset</button>
+                        <button className={btnDark} onClick={handleApplyFilters}>Apply Filters</button>
                     </div>
                 </div>
             </section>
 
             {/* --- KPI Grid --- */}
-            <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-8">
-                {KPI_CONFIG.map((kpi, i) => (
-                    <motion.div
-                        key={i}
-                        whileHover={{ y: -5 }}
-                        className={`${kpi.color} p-5 rounded-2xl min-h-[140px] border border-[#E3E6EE] flex flex-col justify-center cursor-pointer transition shadow-sm`}
-                    >
-                        <h6 className="text-[10px] font-bold mb-1 tracking-wider uppercase opacity-80 text-start">{kpi.label}</h6>
-                        <h2 className="text-3xl text-start font-bold mb-1">0</h2>
-                        <p className="text-[10px] opacity-70 text-start">Click to view profiles</p>
-                    </motion.div>
-                ))}
-            </section>
+            {loading ? (
+                <section className="mt-4">
+                    <FullWidthLoadingSpinner />
+                </section>
+            ) : (
+                <>
+                    <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-8">
+                        {KPI_CONFIG.map((kpi, i) => (
+                            <motion.div
+                                key={i}
+                                whileHover={{ y: -5 }}
+                                onClick={() => handleCardClick(kpi.key)} // Pass the key here
+                                className={`${kpi.color} p-5 rounded-2xl min-h-[140px] border border-[#E3E6EE] flex flex-col justify-center cursor-pointer transition shadow-sm ${filters.countFilter === kpi.key ? 'border-4 border-black/50 shadow-lg' : 'border-[#E3E6EE]'}`}
+                            >
+                                <h6 className="text-[10px] font-bold mb-1 tracking-wider uppercase opacity-80 text-start">{kpi.label}</h6>
+                                <h2 className="text-3xl text-start font-bold mb-1">
+                                    {loading ? <CircularProgress size={20} /> : getKpiValue(kpi.label)}
+                                </h2>
+                                <p className="text-[10px] opacity-70 text-start">Click to view profiles</p>
+                            </motion.div>
+                        ))}
+                    </section>
 
-            {/* --- Work Stats Section --- */}
-            {/* <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                    {/* --- Work Stats Section --- */}
+                    {/* <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                 {WORK_CARDS.map((card, i) => (
                     <div key={i} className="bg-white rounded-xl p-6 border border-[#e6ecf2] shadow-sm flex flex-col justify-between h-full transition hover:-translate-y-1 cursor-pointer">
                         <div className="text-start">
@@ -254,68 +786,123 @@ const ProspectDashboard: React.FC = () => {
                 ))}
             </section> */}
 
-            {/* --- Profile Detail Table --- */}
-            <section className="bg-white rounded-xl border border-[#e6ecf2] shadow-md p-6">
-                <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                    <h5 className="text-lg font-semibold m-0">Prospect Profile Detail (0)</h5>
-                    <div className="flex gap-2">
-                        <input
-                            type="text"
-                            placeholder="Search Profile ID / Name"
-                            className="w-[250px] h-10 px-4 rounded-full border border-gray-300 text-sm focus:outline-none focus:border-gray-500 transition"
-                        />
-                        <button className="h-10 px-4 rounded-full bg-white border border-gray-300 text-sm font-semibold hover:bg-gray-50 transition">Clear</button>
-                    </div>
-                </div>
+                    {/* --- Profile Detail Table --- */}
+                    <section className="bg-white rounded-xl border border-[#e6ecf2] shadow-md p-6">
+                        <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                            <h5 className="text-lg font-semibold m-0">Prospect Profile Detail ({tableData.length || stats?.filtered_count || 0})</h5>
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    placeholder="Search Profile ID / Name"
+                                    value={filters.searchQuery}
+                                    onChange={(e) => setFilters({ ...filters, searchQuery: e.target.value })}
+                                    className="w-[250px] h-10 px-4 rounded-full border border-gray-300 text-sm focus:outline-none focus:border-gray-500 transition"
+                                />
+                                <button className="h-10 px-4 rounded-full bg-white border border-gray-300 text-sm font-semibold hover:bg-gray-50 transition">Clear</button>
+                            </div>
+                        </div>
 
-                <div className="overflow-x-auto max-h-[500px]">
-                    <table className="min-w-full border-separate border-spacing-0 table-auto">
-                        <thead>
-                            <tr className="bg-gray-50">
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0 rounded-tl-xl">Profile ID</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">DOR</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Name</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Age</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Family Status</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Education Details</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Annual Income</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">City</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">State</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Mode</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Owner</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Photo/Horo/ID/</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Viewed</th>
+                        <div ref={tableRef} className="overflow-x-auto max-h-[500px]">
+                            <table className="min-w-full border-separate border-spacing-0 table-auto">
+                                <thead>
+                                    <tr className="bg-gray-50">
+                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0 rounded-tl-xl">Profile ID</th>
+                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">DOR</th>
+                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Name</th>
+                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Age</th>
+                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Family Status</th>
+                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Education Details</th>
+                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Annual Income</th>
+                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">City</th>
+                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">State</th>
+                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Mode</th>
+                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Owner</th>
+                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Photo</th>
+                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Horo</th>
+                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">ID</th>
+                                        {/* <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Viewed</th>
                                 <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Visitors</th>
                                 <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Bookmark</th>
                                 <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Express Interest</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Express Sent</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Last Login</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">LCD</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Comments</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Next Call Date</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Last Action Date</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Last Action Particulars</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Next Action Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {/* This is where you map your API data. Using a placeholder row below: */}
-                            <tr>
-                                <td colSpan={23} className="py-20 text-center">
-                                    {loading ? (
-                                        <CircularProgress size={40} />
-                                    ) : (
-                                        <div className="flex flex-col items-center">
-                                            <Typography variant="body2" className="text-gray-500 font-medium">No Prospect Profiles found</Typography>
-                                        </div>
-                                    )}
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Express Sent</th> */}
+                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Last Login</th>
+                                        {/* <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">LCD</th> */}
+                                        {/* <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Comments</th> */}
+                                        {/* <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Next Call Date</th> */}
+                                        {/* <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Last Action Date</th>
+                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Last Action Particulars</th> */}
+                                        {/* <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Next Action Date</th> */}
+                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Call Logs (+)</th>
+                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0 rounded-tr-xl">Customer Log (+)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {tableLoading ? (
+                                        <tr><td colSpan={15} className="text-center py-10"><CircularProgress /></td></tr>
+                                    ) : tableData.length > 0 ? (
+                                        tableData.map((profile: any) => (
+                                            <tr key={profile.ProfileId} className="hover:bg-gray-50">
+                                                <td className="px-3 py-3 text-sm font-bold text-blue-600 border border-[#e5ebf1] whitespace-nowrap">
+                                                    <a href={`/viewProfile?profileId=${profile.ProfileId}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                                                        {profile.ProfileId}
+                                                    </a>
+                                                </td>
+                                                <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap"> {profile.DateOfJoin
+                                                    ? new Date(profile.DateOfJoin.replace("T", " ")).toLocaleDateString('en-CA')
+                                                    : "N/A"}</td>
+                                                <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{profile.Profile_name || 'N/A'}</td>
+                                                <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{profile.age || 'N/A'}</td>
+                                                <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{profile.family_status_name || 'N/A'}</td>
+                                                <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{profile.other_degree || 'N/A'}</td>
+                                                <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{profile.income || 'N/A'}</td>
+                                                <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{profile.Profile_city || 'N/A'}</td>
+                                                <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{profile.state || 'N/A'}</td>
+                                                <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{profile.plan_name || 'N/A'}</td>
+                                                <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{profile.owner_name || 'N/A'}</td>
+                                                <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap text-center">{profile.has_photo || 'N/A'}</td>
+                                                <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap text-center">{profile.has_horo || 'N/A'}</td>
+                                                <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap text-center">{profile.no_id || 'N/A'}</td>
+                                                <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap"> {profile.Last_login_date
+                                                    ? new Date(profile.Last_login_date.replace("T", " ")).toLocaleDateString('en-CA')
+                                                    : "N/A"}</td>
+                                                {/* Call Logs Button */}
+                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1]">
+                                                    {(profile.last_call_id || profile.last_action_id) ? (
+                                                        <button
+                                                            className="text-[#1d4ed8] font-semibold hover:underline cursor-pointer"
+                                                            onClick={() => handleOpenModal(profile, 'call')}
+                                                        >
+                                                            View
+                                                        </button>
+                                                    ) : (
+                                                        <span className="text-gray-400 cursor-not-allowed"> No call logs</span>
+                                                    )}
+                                                </td>
 
+                                                {/* Customer Log Button */}
+                                                <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1]">
+                                                    <button
+                                                        className="text-[#1d4ed8] font-semibold hover:underline cursor-pointer"
+                                                        onClick={() => handleOpenModal(profile, 'customer')}
+                                                    >
+                                                        View
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan={15} className="text-center py-8 text-black font-semibold text-sm border border-[#e5ebf1]">
+                                                No Prospect Profiles found
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </>
+            )}
             {/* --- Modal Popups --- */}
             <Dialog
                 open={openModal}
@@ -327,7 +914,7 @@ const ProspectDashboard: React.FC = () => {
                 <DialogTitle sx={{ m: 0, p: 3, textAlign: 'center', fontWeight: 800, color: '#0A1735' }}>
                     {modalType === 'call' ? 'Call & Service Logs' : 'Customer Activity Log'}
                     <Typography variant="caption" sx={{ color: '#64748b', display: 'block', mt: 1 }}>
-                        Profile ID: {selectedProfile?.id || 'N/A'}
+                        Profile ID: {selectedProfile?.ProfileId || 'N/A'}
                     </Typography>
                     <IconButton onClick={handleCloseModal} sx={{ position: 'absolute', right: 12, top: 12, bgcolor: '#F1F5F9' }}>
                         <CloseIcon />
@@ -335,8 +922,20 @@ const ProspectDashboard: React.FC = () => {
                 </DialogTitle>
                 <Divider />
                 <DialogContent sx={{ p: 3 }}>
-                    {selectedProfile && (
-                        modalType === 'call' ? <CallLogPopup profile={selectedProfile} /> : <CustomerLogPopup profile={selectedProfile} />
+                    {logLoading ? (
+                        <Box sx={{ textAlign: "center", py: 6 }}>
+                            <CircularProgress size={32} />
+                            <Typography sx={{ mt: 2, fontSize: "0.9rem", color: "#475569" }}>
+                                Loading...
+                            </Typography>
+                        </Box>
+                    ) : (
+                        selectedProfile &&
+                        (modalType === "call" ? (
+                            <CallLogPopup profile={selectedProfile} />
+                        ) : (
+                            <CustomerLogPopup profile={selectedProfile} />
+                        ))
                     )}
                 </DialogContent>
             </Dialog>

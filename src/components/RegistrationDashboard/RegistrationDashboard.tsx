@@ -14,6 +14,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { motion } from 'framer-motion';
 import { apiAxios } from '../../api/apiUrl';
 import { RiArrowDropDownLine } from 'react-icons/ri';
+import { ActionLog, CallLog, ProfileActionCount } from '../RenewalDashboard/RenewalDahboardPage';
 
 // --- Types & Interfaces ---
 interface RegistrationProfile {
@@ -37,14 +38,16 @@ interface RegistrationProfile {
     other_degree: string | null;
     income: string | null;
     age: number;
+    last_action_id: string;
+    last_call_id: string;
 }
 
-interface ProfileOwner {
+export interface ProfileOwner {
     id: string;
     username: string; // or name, adjust based on your API response
 }
 
-interface Plan {
+export interface Plan {
     id: string;
     plan_name: string; // adjust based on your API response
 }
@@ -113,6 +116,10 @@ const RegistrationDashboard: React.FC = () => {
     const [tableLoading, setTableLoading] = useState(false);
     const [isDownloading, setIsDownloading] = useState(false);
     const [originalTableData, setOriginalTableData] = useState<RegistrationProfile[]>([]);
+    const [logLoading, setLogLoading] = React.useState<boolean>(false);
+    const [callLog, setCallLog] = useState<CallLog | null>(null);
+    const [actionLog, setActionLog] = useState<ActionLog | null>(null);
+    const [actionCount, setActionCount] = useState<ProfileActionCount | null>(null);
 
     // --- Styles ---
     const btnDark = "bg-[#0A1735] text-white px-6 py-2 rounded-full font-semibold text-sm hover:bg-[#1f2d50] transition shadow-sm border-none cursor-pointer";
@@ -347,12 +354,20 @@ const RegistrationDashboard: React.FC = () => {
         setTableData(filtered);
     }, [filters.searchQuery, originalTableData, tableLoading]); // Added tableLoading dependency
 
-    const getStatusPillClass = (status: string) => {
-        switch (status?.toUpperCase()) {
-            case 'HOT': return "bg-[#ffe4e4] text-[#d70000]";
-            case 'WARM': return "bg-[#FFF6E4] text-[#ff8c00]";
-            case 'COLD': return "bg-[#F7F7F7] text-[#6b7280]";
-            default: return "bg-gray-100 text-gray-800";
+    const getStatusPillClass = (status: string | null) => {
+        switch (status?.toLowerCase().split(' ')[0]) {
+            case 'hot':
+                return "bg-[#ffe4e4] text-[#d70000]";
+            case 'warm':
+                return "bg-[#FFF6E4] text-[#ff8c00]";
+            case 'cold':
+                return "bg-[#F7F7F7] text-[#6b7280]";
+            case 'not': // "Not interested"
+                return "bg-[#FFECEC] text-[#ef4444]";
+            case 'completed':
+                return "bg-[#d1f7e3] text-[#129f46]";
+            default:
+                return "bg-gray-100 text-gray-800";
         }
     };
 
@@ -404,6 +419,47 @@ const RegistrationDashboard: React.FC = () => {
         }
     };
 
+
+    const handleOpenModal = async (profile: RegistrationProfile, type: "call" | "customer") => {
+        setLogLoading(true);
+
+        // Reset previous stored values 👇 IMPORTANT
+        setCallLog(null);
+        setActionLog(null);
+        setActionCount(null);
+
+        setSelectedProfile(profile);
+        setModalType(type);
+        setOpenModal(true);
+
+        try {
+            if (type === 'call' && profile.last_call_id) {
+                const res = await apiAxios.get(`api/call-log-details/${profile.last_call_id}/`);
+                setCallLog(res.data.call_logs?.[0] as CallLog);
+            }
+
+            if (type === 'call' && profile.last_action_id) {
+                const res = await apiAxios.get(`api/action-log-details/${profile.last_action_id}/`);
+                setActionLog(res.data.action_logs?.[0] as ActionLog);
+            }
+
+            if (type === 'customer' && profile.ProfileId) {
+                const response = await apiAxios.get(`api/get_profile_action_count/${profile.ProfileId}/`);
+                setActionCount(response.data as ProfileActionCount);
+            }
+
+        } finally {
+            setLogLoading(false);
+        }
+    };
+
+    const handleCloseModal = () => {
+        setOpenModal(false);
+        setSelectedProfile(null);
+        setModalType(null);
+    };
+
+
     const FullWidthLoadingSpinner = () => (
         <Box
             className="container-fluid mx-auto px-4 sm:px-6 lg:px-8"
@@ -426,6 +482,164 @@ const RegistrationDashboard: React.FC = () => {
             </Typography>
         </Box>
     );
+
+    const CallLogPopup = ({ profile }: { profile: RegistrationProfile }) => {
+        // Style definitions to match the UI in the image
+        const labelStyle = {
+            fontSize: '0.85rem',
+            color: '#4A5568',
+            fontWeight: 500,
+            width: '160px' // Ensures labels align vertically
+        };
+
+        const valueStyle = {
+            fontSize: '0.9rem',
+            fontWeight: 700,
+            color: '#0A1735'
+        };
+
+        const statusPill = {
+            px: 1.5,
+            py: 0.2,
+            borderRadius: '12px',
+            fontSize: '0.75rem',
+            fontWeight: 700,
+            display: 'inline-block'
+        };
+
+        const call = callLog;
+        const action = actionLog;
+
+
+        return (
+            <Box sx={{ p: 1 }}>
+                <Typography variant="subtitle2" sx={{ color: "#64748b", mb: 3, fontWeight: 600 }}>
+                    Call Logs & Service Details
+                </Typography>
+
+                <Grid container spacing={4}>
+
+                    {/* LEFT COLUMN - Call Logs */}
+                    <Grid item xs={12} md={6}>
+                        <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
+
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <Typography sx={labelStyle}>LCD</Typography>
+                                <Typography sx={valueStyle}>
+                                    {call?.call_date
+                                        ? new Date(call.call_date).toLocaleDateString("en-GB").replace(/\//g, "-")
+                                        : "N/A"}
+                                </Typography>
+                            </Box>
+
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <Typography sx={labelStyle}>LCD Comments</Typography>
+                                <Typography sx={valueStyle}>{call?.comments || "N/A"}</Typography>
+                            </Box>
+
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <Typography sx={labelStyle}>Call Status</Typography>
+                                <Box
+                                    className={getStatusPillClass(call?.call_status_name || null)}
+                                    sx={statusPill}
+                                >{call?.call_status_name || "N/A"}</Box>
+                            </Box>
+
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <Typography sx={labelStyle}>NCD</Typography>
+                                <Typography sx={valueStyle}>
+                                    {call?.next_call_date
+                                        ? new Date(call.next_call_date).toLocaleDateString("en-GB").replace(/\//g, "-")
+                                        : "N/A"}
+                                </Typography>
+                            </Box>
+
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <Typography sx={labelStyle}>Call Particulars</Typography>
+                                <Typography sx={valueStyle}>{call?.particulars_name || "N/A"}</Typography>
+                            </Box>
+
+                            {/* <Box sx={{ display: "flex", alignItems: "center" }}>
+                                    <Typography sx={labelStyle}>Idle Days</Typography>
+                                    <Typography sx={valueStyle}>{profile.idle_days ?? 0}</Typography>
+                                </Box> */}
+                        </Box>
+                    </Grid>
+
+                    {/* RIGHT COLUMN - Action Logs */}
+                    <Grid item xs={12} md={6}>
+                        <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
+
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <Typography sx={labelStyle}>LAD</Typography>
+                                <Typography sx={valueStyle}>
+                                    {action?.action_date
+                                        ? new Date(action.action_date).toLocaleDateString("en-GB").replace(/\//g, "-")
+                                        : "N/A"}
+                                </Typography>
+                            </Box>
+
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <Typography sx={labelStyle}>LAP</Typography>
+                                <Typography sx={valueStyle}>{action?.action_point_name || "N/A"}</Typography>
+                            </Box>
+
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <Typography sx={labelStyle}>LAP Comments</Typography>
+                                <Typography sx={valueStyle}>{action?.comments || "N/A"}</Typography>
+                            </Box>
+
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <Typography sx={labelStyle}>NAD</Typography>
+                                <Typography sx={valueStyle}>
+                                    {action?.next_action_date
+                                        ? new Date(action.next_action_date).toLocaleDateString("en-GB").replace(/\//g, "-")
+                                        : "N/A"}
+                                </Typography>
+                            </Box>
+
+                            {/* <Box sx={{ display: "flex", alignItems: "center" }}>
+                                    <Typography sx={labelStyle}>Renewal Date</Typography>
+                                    <Typography sx={valueStyle}>
+                                        {profile.membership_enddate
+                                            ? new Date(profile.membership_enddate).toLocaleDateString("en-GB").replace(/\//g, "-")
+                                            : "N/A"}
+                                    </Typography>
+                                </Box> */}
+                        </Box>
+                    </Grid>
+                </Grid>
+            </Box>
+        );
+
+    };
+
+    const CustomerLogPopup = ({ profile }: { profile: RegistrationProfile }) => (
+        <Box sx={{ py: 1 }}>
+            <Grid container spacing={2}>
+                {[
+                    { label: 'Profiles Viewed', val: actionCount?.viewed_count ?? 0 },
+                    { label: 'Profile Visitors', val: actionCount?.visited_count ?? 0 },
+                    { label: 'Bookmarks', val: actionCount?.bookmarked ?? 0 },
+                    { label: 'Exp. Int Sent', val: actionCount?.interest_sent ?? 0 },
+                    { label: 'Interest Received', val: actionCount?.interest_received ?? 0 },
+                    // { label: 'Accepted', val: actionCount?.interest_accepted ?? 0 },
+                    // { label: 'Rejected', val: actionCount?.interest_rejected ?? 0 },
+                    // { label: 'Bookmark Received', val: actionCount?.bookmark_received ?? 0 },
+                    // { label: 'Photo Req Sent', val: actionCount?.photo_request_sent ?? 0 },
+                    // { label: 'Photo Req Received', val: actionCount?.photo_request_received ?? 0 },
+                ].map((stat, i) => (
+                    <Grid item xs={6} md={2.4} key={i}>
+                        <Box sx={{ textAlign: 'center', p: 2, bgcolor: '#F1F7FF', borderRadius: '12px', border: '1px solid #E3E6EE' }}>
+                            <Typography sx={{ fontSize: '0.7rem', fontWeight: 700, color: '#475569', mb: 1 }}>{stat.label}</Typography>
+                            <Typography sx={{ fontSize: '1.5rem', fontWeight: 800, color: '#0A1735' }}>{stat.val}</Typography>
+                        </Box>
+                    </Grid>
+                ))}
+            </Grid>
+        </Box>
+    );
+
 
     const LoadingSpinner = () => (
         <Box
@@ -746,6 +960,8 @@ const RegistrationDashboard: React.FC = () => {
                                             <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0 rounded-tr-xl">
                                                 Next Call Date
                                             </th>
+                                            <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Call Logs (+)</th>
+                                            <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0 rounded-tr-xl">Customer Log (+)</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -800,6 +1016,29 @@ const RegistrationDashboard: React.FC = () => {
                                                     </td>
                                                     <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">N/A</td>
                                                     <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.next_call_date || 'N/A'}</td>
+                                                    {/* Call Logs Button */}
+                                                    <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1]">
+                                                        {(row.last_call_id || row.last_action_id) ? (
+                                                            <button
+                                                                className="text-[#1d4ed8] font-semibold hover:underline cursor-pointer"
+                                                                onClick={() => handleOpenModal(row, 'call')}
+                                                            >
+                                                                View
+                                                            </button>
+                                                        ) : (
+                                                            <span className="text-gray-400 cursor-not-allowed"> No call logs</span>
+                                                        )}
+                                                    </td>
+
+                                                    {/* Customer Log Button */}
+                                                    <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1]">
+                                                        <button
+                                                            className="text-[#1d4ed8] font-semibold hover:underline cursor-pointer"
+                                                            onClick={() => handleOpenModal(row, 'customer')}
+                                                        >
+                                                            View
+                                                        </button>
+                                                    </td>
                                                 </tr>
                                             ))
                                         ) : (
@@ -814,6 +1053,65 @@ const RegistrationDashboard: React.FC = () => {
                             </div>
                         </div>
                     </section>
+                    <Dialog
+                        open={openModal}
+                        onClose={handleCloseModal}
+                        maxWidth="md"
+                        fullWidth
+                        PaperProps={{
+                            sx: { borderRadius: '20px', p: 1, boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' }
+                        }}
+                    >
+                        <DialogTitle
+                            sx={{
+                                m: 0,
+                                p: 3,
+                                textAlign: 'center',
+                                fontWeight: 800,
+                                color: '#0A1735',
+                            }}
+                        >
+                            {modalType === 'call' ? 'Call & Service Logs' : 'Customer Log'}
+
+                            <Typography variant="caption" sx={{ color: '#64748b', display: 'block', mt: 1 }}>
+                                Profile ID: {selectedProfile?.ProfileId || 'N/A'}
+                            </Typography>
+                            <IconButton
+                                onClick={handleCloseModal}
+                                sx={{
+                                    position: 'absolute',
+                                    top: 12,
+                                    right: 12,
+                                    bgcolor: '#F1F5F9',
+                                    '&:hover': { bgcolor: '#E2E8F0' }
+                                }}
+                            >
+                                <CloseIcon />
+                            </IconButton>
+                        </DialogTitle>
+
+
+                        <Divider />
+
+                        <DialogContent sx={{ p: 3 }}>
+                            {logLoading ? (
+                                <Box sx={{ textAlign: "center", py: 6 }}>
+                                    <CircularProgress size={32} />
+                                    <Typography sx={{ mt: 2, fontSize: "0.9rem", color: "#475569" }}>
+                                        Loading...
+                                    </Typography>
+                                </Box>
+                            ) : (
+                                selectedProfile &&
+                                (modalType === "call" ? (
+                                    <CallLogPopup profile={selectedProfile} />
+                                ) : (
+                                    <CustomerLogPopup profile={selectedProfile} />
+                                ))
+                            )}
+                        </DialogContent>
+
+                    </Dialog>
                 </>
             )
             }
