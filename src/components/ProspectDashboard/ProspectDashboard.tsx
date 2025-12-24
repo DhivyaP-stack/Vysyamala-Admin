@@ -84,6 +84,7 @@ const KPI_CONFIG = [
     { label: "PENDING FOLLOW UP", key: "pending_work" },
     { label: "TODAY ACTION", key: "today_task" },
     { label: "PENDING ACTION", key: "pending_task" },
+    { label: "ASSIGNED TO ME", key: "assigned_to_me" },
 ];
 
 export const getProspectCardColor = (label: string) => {
@@ -125,6 +126,7 @@ export const getProspectCardColor = (label: string) => {
 
         "TODAY ACTION": "warning",
         "PENDING ACTION": "warning",
+        "ASSIGNED TO ME": "info",
     };
 
     const key = map[label] || "primary";
@@ -225,6 +227,7 @@ const ProspectDashboard: React.FC = () => {
             case "PENDING FOLLOW UP": return stats.work_counts?.pending_work;
             case "TODAY ACTION": return stats.task_counts?.today_task;
             case "PENDING ACTION": return stats.task_counts?.pending_task;
+            case "ASSIGNED TO ME": return stats.assigned_to_me;
             default: return 0;
         }
     };

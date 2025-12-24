@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
     Box,
     Typography,
@@ -12,70 +12,71 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { motion } from 'framer-motion';
+import { apiAxios } from '../../../../api/apiUrl';
 
 // --- Types & Interfaces ---
 interface RegistrationProfile {
-    id: string;
-    name: string;
+    ProfileId: string;
+    Profile_name: string;
     age: number;
-    familyStatus: string;
-    education: string;
-    income: string;
-    city: string;
-    mode: string;
-    owner: string;
-    fromDate: string;
-    toDate: string;
-    lastLogin: string;
-    idleDays: number;
-    status: string;
-    // Stats for Customer Log
-    viewed: number;
-    visitors: number;
-    bookmark: number;
-    expSent: number;
-    expRec: number;
-    // Logs for Call Log
-    lcd: string;
-    lcdComments: string;
-    callStatus: string;
-    ncd: string;
-    lad: string;
-    lap: string;
-    lapComments: string;
-    nad: string;
+    plan_name: string;
+    membership_startdate: string;
+    membership_enddate: string;
+    has_photo: number;
+    has_horo: number;
+    Profile_idproof: string;
+    owner_name: string;
+    Last_login_date: string;
+    call_status: string | null;
+    last_call_date: string | null;
+    // Activity counts for Modal
+    yesterday_vys_assist: number;
+    yesterday_express_sent: number;
+    yesterday_express_received: number;
+    yesterday_bookmark: number;
 }
 
-// --- Configuration ---
 const KPI_CONFIG = [
-    { label: "TOTAL PREMIUM", color: "bg-white" },
-    { label: "Gold | Call >60  days | Action >60days", color: "bg-white" },
-    { label: "PLATINUM | CALL >45 DAYS | ACTION > 45 DAYS", color: "bg-white" },
-    { label: "PLATINUM PRIVATE | CALL >45 DAYS | ACTION > 45 DAYSFFER", color: "bg-white" },
-    { label: "VYSYAMALA DELIGHT | CALL >45 DAYS | ACTION > 45 DAYS", color: "bg-white" },
-    { label: "FEMALE", color: "bg-white" },
-    { label: "MALE", color: "bg-white" },
-    { label: "AGE > 30", color: "bg-white" },
-    { label: "AGE < 30", color: "bg-white" },
-    { label: "TN | OTH", color: "bg-white" },
-    { label: "FIRST 3M PROFILE", color: "bg-white" },
-    { label: "LAST 4M PROFILE", color: "bg-white" },
-    { label: "TODAY'S LOGIN", color: "bg-white" },
-    { label: "YESTERDAY'S LOGIN", color: "bg-white" },
-    { label: "TODAY'S BIRTHDAY", color: "bg-white" },
-    { label: "NO HORO", color: "bg-white" },
-    { label: "NO PHOTO", color: "bg-white" },
-    { label: "NO ID", color: "bg-white" },
-    { label: "CURRENT MONTH PREMIUM", color: "bg-white" },
-    { label: "TODAY'S CALL", color: "bg-white" },
-    { label: "PENDING CALL", color: "bg-white" },
-    { label: "TODAY'S ACTION", color: "bg-white" },
-    { label: "PENDING ACTION", color: "bg-white" },
-    { label: "YESTERDAY'S VYSASSIST", color: "bg-white" },
-    { label: "YESTERDAY'S EXPRESS INT SENT", color: "bg-white" },
-    { label: "YESTERDAY'S EXPRESS INT RECEIVED", color: "bg-white" },
-    { label: "YESTERDAY'S BOOKMARK", color: "bg-white" },
-    // { label: "PENDING ACTION", color: "bg-white" },
+    { label: "TOTAL PREMIUM", key: "total_profiles", color: "bg-white" },
+
+    // Plan specific cards with Call/Action counts
+    { label: "Gold | Call >60 days | Action >60days", key: "plan_counts.gold", color: "bg-white", subKeys: true },
+    { label: "PLATINUM | CALL >45 DAYS | ACTION > 45 DAYS", key: "plan_counts.platinum", color: "bg-white", subKeys: true },
+    { label: "PLATINUM PRIVATE | CALL >45 DAYS | ACTION > 45 DAYS", key: "plan_counts.platinum_private", color: "bg-white", subKeys: true },
+    { label: "VYSYAMALA DELIGHT | CALL >45 DAYS | ACTION > 45 DAYS", key: "plan_counts.vysyamala_delight", color: "bg-white", subKeys: true },
+
+    { label: "FEMALE", key: "female", color: "bg-white" },
+    { label: "MALE", key: "male_count", color: "bg-white" },
+    { label: "AGE > 30", key: "age_above_30", color: "bg-white" },
+    { label: "AGE < 30", key: "age_under_30", color: "bg-white" },
+
+    // Location Card
+    { label: "TN | OTH", key: "state_count", color: "bg-white", type: "location" },
+
+    { label: "FIRST 3M PROFILE", key: "fisrt_three_month", color: "bg-white" },
+    { label: "LAST 4M PROFILE", key: "last_four_month", color: "bg-white" },
+
+    { label: "TODAY'S LOGIN", key: "today_login", color: "bg-white" },
+    { label: "YESTERDAY'S LOGIN", key: "yesterday_login", color: "bg-white" },
+    { label: "TODAY'S BIRTHDAY", key: "today_birthday", color: "bg-white" },
+
+    { label: "NO HORO", key: "no_horo", color: "bg-white" },
+    { label: "NO PHOTO", key: "no_photo", color: "bg-white" },
+    { label: "NO ID", key: "no_id", color: "bg-white" },
+
+    { label: "CURRENT MONTH PREMIUM", key: "cur_month_registrations", color: "bg-white" },
+
+    // Work Counts
+    { label: "TODAY'S CALL", key: "work_counts.today_work", color: "bg-white" },
+    { label: "PENDING CALL", key: "work_counts.pending_work", color: "bg-white" },
+    { label: "TODAY'S ACTION", key: "task_counts.today_task", color: "bg-white" },
+    { label: "PENDING ACTION", key: "task_counts.pending_task", color: "bg-white" },
+
+    // Yesterday's Activity
+    { label: "YESTERDAY'S VYSASSIST", key: "yesterday_activity.vys_assist", color: "bg-white" },
+    { label: "YESTERDAY'S EXPRESS INT SENT", key: "yesterday_activity.express_interest_sent", color: "bg-white" },
+    { label: "YESTERDAY'S EXPRESS INT RECEIVED", key: "yesterday_activity.express_interest_received", color: "bg-white" },
+    { label: "YESTERDAY'S BOOKMARK", key: "yesterday_activity.bookmark", color: "bg-white" },
 ];
 
 
@@ -85,19 +86,106 @@ const PremiumDashboard: React.FC = () => {
     const [modalType, setModalType] = useState<'call' | 'customer' | null>(null);
     const [selectedProfile, setSelectedProfile] = useState<RegistrationProfile | null>(null);
     const [loading, setLoading] = useState(false);
-
+    const [stats, setStats] = useState<any>({});
+    const [tableData, setTableData] = useState<RegistrationProfile[]>([]);
+    const [tableLoading, setTableLoading] = useState(false);
     // --- Styles ---
     const btnDark = "bg-[#0A1735] text-white px-6 py-2 rounded-full font-semibold text-sm hover:bg-[#1f2d50] transition shadow-sm border-none cursor-pointer";
     const btnOutline = "bg-white border border-gray-300 text-[#0A1735] px-6 py-2 rounded-full font-semibold text-sm hover:bg-gray-50 transition shadow-sm cursor-pointer";
 
-    const getStatusPillClass = (status: string) => {
-        switch (status?.toUpperCase()) {
-            case 'HOT': return "bg-[#ffe4e4] text-[#d70000]";
-            case 'WARM': return "bg-[#FFF6E4] text-[#ff8c00]";
-            case 'COLD': return "bg-[#F7F7F7] text-[#6b7280]";
-            default: return "bg-gray-100 text-gray-800";
+    // Updated type to handle Plan stats (Total/Call/Action) and Location (TN/Non-TN)
+    type KpiResult = number | string | { total: number; call: number; action: number } | { tn: number; nonTn: number };
+
+    const getKpiData = (stats: any, label: string): KpiResult => {
+        if (!stats) return 0;
+
+        switch (label) {
+            case "TOTAL PREMIUM":
+                return stats.total_profiles || 0;
+
+            // Plan Mappings (Returning objects for split display)
+            case "Gold | Call >60  days | Action >60days":
+                return stats.plan_counts?.gold || { total: 0, call: 0, action: 0 };
+            case "PLATINUM | CALL >45 DAYS | ACTION > 45 DAYS":
+                return stats.plan_counts?.platinum || { total: 0, call: 0, action: 0 };
+            case "PLATINUM PRIVATE | CALL >45 DAYS | ACTION > 45 DAYSFFER":
+                return stats.plan_counts?.platinum_private || { total: 0, call: 0, action: 0 };
+            case "VYSYAMALA DELIGHT | CALL >45 DAYS | ACTION > 45 DAYS":
+                return stats.plan_counts?.vysyamala_delight || { total: 0, call: 0, action: 0 };
+
+            case "FEMALE": return stats.female || 0;
+            case "MALE": return stats.male_count || 0;
+            case "AGE > 30": return stats.age_above_30 || 0;
+            case "AGE < 30": return stats.age_under_30 || 0;
+
+            case "TN | OTH":
+                return {
+                    tn: stats.state_count?.tn || 0,
+                    nonTn: stats.state_count?.['non-tn'] || 0
+                };
+
+            case "FIRST 3M PROFILE": return stats.fisrt_three_month || 0;
+            case "LAST 4M PROFILE": return stats.last_four_month || 0;
+            case "TODAY'S LOGIN": return stats.today_login || 0;
+            case "YESTERDAY'S LOGIN": return stats.yesterday_login || 0;
+            case "TODAY'S BIRTHDAY": return stats.today_birthday || 0;
+
+            case "NO HORO": return stats.no_horo || 0;
+            case "NO PHOTO": return stats.no_photo || 0;
+            case "NO ID": return stats.no_id || 0;
+
+            case "CURRENT MONTH PREMIUM": return stats.cur_month_registrations || 0;
+
+            case "TODAY'S CALL": return stats.work_counts?.today_work || 0;
+            case "PENDING CALL": return stats.work_counts?.pending_work || 0;
+            case "TODAY'S ACTION": return stats.task_counts?.today_task || 0;
+            case "PENDING ACTION": return stats.task_counts?.pending_task || 0;
+
+            // Activity Mappings
+            case "YESTERDAY'S VYSASSIST": return stats.yesterday_activity?.vys_assist || 0;
+            case "YESTERDAY'S EXPRESS INT SENT": return stats.yesterday_activity?.express_interest_sent || 0;
+            case "YESTERDAY'S EXPRESS INT RECEIVED": return stats.yesterday_activity?.express_interest_received || 0;
+            case "YESTERDAY'S BOOKMARK": return stats.yesterday_activity?.bookmark || 0;
+
+            default: return 0;
         }
     };
+
+    const getStatusPillClass = (status: string | null) => {
+        switch (status?.toLowerCase().split(' ')[0]) {
+            case 'hot':
+                return "bg-[#ffe4e4] text-[#d70000]";
+            case 'warm':
+                return "bg-[#FFF6E4] text-[#ff8c00]";
+            case 'cold':
+                return "bg-[#F7F7F7] text-[#6b7280]";
+            case 'not': // "Not interested"
+                return "bg-[#FFECEC] text-[#ef4444]";
+            case 'completed':
+                return "bg-[#d1f7e3] text-[#129f46]";
+            default:
+                return "bg-gray-100 text-gray-800";
+        }
+    };
+
+    const fetchPremiumData = useCallback(async () => {
+        setLoading(true);
+        try {
+            const response = await apiAxios.get('api/premium-report/');
+            if (response.data.status) {
+                setStats(response.data);
+                setTableData(response.data.data);
+            }
+        } catch (error) {
+            console.error("Error fetching premium data:", error);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchPremiumData();
+    }, [fetchPremiumData]);
 
     // --- Handlers ---
     const handleOpenModal = (profile: RegistrationProfile, type: 'call' | 'customer') => {
@@ -223,17 +311,52 @@ const PremiumDashboard: React.FC = () => {
 
             {/* --- KPI Grid --- */}
             <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-8">
-                {KPI_CONFIG.map((kpi, i) => (
-                    <motion.div
-                        key={i}
-                        whileHover={{ y: -5 }}
-                        className={`${kpi.color} p-5 rounded-2xl min-h-[140px] border border-[#E3E6EE] flex flex-col justify-center cursor-pointer transition shadow-sm`}
-                    >
-                        <h6 className="text-[10px] font-bold mb-1 tracking-wider uppercase opacity-80 text-start">{kpi.label}</h6>
-                        <h2 className="text-3xl text-start font-bold mb-1">0</h2>
-                        <p className="text-[10px] opacity-70 text-start">Click to view profiles</p>
-                    </motion.div>
-                ))}
+                {KPI_CONFIG.map((kpi, i) => {
+                    const data = getKpiData(stats, kpi.label);
+
+                    // Helper to render the main number
+                    const renderValue = () => {
+                        if (typeof data === 'number') return data;
+
+                        // Handle Plan Object {total, call, action}
+                        if (typeof data === 'object' && data && 'total' in data) {
+                            return (
+                                <div className="flex items-baseline gap-2">
+                                    <span>{data.total}</span>
+                                    <span className="text-sm font-medium text-gray-400">
+                                        | {data.call} | {data.action}
+                                    </span>
+                                </div>
+                            );
+                        }
+
+                        // Handle Location Object {tn, nonTn}
+                        if (typeof data === 'object' && data && 'tn' in data) {
+                            return (
+                                <div className="flex items-baseline gap-2">
+                                    <span className="text-blue-600">{(data as { tn: number; nonTn: number }).tn}</span>
+                                    <span className="text-gray-300 text-xl">|</span>
+                                    <span className="text-orange-600">{(data as { tn: number; nonTn: number }).nonTn}</span>
+                                </div>
+                            );
+                        }
+                        return "0";
+                    };
+
+                    return (
+                        <motion.div
+                            key={i}
+                            whileHover={{ y: -5 }}
+                            className={`${kpi.color} p-5 rounded-2xl min-h-[140px] border border-[#E3E6EE] flex flex-col justify-center cursor-pointer transition shadow-sm`}
+                        >
+                            <h6 className="text-[10px] font-bold mb-1 tracking-wider uppercase opacity-80 text-start">{kpi.label}</h6>
+                            <h2 className="text-3xl text-start font-bold mb-1">
+                                {loading ? <CircularProgress size={20} /> : renderValue()}
+                            </h2>
+                            <p className="text-[10px] opacity-70 text-start">Click to view profiles</p>
+                        </motion.div>
+                    );
+                })}
             </section>
 
             {/* --- Work Stats Section --- */}
@@ -278,33 +401,52 @@ const PremiumDashboard: React.FC = () => {
                                 <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">ID</th>
                                 <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Owner</th>
                                 <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Last Login</th>
-                                 {/* <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Viewed</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Visitors</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Bookmark</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Express Interest</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Express Sent</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Last Login</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">LCD</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Comments</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Next Call Date</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Last Action Date</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Last Action Particulars</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Next Action Date</th> */}
                             </tr>
                         </thead>
                         <tbody>
-                            {/* This is where you map your API data. Using a placeholder row below: */}
-                            <tr>
-                                <td colSpan={23} className="py-20 text-center">
-                                    {loading ? (
-                                        <CircularProgress size={40} />
-                                    ) : (
-                                        <div className="flex flex-col items-center">
-                                            <Typography variant="body2" className="text-gray-500 font-medium">No Premium Profiles found</Typography>
+                            {tableLoading ? (
+                                <tr>
+                                    <td colSpan={16} className="py-20">
+                                        <div className="flex flex-col items-center justify-center">
+                                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1d4ed8] mb-4"></div>
+                                            <p className="text-sm text-gray-600 font-medium">Loading Premium Profiles...</p>
                                         </div>
-                                    )}
-                                </td>
-                            </tr>
+                                    </td>
+                                </tr>
+                            ) : tableData.length > 0 ? (
+                                tableData.map((row) => (
+                                    <tr key={row.ProfileId} className="hover:bg-gray-50">
+                                        <td className="px-3 py-3 text-sm font-bold text-blue-600 border border-[#e5ebf1] whitespace-nowrap">
+                                            <a href={`/viewProfile?profileId=${row.ProfileId}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                                                {row.ProfileId}
+                                            </a>
+                                        </td>
+                                        <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.Profile_name}</td>
+                                        <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.age}</td>
+                                        <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.plan_name || 'N/A'}</td>
+                                        <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.membership_startdate || 'N/A'}</td>
+                                        <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.membership_enddate || 'N/A'}</td>
+                                        <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.has_photo || 'N/A'}</td>
+                                        <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.has_horo || 'N/A'}</td>
+                                        <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.Profile_idproof || 'N/A'}</td>
+                                        <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.owner_name || 'N/A'}</td>
+                                        <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">
+                                            {/* {row.Last_login_date
+                                                            ? new Date(row.Last_login_date).toISOString().split('T')[0]
+                                                            : 'N/A'} */}
+                                            {row.Last_login_date
+                                                ? new Date(row.Last_login_date.replace("T", " ")).toLocaleDateString('en-CA')
+                                                : "N/A"}
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan={16} className="text-center py-8 text-black font-semibold text-sm border border-[#e5ebf1]">
+                                        No Profiles found
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </div>
