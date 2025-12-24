@@ -14,7 +14,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { motion } from 'framer-motion';
 import { apiAxios } from '../../api/apiUrl';
 import { RiArrowDropDownLine } from 'react-icons/ri';
-import { Plan, ProfileOwner } from '../RegistrationDashboard/RegistrationDashboard';
+import { CARD_COLOR_CLASSES, Plan, ProfileOwner } from '../RegistrationDashboard/RegistrationDashboard';
 import { ActionLog, CallLog, ProfileActionCount } from '../RenewalDashboard/RenewalDahboardPage';
 
 // --- Types & Interfaces ---
@@ -57,33 +57,78 @@ interface ProspectProfile {
 
 // --- Configuration ---
 const KPI_CONFIG = [
-    { label: "TOTAL PROFILE", key: "", color: "bg-white" },
-    { label: "PROSPECT", key: "Prospect", color: "bg-white" },
-    { label: "FREE", key: "Free", color: "bg-white" },
-    { label: "OFFER", key: "Offer", color: "bg-white" },
-    { label: "BASIC", key: "Basic", color: "bg-white" },
-    { label: "AGE > 35", key: "age_above_30", color: "bg-white" },
-    { label: "AGE < 35", key: "age_under_30", color: "bg-white" },
-    { label: "NO HORO", key: "no_horo", color: "bg-white" },
-    { label: "NO PHOTO", key: "no_photo", color: "bg-white" },
-    { label: "NO ID", key: "no_id", color: "bg-white" },
+    { label: "TOTAL PROFILE", key: "" },
+    { label: "PROSPECT", key: "Prospect" },
+    { label: "FREE", key: "Free" },
+    { label: "OFFER", key: "Offer" },
+    { label: "BASIC", key: "Basic" },
+    { label: "AGE > 35", key: "age_above_30" },
+    { label: "AGE < 35", key: "age_under_30" },
+    { label: "NO HORO", key: "no_horo" },
+    { label: "NO PHOTO", key: "no_photo" },
+    { label: "NO ID", key: "no_id" },
     { label: "TODAY'S BIRTHDAY", key: "today_birthday", color: "bg-white" },
-    { label: "CURRENT LOGIN", key: "today_login", color: "bg-white" },
-    { label: "YESTERDAY'S LOGIN", key: "yesterday_login", color: "bg-white" },
-    { label: "CURRENT MONTH REGISTRATION", key: "current_month_registration", color: "bg-white" },
-    { label: "PAYMENT FAILURE", key: "payment_failed", color: "bg-white" },
-    { label: "PAYMENT SUCCESS", key: "payment_success", color: "bg-white" },
-    { label: "HOT", key: "Hot", color: "bg-white" },
-    { label: "WARM", key: "Warm", color: "bg-white" },
-    { label: "COLD", key: "Cold", color: "bg-white" },
-    { label: "NOT INTERESTED", key: "not_interested", color: "bg-white" },
-    { label: "VALIDATION > 3 MONTHS", key: "idle_90_count", color: "bg-white" },
-    { label: "> 20 EXPRESS INTEREST", key: "express_interest_20", color: "bg-white" },
-    { label: "TODAY FOLLOW UP", key: "today_work", color: "bg-white" },
-    { label: "PENDING FOLLOW UP", key: "pending_work", color: "bg-white" },
-    { label: "TODAY ACTION", key: "today_task", color: "bg-white" },
-    { label: "PENDING ACTION", key: "pending_task", color: "bg-white" },
+    { label: "CURRENT LOGIN", key: "today_login" },
+    { label: "YESTERDAY'S LOGIN", key: "yesterday_login" },
+    { label: "CURRENT MONTH REGISTRATION", key: "current_month_registration" },
+    { label: "PAYMENT FAILURE", key: "payment_failed" },
+    { label: "PAYMENT SUCCESS", key: "payment_success" },
+    { label: "HOT", key: "Hot" },
+    { label: "WARM", key: "Warm" },
+    { label: "COLD", key: "Cold" },
+    { label: "NOT INTERESTED", key: "not_interested" },
+    { label: "VALIDATION > 3 MONTHS", key: "idle_90_count" },
+    { label: "> 20 EXPRESS INTEREST", key: "express_interest_20" },
+    { label: "TODAY FOLLOW UP", key: "today_work" },
+    { label: "PENDING FOLLOW UP", key: "pending_work" },
+    { label: "TODAY ACTION", key: "today_task" },
+    { label: "PENDING ACTION", key: "pending_task" },
 ];
+
+export const getProspectCardColor = (label: string) => {
+    const map: Record<string, string> = {
+        "TOTAL PROFILE": "primary",
+
+        "PROSPECT": "info",
+        "FREE": "muted",
+        "OFFER": "warning",
+        "BASIC": "success",
+
+        "AGE > 35": "info",
+        "AGE < 35": "info",
+
+        "NO PHOTO": "danger",
+        "NO HORO": "danger",
+        "NO ID": "danger",
+
+        "TODAY'S BIRTHDAY": "birthday",
+
+        "CURRENT LOGIN": "info",
+        "YESTERDAY'S LOGIN": "muted",
+
+        "CURRENT MONTH REGISTRATION": "primary",
+
+        "PAYMENT SUCCESS": "success",
+        "PAYMENT FAILURE": "danger",
+
+        "HOT": "hot",
+        "WARM": "warm",
+        "COLD": "cold",
+        "NOT INTERESTED": "danger",
+
+        "VALIDATION > 3 MONTHS": "warning",
+        "> 20 EXPRESS INTEREST": "info",
+
+        "TODAY FOLLOW UP": "warning",
+        "PENDING FOLLOW UP": "warning",
+
+        "TODAY ACTION": "warning",
+        "PENDING ACTION": "warning",
+    };
+
+    const key = map[label] || "primary";
+    return CARD_COLOR_CLASSES[key];
+};
 
 // const WORK_CARDS = [
 //     { label: "Today's Work", sub: "Total tasks to be completed today.", key: "today_work" },
@@ -276,7 +321,11 @@ const ProspectDashboard: React.FC = () => {
         setTableLoading(true);
         // 1. Update filters with the clicked card's key
         // 2. Clear search so the table isn't empty due to previous search terms
-        setFilters(prev => ({ ...prev, countFilter: key, searchQuery: "" }));
+        setFilters(prev => ({
+            ...prev,
+            countFilter: prev.countFilter === key ? "" : key,
+            searchQuery: ""
+        }));
         setScrollSource('card');
         setApplyFilters(true); // Triggers the useEffect that calls fetchDashboardData
     };
@@ -309,22 +358,39 @@ const ProspectDashboard: React.FC = () => {
     };
 
 
+    // useEffect(() => {
+    //     if (applyFilters) {
+    //         // If it was a card click, scroll first, then fetch
+    //         if (scrollSource === 'card' && tableRef.current) {
+    //             tableRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    //             // Small delay to let the scroll animation start before the heavy API call
+    //             setTimeout(() => {
+    //                 fetchDashboardData();
+    //             }, 100);
+    //         } else {
+    //             // Filter/Reset click: just fetch
+    //             fetchDashboardData();
+    //         }
+    //     }
+    // }, [applyFilters, scrollSource, fetchDashboardData]);
     useEffect(() => {
-        if (applyFilters) {
-            // If it was a card click, scroll first, then fetch
+        // This runs whenever filters change
+        const loadData = async () => {
+            setTableLoading(true);
+
+            // Handle scrolling if the source was a card
             if (scrollSource === 'card' && tableRef.current) {
                 tableRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-                // Small delay to let the scroll animation start before the heavy API call
-                setTimeout(() => {
-                    fetchDashboardData();
-                }, 400);
-            } else {
-                // Filter/Reset click: just fetch
-                fetchDashboardData();
             }
-        }
-    }, [applyFilters, scrollSource, fetchDashboardData]);
+
+            await fetchDashboardData();
+            setScrollSource(null);
+        };
+
+        loadData();
+    }, [filters.countFilter, filters.fromDate, filters.toDate, filters.staff, filters.plan, filters.minAge, filters.maxAge]);
+    // Note: We exclude searchQuery if you want search to be "live" or "on-demand"
 
     useEffect(() => {
         if (tableLoading) return; // Don't filter while the API is fetching new data
@@ -683,7 +749,7 @@ const ProspectDashboard: React.FC = () => {
                                 className="w-full h-12 px-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                             />
                         </div>
-                        {/* {RoleID === "7" && (
+                        {RoleID === "7" && (
                             <div className="text-start">
                                 <label className="block text-sm font-semibold text-[#3A3E47] mb-1">Staff</label>
                                 <div className="relative">
@@ -703,8 +769,8 @@ const ProspectDashboard: React.FC = () => {
                                     </div>
                                 </div>
                             </div>
-                        )} */}
-                        <div className="text-start">
+                        )}
+                        {/* <div className="text-start">
                             <label className="block text-sm font-semibold text-[#3A3E47] mb-1">Plan</label>
                             <div className="relative">
                                 <select
@@ -721,7 +787,7 @@ const ProspectDashboard: React.FC = () => {
                                     <RiArrowDropDownLine size={30} className="text-gray-500" />
                                 </div>
                             </div>
-                        </div>
+                        </div> */}
                         <div className="col-span-1">
                             <label className="block text-sm font-semibold text-[#3A3E47] mb-1">Age Range</label>
                             <div className="flex gap-2">
@@ -762,7 +828,7 @@ const ProspectDashboard: React.FC = () => {
                                 key={i}
                                 whileHover={{ y: -5 }}
                                 onClick={() => handleCardClick(kpi.key)} // Pass the key here
-                                className={`${kpi.color} p-5 rounded-2xl min-h-[140px] border border-[#E3E6EE] flex flex-col justify-center cursor-pointer transition shadow-sm ${filters.countFilter === kpi.key ? 'border-4 border-black/50 shadow-lg' : 'border-[#E3E6EE]'}`}
+                                className={`${getProspectCardColor(kpi.label)} p-5 rounded-2xl min-h-[140px] border border-[#E3E6EE] flex flex-col justify-center cursor-pointer transition shadow-sm ${filters.countFilter === kpi.key ? 'border-4 border-black/50 shadow-lg' : 'border-[#E3E6EE]'}`}
                             >
                                 <h6 className="text-[10px] font-bold mb-1 tracking-wider uppercase opacity-80 text-start">{kpi.label}</h6>
                                 <h2 className="text-3xl text-start font-bold mb-1">

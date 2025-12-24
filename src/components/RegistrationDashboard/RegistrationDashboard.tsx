@@ -1018,12 +1018,12 @@ const RegistrationDashboard: React.FC = () => {
                                             <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
                                                 Call Status
                                             </th>
-                                            <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
+                                            {/* <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">
                                                 Call Comments
                                             </th>
                                             <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0 rounded-tr-xl">
                                                 Next Call Date
-                                            </th>
+                                            </th> */}
                                             <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Call Logs (+)</th>
                                             <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0 rounded-tr-xl">Customer Log (+)</th>
                                         </tr>
@@ -1078,8 +1078,8 @@ const RegistrationDashboard: React.FC = () => {
                                                             {row.call_status || 'N/A'}
                                                         </span>
                                                     </td>
-                                                    <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">N/A</td>
-                                                    <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.next_call_date || 'N/A'}</td>
+                                                    {/* <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">N/A</td>
+                                                    <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.next_call_date || 'N/A'}</td> */}
                                                     {/* Call Logs Button */}
                                                     <td className="px-3 py-3 whitespace-nowrap text-sm border border-[#e5ebf1]">
                                                         {(row.last_call_id || row.last_action_id) ? (
