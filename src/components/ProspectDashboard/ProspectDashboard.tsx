@@ -77,7 +77,7 @@ const KPI_CONFIG = [
     { label: "WARM", key: "Warm" },
     { label: "COLD", key: "Cold" },
     { label: "NOT INTERESTED", key: "not_interested" },
-    { label: "VALIDATION > 3 MONTHS", key: "idle_90_count" },
+    { label: "VALIDATION > 3 MONTHS", key: "90" },
     { label: "> 20 EXPRESS INTEREST", key: "express_interest_20" },
     { label: "TODAY FOLLOW UP", key: "today_work" },
     { label: "PENDING FOLLOW UP", key: "pending_work" },
@@ -216,7 +216,7 @@ const ProspectDashboard: React.FC = () => {
             case "COLD": return stats.interest?.cold;
             case "NOT INTERESTED": return stats.interest?.not_interested;
 
-            case "VALIDATION > 3 MONTHS": return stats.idle_90_count;
+            case "VALIDATION > 3 MONTHS": return stats?.idle_90_count;
             case "> 20 EXPRESS INTEREST": return stats.express_interest?.above_20;
 
             // case "ASSIGNED ACTION/CALL": return stats.interest?.cold;
@@ -321,11 +321,14 @@ const ProspectDashboard: React.FC = () => {
         setTableLoading(true);
         // 1. Update filters with the clicked card's key
         // 2. Clear search so the table isn't empty due to previous search terms
-        setFilters(prev => ({
-            ...prev,
-            countFilter: prev.countFilter === key ? "" : key,
-            searchQuery: ""
-        }));
+        setFilters(prev => {
+            const isSameFilter = prev.countFilter === key;
+            return {
+                ...prev,
+                countFilter: isSameFilter ? "" : key,
+                searchQuery: "" // clear search when card is clicked
+            };
+        });
         setScrollSource('card');
         setApplyFilters(true); // Triggers the useEffect that calls fetchDashboardData
     };
@@ -358,39 +361,22 @@ const ProspectDashboard: React.FC = () => {
     };
 
 
-    // useEffect(() => {
-    //     if (applyFilters) {
-    //         // If it was a card click, scroll first, then fetch
-    //         if (scrollSource === 'card' && tableRef.current) {
-    //             tableRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-    //             // Small delay to let the scroll animation start before the heavy API call
-    //             setTimeout(() => {
-    //                 fetchDashboardData();
-    //             }, 100);
-    //         } else {
-    //             // Filter/Reset click: just fetch
-    //             fetchDashboardData();
-    //         }
-    //     }
-    // }, [applyFilters, scrollSource, fetchDashboardData]);
     useEffect(() => {
-        // This runs whenever filters change
-        const loadData = async () => {
-            setTableLoading(true);
-
-            // Handle scrolling if the source was a card
+        if (applyFilters) {
+            // If it was a card click, scroll first, then fetch
             if (scrollSource === 'card' && tableRef.current) {
                 tableRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+                // Small delay to let the scroll animation start before the heavy API call
+                setTimeout(() => {
+                    fetchDashboardData();
+                }, 100);
+            } else {
+                // Filter/Reset click: just fetch
+                fetchDashboardData();
             }
-
-            await fetchDashboardData();
-            setScrollSource(null);
-        };
-
-        loadData();
-    }, [filters.countFilter, filters.fromDate, filters.toDate, filters.staff, filters.plan, filters.minAge, filters.maxAge]);
-    // Note: We exclude searchQuery if you want search to be "live" or "on-demand"
+        }
+    }, [applyFilters, scrollSource, fetchDashboardData]);
 
     useEffect(() => {
         if (tableLoading) return; // Don't filter while the API is fetching new data
@@ -874,9 +860,9 @@ const ProspectDashboard: React.FC = () => {
                             </div>
                         </div>
 
-                        <div ref={tableRef} className="overflow-x-auto max-h-[500px]">
+                        <div ref={tableRef} className="overflow-x-auto overflow-y-auto max-h-[500px]">
                             <table className="min-w-full border-separate border-spacing-0 table-auto">
-                                <thead>
+                                <thead className="sticky top-0 z-20">
                                     <tr className="bg-gray-50">
                                         <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0 rounded-tl-xl">Profile ID</th>
                                         <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">DOR</th>

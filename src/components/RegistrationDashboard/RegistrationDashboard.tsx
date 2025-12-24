@@ -179,6 +179,7 @@ const RegistrationDashboard: React.FC = () => {
     // --- Styles ---
     const btnDark = "bg-[#0A1735] text-white px-6 py-2 rounded-full font-semibold text-sm hover:bg-[#1f2d50] transition shadow-sm border-none cursor-pointer";
     const btnOutline = "bg-white border border-gray-300 text-[#0A1735] px-6 py-2 rounded-full font-semibold text-sm hover:bg-gray-50 transition shadow-sm cursor-pointer";
+    
     type KpiResult = number | { total: number; tn: number; kat: number };
     const getKpiData = (stats: any, label: string): KpiResult => {
         // 2. Consistent return for null/empty stats
