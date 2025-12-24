@@ -105,12 +105,12 @@ export const getRegistrationCardColor = (label: string) => {
         "PREMIUM": "success",
 
         "ONLINE APPROVED - TN/OTH": "info",
-        "ADMIN APPROVED - TN/OTH": "admin",
+        "ADMIN APPROVED - TN/OTH": "info",
 
         "ONLINE UNAPPROVED - TN/OTH": "warning",
         "ADMIN UNAPPROVED - TN/OTH": "danger",
 
-        "TODAY'S LOGIN": "info",
+        "TODAY'S LOGIN": "admin",
 
         "TODAY'S WORK": "warning",
         "PENDING WORK": "warning",

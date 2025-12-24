@@ -392,7 +392,13 @@ const ProspectDashboard: React.FC = () => {
 
         // 2. Update the state for the UI/Inputs
         setFilters(updatedFilters);
-        setScrollSource('card');
+        // setScrollSource('card');
+        if (tableRef.current) {
+            tableRef.current.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
 
         // 3. Trigger the fetch IMMEDIATELY with the new values
         // Don't wait for applyFilters useEffect
