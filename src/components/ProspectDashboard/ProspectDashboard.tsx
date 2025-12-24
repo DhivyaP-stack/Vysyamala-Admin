@@ -268,20 +268,56 @@ const ProspectDashboard: React.FC = () => {
         setFilters(prev => ({ ...prev, [field]: value }));
     };
 
-    const fetchDashboardData = useCallback(async () => {
+    // const fetchDashboardData = useCallback(async () => {
+    //     setTableLoading(true);
+    //     const params = new URLSearchParams();
+
+    //     // Map filters to API expected query params
+    //     if (filters.fromDate) params.append('from_date', filters.fromDate);
+    //     if (filters.toDate) params.append('to_date', filters.toDate);
+    //     if (filters.minAge) params.append('age_from', filters.minAge);
+    //     if (filters.maxAge) params.append('age_to', filters.maxAge);
+    //     if (filters.plan) params.append('plan_id', filters.plan);
+    //     if (filters.countFilter) params.append('countFilter', filters.countFilter);
+
+    //     // Logic for Owner (similar to your registration dashboard)
+    //     const ownerId = (RoleID === "7") ? filters.staff : (SuperAdminID || "");
+    //     if (ownerId) params.append("owner", ownerId);
+
+    //     try {
+    //         const response = await apiAxios.get('api/prospect-report/', {
+    //             params: Object.fromEntries(params.entries())
+    //         });
+
+    //         if (response.data.status) {
+    //             setOriginalTableData(response.data.data);
+    //             setTableData(response.data.data);
+    //             setStats(response.data); // Stores the whole object for KPI access
+    //         }
+    //     } catch (e) {
+    //         console.error("Error fetching prospect data:", e);
+    //     } finally {
+    //         setLoading(false);
+    //         setTableLoading(false);
+    //         setApplyFilters(false);
+    //         setScrollSource(null);
+    //     }
+    // }, [filters, RoleID, SuperAdminID]);
+
+    // Add currentFilters as an optional argument
+    const fetchDashboardData = useCallback(async (currentFilters = filters) => {
         setTableLoading(true);
         const params = new URLSearchParams();
 
-        // Map filters to API expected query params
-        if (filters.fromDate) params.append('from_date', filters.fromDate);
-        if (filters.toDate) params.append('to_date', filters.toDate);
-        if (filters.minAge) params.append('age_from', filters.minAge);
-        if (filters.maxAge) params.append('age_to', filters.maxAge);
-        if (filters.plan) params.append('plan_id', filters.plan);
-        if (filters.countFilter) params.append('countFilter', filters.countFilter);
+        // Use currentFilters instead of filters
+        if (currentFilters.fromDate) params.append('from_date', currentFilters.fromDate);
+        if (currentFilters.toDate) params.append('to_date', currentFilters.toDate);
+        if (currentFilters.minAge) params.append('age_from', currentFilters.minAge);
+        if (currentFilters.maxAge) params.append('age_to', currentFilters.maxAge);
+        if (currentFilters.plan) params.append('plan_id', currentFilters.plan);
+        if (currentFilters.countFilter) params.append('countFilter', currentFilters.countFilter);
 
-        // Logic for Owner (similar to your registration dashboard)
-        const ownerId = (RoleID === "7") ? filters.staff : (SuperAdminID || "");
+        const ownerId = (RoleID === "7") ? currentFilters.staff : (SuperAdminID || "");
         if (ownerId) params.append("owner", ownerId);
 
         try {
@@ -292,23 +328,33 @@ const ProspectDashboard: React.FC = () => {
             if (response.data.status) {
                 setOriginalTableData(response.data.data);
                 setTableData(response.data.data);
-                setStats(response.data); // Stores the whole object for KPI access
+                setStats(response.data);
             }
         } catch (e) {
-            console.error("Error fetching prospect data:", e);
+            console.error("Error fetching data:", e);
         } finally {
             setLoading(false);
             setTableLoading(false);
             setApplyFilters(false);
             setScrollSource(null);
         }
-    }, [filters, RoleID, SuperAdminID]);
+    }, [RoleID, SuperAdminID, filters]); // Keep filters in deps for other triggers
+
+    // useEffect(() => {
+    //     if (applyFilters) {
+    //         fetchDashboardData();
+    //     }
+    // }, [applyFilters, fetchDashboardData]);
 
     useEffect(() => {
         if (applyFilters) {
+            if (scrollSource === 'card' && tableRef.current) {
+                tableRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            // This will now use the latest state if triggered by "Apply Filters" button
             fetchDashboardData();
         }
-    }, [applyFilters, fetchDashboardData]);
+    }, [applyFilters, scrollSource, fetchDashboardData]);
 
     // 3. Initial Load
 
@@ -318,20 +364,39 @@ const ProspectDashboard: React.FC = () => {
         fetchDashboardData();
     }, []);
 
+    // const handleCardClick = (key: string) => {
+    //     setTableLoading(true);
+    //     // 1. Update filters with the clicked card's key
+    //     // 2. Clear search so the table isn't empty due to previous search terms
+    //     setFilters(prev => {
+    //         const isSameFilter = prev.countFilter === key;
+    //         return {
+    //             ...prev,
+    //             countFilter: isSameFilter ? "" : key,
+    //             searchQuery: "" // clear search when card is clicked
+    //         };
+    //     });
+    //     setScrollSource('card');
+    //     setApplyFilters(true); // Triggers the useEffect that calls fetchDashboardData
+    // };
+
     const handleCardClick = (key: string) => {
         setTableLoading(true);
-        // 1. Update filters with the clicked card's key
-        // 2. Clear search so the table isn't empty due to previous search terms
-        setFilters(prev => {
-            const isSameFilter = prev.countFilter === key;
-            return {
-                ...prev,
-                countFilter: isSameFilter ? "" : key,
-                searchQuery: "" // clear search when card is clicked
-            };
-        });
+
+        // 1. Determine the new filter state immediately
+        const updatedFilters = {
+            ...filters,
+            countFilter: filters.countFilter === key ? "" : key,
+            searchQuery: ""
+        };
+
+        // 2. Update the state for the UI/Inputs
+        setFilters(updatedFilters);
         setScrollSource('card');
-        setApplyFilters(true); // Triggers the useEffect that calls fetchDashboardData
+
+        // 3. Trigger the fetch IMMEDIATELY with the new values
+        // Don't wait for applyFilters useEffect
+        fetchDashboardData(updatedFilters);
     };
 
     const handleReset = () => {
