@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     Box,
     Typography,
@@ -13,9 +13,10 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import { motion } from 'framer-motion';
 import { apiAxios } from '../../../../api/apiUrl';
+import { CARD_COLOR_CLASSES } from '../../../RegistrationDashboard/RegistrationDashboard';
 
 // --- Types & Interfaces ---
-interface RegistrationProfile {
+interface PremiumProfile {
     ProfileId: string;
     Profile_name: string;
     age: number;
@@ -79,16 +80,94 @@ const KPI_CONFIG = [
     { label: "YESTERDAY'S BOOKMARK", key: "yesterday_activity.bookmark", color: "bg-white" },
 ];
 
+export const getPremiumCardColor = (label: string) => {
+    const map: Record<string, string> = {
+        // ===================== TOTAL =====================
+        "TOTAL PREMIUM": "primary",
+
+        // ===================== PLAN BASED =====================
+        "Gold | Call >60 days | Action >60days": "warning",
+        "PLATINUM | CALL >45 DAYS | ACTION > 45 DAYS": "info",
+        "PLATINUM PRIVATE | CALL >45 DAYS | ACTION > 45 DAYS": "success",
+        "VYSYAMALA DELIGHT | CALL >45 DAYS | ACTION > 45 DAYS": "purple",
+
+        // ===================== GENDER =====================
+        "FEMALE": "pink",
+        "MALE": "info",
+
+        // ===================== AGE =====================
+        "AGE > 30": "info",
+        "AGE < 30": "info",
+
+        // ===================== LOCATION =====================
+        "TN | OTH": "muted",
+
+        // ===================== PROFILE AGE =====================
+        "FIRST 3M PROFILE": "success",
+        "LAST 4M PROFILE": "warning",
+
+        // ===================== LOGIN =====================
+        "TODAY'S LOGIN": "success",
+        "YESTERDAY'S LOGIN": "muted",
+
+        // ===================== BIRTHDAY =====================
+        "TODAY'S BIRTHDAY": "birthday",
+
+        // ===================== MISSING DATA =====================
+        "NO HORO": "danger",
+        "NO PHOTO": "danger",
+        "NO ID": "danger",
+
+        // ===================== PREMIUM =====================
+        "CURRENT MONTH PREMIUM": "primary",
+
+        // ===================== WORK / TASK =====================
+        "TODAY'S CALL": "warning",
+        "PENDING CALL": "danger",
+        "TODAY'S ACTION": "warning",
+        "PENDING ACTION": "danger",
+
+        // ===================== YESTERDAY ACTIVITY =====================
+        "YESTERDAY'S VYSASSIST": "info",
+        "YESTERDAY'S EXPRESS INT SENT": "success",
+        "YESTERDAY'S EXPRESS INT RECEIVED": "info",
+        "YESTERDAY'S BOOKMARK": "muted",
+    };
+
+    const key = map[label] || "primary";
+    return CARD_COLOR_CLASSES[key];
+};
+
 
 const PremiumDashboard: React.FC = () => {
     // --- State ---
     const [openModal, setOpenModal] = useState(false);
     const [modalType, setModalType] = useState<'call' | 'customer' | null>(null);
-    const [selectedProfile, setSelectedProfile] = useState<RegistrationProfile | null>(null);
+    const [selectedProfile, setSelectedProfile] = useState<PremiumProfile | null>(null);
     const [loading, setLoading] = useState(false);
     const [stats, setStats] = useState<any>({});
-    const [tableData, setTableData] = useState<RegistrationProfile[]>([]);
+    const [tableData, setTableData] = useState<PremiumProfile[]>([]);
     const [tableLoading, setTableLoading] = useState(false);
+    const abortControllerRef = useRef<AbortController | null>(null);
+    const SuperAdminID = localStorage.getItem('id') || sessionStorage.getItem('id');
+    const RoleID = localStorage.getItem('role_id') || sessionStorage.getItem('role_id');
+    const [filters, setFilters] = useState({
+        fromDate: "",
+        toDate: "",
+        staff: SuperAdminID || "",
+        plan: "",
+        minAge: "",
+        maxAge: "",
+        searchQuery: "", // search
+        countFilter: "",
+    });
+    const [profileOwners, setProfileOwners] = useState<any[]>([]);
+    const [plans, setPlans] = useState<any[]>([]);
+    const [scrollSource, setScrollSource] = useState<'card' | 'filter' | null>(null);
+    const tableRef = useRef<HTMLDivElement>(null);
+    const [applyFilters, setApplyFilters] = useState(false);
+    const [originalTableData, setOriginalTableData] = useState<PremiumProfile[]>([]);
+
     // --- Styles ---
     const btnDark = "bg-[#0A1735] text-white px-6 py-2 rounded-full font-semibold text-sm hover:bg-[#1f2d50] transition shadow-sm border-none cursor-pointer";
     const btnOutline = "bg-white border border-gray-300 text-[#0A1735] px-6 py-2 rounded-full font-semibold text-sm hover:bg-gray-50 transition shadow-sm cursor-pointer";
@@ -168,33 +247,155 @@ const PremiumDashboard: React.FC = () => {
         }
     };
 
-    const fetchPremiumData = useCallback(async () => {
-        setLoading(true);
-        const startTime = performance.now(); // ⏱ start timing
+    useEffect(() => {
+        const fetchMetadata = async () => {
+            try {
+                const [usersRes, plansRes] = await Promise.all([
+                    apiAxios.get('api/users/'),
+                    apiAxios.get('api/get-plans/')
+                ]);
+                setProfileOwners(usersRes.data);
+                setPlans(plansRes.data.plans);
+            } catch (e) {
+                console.error("Metadata fetch failed", e);
+            }
+        };
+        fetchMetadata();
+    }, []);
+
+    const fetchDashboardData = useCallback(async (currentFilters = filters) => {
+        if (abortControllerRef.current) abortControllerRef.current.abort();
+        const controller = new AbortController();
+        abortControllerRef.current = controller;
+
+        setTableLoading(true);
+        setTableData([]);
+
+        const params = new URLSearchParams();
+
+        // Map local filters to API expected keys
+        if (currentFilters.fromDate) params.append('from_date', currentFilters.fromDate);
+        if (currentFilters.toDate) params.append('to_date', currentFilters.toDate);
+        if (currentFilters.minAge) params.append('age_from', currentFilters.minAge);
+        if (currentFilters.maxAge) params.append('age_to', currentFilters.maxAge);
+        if (currentFilters.plan) params.append('plan_id', currentFilters.plan);
+        if (currentFilters.countFilter) params.append('countFilter', currentFilters.countFilter);
+        if (currentFilters.searchQuery) params.append('search', currentFilters.searchQuery);
+
+        const ownerId = (RoleID === "7") ? currentFilters.staff : (SuperAdminID || "");
+        if (ownerId) params.append("owner", ownerId);
 
         try {
-            const response = await apiAxios.get('api/premium-report');
-            const endTime = performance.now(); // ⏱ end timing
-            const apiTime = ((endTime - startTime) / 1000).toFixed(2);
+            const response = await apiAxios.get('api/premium-report', {
+                params: Object.fromEntries(params.entries()),
+                signal: controller.signal
+            });
 
-            console.log(`💎 Premium API took ${apiTime}s`);
             if (response.data.status) {
                 setStats(response.data);
                 setTableData(response.data.data);
             }
-        } catch (error) {
+        } catch (error: any) {
+            if (error.name === 'CanceledError' || error.name === 'AbortError') return;
             console.error("Error fetching premium data:", error);
         } finally {
-            setLoading(false);
+            if (abortControllerRef.current === controller) {
+                setTableLoading(false);
+                setLoading(false);
+                setApplyFilters(false);
+            }
         }
-    }, []);
+    }, [RoleID, SuperAdminID, filters]);
 
     useEffect(() => {
-        fetchPremiumData();
-    }, [fetchPremiumData]);
+        if (applyFilters) {
+            if (scrollSource === 'card' && tableRef.current) {
+                tableRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            // This will now use the latest state if triggered by "Apply Filters" button
+            fetchDashboardData();
+        }
+    }, [applyFilters, scrollSource, fetchDashboardData]);
 
+    // 3. Initial Load
+
+    useEffect(() => {
+        setLoading(true);       // This triggers the FullWidthLoadingSpinner
+        setTableLoading(true);
+        fetchDashboardData();
+    }, []);
+
+    const handleCardClick = (key: string) => {
+        setTableLoading(true);
+
+        // 1. Determine the new filter state immediately
+        const updatedFilters = {
+            ...filters,
+            countFilter: filters.countFilter === key ? "" : key,
+            searchQuery: ""
+        };
+        console.log("updatedFilters", updatedFilters)
+        // 2. Update the state for the UI/Inputs
+        setFilters(updatedFilters);
+        // setScrollSource('card');
+        if (tableRef.current) {
+            tableRef.current.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+
+        // 3. Trigger the fetch IMMEDIATELY with the new values
+        // Don't wait for applyFilters useEffect
+        fetchDashboardData(updatedFilters);
+    };
+
+    const handleReset = () => {
+        // Show loading on both sections
+        setLoading(true);
+        setTableLoading(true);
+
+        setFilters({
+            fromDate: "",
+            toDate: "",
+            staff: RoleID === "7" ? "" : (SuperAdminID || ""),
+            plan: "",
+            minAge: "",
+            maxAge: "",
+            searchQuery: "",
+            countFilter: "",
+        });
+
+        setScrollSource('filter');
+        setApplyFilters(true);
+    };
+
+    const handleApplyFilters = () => {
+        setLoading(true);
+        setTableLoading(true);
+        setScrollSource('filter');
+        setApplyFilters(true);
+    };
+
+    useEffect(() => {
+        if (tableLoading) return; // Don't filter while the API is fetching new data
+
+        if (!filters.searchQuery || filters.searchQuery.trim() === '') {
+            setTableData(originalTableData);
+            return;
+        }
+
+        const searchTerm = filters.searchQuery.toLowerCase().trim();
+        const filtered = originalTableData.filter((profile) => {
+            const profileId = (profile.ProfileId || '').toString().toLowerCase();
+            const profileName = (profile.Profile_name || '').toString().toLowerCase();
+            return profileId.includes(searchTerm) || profileName.includes(searchTerm);
+        });
+
+        setTableData(filtered);
+    }, [filters.searchQuery, originalTableData, tableLoading]);
     // --- Handlers ---
-    const handleOpenModal = (profile: RegistrationProfile, type: 'call' | 'customer') => {
+    const handleOpenModal = (profile: PremiumProfile, type: 'call' | 'customer') => {
         setSelectedProfile(profile);
         setModalType(type);
         setOpenModal(true);
@@ -206,7 +407,7 @@ const PremiumDashboard: React.FC = () => {
     };
 
     // --- Sub-Components ---
-    const CallLogPopup = ({ profile }: { profile: RegistrationProfile }) => (
+    const CallLogPopup = ({ profile }: { profile: PremiumProfile }) => (
         <Box sx={{ p: 1 }}>
             <Typography variant="subtitle2" sx={{ color: "#64748b", mb: 3, fontWeight: 600 }}>
                 Call Logs & Service Details
@@ -233,7 +434,7 @@ const PremiumDashboard: React.FC = () => {
         </Box>
     );
 
-    const CustomerLogPopup = ({ profile }: { profile: RegistrationProfile }) => (
+    const CustomerLogPopup = ({ profile }: { profile: PremiumProfile }) => (
         <Box sx={{ py: 1 }}>
             <Grid container spacing={2}>
                 {[
@@ -253,6 +454,54 @@ const PremiumDashboard: React.FC = () => {
             </Grid>
         </Box>
     );
+
+    const FullWidthLoadingSpinner = () => (
+        <Box
+            className="container-fluid mx-auto px-4 sm:px-6 lg:px-8"
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                py: 12, // Increased padding for visibility
+                width: '100%',
+                backgroundColor: '#fff', // White background
+                borderRadius: '1rem',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)',
+                mb: 4, // margin bottom to separate from the table
+            }}
+        >
+            <CircularProgress color="primary" size={40} />
+            <Typography variant="h6" sx={{ mt: 3, color: '#0A1735', fontWeight: 600 }}>
+                Loading...
+            </Typography>
+        </Box>
+    );
+
+    const LoadingSpinner = () => (
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                py: 8,
+                minHeight: '200px',
+                width: '100%',
+            }}
+        >
+            <CircularProgress color="primary" size={30} />
+            <Typography variant="body2" sx={{ mt: 2, color: 'text.secondary' }}>
+                Loading Dashboard Data...
+            </Typography>
+        </Box>
+    );
+
+
+    if (loading && !stats) {
+        return <LoadingSpinner />;
+    }
+
 
     return (
         <div className="min-h-screen bg-[#F5F7FB] font-inter text-black p-4 md:p-8">
@@ -274,22 +523,48 @@ const PremiumDashboard: React.FC = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         <div className="text-start">
                             <label className="block text-sm font-semibold text-[#3A3E47] mb-1">From Date</label>
-                            <input type="date" className="w-full h-12 px-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500" />
+                            <input
+                                type="date"
+                                value={filters.fromDate}
+                                onChange={(e) => setFilters({ ...filters, fromDate: e.target.value })}
+                                className="w-full h-12 px-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            />
                         </div>
                         <div className="text-start">
                             <label className="block text-sm font-semibold text-[#3A3E47] mb-1">To Date</label>
-                            <input type="date" className="w-full h-12 px-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500" />
+                            <input
+                                type="date"
+                                value={filters.toDate}
+                                onChange={(e) => setFilters({ ...filters, toDate: e.target.value })}
+                                className="w-full h-12 px-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            />
                         </div>
-                        <div className="text-start">
-                            <label className="block text-sm font-semibold text-[#3A3E47] mb-1">Staff</label>
-                            <select className="w-full h-12 px-3 border border-gray-300 rounded-lg text-sm cursor-pointer appearance-none bg-white focus:outline-none">
-                                <option>Select Staff</option>
-                            </select>
-                        </div>
+                        {RoleID === "7" && (
+                            <div className="text-start">
+                                <label className="block text-sm font-semibold text-[#3A3E47] mb-1">Staff</label>
+                                <select
+                                    value={filters.staff}
+                                    onChange={(e) => setFilters({ ...filters, staff: e.target.value })}
+                                    className="w-full h-12 px-3 border border-gray-300 rounded-lg text-sm bg-white"
+                                >
+                                    <option value="">Select Staff</option>
+                                    {profileOwners.map(owner => (
+                                        <option key={owner.id} value={owner.id}>{owner.username}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
                         <div className="text-start">
                             <label className="block text-sm font-semibold text-[#3A3E47] mb-1">Plan</label>
-                            <select className="w-full h-12 px-3 border border-gray-300 rounded-lg text-sm cursor-pointer appearance-none bg-white focus:outline-none">
-                                <option>Select Plan</option>
+                            <select
+                                value={filters.plan}
+                                onChange={(e) => setFilters({ ...filters, plan: e.target.value })}
+                                className="w-full h-12 px-3 border border-gray-300 rounded-lg text-sm bg-white"
+                            >
+                                <option value="">Select Plan</option>
+                                {plans.map(p => (
+                                    <option key={p.id} value={p.id}>{p.plan_name}</option>
+                                ))}
                             </select>
                         </div>
                         <div className="col-span-1">
@@ -298,75 +573,87 @@ const PremiumDashboard: React.FC = () => {
                                 <input
                                     type="number"
                                     placeholder="Min"
-                                    className="w-1/2 h-12 px-3 cursor-pointer border border-gray-300 rounded-lg text-sm"
+                                    value={filters.minAge}
+                                    onChange={(e) => setFilters({ ...filters, minAge: e.target.value })}
+                                    className="w-1/2 h-12 px-3 border border-gray-300 rounded-lg text-sm"
                                 />
                                 <input
                                     type="number"
                                     placeholder="Max"
+                                    value={filters.maxAge}
+                                    onChange={(e) => setFilters({ ...filters, maxAge: e.target.value })}
                                     className="w-1/2 h-12 px-3 border border-gray-300 rounded-lg text-sm"
                                 />
                             </div>
                         </div>
                     </div>
                     <div className="flex justify-end gap-3 mt-6">
-                        <button className={btnOutline}>Reset</button>
-                        <button className={btnDark}>Apply Filters</button>
+                        <button onClick={handleReset} className={btnOutline}>Reset</button>
+                        <button onClick={handleApplyFilters} className={btnDark}>Apply Filters</button>
                     </div>
                 </div>
             </section>
 
             {/* --- KPI Grid --- */}
-            <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-8">
-                {KPI_CONFIG.map((kpi, i) => {
-                    const data = getKpiData(stats, kpi.label);
+            {loading ? (
+                <section className="mt-4">
+                    <FullWidthLoadingSpinner />
+                </section>
+            ) : (
+                <>
+                    <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-8">
+                        {KPI_CONFIG.map((kpi, i) => {
+                            const data = getKpiData(stats, kpi.label);
 
-                    // Helper to render the main number
-                    const renderValue = () => {
-                        if (typeof data === 'number') return data;
+                            // Helper to render the main number
+                            const renderValue = () => {
+                                if (typeof data === 'number') return data;
 
-                        // Handle Plan Object {total, call, action}
-                        if (typeof data === 'object' && data && 'total' in data) {
+                                // Handle Plan Object {total, call, action}
+                                if (typeof data === 'object' && data && 'total' in data) {
+                                    return (
+                                        <div className="flex items-baseline gap-2">
+                                            <span>{data.total}</span>
+                                            <span className="text-sm font-medium text-gray-400">
+                                                | {data.call} | {data.action}
+                                            </span>
+                                        </div>
+                                    );
+                                }
+
+                                // Handle Location Object {tn, nonTn}
+                                if (typeof data === 'object' && data && 'tn' in data) {
+                                    return (
+                                        <div className="flex items-baseline gap-2">
+                                            <span className="text-blue-600">{(data as { tn: number; nonTn: number }).tn}</span>
+                                            <span className="text-gray-300 text-xl">|</span>
+                                            <span className="text-orange-600">{(data as { tn: number; nonTn: number }).nonTn}</span>
+                                        </div>
+                                    );
+                                }
+                                return "0";
+                            };
+
                             return (
-                                <div className="flex items-baseline gap-2">
-                                    <span>{data.total}</span>
-                                    <span className="text-sm font-medium text-gray-400">
-                                        | {data.call} | {data.action}
-                                    </span>
-                                </div>
+                                <motion.div
+                                    key={i}
+                                    whileHover={{ y: -5 }}
+                                    onClick={() => handleCardClick(kpi.key)}
+                                    // className={`${kpi.color} p-5 rounded-2xl min-h-[140px] border border-[#E3E6EE] flex flex-col justify-center cursor-pointer transition shadow-sm`}
+                                    className={`${getPremiumCardColor(kpi.label)} p-5 rounded-2xl min-h-[140px] border border-[#E3E6EE] flex flex-col justify-center cursor-pointer transition shadow-sm ${filters.countFilter === kpi.key ? 'border-4 border-black/50 shadow-lg' : 'border-[#E3E6EE]'}`}
+                                >
+                                    <h6 className="text-[10px] font-bold mb-1 tracking-wider uppercase opacity-80 text-start">{kpi.label}</h6>
+                                    <h2 className="text-3xl text-start font-bold mb-1">
+                                        {loading ? <CircularProgress size={20} /> : renderValue()}
+                                    </h2>
+                                    <p className="text-[10px] opacity-70 text-start">Click to view profiles</p>
+                                </motion.div>
                             );
-                        }
+                        })}
+                    </section>
 
-                        // Handle Location Object {tn, nonTn}
-                        if (typeof data === 'object' && data && 'tn' in data) {
-                            return (
-                                <div className="flex items-baseline gap-2">
-                                    <span className="text-blue-600">{(data as { tn: number; nonTn: number }).tn}</span>
-                                    <span className="text-gray-300 text-xl">|</span>
-                                    <span className="text-orange-600">{(data as { tn: number; nonTn: number }).nonTn}</span>
-                                </div>
-                            );
-                        }
-                        return "0";
-                    };
-
-                    return (
-                        <motion.div
-                            key={i}
-                            whileHover={{ y: -5 }}
-                            className={`${kpi.color} p-5 rounded-2xl min-h-[140px] border border-[#E3E6EE] flex flex-col justify-center cursor-pointer transition shadow-sm`}
-                        >
-                            <h6 className="text-[10px] font-bold mb-1 tracking-wider uppercase opacity-80 text-start">{kpi.label}</h6>
-                            <h2 className="text-3xl text-start font-bold mb-1">
-                                {loading ? <CircularProgress size={20} /> : renderValue()}
-                            </h2>
-                            <p className="text-[10px] opacity-70 text-start">Click to view profiles</p>
-                        </motion.div>
-                    );
-                })}
-            </section>
-
-            {/* --- Work Stats Section --- */}
-            {/* <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                    {/* --- Work Stats Section --- */}
+                    {/* <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                 {WORK_CARDS.map((card, i) => (
                     <div key={i} className="bg-white rounded-xl p-6 border border-[#e6ecf2] shadow-sm flex flex-col justify-between h-full transition hover:-translate-y-1 cursor-pointer">
                         <div className="text-start">
@@ -378,85 +665,87 @@ const PremiumDashboard: React.FC = () => {
                 ))}
             </section> */}
 
-            {/* --- Profile Detail Table --- */}
-            <section className="bg-white rounded-xl border border-[#e6ecf2] shadow-md p-6">
-                <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                    <h5 className="text-lg font-semibold m-0">Premium Profile Detail (0)</h5>
-                    <div className="flex gap-2">
-                        <input
-                            type="text"
-                            placeholder="Search Profile ID / Name"
-                            className="w-[250px] h-10 px-4 rounded-full border border-gray-300 text-sm focus:outline-none focus:border-gray-500 transition"
-                        />
-                        <button className="h-10 px-4 rounded-full bg-white border border-gray-300 text-sm font-semibold hover:bg-gray-50 transition">Clear</button>
-                    </div>
-                </div>
+                    {/* --- Profile Detail Table --- */}
+                    <section className="bg-white rounded-xl border border-[#e6ecf2] shadow-md p-6">
+                        <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                            <h5 className="text-lg font-semibold m-0">Premium Profile Detail ({tableData.length || stats?.filtered_count || 0})</h5>
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    placeholder="Search Profile ID / Name"
+                                    className="w-[250px] h-10 px-4 rounded-full border border-gray-300 text-sm focus:outline-none focus:border-gray-500 transition"
+                                />
+                                <button className="h-10 px-4 rounded-full bg-white border border-gray-300 text-sm font-semibold hover:bg-gray-50 transition">Clear</button>
+                            </div>
+                        </div>
 
-                <div className="overflow-x-auto max-h-[500px]">
-                    <table className="min-w-full border-separate border-spacing-0 table-auto">
-                        <thead>
-                            <tr className="bg-gray-50">
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0 rounded-tl-xl">Profile ID</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Name</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Age</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Plan</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Plan Start Date</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Plan End Date</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Photo</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Horo</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">ID</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Owner</th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Last Login</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {tableLoading ? (
-                                <tr>
-                                    <td colSpan={16} className="py-20">
-                                        <div className="flex flex-col items-center justify-center">
-                                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1d4ed8] mb-4"></div>
-                                            <p className="text-sm text-gray-600 font-medium">Loading Premium Profiles...</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ) : tableData.length > 0 ? (
-                                tableData.map((row) => (
-                                    <tr key={row.ProfileId} className="hover:bg-gray-50">
-                                        <td className="px-3 py-3 text-sm font-bold text-blue-600 border border-[#e5ebf1] whitespace-nowrap">
-                                            <a href={`/viewProfile?profileId=${row.ProfileId}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
-                                                {row.ProfileId}
-                                            </a>
-                                        </td>
-                                        <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.Profile_name}</td>
-                                        <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.age}</td>
-                                        <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.plan_name || 'N/A'}</td>
-                                        <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.membership_startdate || 'N/A'}</td>
-                                        <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.membership_enddate || 'N/A'}</td>
-                                        <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.has_photo || 'N/A'}</td>
-                                        <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.has_horo || 'N/A'}</td>
-                                        <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.Profile_idproof || 'N/A'}</td>
-                                        <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.owner_name || 'N/A'}</td>
-                                        <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">
-                                            {/* {row.Last_login_date
+                        <div className="overflow-x-auto max-h-[500px]">
+                            <table className="min-w-full border-separate border-spacing-0 table-auto">
+                                <thead>
+                                    <tr className="bg-gray-50">
+                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0 rounded-tl-xl">Profile ID</th>
+                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Name</th>
+                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Age</th>
+                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Plan</th>
+                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Plan Start Date</th>
+                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Plan End Date</th>
+                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Photo</th>
+                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Horo</th>
+                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">ID</th>
+                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Owner</th>
+                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border border-[#e5ebf1] border-b-0">Last Login</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {tableLoading ? (
+                                        <tr>
+                                            <td colSpan={16} className="py-20">
+                                                <div className="flex flex-col items-center justify-center">
+                                                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1d4ed8] mb-4"></div>
+                                                    <p className="text-sm text-gray-600 font-medium">Loading Premium Profiles...</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ) : tableData.length > 0 ? (
+                                        tableData.map((row) => (
+                                            <tr key={row.ProfileId} className="hover:bg-gray-50">
+                                                <td className="px-3 py-3 text-sm font-bold text-blue-600 border border-[#e5ebf1] whitespace-nowrap">
+                                                    <a href={`/viewProfile?profileId=${row.ProfileId}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                                                        {row.ProfileId}
+                                                    </a>
+                                                </td>
+                                                <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.Profile_name}</td>
+                                                <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.age}</td>
+                                                <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.plan_name || 'N/A'}</td>
+                                                <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.membership_startdate || 'N/A'}</td>
+                                                <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.membership_enddate || 'N/A'}</td>
+                                                <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.has_photo || 'N/A'}</td>
+                                                <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.has_horo || 'N/A'}</td>
+                                                <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.Profile_idproof || 'N/A'}</td>
+                                                <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">{row.owner_name || 'N/A'}</td>
+                                                <td className="px-3 py-3 text-sm border border-[#e5ebf1] whitespace-nowrap">
+                                                    {/* {row.Last_login_date
                                                             ? new Date(row.Last_login_date).toISOString().split('T')[0]
                                                             : 'N/A'} */}
-                                            {row.Last_login_date
-                                                ? new Date(row.Last_login_date.replace("T", " ")).toLocaleDateString('en-CA')
-                                                : "N/A"}
-                                        </td>
-                                    </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan={16} className="text-center py-8 text-black font-semibold text-sm border border-[#e5ebf1]">
-                                        No Profiles found
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+                                                    {row.Last_login_date
+                                                        ? new Date(row.Last_login_date.replace("T", " ")).toLocaleDateString('en-CA')
+                                                        : "N/A"}
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan={16} className="text-center py-8 text-black font-semibold text-sm border border-[#e5ebf1]">
+                                                No Profiles found
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </>
+            )}
 
             {/* --- Modal Popups --- */}
             <Dialog
