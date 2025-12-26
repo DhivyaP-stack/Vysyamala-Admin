@@ -170,8 +170,14 @@ const PremiumDashboard: React.FC = () => {
 
     const fetchPremiumData = useCallback(async () => {
         setLoading(true);
+        const startTime = performance.now(); // ⏱ start timing
+
         try {
-            const response = await apiAxios.get('api/premium-report/');
+            const response = await apiAxios.get('api/premium-report');
+            const endTime = performance.now(); // ⏱ end timing
+            const apiTime = ((endTime - startTime) / 1000).toFixed(2);
+
+            console.log(`💎 Premium API took ${apiTime}s`);
             if (response.data.status) {
                 setStats(response.data);
                 setTableData(response.data.data);

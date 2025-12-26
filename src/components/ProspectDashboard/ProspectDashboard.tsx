@@ -310,6 +310,8 @@ const ProspectDashboard: React.FC = () => {
     // Add currentFilters as an optional argument
     const fetchDashboardData = useCallback(async (currentFilters = filters) => {
         setTableLoading(true);
+        const startTime = performance.now(); // ⏱ start timing
+
         const params = new URLSearchParams();
 
         // Use currentFilters instead of filters
@@ -327,6 +329,15 @@ const ProspectDashboard: React.FC = () => {
             const response = await apiAxios.get('api/prospect-report/', {
                 params: Object.fromEntries(params.entries())
             });
+
+            const endTime = performance.now(); // ⏱ end timing
+            const apiTime = ((endTime - startTime) / 1000).toFixed(2);
+
+            console.log(
+                `📊 Dashboard API took prospect ${apiTime}s`,
+                Object.fromEntries(params.entries())
+            );
+
 
             if (response.data.status) {
                 setOriginalTableData(response.data.data);
@@ -392,7 +403,7 @@ const ProspectDashboard: React.FC = () => {
             countFilter: filters.countFilter === key ? "" : key,
             searchQuery: ""
         };
-
+        console.log("updatedFilters", updatedFilters)
         // 2. Update the state for the UI/Inputs
         setFilters(updatedFilters);
         // setScrollSource('card');
@@ -473,6 +484,7 @@ const ProspectDashboard: React.FC = () => {
 
     const handleDownloadReport = async () => {
         setIsDownloading(true);
+
         try {
             const params = new URLSearchParams();
 
