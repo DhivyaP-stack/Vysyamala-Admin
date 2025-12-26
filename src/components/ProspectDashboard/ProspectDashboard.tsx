@@ -164,6 +164,7 @@ const ProspectDashboard: React.FC = () => {
     const [actionLog, setActionLog] = useState<ActionLog | null>(null);
     const [actionCount, setActionCount] = useState<ProfileActionCount | null>(null);
     const [isDownloading, setIsDownloading] = useState(false);
+    const abortControllerRef = useRef<AbortController | null>(null);
     const [filters, setFilters] = useState({
         fromDate: "",
         toDate: "",
@@ -271,50 +272,21 @@ const ProspectDashboard: React.FC = () => {
         setFilters(prev => ({ ...prev, [field]: value }));
     };
 
-    // const fetchDashboardData = useCallback(async () => {
-    //     setTableLoading(true);
-    //     const params = new URLSearchParams();
-
-    //     // Map filters to API expected query params
-    //     if (filters.fromDate) params.append('from_date', filters.fromDate);
-    //     if (filters.toDate) params.append('to_date', filters.toDate);
-    //     if (filters.minAge) params.append('age_from', filters.minAge);
-    //     if (filters.maxAge) params.append('age_to', filters.maxAge);
-    //     if (filters.plan) params.append('plan_id', filters.plan);
-    //     if (filters.countFilter) params.append('countFilter', filters.countFilter);
-
-    //     // Logic for Owner (similar to your registration dashboard)
-    //     const ownerId = (RoleID === "7") ? filters.staff : (SuperAdminID || "");
-    //     if (ownerId) params.append("owner", ownerId);
-
-    //     try {
-    //         const response = await apiAxios.get('api/prospect-report/', {
-    //             params: Object.fromEntries(params.entries())
-    //         });
-
-    //         if (response.data.status) {
-    //             setOriginalTableData(response.data.data);
-    //             setTableData(response.data.data);
-    //             setStats(response.data); // Stores the whole object for KPI access
-    //         }
-    //     } catch (e) {
-    //         console.error("Error fetching prospect data:", e);
-    //     } finally {
-    //         setLoading(false);
-    //         setTableLoading(false);
-    //         setApplyFilters(false);
-    //         setScrollSource(null);
-    //     }
-    // }, [filters, RoleID, SuperAdminID]);
-
-    // Add currentFilters as an optional argument
     const fetchDashboardData = useCallback(async (currentFilters = filters) => {
+        // 1. Abort existing request
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort();
+        }
+
+        // 2. Create new controller
+        const controller = new AbortController();
+        abortControllerRef.current = controller;
+
+        // 3. FORCE LOADING STATES IMMEDIATELY
         setTableLoading(true);
-        const startTime = performance.now(); // ⏱ start timing
+        setTableData([]); // Clear previous records to prevent "ghosting"
 
         const params = new URLSearchParams();
-
-        // Use currentFilters instead of filters
         if (currentFilters.fromDate) params.append('from_date', currentFilters.fromDate);
         if (currentFilters.toDate) params.append('to_date', currentFilters.toDate);
         if (currentFilters.minAge) params.append('age_from', currentFilters.minAge);
@@ -325,34 +297,36 @@ const ProspectDashboard: React.FC = () => {
         const ownerId = (RoleID === "7") ? currentFilters.staff : (SuperAdminID || "");
         if (ownerId) params.append("owner", ownerId);
 
+
         try {
             const response = await apiAxios.get('api/prospect-report/', {
-                params: Object.fromEntries(params.entries())
+                params: Object.fromEntries(params.entries()),
+                signal: controller.signal
             });
-
-            const endTime = performance.now(); // ⏱ end timing
-            const apiTime = ((endTime - startTime) / 1000).toFixed(2);
-
-            console.log(
-                `📊 Dashboard API took prospect ${apiTime}s`,
-                Object.fromEntries(params.entries())
-            );
-
 
             if (response.data.status) {
                 setOriginalTableData(response.data.data);
                 setTableData(response.data.data);
                 setStats(response.data);
             }
-        } catch (e) {
-            console.error("Error fetching data:", e);
+        } catch (e: any) {
+            // If aborted, we exit quietly because the NEXT call has already set its own loading state
+            if (e.name === 'CanceledError' || e.name === 'AbortError' || e.code === "ERR_CANCELED") {
+                return;
+            }
+            console.error("Fetch error:", e);
         } finally {
-            setLoading(false);
-            setTableLoading(false);
-            setApplyFilters(false);
-            setScrollSource(null);
+            /* 4. IMPORTANT: Only stop loading if THIS specific request 
+               is still the active one. If abortControllerRef.current has changed, 
+               it means a newer request is running and we should stay in loading state.
+            */
+            if (abortControllerRef.current === controller) {
+                setTableLoading(false);
+                setLoading(false);
+                setApplyFilters(false);
+            }
         }
-    }, [RoleID, SuperAdminID, filters]); // Keep filters in deps for other triggers
+    }, [RoleID, SuperAdminID, filters]);
 
     // useEffect(() => {
     //     if (applyFilters) {
