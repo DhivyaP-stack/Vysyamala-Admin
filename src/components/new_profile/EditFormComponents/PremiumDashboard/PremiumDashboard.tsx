@@ -38,13 +38,13 @@ interface PremiumProfile {
 }
 
 const KPI_CONFIG = [
-    { label: "TOTAL PREMIUM", key: "total_profiles", color: "bg-white" },
+    { label: "TOTAL PREMIUM", key: "", color: "bg-white" },
 
     // Plan specific cards with Call/Action counts
-    { label: "Gold | Call >60 days | Action >60days", key: "plan_counts.gold", color: "bg-white", subKeys: true },
-    { label: "PLATINUM | CALL >45 DAYS | ACTION > 45 DAYS", key: "plan_counts.platinum", color: "bg-white", subKeys: true },
-    { label: "PLATINUM PRIVATE | CALL >45 DAYS | ACTION > 45 DAYS", key: "plan_counts.platinum_private", color: "bg-white", subKeys: true },
-    { label: "VYSYAMALA DELIGHT | CALL >45 DAYS | ACTION > 45 DAYS", key: "plan_counts.vysyamala_delight", color: "bg-white", subKeys: true },
+    { label: "Gold | Call >60 days | Action >60days", key: "plan_gold ", color: "bg-white", subKeys: true },
+    { label: "PLATINUM | CALL >45 DAYS | ACTION > 45 DAYS", key: "plan_platinum", color: "bg-white", subKeys: true },
+    { label: "PLATINUM PRIVATE | CALL >45 DAYS | ACTION > 45 DAYS", key: "plan_platinum_private", color: "bg-white", subKeys: true },
+    { label: "VYSYAMALA DELIGHT | CALL >45 DAYS | ACTION > 45 DAYS", key: "plan_vys_delight", color: "bg-white", subKeys: true },
 
     { label: "FEMALE", key: "female", color: "bg-white" },
     { label: "MALE", key: "male_count", color: "bg-white" },
@@ -74,10 +74,10 @@ const KPI_CONFIG = [
     { label: "PENDING ACTION", key: "task_counts.pending_task", color: "bg-white" },
 
     // Yesterday's Activity
-    { label: "YESTERDAY'S VYSASSIST", key: "yesterday_activity.vys_assist", color: "bg-white" },
-    { label: "YESTERDAY'S EXPRESS INT SENT", key: "yesterday_activity.express_interest_sent", color: "bg-white" },
-    { label: "YESTERDAY'S EXPRESS INT RECEIVED", key: "yesterday_activity.express_interest_received", color: "bg-white" },
-    { label: "YESTERDAY'S BOOKMARK", key: "yesterday_activity.bookmark", color: "bg-white" },
+    { label: "YESTERDAY'S VYSASSIST", key: "yesterday_vys_assist", color: "bg-white" },
+    { label: "YESTERDAY'S EXPRESS INT SENT", key: "yesterday_express_sent", color: "bg-white" },
+    { label: "YESTERDAY'S EXPRESS INT RECEIVED", key: "yesterday_express_received", color: "bg-white" },
+    { label: "YESTERDAY'S BOOKMARK", key: "yesterday_bookmark", color: "bg-white" },
 ];
 
 export const getPremiumCardColor = (label: string) => {
@@ -160,6 +160,7 @@ const PremiumDashboard: React.FC = () => {
         maxAge: "",
         searchQuery: "", // search
         countFilter: "",
+        genderFilter: "",
     });
     const [profileOwners, setProfileOwners] = useState<any[]>([]);
     const [plans, setPlans] = useState<any[]>([]);
@@ -182,15 +183,18 @@ const PremiumDashboard: React.FC = () => {
             case "TOTAL PREMIUM":
                 return stats.total_profiles || 0;
 
-            // Plan Mappings (Returning objects for split display)
-            case "Gold | Call >60  days | Action >60days":
-                return stats.plan_counts?.gold || { total: 0, call: 0, action: 0 };
+            case "Gold | Call >60 days | Action >60days":
+                return stats.plan_counts?.gold ?? { total: 0, call: 0, action: 0 };
+
             case "PLATINUM | CALL >45 DAYS | ACTION > 45 DAYS":
-                return stats.plan_counts?.platinum || { total: 0, call: 0, action: 0 };
-            case "PLATINUM PRIVATE | CALL >45 DAYS | ACTION > 45 DAYSFFER":
-                return stats.plan_counts?.platinum_private || { total: 0, call: 0, action: 0 };
+                return stats.plan_counts?.platinum ?? { total: 0, call: 0, action: 0 };
+
+            case "PLATINUM PRIVATE | CALL >45 DAYS | ACTION > 45 DAYS":
+                return stats.plan_counts?.platinum_private ?? { total: 0, call: 0, action: 0 };
+
             case "VYSYAMALA DELIGHT | CALL >45 DAYS | ACTION > 45 DAYS":
-                return stats.plan_counts?.vysyamala_delight || { total: 0, call: 0, action: 0 };
+                return stats.plan_counts?.vysyamala_delight ?? { total: 0, call: 0, action: 0 };
+
 
             case "FEMALE": return stats.female || 0;
             case "MALE": return stats.male_count || 0;
@@ -264,41 +268,56 @@ const PremiumDashboard: React.FC = () => {
     }, []);
 
     const fetchDashboardData = useCallback(async (currentFilters = filters) => {
-        if (abortControllerRef.current) abortControllerRef.current.abort();
+        // 1. Abort existing request
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort();
+        }
+
+        // 2. Create new controller
         const controller = new AbortController();
         abortControllerRef.current = controller;
 
+        // 3. FORCE LOADING STATES IMMEDIATELY
         setTableLoading(true);
-        setTableData([]);
+        setTableData([]); // Clear previous records to prevent "ghosting"
 
         const params = new URLSearchParams();
-
-        // Map local filters to API expected keys
         if (currentFilters.fromDate) params.append('from_date', currentFilters.fromDate);
         if (currentFilters.toDate) params.append('to_date', currentFilters.toDate);
         if (currentFilters.minAge) params.append('age_from', currentFilters.minAge);
         if (currentFilters.maxAge) params.append('age_to', currentFilters.maxAge);
         if (currentFilters.plan) params.append('plan_id', currentFilters.plan);
         if (currentFilters.countFilter) params.append('countFilter', currentFilters.countFilter);
-        if (currentFilters.searchQuery) params.append('search', currentFilters.searchQuery);
+        if (currentFilters.genderFilter) {
+            params.append("genderFilter", currentFilters.genderFilter);
+        }
 
         const ownerId = (RoleID === "7") ? currentFilters.staff : (SuperAdminID || "");
         if (ownerId) params.append("owner", ownerId);
 
+
         try {
-            const response = await apiAxios.get('api/premium-report', {
+            const response = await apiAxios.get('api/premium-report/', {
                 params: Object.fromEntries(params.entries()),
                 signal: controller.signal
             });
 
             if (response.data.status) {
-                setStats(response.data);
+                setOriginalTableData(response.data.data);
                 setTableData(response.data.data);
+                setStats(response.data);
             }
-        } catch (error: any) {
-            if (error.name === 'CanceledError' || error.name === 'AbortError') return;
-            console.error("Error fetching premium data:", error);
+        } catch (e: any) {
+            // If aborted, we exit quietly because the NEXT call has already set its own loading state
+            if (e.name === 'CanceledError' || e.name === 'AbortError' || e.code === "ERR_CANCELED") {
+                return;
+            }
+            console.error("Fetch error:", e);
         } finally {
+            /* 4. IMPORTANT: Only stop loading if THIS specific request 
+               is still the active one. If abortControllerRef.current has changed, 
+               it means a newer request is running and we should stay in loading state.
+            */
             if (abortControllerRef.current === controller) {
                 setTableLoading(false);
                 setLoading(false);
@@ -327,17 +346,27 @@ const PremiumDashboard: React.FC = () => {
 
     const handleCardClick = (key: string) => {
         setTableLoading(true);
-
-        // 1. Determine the new filter state immediately
         const updatedFilters = {
             ...filters,
-            countFilter: filters.countFilter === key ? "" : key,
+            countFilter: "",
+            genderFilter: "",
             searchQuery: ""
         };
-        console.log("updatedFilters", updatedFilters)
-        // 2. Update the state for the UI/Inputs
+        // const updatedFilters = {
+        //     ...filters,
+        //     countFilter: key, // Set the specific key (e.g., 'gold_call')
+        //     searchQuery: ""
+        // };
+        if (key === "male" || key === "female") {
+            updatedFilters.genderFilter = key;
+        } else {
+            updatedFilters.countFilter = key;
+        }
+
+
         setFilters(updatedFilters);
-        // setScrollSource('card');
+
+        // Smooth Scroll to Table
         if (tableRef.current) {
             tableRef.current.scrollIntoView({
                 behavior: 'smooth',
@@ -345,8 +374,6 @@ const PremiumDashboard: React.FC = () => {
             });
         }
 
-        // 3. Trigger the fetch IMMEDIATELY with the new values
-        // Don't wait for applyFilters useEffect
         fetchDashboardData(updatedFilters);
     };
 
@@ -364,6 +391,7 @@ const PremiumDashboard: React.FC = () => {
             maxAge: "",
             searchQuery: "",
             countFilter: "",
+            genderFilter: "",
         });
 
         setScrollSource('filter');
@@ -394,6 +422,99 @@ const PremiumDashboard: React.FC = () => {
 
         setTableData(filtered);
     }, [filters.searchQuery, originalTableData, tableLoading]);
+
+    const renderKpiValue = (data: any, kpi: any) => {
+        if (typeof data === 'number') return data;
+
+        // Handle Plan Objects (Total | Call | Action)
+        // if (typeof data === 'object' && data && 'total' in data) {
+        //     // Determine prefixes based on the label
+        //     let prefix = "";
+        //     if (kpi.label.includes("Gold")) prefix = "gold";
+        //     else if (kpi.label.includes("PLATINUM PRIVATE")) prefix = "platinum_private";
+        //     else if (kpi.label.includes("PLATINUM")) prefix = "platinum";
+        //     else if (kpi.label.includes("VYSYAMALA DELIGHT")) prefix = "vysd";
+
+        //     return (
+        //         <div className="flex items-baseline gap-2">
+        //             <span className="hover:text-blue-700 transition">{data.total}</span>
+        //             <span className="text-sm font-medium text-gray-400 flex gap-1">
+        //                 |
+        //                 <span
+        //                     className="hover:text-black hover:underline cursor-pointer px-1"
+        //                     onClick={(e) => { e.stopPropagation(); handleCardClick(`${prefix}_call`); }}
+        //                 >
+        //                     {data.call}
+        //                 </span>
+        //                 |
+        //                 <span
+        //                     className="hover:text-black hover:underline cursor-pointer px-1"
+        //                     onClick={(e) => { e.stopPropagation(); handleCardClick(`${prefix}_action`); }}
+        //                 >
+        //                     {data.action}
+        //                 </span>
+        //             </span>
+        //         </div>
+        //     );
+        // }
+        if (typeof data === 'object' && 'total' in data) {
+            return (
+                <div className="flex items-baseline gap-2">
+                    <span className="font-bold">{data.total}</span>
+                    <span className="text-sm text-gray-500 flex gap-1">
+                        |
+                        <span
+                            className="cursor-pointer hover:underline"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleCardClick(`${kpi.key}_call`);
+                            }}
+                        >
+                            {data.call}
+                        </span>
+                        |
+                        <span
+                            className="cursor-pointer hover:underline"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleCardClick(`${kpi.key}_action`);
+                            }}
+                        >
+                            {data.action}
+                        </span>
+                    </span>
+                </div>
+            );
+        }
+
+        // Handle Location Object {tn, nonTn}
+        if (typeof data === 'object' && 'tn' in data) {
+            return (
+                <div className="flex items-baseline gap-2 font-bold text-black">
+                    <span
+                        className="cursor-pointer hover:underline"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            handleCardClick('tn');
+                        }}
+                    >
+                        {data.tn}
+                    </span>
+                    <span className="text-gray-400">|</span>
+                    <span
+                        className="cursor-pointer hover:underline"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            handleCardClick('non_tn');
+                        }}
+                    >
+                        {data.nonTn}
+                    </span>
+                </div>
+            );
+        }
+        return "0";
+    };
     // --- Handlers ---
     const handleOpenModal = (profile: PremiumProfile, type: 'call' | 'customer') => {
         setSelectedProfile(profile);
@@ -604,69 +725,31 @@ const PremiumDashboard: React.FC = () => {
                     <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-8">
                         {KPI_CONFIG.map((kpi, i) => {
                             const data = getKpiData(stats, kpi.label);
-
-                            // Helper to render the main number
-                            const renderValue = () => {
-                                if (typeof data === 'number') return data;
-
-                                // Handle Plan Object {total, call, action}
-                                if (typeof data === 'object' && data && 'total' in data) {
-                                    return (
-                                        <div className="flex items-baseline gap-2">
-                                            <span>{data.total}</span>
-                                            <span className="text-sm font-medium text-gray-400">
-                                                | {data.call} | {data.action}
-                                            </span>
-                                        </div>
-                                    );
-                                }
-
-                                // Handle Location Object {tn, nonTn}
-                                if (typeof data === 'object' && data && 'tn' in data) {
-                                    return (
-                                        <div className="flex items-baseline gap-2">
-                                            <span className="text-blue-600">{(data as { tn: number; nonTn: number }).tn}</span>
-                                            <span className="text-gray-300 text-xl">|</span>
-                                            <span className="text-orange-600">{(data as { tn: number; nonTn: number }).nonTn}</span>
-                                        </div>
-                                    );
-                                }
-                                return "0";
-                            };
+                            const isActive = filters.countFilter === kpi.key;
 
                             return (
                                 <motion.div
                                     key={i}
                                     whileHover={{ y: -5 }}
                                     onClick={() => handleCardClick(kpi.key)}
-                                    // className={`${kpi.color} p-5 rounded-2xl min-h-[140px] border border-[#E3E6EE] flex flex-col justify-center cursor-pointer transition shadow-sm`}
-                                    className={`${getPremiumCardColor(kpi.label)} p-5 rounded-2xl min-h-[140px] border border-[#E3E6EE] flex flex-col justify-center cursor-pointer transition shadow-sm ${filters.countFilter === kpi.key ? 'border-4 border-black/50 shadow-lg' : 'border-[#E3E6EE]'}`}
+                                    className={`${getPremiumCardColor(kpi.label)} p-5 rounded-2xl min-h-[140px] border flex flex-col justify-center cursor-pointer transition shadow-sm ${isActive ? 'ring-4 ring-black/20 border-black' : 'border-[#E3E6EE]'}`}
                                 >
                                     <h6 className="text-[10px] font-bold mb-1 tracking-wider uppercase opacity-80 text-start">{kpi.label}</h6>
                                     <h2 className="text-3xl text-start font-bold mb-1">
-                                        {loading ? <CircularProgress size={20} /> : renderValue()}
+                                        {tableLoading && filters.countFilter === kpi.key ?
+                                            <CircularProgress size={20} /> :
+                                            renderKpiValue(data, kpi)
+                                        }
                                     </h2>
-                                    <p className="text-[10px] opacity-70 text-start">Click to view profiles</p>
+                                    <p className="text-[10px] opacity-70 text-start">
+                                        {isActive ? "Viewing these profiles" : "Click to view profiles"}
+                                    </p>
                                 </motion.div>
                             );
                         })}
                     </section>
 
-                    {/* --- Work Stats Section --- */}
-                    {/* <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                {WORK_CARDS.map((card, i) => (
-                    <div key={i} className="bg-white rounded-xl p-6 border border-[#e6ecf2] shadow-sm flex flex-col justify-between h-full transition hover:-translate-y-1 cursor-pointer">
-                        <div className="text-start">
-                            <h5 className="text-base font-semibold text-gray-900 mb-1">{card.label}</h5>
-                            <p className="text-xs text-gray-500 mb-4">{card.sub}</p>
-                        </div>
-                        <div className="text-3xl font-bold text-[#000c28] text-start">0</div>
-                    </div>
-                ))}
-            </section> */}
-
-                    {/* --- Profile Detail Table --- */}
-                    <section className="bg-white rounded-xl border border-[#e6ecf2] shadow-md p-6">
+                    <section ref={tableRef} className="bg-white rounded-xl border border-[#e6ecf2] shadow-md p-6">
                         <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
                             <h5 className="text-lg font-semibold m-0">Premium Profile Detail ({tableData.length || stats?.filtered_count || 0})</h5>
                             <div className="flex gap-2">
