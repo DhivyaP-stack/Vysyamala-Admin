@@ -47,12 +47,12 @@ const KPI_CONFIG = [
     { label: "VYSYAMALA DELIGHT | CALL >45 DAYS | ACTION > 45 DAYS", key: "plan_vys_delight", color: "bg-white", subKeys: true },
 
     { label: "FEMALE", key: "female", color: "bg-white" },
-    { label: "MALE", key: "male_count", color: "bg-white" },
+    { label: "MALE", key: "male", color: "bg-white" },
     { label: "AGE > 30", key: "age_above_30", color: "bg-white" },
     { label: "AGE < 30", key: "age_under_30", color: "bg-white" },
 
     // Location Card
-    { label: "TN | OTH", key: "state_count", color: "bg-white", type: "location" },
+    { label: "TN | OTH", key: "tn", color: "bg-white", type: "location" },
 
     { label: "FIRST 3M PROFILE", key: "fisrt_three_month", color: "bg-white" },
     { label: "LAST 4M PROFILE", key: "last_four_month", color: "bg-white" },
@@ -68,10 +68,10 @@ const KPI_CONFIG = [
     { label: "CURRENT MONTH PREMIUM", key: "cur_month_registrations", color: "bg-white" },
 
     // Work Counts
-    { label: "TODAY'S CALL", key: "work_counts.today_work", color: "bg-white" },
-    { label: "PENDING CALL", key: "work_counts.pending_work", color: "bg-white" },
-    { label: "TODAY'S ACTION", key: "task_counts.today_task", color: "bg-white" },
-    { label: "PENDING ACTION", key: "task_counts.pending_task", color: "bg-white" },
+    { label: "TODAY'S CALL", key: "today_work", color: "bg-white" },
+    { label: "PENDING CALL", key: "pending_work", color: "bg-white" },
+    { label: "TODAY'S ACTION", key: "today_task", color: "bg-white" },
+    { label: "PENDING ACTION", key: "pending_task", color: "bg-white" },
 
     // Yesterday's Activity
     { label: "YESTERDAY'S VYSASSIST", key: "yesterday_vys_assist", color: "bg-white" },
@@ -168,6 +168,7 @@ const PremiumDashboard: React.FC = () => {
     const tableRef = useRef<HTMLDivElement>(null);
     const [applyFilters, setApplyFilters] = useState(false);
     const [originalTableData, setOriginalTableData] = useState<PremiumProfile[]>([]);
+    const [activeKpiKey, setActiveKpiKey] = useState<string>("");
 
     // --- Styles ---
     const btnDark = "bg-[#0A1735] text-white px-6 py-2 rounded-full font-semibold text-sm hover:bg-[#1f2d50] transition shadow-sm border-none cursor-pointer";
@@ -346,36 +347,27 @@ const PremiumDashboard: React.FC = () => {
 
     const handleCardClick = (key: string) => {
         setTableLoading(true);
+        setActiveKpiKey(key);
+
         const updatedFilters = {
             ...filters,
             countFilter: "",
             genderFilter: "",
             searchQuery: ""
         };
-        // const updatedFilters = {
-        //     ...filters,
-        //     countFilter: key, // Set the specific key (e.g., 'gold_call')
-        //     searchQuery: ""
-        // };
+
         if (key === "male" || key === "female") {
             updatedFilters.genderFilter = key;
         } else {
             updatedFilters.countFilter = key;
         }
 
-
         setFilters(updatedFilters);
 
-        // Smooth Scroll to Table
-        if (tableRef.current) {
-            tableRef.current.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }
-
+        tableRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
         fetchDashboardData(updatedFilters);
     };
+
 
     const handleReset = () => {
         // Show loading on both sections
@@ -423,41 +415,20 @@ const PremiumDashboard: React.FC = () => {
         setTableData(filtered);
     }, [filters.searchQuery, originalTableData, tableLoading]);
 
+    const getPlanPrefix = (label: string) => {
+        if (label.includes("Gold")) return "gold";
+        if (label.includes("PLATINUM PRIVATE")) return "platinum_private";
+        if (label.includes("PLATINUM")) return "platinum";
+        if (label.includes("VYSYAMALA")) return "vysd";
+        return "";
+    };
+
     const renderKpiValue = (data: any, kpi: any) => {
         if (typeof data === 'number') return data;
 
-        // Handle Plan Objects (Total | Call | Action)
-        // if (typeof data === 'object' && data && 'total' in data) {
-        //     // Determine prefixes based on the label
-        //     let prefix = "";
-        //     if (kpi.label.includes("Gold")) prefix = "gold";
-        //     else if (kpi.label.includes("PLATINUM PRIVATE")) prefix = "platinum_private";
-        //     else if (kpi.label.includes("PLATINUM")) prefix = "platinum";
-        //     else if (kpi.label.includes("VYSYAMALA DELIGHT")) prefix = "vysd";
+        if (typeof data === "object" && "total" in data) {
+            const prefix = getPlanPrefix(kpi.label);
 
-        //     return (
-        //         <div className="flex items-baseline gap-2">
-        //             <span className="hover:text-blue-700 transition">{data.total}</span>
-        //             <span className="text-sm font-medium text-gray-400 flex gap-1">
-        //                 |
-        //                 <span
-        //                     className="hover:text-black hover:underline cursor-pointer px-1"
-        //                     onClick={(e) => { e.stopPropagation(); handleCardClick(`${prefix}_call`); }}
-        //                 >
-        //                     {data.call}
-        //                 </span>
-        //                 |
-        //                 <span
-        //                     className="hover:text-black hover:underline cursor-pointer px-1"
-        //                     onClick={(e) => { e.stopPropagation(); handleCardClick(`${prefix}_action`); }}
-        //                 >
-        //                     {data.action}
-        //                 </span>
-        //             </span>
-        //         </div>
-        //     );
-        // }
-        if (typeof data === 'object' && 'total' in data) {
             return (
                 <div className="flex items-baseline gap-2">
                     <span className="font-bold">{data.total}</span>
@@ -467,7 +438,7 @@ const PremiumDashboard: React.FC = () => {
                             className="cursor-pointer hover:underline"
                             onClick={(e) => {
                                 e.stopPropagation();
-                                handleCardClick(`${kpi.key}_call`);
+                                handleCardClick(`${prefix}_call`);
                             }}
                         >
                             {data.call}
@@ -477,7 +448,7 @@ const PremiumDashboard: React.FC = () => {
                             className="cursor-pointer hover:underline"
                             onClick={(e) => {
                                 e.stopPropagation();
-                                handleCardClick(`${kpi.key}_action`);
+                                handleCardClick(`${prefix}_action`);
                             }}
                         >
                             {data.action}
@@ -725,7 +696,11 @@ const PremiumDashboard: React.FC = () => {
                     <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-8">
                         {KPI_CONFIG.map((kpi, i) => {
                             const data = getKpiData(stats, kpi.label);
-                            const isActive = filters.countFilter === kpi.key;
+                            const isActive =
+                                filters.countFilter === kpi.key ||
+                                (kpi.key === "male" && filters.genderFilter === "male") ||
+                                (kpi.key === "female" && filters.genderFilter === "female");
+
 
                             return (
                                 <motion.div
@@ -736,10 +711,13 @@ const PremiumDashboard: React.FC = () => {
                                 >
                                     <h6 className="text-[10px] font-bold mb-1 tracking-wider uppercase opacity-80 text-start">{kpi.label}</h6>
                                     <h2 className="text-3xl text-start font-bold mb-1">
-                                        {tableLoading && filters.countFilter === kpi.key ?
-                                            <CircularProgress size={20} /> :
+                                        {/* {tableLoading && activeKpiKey === kpi.key ? (
+                                            <CircularProgress size={20} />
+                                        ) : (
                                             renderKpiValue(data, kpi)
-                                        }
+                                        )} */}
+                                        {renderKpiValue(data, kpi)}
+
                                     </h2>
                                     <p className="text-[10px] opacity-70 text-start">
                                         {isActive ? "Viewing these profiles" : "Click to view profiles"}
