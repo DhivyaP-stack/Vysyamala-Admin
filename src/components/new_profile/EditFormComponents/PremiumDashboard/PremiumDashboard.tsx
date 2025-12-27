@@ -740,9 +740,14 @@ const PremiumDashboard: React.FC = () => {
                             </Box>
 
                             {/* <Box sx={{ display: "flex", alignItems: "center" }}>
-                                <Typography sx={labelStyle}>Idle Days</Typography>
-                                <Typography sx={valueStyle}>{profile.idle_days ?? 0}</Typography>
+                                <Typography sx={labelStyle}>Call Particulars</Typography>
+                                <Typography sx={valueStyle}>{call?.particulars_name || "N/A"}</Typography>
                             </Box> */}
+
+                            {/* <Box sx={{ display: "flex", alignItems: "center" }}>
+                                   <Typography sx={labelStyle}>Idle Days</Typography>
+                                   <Typography sx={valueStyle}>{profile.idle_days ?? 0}</Typography>
+                               </Box> */}
                         </Box>
                     </Grid>
 
@@ -764,10 +769,10 @@ const PremiumDashboard: React.FC = () => {
                                 <Typography sx={valueStyle}>{action?.action_point_name || "N/A"}</Typography>
                             </Box>
 
-                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                            {/* <Box sx={{ display: "flex", alignItems: "center" }}>
                                 <Typography sx={labelStyle}>LAP Comments</Typography>
                                 <Typography sx={valueStyle}>{action?.comments || "N/A"}</Typography>
-                            </Box>
+                            </Box> */}
 
                             <Box sx={{ display: "flex", alignItems: "center" }}>
                                 <Typography sx={labelStyle}>NAD</Typography>
@@ -778,14 +783,21 @@ const PremiumDashboard: React.FC = () => {
                                 </Typography>
                             </Box>
 
-                            {/* <Box sx={{ display: "flex", alignItems: "center" }}>
-                                <Typography sx={labelStyle}>Renewal Date</Typography>
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <Typography sx={labelStyle}>NAP</Typography>
                                 <Typography sx={valueStyle}>
-                                    {profile.membership_enddate
-                                        ? new Date(profile.membership_enddate).toLocaleDateString("en-GB").replace(/\//g, "-")
-                                        : "N/A"}
+                                    {action?.next_action_name || "N/A"}
                                 </Typography>
-                            </Box> */}
+                            </Box>
+
+                            {/* <Box sx={{ display: "flex", alignItems: "center" }}>
+                                   <Typography sx={labelStyle}>Renewal Date</Typography>
+                                   <Typography sx={valueStyle}>
+                                       {profile.membership_enddate
+                                           ? new Date(profile.membership_enddate).toLocaleDateString("en-GB").replace(/\//g, "-")
+                                           : "N/A"}
+                                   </Typography>
+                               </Box> */}
                         </Box>
                     </Grid>
                 </Grid>
@@ -1090,7 +1102,13 @@ const PremiumDashboard: React.FC = () => {
                                     }}
                                     className="w-[250px] h-10 px-4 rounded-full border border-gray-300 text-sm focus:outline-none focus:border-gray-500 transition"
                                 />
-                                <button className="h-10 px-4 rounded-full bg-white border border-gray-300 text-sm font-semibold hover:bg-gray-50 transition">Clear</button>
+                                <button
+                                    onClick={() => {
+                                        setFilters({ ...filters, searchQuery: "" });
+                                        setScrollSource('filter');
+                                        setApplyFilters(true);  // 👈 reload table after clearing
+                                    }}
+                                    className="h-10 px-4 rounded-full bg-white border border-gray-300 text-sm font-semibold hover:bg-gray-50 transition">Clear</button>
                             </div>
                         </div>
 
