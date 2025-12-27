@@ -983,13 +983,34 @@ const PremiumDashboard: React.FC = () => {
                     <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-8">
                         {KPI_CONFIG.map((kpi, i) => {
                             const data = getKpiData(stats, kpi.label);
+                            // const isActive =
+                            //     // ✅ Gender cards → ONLY highlight themselves
+                            //     (kpi.key === "male" && filters.genderFilter === "male") ||
+                            //     (kpi.key === "female" && filters.genderFilter === "female") ||
+
+                            //     // ✅ Plan cards → Gold / Platinum / PP / Vysyamala
+                            //     (kpi.subKeys && activeKpiKey === getPlanPrefix(kpi.label)) ||
+
+                            //     // ✅ Normal KPI (EXCLUDE TOTAL PREMIUM)
+                            //     (
+                            //         kpi.key !== "" &&
+                            //         !kpi.subKeys &&
+                            //         filters.countFilter === kpi.key
+                            //     ) ||
+
+                            //     // ✅ TN | OTH
+                            //     (kpi.key === "tn" && ["tn", "non_tn"].includes(filters.countFilter));
+
                             const isActive =
-                                // ✅ Gender cards → ONLY highlight themselves
+                                // ✅ Gender cards
                                 (kpi.key === "male" && filters.genderFilter === "male") ||
                                 (kpi.key === "female" && filters.genderFilter === "female") ||
 
-                                // ✅ Plan cards → Gold / Platinum / PP / Vysyamala
-                                (kpi.subKeys && activeKpiKey === getPlanPrefix(kpi.label)) ||
+                                // ✅ FIXED: Plan cards (Matches the base key OR any sub-key like _call/_action)
+                                (kpi.subKeys && (
+                                    filters.countFilter === kpi.key ||
+                                    (filters.countFilter && filters.countFilter.startsWith(getPlanPrefix(kpi.label)))
+                                )) ||
 
                                 // ✅ Normal KPI (EXCLUDE TOTAL PREMIUM)
                                 (
