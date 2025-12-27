@@ -984,18 +984,23 @@ const PremiumDashboard: React.FC = () => {
                         {KPI_CONFIG.map((kpi, i) => {
                             const data = getKpiData(stats, kpi.label);
                             const isActive =
-                                // Gender cards
+                                // ✅ Gender cards → ONLY highlight themselves
                                 (kpi.key === "male" && filters.genderFilter === "male") ||
                                 (kpi.key === "female" && filters.genderFilter === "female") ||
 
-                                // Plan KPI (call/action)
+                                // ✅ Plan cards → Gold / Platinum / PP / Vysyamala
                                 (kpi.subKeys && activeKpiKey === getPlanPrefix(kpi.label)) ||
 
-                                // Normal KPI
-                                (!kpi.subKeys && filters.countFilter === kpi.key) ||
+                                // ✅ Normal KPI (EXCLUDE TOTAL PREMIUM)
+                                (
+                                    kpi.key !== "" &&
+                                    !kpi.subKeys &&
+                                    filters.countFilter === kpi.key
+                                ) ||
 
-                                // TN | OTH
+                                // ✅ TN | OTH
                                 (kpi.key === "tn" && ["tn", "non_tn"].includes(filters.countFilter));
+
 
 
                             return (
