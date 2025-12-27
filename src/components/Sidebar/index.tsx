@@ -4,7 +4,7 @@ import SidebarLinkGroup from './SidebarLinkGroup';
 import Logo from '../../../public/Vysyamala.svg';
 import { CgProfile } from 'react-icons/cg';
 import { FaUser, FaUserCog, FaSearch, FaSearchPlus } from 'react-icons/fa';
-import { MdAddLocationAlt, MdAppRegistration, MdAutorenew } from 'react-icons/md';
+import { MdAddLocationAlt, MdAppRegistration, MdAutorenew, MdDashboard } from 'react-icons/md';
 import { FaRegStar } from 'react-icons/fa';
 import { MdFamilyRestroom } from 'react-icons/md';
 import { ImProfile } from 'react-icons/im';
@@ -1415,7 +1415,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                         (isActive && '!text-PrimaryRed')
                       }
                     >
-                      <RxDashboard />
+                      <MdDashboard />
                       Premium Dashboard
                     </NavLink>
                   </li>
