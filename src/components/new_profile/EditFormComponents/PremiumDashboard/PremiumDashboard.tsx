@@ -412,48 +412,50 @@ const PremiumDashboard: React.FC = () => {
 
     const handleCardClick = (key: string) => {
         setTableLoading(true);
-        setActiveSubType(null);
 
-        // ✅ Preserve ALL existing filters
         const updatedFilters = { ...filters };
 
-        // ---------------- GENDER CLICK ----------------
+        // ---------------- GENDER ----------------
         if (key === "male" || key === "female") {
-            updatedFilters.genderFilter = key;   // ✅ only set gender
-            updatedFilters.countFilter = "";     // ✅ clear KPI filter only
-            setActiveKpiKey("");                 // ✅ no TOTAL highlight
+            updatedFilters.genderFilter = key;
+            updatedFilters.countFilter = "";
+            setActiveKpiKey("");          // clear KPI
+            setActiveSubType(null);
         }
 
-        // ---------------- CALL / ACTION ----------------
+        // ---------------- CALL ----------------
         else if (key.endsWith("_call")) {
+            const baseKey = key.replace("_call", "");
             updatedFilters.countFilter = key;
             updatedFilters.genderFilter = "";
-            setActiveSubType("call");
-            setActiveKpiKey(key.replace("_call", ""));
+
+            setActiveKpiKey(baseKey);     // ✅ KPI card highlight
+            setActiveSubType("call");     // ✅ underline call
         }
 
+        // ---------------- ACTION ----------------
         else if (key.endsWith("_action")) {
+            const baseKey = key.replace("_action", "");
             updatedFilters.countFilter = key;
             updatedFilters.genderFilter = "";
-            setActiveSubType("action");
-            setActiveKpiKey(key.replace("_action", ""));
+
+            setActiveKpiKey(baseKey);     // ✅ KPI card highlight
+            setActiveSubType("action");   // ✅ underline action
         }
 
-        // ---------------- OTHER KPI ----------------
+        // ---------------- NORMAL KPI ----------------
         else {
             updatedFilters.countFilter = key;
             updatedFilters.genderFilter = "";
+
             setActiveKpiKey(key);
+            setActiveSubType(null);
         }
 
         setFilters(updatedFilters);
-
-        tableRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-
-        // ✅ API CALL WITH EXISTING PARAMS + gender
+        tableRef.current?.scrollIntoView({ behavior: "smooth" });
         fetchDashboardData(updatedFilters);
     };
-
 
 
 
@@ -523,7 +525,9 @@ const PremiumDashboard: React.FC = () => {
                     <span className="text-sm text-gray-500 flex gap-1">
                         |
                         <span
-                            className={`cursor-pointer ${activeSubType === "call" ? "underline font-bold text-black" : "hover:underline"
+                            className={`cursor-pointer ${activeKpiKey === prefix && activeSubType === "call"
+                                ? "underline font-bold text-black"
+                                : "hover:underline"
                                 }`}
                             onClick={(e) => {
                                 e.stopPropagation();
@@ -534,7 +538,9 @@ const PremiumDashboard: React.FC = () => {
                         </span>
                         |
                         <span
-                            className={`cursor-pointer ${activeSubType === "action" ? "underline font-bold text-black" : "hover:underline"
+                            className={`cursor-pointer ${activeKpiKey === prefix && activeSubType === "action"
+                                ? "underline font-bold text-black"
+                                : "hover:underline"
                                 }`}
                             onClick={(e) => {
                                 e.stopPropagation();
@@ -936,19 +942,19 @@ const PremiumDashboard: React.FC = () => {
                         {KPI_CONFIG.map((kpi, i) => {
                             const data = getKpiData(stats, kpi.label);
                             const isActive =
-                                // Gender cards – ONLY highlight the selected gender
+                                // Gender cards
                                 (kpi.key === "male" && filters.genderFilter === "male") ||
                                 (kpi.key === "female" && filters.genderFilter === "female") ||
 
-                                // Other KPI cards (non-gender)
-                                (kpi.key &&
-                                    kpi.key !== "male" &&
-                                    kpi.key !== "female" &&
-                                    filters.countFilter === kpi.key) ||
+                                // Plan KPI (call/action)
+                                (kpi.subKeys && activeKpiKey === getPlanPrefix(kpi.label)) ||
 
-                                // TN | OTH special case
-                                (kpi.key === "tn" &&
-                                    ["tn", "non_tn"].includes(filters.countFilter));
+                                // Normal KPI
+                                (!kpi.subKeys && filters.countFilter === kpi.key) ||
+
+                                // TN | OTH
+                                (kpi.key === "tn" && ["tn", "non_tn"].includes(filters.countFilter));
+
 
                             return (
                                 <motion.div
