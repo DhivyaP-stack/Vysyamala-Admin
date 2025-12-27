@@ -59,7 +59,7 @@ const KPI_CONFIG = [
     // Location Card
     { label: "TN | OTH", key: "tn", color: "bg-white", type: "location" },
 
-    { label: "FIRST 3M PROFILE", key: "fisrt_three_month", color: "bg-white" },
+    { label: "FIRST 3M PROFILE", key: "first_three_month", color: "bg-white" },
     { label: "LAST 4M PROFILE", key: "last_four_month", color: "bg-white" },
 
     { label: "TODAY'S LOGIN", key: "today_login", color: "bg-white" },
@@ -413,37 +413,80 @@ const PremiumDashboard: React.FC = () => {
     const handleCardClick = (key: string) => {
         setTableLoading(true);
 
-        const updatedFilters = { ...filters };
+        const updatedFilters = { ...filters, searchQuery: "" };
 
-        // ---------------- GENDER ----------------
+        // ================= TOGGLE OFF =================
+        const isSameGender =
+            (key === "male" || key === "female") &&
+            filters.genderFilter === key;
+
+        const isSameNormalKpi =
+            !key.endsWith("_call") &&
+            !key.endsWith("_action") &&
+            key === filters.countFilter;
+
+        const isSameCall =
+            key.endsWith("_call") &&
+            filters.countFilter === key;
+
+        const isSameAction =
+            key.endsWith("_action") &&
+            filters.countFilter === key;
+
+        // 👉 If same card clicked again → RESET everything
+        if (isSameGender || isSameNormalKpi || isSameCall || isSameAction) {
+            setFilters({
+                ...updatedFilters,
+                countFilter: "",
+                genderFilter: "",
+            });
+
+            setActiveKpiKey("");
+            setActiveSubType(null);
+
+            fetchDashboardData({
+                ...updatedFilters,
+                countFilter: "",
+                genderFilter: "",
+            });
+
+            return;
+        }
+
+        // ================= APPLY NEW SELECTION =================
+
+        // -------- GENDER --------
         if (key === "male" || key === "female") {
             updatedFilters.genderFilter = key;
             updatedFilters.countFilter = "";
-            setActiveKpiKey("");          // clear KPI
+
+            setActiveKpiKey("");
             setActiveSubType(null);
         }
 
-        // ---------------- CALL ----------------
+        // -------- CALL --------
         else if (key.endsWith("_call")) {
             const baseKey = key.replace("_call", "");
+
             updatedFilters.countFilter = key;
             updatedFilters.genderFilter = "";
 
-            setActiveKpiKey(baseKey);     // ✅ KPI card highlight
-            setActiveSubType("call");     // ✅ underline call
+            setActiveKpiKey(baseKey);
+            setActiveSubType("call");
         }
 
-        // ---------------- ACTION ----------------
+        // -------- ACTION --------
         else if (key.endsWith("_action")) {
             const baseKey = key.replace("_action", "");
+
             updatedFilters.countFilter = key;
             updatedFilters.genderFilter = "";
 
-            setActiveKpiKey(baseKey);     // ✅ KPI card highlight
-            setActiveSubType("action");   // ✅ underline action
+            setActiveKpiKey(baseKey);
+            setActiveSubType("action");
         }
 
-        // ---------------- NORMAL KPI ----------------
+        // -------- NORMAL KPI --------
         else {
             updatedFilters.countFilter = key;
             updatedFilters.genderFilter = "";
@@ -456,7 +499,6 @@ const PremiumDashboard: React.FC = () => {
         tableRef.current?.scrollIntoView({ behavior: "smooth" });
         fetchDashboardData(updatedFilters);
     };
-
 
 
     const handleReset = () => {
