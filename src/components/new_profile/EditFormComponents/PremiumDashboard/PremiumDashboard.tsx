@@ -1001,15 +1001,43 @@ const PremiumDashboard: React.FC = () => {
                             //     // ✅ TN | OTH
                             //     (kpi.key === "tn" && ["tn", "non_tn"].includes(filters.countFilter));
 
+                            // const isActive =
+                            //     // ✅ Gender cards
+                            //     (kpi.key === "male" && filters.genderFilter === "male") ||
+                            //     (kpi.key === "female" && filters.genderFilter === "female") ||
+
+                            //     // ✅ FIXED: Plan cards (Matches the base key OR any sub-key like _call/_action)
+                            //     (kpi.subKeys && (
+                            //         filters.countFilter === kpi.key ||
+                            //         (filters.countFilter && filters.countFilter.startsWith(getPlanPrefix(kpi.label)))
+                            //     )) ||
+
+                            //     // ✅ Normal KPI (EXCLUDE TOTAL PREMIUM)
+                            //     (
+                            //         kpi.key !== "" &&
+                            //         !kpi.subKeys &&
+                            //         filters.countFilter === kpi.key
+                            //     ) ||
+
+                            //     // ✅ TN | OTH
+                            //     (kpi.key === "tn" && ["tn", "non_tn"].includes(filters.countFilter));
+
+
                             const isActive =
                                 // ✅ Gender cards
                                 (kpi.key === "male" && filters.genderFilter === "male") ||
                                 (kpi.key === "female" && filters.genderFilter === "female") ||
 
-                                // ✅ FIXED: Plan cards (Matches the base key OR any sub-key like _call/_action)
+                                // ✅ FIXED: Plan card matching with specific prefix boundary
                                 (kpi.subKeys && (
                                     filters.countFilter === kpi.key ||
-                                    (filters.countFilter && filters.countFilter.startsWith(getPlanPrefix(kpi.label)))
+                                    (
+                                        filters.countFilter &&
+                                        // Check if the current filter starts with the exact prefix followed by an underscore
+                                        filters.countFilter.startsWith(getPlanPrefix(kpi.label) + "_") &&
+                                        // Additional safety: ensure we aren't matching 'platinum' when the filter is 'platinum_private'
+                                        (getPlanPrefix(kpi.label) === "platinum" ? !filters.countFilter.includes("platinum_private") : true)
+                                    )
                                 )) ||
 
                                 // ✅ Normal KPI (EXCLUDE TOTAL PREMIUM)
@@ -1021,8 +1049,6 @@ const PremiumDashboard: React.FC = () => {
 
                                 // ✅ TN | OTH
                                 (kpi.key === "tn" && ["tn", "non_tn"].includes(filters.countFilter));
-
-
 
                             return (
                                 <motion.div
