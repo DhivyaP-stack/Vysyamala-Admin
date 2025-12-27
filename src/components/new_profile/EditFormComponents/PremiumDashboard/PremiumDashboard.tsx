@@ -412,38 +412,48 @@ const PremiumDashboard: React.FC = () => {
 
     const handleCardClick = (key: string) => {
         setTableLoading(true);
-        setActiveKpiKey(key);
-        setActiveSubType(null); // reset by default
+        setActiveSubType(null);
 
-        const updatedFilters = {
-            ...filters,
-            countFilter: "",
-            genderFilter: "",
-            searchQuery: ""
-        };
+        // ✅ Preserve ALL existing filters
+        const updatedFilters = { ...filters };
 
-        // 👇 Detect call / action clicks
-        if (key.endsWith("_call")) {
+        // ---------------- GENDER CLICK ----------------
+        if (key === "male" || key === "female") {
+            updatedFilters.genderFilter = key;   // ✅ only set gender
+            updatedFilters.countFilter = "";     // ✅ clear KPI filter only
+            setActiveKpiKey("");                 // ✅ no TOTAL highlight
+        }
+
+        // ---------------- CALL / ACTION ----------------
+        else if (key.endsWith("_call")) {
             updatedFilters.countFilter = key;
+            updatedFilters.genderFilter = "";
             setActiveSubType("call");
             setActiveKpiKey(key.replace("_call", ""));
-        } else if (key.endsWith("_action")) {
+        }
+
+        else if (key.endsWith("_action")) {
             updatedFilters.countFilter = key;
+            updatedFilters.genderFilter = "";
             setActiveSubType("action");
             setActiveKpiKey(key.replace("_action", ""));
-        } else if (key === "male" || key === "female") {
-            updatedFilters.genderFilter = key;
-            updatedFilters.countFilter = ""; // IMPORTANT
-            setActiveKpiKey(""); // 👈 forces TOTAL PREMIUM highlight
-        } else {
+        }
+
+        // ---------------- OTHER KPI ----------------
+        else {
             updatedFilters.countFilter = key;
+            updatedFilters.genderFilter = "";
             setActiveKpiKey(key);
         }
 
         setFilters(updatedFilters);
+
         tableRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+
+        // ✅ API CALL WITH EXISTING PARAMS + gender
         fetchDashboardData(updatedFilters);
     };
+
 
 
 
@@ -926,13 +936,19 @@ const PremiumDashboard: React.FC = () => {
                         {KPI_CONFIG.map((kpi, i) => {
                             const data = getKpiData(stats, kpi.label);
                             const isActive =
-                                filters.countFilter === kpi.key ||
-                                activeKpiKey === kpi.key ||
-                                (kpi.key === "tn" && ["tn", "non_tn"].includes(filters.countFilter)) ||
-                                (kpi.label === "TOTAL PREMIUM" && !!filters.genderFilter) ||
+                                // Gender cards – ONLY highlight the selected gender
                                 (kpi.key === "male" && filters.genderFilter === "male") ||
-                                (kpi.key === "female" && filters.genderFilter === "female");
+                                (kpi.key === "female" && filters.genderFilter === "female") ||
 
+                                // Other KPI cards (non-gender)
+                                (kpi.key &&
+                                    kpi.key !== "male" &&
+                                    kpi.key !== "female" &&
+                                    filters.countFilter === kpi.key) ||
+
+                                // TN | OTH special case
+                                (kpi.key === "tn" &&
+                                    ["tn", "non_tn"].includes(filters.countFilter));
 
                             return (
                                 <motion.div
@@ -966,6 +982,12 @@ const PremiumDashboard: React.FC = () => {
                                 <input
                                     type="text"
                                     placeholder="Search Profile ID / Name"
+                                    value={filters.searchQuery}
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        setFilters({ ...filters, searchQuery: val });
+                                        // REMOVED: Timer logic - filtering happens instantly via useEffect
+                                    }}
                                     className="w-[250px] h-10 px-4 rounded-full border border-gray-300 text-sm focus:outline-none focus:border-gray-500 transition"
                                 />
                                 <button className="h-10 px-4 rounded-full bg-white border border-gray-300 text-sm font-semibold hover:bg-gray-50 transition">Clear</button>
